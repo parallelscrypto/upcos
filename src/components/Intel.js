@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import dai from '../dai.png'
 import MyTerminal from './MyTerminal'
 import MyTicker from './MyTicker'
+import UpcStatsTicker from './UpcStatsTicker'
 import ReactCardFlip from 'react-card-flip';
 
 class Intel extends Component {
@@ -56,6 +57,7 @@ class Intel extends Component {
                   Crypto Mode
                 </button>
 	        <MyTicker style={{"position":"absolute","bottom":"0"}} />
+	        <UpcStatsTicker style={{"position":"absolute","bottom":"0"}} />
              </div>
              <div>
                   <form className="mb-3" onSubmit={(event) => {

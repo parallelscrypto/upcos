@@ -152,19 +152,18 @@ export default class MyTicker extends Component {
   render() {
     return (
       <div>
+
         <Ticker
-          speed={1}
+          direction="toRight"
+          offset="100%"
+          speed={5}
           move={this.state.move}
-          height={100}
         >
-          {({ index }) => index === 0
-            ? <p style={{ width: '25vw' }}></p>
-            : 
-         <div onClick={() => alert("hi")} style={{"marginRight":"10px"}} >
-	    <QRCode size={128} value={uuid()} />
-         </div>
-          }
+          {(index) => (
+            <b style={{color:"orange"}}>React-Ticker</b>
+          )}
         </Ticker>
+	    
       </div >
     )
   }

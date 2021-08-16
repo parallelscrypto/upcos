@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import Terminal from 'react-console-emulator'
 import ScratchCard from './ScratchCard'
-
+import Modal from "react-animated-modal";
+import Iframe from 'react-iframe';
+import axios from "axios";
 
 const commands = {
   echo: {
@@ -22,6 +24,8 @@ export default class MyTerminal extends Component {
        account: props.account,
        progress: 0,
        approved: '',
+       vrLink: '',
+       showModal: false,
        progressBal: ''
     }
   }
@@ -29,8 +33,11 @@ export default class MyTerminal extends Component {
   render () {
     var promptlabel = this.state.account + '@upc_shell>';
     return (
+      <div>
+      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModal} closemodal={() => this.setState({ showModal: false })} type="hinge" >{this.state.vrLink}</Modal>
       <Terminal
         style={{"maxHeight":"300px"}}
+        dangerMode={true}
         ref={this.progressTerminal}
         commands={{
             bal: {
@@ -140,28 +147,18 @@ export default class MyTerminal extends Component {
                   let approval = this.props.getVrByUpcId(this.state.account);
 	          var self = this;
                   approval.then((value) => {
-                     console.log("its " + value);
 		     self.setState({approved: "true"});
-                     clearInterval(interval)
-		     terminal.pushToStdout(` ${value}`)
-                     // expected output: "Success!"
-                  });
+		     self.setState({showModal: true});
+                     var link = <a href={value}>Click to visit my VR</a>
+		     self.setState({vrLink: link});
 
-
-
-                  const interval = setInterval(() => {
-                    if (this.state.approved != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({approved: approval});
-                      var self = this;
-                      this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Congrats! You just mined some crypto. \n  Type 'bal' to see your new balance! ${approval}`))
-                    }
-                  }, 1500)
-
-
-
+		     axios.get(value)
+                     .then(function (response) {
+                       // handle success
+                       console.log(response);
+                     })
+		     terminal.pushToStdout(value)
+	          });
                 })
 
                 return ''
@@ -232,6 +229,8 @@ export default class MyTerminal extends Component {
         autoFocus={true}
 	promptLabelStyle={{"color":"green"}}
       />
+
+      </div>
     )
   }
 }

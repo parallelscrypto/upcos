@@ -4,6 +4,18 @@
   text-align: center;
 }
 
+.react-modal-body {
+position: relative;
+background-color: #fff;
+border-radius: 54px;
+z-index: 103;
+width: 90vw;
+min-height: 90vh;
+display: table-cell;
+text-align: center;
+vertical-align: middle;
+}
+
 body {
   background: #1e1e2e;
   color: #28a745;
