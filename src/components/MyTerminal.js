@@ -225,7 +225,7 @@ export default class MyTerminal extends Component {
               }
             }
           }}
-        welcomeMessage={'Welcome to UPC Matrix! \n Type `tut` for tutorial'}
+        welcomeMessage={'Welcome to UPC Matrix! \n Type `fire` for tutorial'}
         promptLabel={promptlabel}
         autoFocus={true}
 	promptLabelStyle={{"color":"green", "fontWeight":"bold", "fontSize":"1.1em"}}
