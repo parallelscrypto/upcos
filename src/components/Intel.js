@@ -63,6 +63,7 @@ let vid =
 
             <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
              <div>
+	    {vid}
                 <button onClick={() => this.flipCard('cm')}
                    className="btn btn-dark btn-block btn-lg"
                 >
@@ -73,7 +74,6 @@ let vid =
              </div>
 
              <div>
-	    {vid}
                   <form className="mb-3" onSubmit={(event) => {
                       event.preventDefault()
                       let upcId = this.upcId.value.toString()
