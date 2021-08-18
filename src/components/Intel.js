@@ -4,6 +4,10 @@ import MyTerminal from './MyTerminal'
 import MyTicker from './MyTicker'
 import UpcStatsTicker from './UpcStatsTicker'
 import ReactCardFlip from 'react-card-flip';
+import equalizer from './extra/equalizer.mp4';
+
+
+
 
 class Intel extends Component {
 
@@ -37,6 +41,14 @@ class Intel extends Component {
 
 
   render() {
+let vid = 
+<div>
+<video style={{"position":"fixed","zIndex":"-1","width":"100%"}} autoPlay loop muted>
+    <source src={equalizer} type='video/mp4' />
+</video>
+<h1>this is a test!!!!</h1>		  
+</div>;
+
     return (
 	    <div>
 
@@ -59,7 +71,9 @@ class Intel extends Component {
 	        <MyTicker style={{"position":"absolute","bottom":"0"}} />
 	        <UpcStatsTicker style={{"position":"absolute","bottom":"0"}} />
              </div>
+
              <div>
+	    {vid}
                   <form className="mb-3" onSubmit={(event) => {
                       event.preventDefault()
                       let upcId = this.upcId.value.toString()

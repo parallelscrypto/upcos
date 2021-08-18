@@ -156,7 +156,7 @@ export default class MyTicker extends Component {
         <Ticker
           direction="toRight"
           offset="100%"
-          speed={5}
+          speed={0.5}
           move={this.state.move}
         >
           {(index) => (

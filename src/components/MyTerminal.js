@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Terminal from 'react-console-emulator'
 import ScratchCard from './ScratchCard'
+import MatrixBg from './extra/matrixbg.png'
 import Modal from "react-animated-modal";
 import Iframe from 'react-iframe';
 import axios from "axios";
@@ -36,7 +37,7 @@ export default class MyTerminal extends Component {
       <div>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModal} closemodal={() => this.setState({ showModal: false })} type="hinge" >{this.state.vrLink}</Modal>
       <Terminal
-        style={{"maxHeight":"300px"}}
+        style={{"maxHeight":"300px",backgroundColor: "#000",   backgroundImage: "url(" + MatrixBg + ")",}}
         dangerMode={true}
         ref={this.progressTerminal}
         commands={{
@@ -227,7 +228,7 @@ export default class MyTerminal extends Component {
         welcomeMessage={'Welcome to UPC Matrix! \n Type `tut` for tutorial'}
         promptLabel={promptlabel}
         autoFocus={true}
-	promptLabelStyle={{"color":"green"}}
+	promptLabelStyle={{"color":"green", "fontWeight":"bold", "fontSize":"1.1em"}}
       />
 
       </div>
