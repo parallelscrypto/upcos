@@ -43,7 +43,7 @@ class Intel extends Component {
   render() {
 let vid = 
 <div>
-<video style={{"position":"fixed","zIndex":"-1","opacity":"0.1"}} autoPlay loop muted>
+<video style={{"position":"fixed","zIndex":"1","opacity":"0.4","width":"100vw"}} autoPlay loop muted>
     <source src={equalizer} type='video/mp4' />
 </video>
 </div>;

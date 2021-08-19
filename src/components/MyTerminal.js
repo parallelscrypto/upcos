@@ -5,6 +5,8 @@ import MatrixBg from './extra/matrixbg.png'
 import Modal from "react-animated-modal";
 import Iframe from 'react-iframe';
 import axios from "axios";
+import equalizer from './extra/equalizer.mp4';
+
 
 const commands = {
   echo: {
@@ -32,6 +34,17 @@ export default class MyTerminal extends Component {
   }
 
   render () {
+
+
+let vid =
+<div>
+<video style={{"position":"fixed","zIndex":"-1","opacity":"0.4"}} autoPlay loop muted>
+    <source src={equalizer} type='video/mp4' />
+</video>
+</div>;
+
+
+
     var promptlabel = this.state.account + '@upc_shell>';
     return (
       <div>
