@@ -5,6 +5,7 @@ import MyTicker from './MyTicker'
 import UpcStatsTicker from './UpcStatsTicker'
 import ReactCardFlip from 'react-card-flip';
 import equalizer from './extra/equalizer.mp4';
+import fps from './extra/fps.mp4';
 
 
 
@@ -39,15 +40,23 @@ class Intel extends Component {
     this.setState({isFlipped: !this.state.isFlipped});
   }
 
-
   render() {
-let vid = 
-<div>
-<video style={{"position":"fixed","zIndex":"1","opacity":"0.4","width":"100vw"}} autoPlay loop muted>
-    <source src={equalizer} type='video/mp4' />
-</video>
-</div>;
-
+	  
+      let vidBg;
+      const rndInt = Math.floor(Math.random() * 2) + 1
+      if(rndInt == 1) {
+          vidBg = fps;
+      }
+      else {
+          vidBg = equalizer;
+      }
+      let vid = 
+      <div>
+         <video style={{"position":"fixed","zIndex":"-1","opacity":"0.9","width":"100vw"}} autoPlay loop muted>
+           <source src={vidBg} type='video/mp4' />
+         </video>
+      </div>;
+    
     return (
 	    <div>
 
@@ -63,11 +72,6 @@ let vid =
             <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
              <div>
 	    {vid}
-                <button onClick={() => this.flipCard('cm')}
-                   className="btn btn-dark btn-block btn-lg"
-                >
-                  Crypto Mode
-                </button>
 	        <MyTicker style={{"position":"absolute","bottom":"0"}} />
 	        <UpcStatsTicker style={{"position":"absolute","bottom":"0"}} />
              </div>
