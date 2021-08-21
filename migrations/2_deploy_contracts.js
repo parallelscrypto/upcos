@@ -12,7 +12,7 @@ module.exports = async function(deployer, network, accounts) {
   //await deployer.deploy(Permissions)
   //await deployer.deploy(Context)
   //await deployer.deploy(ERC20)
-  await deployer.deploy(xUPC)
+  //await deployer.deploy(xUPC)
   await deployer.deploy(UPCNFT)
   //await deployer.deploy(IERC20)
   //await deployer.deploy(Migrations)

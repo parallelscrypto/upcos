@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
 import dai from '../dai.png'
 import MyTerminal from './MyTerminal'
-import MyTicker from './MyTicker'
+import NftPopupTicker from './NftPopupTicker'
 import UpcStatsTicker from './UpcStatsTicker'
 import ReactCardFlip from 'react-card-flip';
 import equalizer from './extra/equalizer.mp4';
 import fps from './extra/fps.mp4';
+import heartbeat from './extra/heartbeat.mp4';
+import Modal from 'react-modal';
 
 
 
@@ -17,6 +19,7 @@ class Intel extends Component {
     this.state = {
       code: "",
       isFlipped: false,
+      modalIsOpen: false
     }
   }
 
@@ -40,15 +43,28 @@ class Intel extends Component {
     this.setState({isFlipped: !this.state.isFlipped});
   }
 
+  openModal = () => {
+    this.setState({modalIsOpen: true});
+  }
+
+  closeModal = () => {
+    this.setState({modalIsOpen: false});
+  }
+
+
+
   render() {
 	  
       let vidBg;
-      const rndInt = Math.floor(Math.random() * 2) + 1
+      const rndInt = Math.floor(Math.random() * 3) + 1
       if(rndInt == 1) {
           vidBg = fps;
       }
-      else {
+      else if(rndInt == 2) {
           vidBg = equalizer;
+      }
+      else if(rndInt == 3) {
+          vidBg = heartbeat;
       }
       let vid = 
       <div>
@@ -72,7 +88,7 @@ class Intel extends Component {
             <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
              <div>
 	    {vid}
-	        <MyTicker style={{"position":"absolute","bottom":"0"}} />
+	        <NftPopupTicker style={{"position":"absolute","bottom":"0"}} />
 	        <UpcStatsTicker style={{"position":"absolute","bottom":"0"}} />
              </div>
 
