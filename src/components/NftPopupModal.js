@@ -21,13 +21,13 @@ export default class NftPopupModal extends Component {
 
 
   render() {
-    var srcImg = 'https://avatars.dicebear.com/api/male/' + this.state.hash + ".svg";
+    var srcImg = 'https://avatars.dicebear.com/api/human/' + this.state.hash + ".svg";
     return (
       <div>
           <QRCode size={128} value={this.state.hash} onClick={() => { this.setState({qIsOpen: true})}}/>
           <Modal
             isOpen={this.state.qIsOpen}
-            contentLabel="Example Modal"
+            contentLabel={this.state.hash}
           >    
              <img src={srcImg} height="200" width="200"/>
              <p>{this.state.hash}</p>
