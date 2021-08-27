@@ -186,6 +186,8 @@ let vid =
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
                   const terminal = this.progressTerminal.current
+			console.log("props is ");
+			console.log(this.props);
                   let approval = this.props.mine();
                   approval.then((value) => {
                      approval = value;

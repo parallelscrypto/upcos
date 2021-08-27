@@ -55,13 +55,8 @@ class App extends Component {
     // Load afroX
     const afroXData = afroX.networks[networkId]
     if(afroXData) {
-	    console.log("addy is " + afroXData.address);
       const AFROX = new web3.eth.Contract(afroX.abi, afroXData.address)
       this.setState({ afroX: AFROX })
-      var afroBal = await this.state.afroX.methods.balanceOf(this.state.account).call({ from: this.state.account });
-	    console.log(afroBal);
-      afroBal = window.web3.utils.fromWei(afroBal, "ether");
-      this.setState({ afroBal })
     } else {
       //window.alert('UPCGoldBank contract not deployed to detected network.')
     }
@@ -200,7 +195,7 @@ class App extends Component {
 
   mine= async () => {
     const web3 = window.web3
-    const afroXData = this.state.afroXData;
+    const afroXData = this.state.afroX;
 
     const { accounts, contract } = this.state;
 
