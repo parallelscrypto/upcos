@@ -4,6 +4,7 @@ import Iframe from 'react-iframe'
 import Web3 from 'web3'
 import UPCNFT from '../abis/UPCNFT.json'
 import xUPC from '../abis/xUPC.json'
+import afroX from '../abis/afroX.json'
 import Navbar from './Navbar'
 import VideoBackground from './VideoBackground'
 import Leases from './Leases'
@@ -22,6 +23,10 @@ class App extends Component {
     await this.loadBlockchainData()
   }
 
+
+
+
+
   async loadBlockchainData() {
     const web3 = window.web3
 
@@ -31,11 +36,13 @@ class App extends Component {
     const networkId = await web3.eth.net.getId()
 
 
+
+
     // Load UPCNFT
     const upcNFTData = UPCNFT.networks[networkId]
     if(upcNFTData) {
       const upcNft = new web3.eth.Contract(UPCNFT.abi, upcNFTData.address)
-	    console.log(upcNft);
+           console.log(upcNft);
       this.setState({ upcNft })
       this.setState({ upcNFTData: upcNFTData })
     } else {
@@ -43,15 +50,18 @@ class App extends Component {
     }
 
 
-    // Load xUPC
-    const xUPCData = xUPC.networks[networkId]
-    if(xUPCData) {
-      const XUPC = new web3.eth.Contract(xUPC.abi, xUPCData.address)
-      this.setState({ xupc: XUPC })
-      var upcBal = await this.state.xupc.methods.balanceOf(this.state.account).call({ from: this.state.account });
-	    console.log(upcBal);
-      upcBal = window.web3.utils.fromWei(upcBal, "ether");
-      this.setState({ upcBal })
+
+
+    // Load afroX
+    const afroXData = afroX.networks[networkId]
+    if(afroXData) {
+	    console.log("addy is " + afroXData.address);
+      const AFROX = new web3.eth.Contract(afroX.abi, afroXData.address)
+      this.setState({ afroX: AFROX })
+      var afroBal = await this.state.afroX.methods.balanceOf(this.state.account).call({ from: this.state.account });
+	    console.log(afroBal);
+      afroBal = window.web3.utils.fromWei(afroBal, "ether");
+      this.setState({ afroBal })
     } else {
       //window.alert('UPCGoldBank contract not deployed to detected network.')
     }
@@ -170,7 +180,7 @@ class App extends Component {
   getMyBalance = async () => {
     const { accounts, contract } = this.state;
 
-    var stakingBalance = await this.state.xupc.methods.balanceOf(this.state.account).call({ from: this.state.account });
+    var stakingBalance = await this.state.afroX.methods.balanceOf(this.state.account).call({ from: this.state.account });
     this.setState({daiTokenBalance: stakingBalance.toString() });
     return stakingBalance.toString();
   };
@@ -178,24 +188,23 @@ class App extends Component {
 
   approve= async () => {
     const web3 = window.web3
-    const upcNFTData = this.state.upcNFTData;
+    const afroXData = this.state.afroX;
 
     const { accounts, contract } = this.state;
 
-    console.log(upcNFTData.address);
-    var approval = await this.state.xupc.methods.approve(upcNFTData.address, "10000000000000000000").send({ from: this.state.account });
+    var upcNFTData = this.state.upcNFTData;
+    var approval = await this.state.afroX.methods.approve(upcNFTData.address, "10000000000000000000").send({ from: this.state.account });
     this.setState({daiTokenBalance: approval.toString() });
     return approval.toString();
   };
 
   mine= async () => {
     const web3 = window.web3
-    const upcNFTData = this.state.upcNFTData;
+    const afroXData = this.state.afroXData;
 
     const { accounts, contract } = this.state;
 
-    console.log(upcNFTData.address);
-    var approval = await this.state.xupc.methods.mine().send({ from: this.state.account });
+    var approval = await this.state.afroX.methods.mine().send({ from: this.state.account });
     this.setState({daiTokenBalance: approval.toString() });
     return approval.toString();
   };
