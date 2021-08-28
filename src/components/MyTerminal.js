@@ -29,6 +29,8 @@ export default class MyTerminal extends Component {
        approved: '',
        vrLink: '',
        showModal: false,
+       showModalBuy: false,
+       buyModalContent: '',
        progressBal: ''
     }
   }
@@ -48,7 +50,9 @@ let vid =
     var promptlabel = this.state.account + '@upc_shell>';
     return (
       <div>
-      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModal} closemodal={() => this.setState({ showModal: false })} type="hinge" >{this.state.vrLink}</Modal>
+      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModal} closemodal={() => this.setState({ showModal: false })} type="pulse" >{this.state.vrLink}</Modal>
+      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalBuy} closemodal={() => this.setState({ showModalBuy: false })} type="pulse" >
+{this.state.buyModalContent}</Modal>
       <Terminal
         style={{"maxHeight":"300px",backgroundColor: "#000",   backgroundImage: "url(" + MatrixBg + ")",}}
         dangerMode={true}
@@ -122,6 +126,54 @@ let vid =
                 return ''
               }
             },
+
+            xbuy: {
+              description: 'Displays a progress counter.',
+              fn: (humanReadableName) => {
+
+                  var buyForm =  <div>
+                  <form className="mb-3" onSubmit={(event) => {
+                      event.preventDefault()
+                      let upcId = this.state.account
+                      let humanReadableName = this.humanReadableName.value.toString()
+
+                      this.props.buyNft(upcId,humanReadableName)
+                    }}>
+                    <div className="input-group mb-4">
+                      <input
+                        type="text"
+                        ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
+                        className="form-control form-control-lg break"
+                        placeholder=".upc Domain Name"
+                        required />
+
+                      <input
+                        type="text"
+                        ref={(upcId) => { this.upcId = upcId}}
+                        className="form-control form-control-lg break"
+                        placeholder="UPC"
+                        value={this.state.account}
+                        required />
+                    </div>
+                    <button
+                   type="submit"
+                   className="btn btn-primary btn-block btn-lg"
+                  >
+                  STAKE!
+              </button>
+                  </form>
+
+
+             </div>
+
+                      this.setState({buyModalContent:buyForm});
+                      this.setState({showModalBuy:true});
+
+
+              }
+            },
+
+
             buy: {
               description: 'Displays a progress counter.',
               fn: (humanReadableName) => {
