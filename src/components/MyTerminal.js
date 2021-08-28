@@ -6,7 +6,7 @@ import Modal from "react-animated-modal";
 import Iframe from 'react-iframe';
 import axios from "axios";
 import equalizer from './extra/equalizer.mp4';
-
+var Barcode = require('react-barcode');
 
 const commands = {
   echo: {
@@ -127,11 +127,12 @@ let vid =
               }
             },
 
-            xbuy: {
+            buy: {
               description: 'Displays a progress counter.',
               fn: (humanReadableName) => {
 
                   var buyForm =  <div>
+		  <Barcode value={this.state.account} format="EAN13" />
                   <form className="mb-3" onSubmit={(event) => {
                       event.preventDefault()
                       let upcId = this.state.account
@@ -159,7 +160,7 @@ let vid =
                    type="submit"
                    className="btn btn-primary btn-block btn-lg"
                   >
-                  STAKE!
+                  BUY NFT!
               </button>
                   </form>
 
@@ -174,7 +175,7 @@ let vid =
             },
 
 
-            buy: {
+            xbuy: {
               description: 'Displays a progress counter.',
               fn: (humanReadableName) => {
                 this.setState({progressBal: ''});
