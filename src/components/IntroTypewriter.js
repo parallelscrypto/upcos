@@ -9,6 +9,8 @@ import Image3 from './extra/img-3.jpg'
 import Image4 from './extra/img-4.jpg'
 import QRCode from "react-qr-code";
 import Typewriter from 'typewriter-effect';
+var Barcode = require('react-barcode');
+
 
 export default class IntroTypewriter extends Component {
   state = {
@@ -44,13 +46,18 @@ export default class IntroTypewriter extends Component {
 
     var message = "Welcome to UPC#" + this.state.code
     return (
-      <Typewriter
-         options={{
-           strings: message,
-           autoStart: true,
-           loop: true,
-         }}
-      />  
+      <div 
+	 style={{textAlign:"center", color:"white", transform:'translateY(50vh)' , transform:'translateY(50vw)'}}
+      >
+         <Typewriter
+            options={{
+              strings: message,
+              autoStart: true,
+              loop: true,
+            }}
+         />
+	<Barcode value={this.state.code} format="EAN13" />
+      </div>
     )
   }
 }

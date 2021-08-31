@@ -64,11 +64,12 @@ class App extends Component {
 	  var start = new Date().getTime();
     var introTimer = 0;
 
+    //only show the intro for 5 seconds
     for(introTimer;introTimer<10;introTimer++) {
         setTimeout(function() {
 		var elapsed = new Date().getTime() - start;
 		console.log(elapsed)
-		if(elapsed >= 7000) {
+		if(elapsed >= 5000) {
                   self.setState({ loading: false })
 		}
         },(introTimer+introTimer+1)*1000);
