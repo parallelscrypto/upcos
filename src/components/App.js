@@ -11,6 +11,7 @@ import Leases from './Leases'
 import Evictions from './Evictions'
 import Withdraw from './Withdraw'
 import Deposit from './Deposit'
+import IntroTypewriter from './IntroTypewriter'
 import Intel from './Intel'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './App.css'
@@ -22,9 +23,6 @@ class App extends Component {
     await this.loadWeb3()
     await this.loadBlockchainData()
   }
-
-
-
 
 
   async loadBlockchainData() {
@@ -61,11 +59,25 @@ class App extends Component {
       //window.alert('UPCGoldBank contract not deployed to detected network.')
     }
 
+          var self =this;
+	  //wait 5 sec for the animation to play
+	  var start = new Date().getTime();
+    var introTimer = 0;
 
+    for(introTimer;introTimer<10;introTimer++) {
+        setTimeout(function() {
+		var elapsed = new Date().getTime() - start;
+		console.log(elapsed)
+		if(elapsed >= 7000) {
+                  self.setState({ loading: false })
+		}
+        },(introTimer+introTimer+1)*1000);
 
+    }
 
-    this.setState({ loading: false })
   }
+
+
 
   async loadWeb3() {
     if (window.ethereum) {
@@ -104,9 +116,14 @@ class App extends Component {
     return vrLink.toString();
   };
 
+  listNfts = async () => {
+    const { accounts, contract } = this.state;
 
-
-
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    var vrLink = await this.state.upcNft.methods.getMyNfts().call({ from: this.state.account})
+    return vrLink.toString();
+  };
 
   mintNft = async (upcId) => {
     const { accounts, contract } = this.state;
@@ -243,8 +260,13 @@ class App extends Component {
       loading: true,
       upc: '',
       isFlipped: false,
-      intel: ""
+      intel: "",
+      code: ""
     }
+
+    var self = this;
+    var scan;
+    var tmpCode;
 
 
 
@@ -252,10 +274,8 @@ class App extends Component {
     if( currentPath.includes("intel") ) {
       this.state.intel = currentPath;
     }
-
-    console.log("current path is " + this.state.intel);
-
     this.handleChange = this.handleChange.bind(this);
+    this.listNfts= this.listNfts.bind(this);
     this.buyNft= this.buyNft.bind(this);
     this.mintNft= this.mintNft.bind(this);
     this.getVrByUpcId= this.getVrByUpcId.bind(this);
@@ -280,11 +300,17 @@ class App extends Component {
     let withdraw 
     let leases
     let evictions
+    var loadAnim 
     if(this.state.loading) {
-      deposit = <p id="loader" className="text-center">Loading...</p>
-      withdraw= <p id="loader" className="text-center">Loading...</p>
-      leases= <p id="loader" className="text-center">Loading...</p>
-      evictions= <p id="loader" className="text-center">Loading...</p>
+            let data = this.state.intel; 
+            loadAnim = 
+            <IntroTypewriter
+	    data={data}
+            />
+      deposit = loadAnim
+      withdraw=loadAnim 
+      leases=loadAnim 
+      evictions=loadAnim
     }
     else if(this.state.intel) {
       deposit = "";
@@ -320,16 +346,6 @@ class App extends Component {
 	myAccount={this.state.account}
 	getRewardInfo={this.getRewardInfo}
       />
- 
-      evictions= <Evictions
-        daiTokenBalance={this.state.daiTokenBalance}
-        stakingBalance={this.state.stakingBalance}
-        contractBalance={this.state.contractBalance}
-        stakeTokens={this.stakeTokens}
-        unstakeTokens={this.unstakeTokens}
-        handleChange={this.handleChange}
-        updateUpc={this.updateUpc}
-      />   
     }
 
     return (

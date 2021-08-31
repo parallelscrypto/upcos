@@ -23,7 +23,7 @@ module.exports = {
       network_id: "*"
     },
     matic: {
-      provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://rpc-mainnet.maticvigil.com`),
+      provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://polygon-rpc.com`),
       network_id: 137,
       confirmations: 2,
       skipDryRun: true,
