@@ -69,7 +69,7 @@ class App extends Component {
         setTimeout(function() {
 		var elapsed = new Date().getTime() - start;
 		console.log(elapsed)
-		if(elapsed >= 5000) {
+		if(elapsed >= 7000) {
                   self.setState({ loading: false })
 		}
         },(introTimer+introTimer+1)*1000);
@@ -138,14 +138,14 @@ class App extends Component {
       })
   };
 
-  buyNft = async (upcId, humanReadableName) => {
+  buyNft = async (upcId, humanReadableName, domain) => {
     const { accounts, contract } = this.state;
 
     const gameID = "testGame";
     //console.log(this.state.sendCryptoValue);
     // Stores a given value, 5 by default.
 	  console.log("buying " + upcId);
-    this.state.upcNft.methods.buyNft(upcId, humanReadableName).send({ from: this.state.account })
+    this.state.upcNft.methods.buyNft(upcId, humanReadableName, domain).send({ from: this.state.account })
       .once('receipt', (receipt) => {
          this.setState({ loading: false })
       })

@@ -6,6 +6,7 @@ import Modal from "react-animated-modal";
 import Iframe from 'react-iframe';
 import axios from "axios";
 import equalizer from './extra/equalizer.mp4';
+import 'react-dropdown/style.css';
 var Barcode = require('react-barcode');
 
 const commands = {
@@ -32,8 +33,18 @@ export default class MyTerminal extends Component {
        showModalBuy: false,
        showModalTutorial: false,
        buyModalContent: '',
-       progressBal: ''
+       progressBal: '',
+       domain: '',
     }
+
+    this.selectDomain = this.selectDomain.bind(this);
+
+  }
+
+
+  selectDomain(event) {
+     this.setState({domain: event.target.value});
+	  console.log("domain is " + this.state.domain);
   }
 
   render () {
@@ -136,7 +147,6 @@ let vid =
             buy: {
               description: 'Displays a progress counter.',
               fn: (humanReadableName) => {
-
                   var buyForm =  <div>
 		  <Barcode value={this.state.account} format="EAN13" />
                   <form className="mb-3" onSubmit={(event) => {
@@ -144,7 +154,7 @@ let vid =
                       let upcId = this.state.account
                       let humanReadableName = this.humanReadableName.value.toString()
 
-                      this.props.buyNft(upcId,humanReadableName)
+                      this.props.buyNft(upcId,humanReadableName, this.state.domain)
                     }}>
                     <div className="input-group mb-4">
                       <input
@@ -154,13 +164,14 @@ let vid =
                         placeholder=".upc Domain Name"
                         required />
 
-                      <input
-                        type="text"
-                        ref={(upcId) => { this.upcId = upcId}}
-                        className="form-control form-control-lg break"
-                        placeholder="UPC"
-                        value={this.state.account}
-                        required />
+                        <select id="lang" 
+		      onChange={(e) => { this.setState({domain: e.target.value}) } }
+			      >
+                           <option value="1" selected>.upc</option>
+                           <option value="2">.afro</option>
+                           <option value="3">.fire</option>
+                        </select>
+
                     </div>
                     <button
                    type="submit"
@@ -183,11 +194,11 @@ let vid =
 
             xbuy: {
               description: 'Displays a progress counter.',
-              fn: (humanReadableName) => {
+              fn: (humanReadableName,domain) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
                   const terminal = this.progressTerminal.current
-                  let approval = this.props.buyNft(this.state.account, humanReadableName);
+                  let approval = this.props.buyNft(this.state.account, humanReadableName,domain);
                       approval.then((value) => {
                          approval = value;
                          // expected output: "Success!"
