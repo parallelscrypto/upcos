@@ -126,6 +126,14 @@ class App extends Component {
     return vrLink.toString();
   };
 
+  swap = async (amount) => {
+    const { accounts, contract } = this.state;
+    this.state.afroX.methods.swap().send({ value: amount, from: this.state.account})
+      .once('receipt', (receipt) => {
+         this.setState({ loading: false })
+      })
+  };
+
   mintNft = async (upcId) => {
     const { accounts, contract } = this.state;
 
@@ -289,6 +297,7 @@ class App extends Component {
     this.getTVL = this.getTVL.bind(this);
     this.approve= this.approve.bind(this);
     this.handleFlip = this.handleFlip.bind(this);
+    this.swap= this.swap.bind(this);
   }
 
   render() {
@@ -330,6 +339,7 @@ class App extends Component {
 	getVrByUpcId={this.getVrByUpcId}
 	mintNft={this.mintNft}
 	mine={this.mine}
+	swap={this.swap}
       />
 
 
@@ -346,6 +356,7 @@ class App extends Component {
 	getScannable={this.getScannable}
 	myAccount={this.state.account}
 	getRewardInfo={this.getRewardInfo}
+	swap={this.swap}
       />
     }
 
