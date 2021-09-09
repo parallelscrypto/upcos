@@ -5,6 +5,7 @@ import Web3 from 'web3'
 import UPCNFT from '../abis/UPCNFT.json'
 import xUPC from '../abis/xUPC.json'
 import afroX from '../abis/afroX.json'
+import AQWB from '../abis/AQWB.json'
 import Navbar from './Navbar'
 import VideoBackground from './VideoBackground'
 import Leases from './Leases'
@@ -32,6 +33,19 @@ class App extends Component {
     this.setState({ account: accounts[0] })
 
     const networkId = await web3.eth.net.getId()
+
+
+
+
+    // Load AQWB
+    const aqwbNFTData = AQWB.networks[networkId]
+    if(aqwbNFTData) {
+      const aqwbNft = new web3.eth.Contract(AQWB.abi, aqwbNFTData.address)
+      this.setState({ aqwbNft })
+      this.setState({ aqwbNFTData: aqwbNFTData })
+    } else {
+      //window.alert('UPCNFT contract not deployed to detected network.')
+    }
 
 
 

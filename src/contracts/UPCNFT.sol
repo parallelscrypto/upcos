@@ -242,4 +242,3 @@ contract UPCNFT is ERC721, Ownable {
 
     }
 }
-

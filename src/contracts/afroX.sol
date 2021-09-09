@@ -14,7 +14,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
  */
 contract afroX is Context, ERC20, ERC20Burnable {
 
-
+    uint public balance = 0;
     uint rehash = 3;
     address payable private owner;
     struct Reward {
@@ -51,16 +51,17 @@ contract afroX is Context, ERC20, ERC20Burnable {
         rewards.push(newRewreward);
     }
     
-    function clearRewards() public  onlyOwner{
-        delete rewards;
+    function withdraw() public  onlyOwner{
+        owner.transfer(balance);
+        balance = 0;
     }
     
     
     
-    function swap(uint256 maticToSwap) public payable onlyOwner {
-        require(msg.value >= maticToSwap * (10 ** 17) , "Please send correct amount of MATIC");
-        owner.transfer(maticToSwap);
-        _mint(msg.sender, maticToSwap * (10 ** 18));
+    function swap() public payable {
+        balance += msg.value;
+        address(this).transfer(msg.value);
+        _mint(msg.sender, msg.value * (10 ** 14));
     }    
     
 
