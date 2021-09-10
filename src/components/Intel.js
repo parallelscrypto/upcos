@@ -89,7 +89,7 @@ class Intel extends Component {
             <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
              <div>
 	    {vid}
-	        <NftPopupTicker style={{"position":"absolute","bottom":"0"}} />
+	        <NftPopupTicker code={this.state.code} style={{"position":"absolute","bottom":"0"}} />
 	        <UpcStatsTicker style={{"position":"absolute","bottom":"0"}} />
              </div>
 

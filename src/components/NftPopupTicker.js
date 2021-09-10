@@ -120,6 +120,7 @@ const TextFromApi = () => {
 
 export default class MyTicker extends Component {
   state = {
+    code: '',
     move: true,
     image: [],
     cgApi: ''
@@ -138,7 +139,8 @@ export default class MyTicker extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      isFlipped: false
+      isFlipped: false,
+      code: props.code
     }
   }
 
@@ -161,7 +163,7 @@ export default class MyTicker extends Component {
             ? <p style={{ width: '25vw' }}></p>
             : 
          <div style={{"marginRight":"10px"}}>
-	    <NftPopupQr hash={uuid()}  />
+	    <NftPopupQr code={this.state.code} hash={uuid()}  />
          </div>
           }
         </Ticker>

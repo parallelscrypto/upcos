@@ -17,6 +17,7 @@ export default class NftPopupQr extends Component {
     this.state = {
       isFlipped:   false,
       hash:        props.hash,
+      code:        props.code,
       modalIsOpen: false
     }
     this.onClick = this.onClick.bind(this);
@@ -31,7 +32,7 @@ export default class NftPopupQr extends Component {
   render() {
     return (
 	    <div>
-	       <NftPopupModal hash={this.state.hash} qIsOpen={this.state.modalIsOpen}/>
+	       <NftPopupModal code={this.state.code} hash={this.state.hash} qIsOpen={this.state.modalIsOpen}/>
 	    </div>
     )
   }
