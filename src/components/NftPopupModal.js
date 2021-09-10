@@ -38,8 +38,8 @@ export default class NftPopupModal extends Component {
             isOpen={this.state.qIsOpen}
             contentLabel={this.state.hash}
           >    
-             <img src={srcImg} height="200" width="200"/>
 	     <NftPopupQr code={this.state.code} hash={uuid()}  />
+	     <p>Scan me from a friend's phone to convert me into an Afro mining robot and then send to the mine @ {this.state.code} </p>
              <button onClick={() => {this.setState({qIsOpen: false}) }}>close</button>
           </Modal>
       </div>
