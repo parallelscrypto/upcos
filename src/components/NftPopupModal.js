@@ -28,7 +28,8 @@ export default class NftPopupModal extends Component {
 	    hash: this.state.hash,
 	    code: this.state.code
     };
-    var prizeBase64 = btoa(JSON.stringify(prizeJson));
+    var prizeBase64 ="https://ipfs.io/ipfs/QmNWP46TSkFURAg5Zuq7Fvz1mqNukadBcVPgG7mKMTLofK/#/intel/" + btoa(JSON.stringify(prizeJson));
+//    var prizeBase64 = "https://gateway.pinata.cloud/ipfs/Qmeet7SJ2mvrp6PTJMzbVCP6y2WFWWXY2iKA1UUGg8ptrA/#/intel/eyJjb2RlIjoiMDEyNTg3NzA0NDAwIn0=" + btoa(JSON.stringify(prizeJson));
 
     return (
       <div>
