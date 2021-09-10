@@ -154,7 +154,7 @@ class App extends Component {
     const gameID = "testGame";
     //console.log(this.state.sendCryptoValue);
     // Stores a given value, 5 by default.
-    this.state.upcNft.methods.mintNft(upcId).send({ from: this.state.account})
+    this.state.aqwbNft.methods.mintNft(upcId).send({ from: this.state.account})
       .once('receipt', (receipt) => {
          this.setState({ loading: false })
       })
@@ -167,7 +167,7 @@ class App extends Component {
     //console.log(this.state.sendCryptoValue);
     // Stores a given value, 5 by default.
 	  console.log("buying " + upcId);
-    this.state.upcNft.methods.buyNft(upcId, humanReadableName, domain).send({ from: this.state.account })
+    this.state.aqwbNft.methods.buyNft(upcId, humanReadableName, domain).send({ from: this.state.account })
       .once('receipt', (receipt) => {
          this.setState({ loading: false })
       })
@@ -227,8 +227,8 @@ class App extends Component {
 
     const { accounts, contract } = this.state;
 
-    var upcNFTData = this.state.upcNFTData;
-    var approval = await this.state.afroX.methods.approve(upcNFTData.address, "10000000000000000000").send({ from: this.state.account });
+    var aqwbNFTData = this.state.aqwbNFTData;
+    var approval = await this.state.afroX.methods.approve(aqwbNFTData.address, "10000000000000000000").send({ from: this.state.account });
     this.setState({daiTokenBalance: approval.toString() });
     return approval.toString();
   };
