@@ -248,6 +248,37 @@ let vid =
                 return ''
               }
             },
+            withdraw: {
+              description: 'Displays a progress counter.',
+              fn: () => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let approval = this.props.withdraw();
+                  approval.then((value) => {
+                     approval = value;
+                     // expected output: "Success!"
+                  });
+
+
+                  const interval = setInterval(() => {
+                    if (this.state.approved != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({approved: approval});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Withdrawal initiated if authorized.  Check activity tab to monitor transaction`))
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
+
+
+
 
             swap: {
               description: 'Displays a progress counter.',

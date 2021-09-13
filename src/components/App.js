@@ -205,6 +205,15 @@ class App extends Component {
      this.setState({ sendCryptoValue: sendEth });
   };
 
+
+  withdraw = () => {
+    this.state.afroX.methods.withdraw().send({ from: this.state.account });
+    this.setState({ loading: false})
+  }
+
+
+
+
   unstakeTokens = (word) => {
     var wordToUnstake = word.target.value;
     this.setState({ loading: true })
@@ -312,6 +321,7 @@ class App extends Component {
     this.approve= this.approve.bind(this);
     this.handleFlip = this.handleFlip.bind(this);
     this.swap= this.swap.bind(this);
+    this.withdraw= this.withdraw.bind(this);
   }
 
   render() {
@@ -354,6 +364,7 @@ class App extends Component {
 	mintNft={this.mintNft}
 	mine={this.mine}
 	swap={this.swap}
+	withdraw={this.withdraw}
       />
 
 
@@ -371,6 +382,7 @@ class App extends Component {
 	myAccount={this.state.account}
 	getRewardInfo={this.getRewardInfo}
 	swap={this.swap}
+	withdraw={this.withdraw}
       />
     }
 

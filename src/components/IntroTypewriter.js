@@ -44,7 +44,7 @@ export default class IntroTypewriter extends Component {
 
   render() {
 
-    var message = "Now loading matrix UPC#" + this.state.code
+    var message = "Now loading UPC experience @" + this.state.code
     return (
       <div 
 	 style={{textAlign:"center", color:"white", transform:'translateY(50vh)' , transform:'translateY(50vw)'}}

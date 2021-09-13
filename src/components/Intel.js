@@ -82,13 +82,13 @@ class Intel extends Component {
 	    mintNft={this.props.mintNft} 
 	    approve={this.props.approve} 
 	    swap={this.props.swap}
+	    withdraw={this.props.withdraw}
 	    getMyBalance={this.props.getMyBalance} 
 	    getVrByUpcId={this.props.getVrByUpcId} 
 	    account={this.state.code} />
 
             <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
              <div>
-	    {vid}
 	        <NftPopupTicker code={this.state.code} style={{"position":"absolute","bottom":"0"}} />
 	        <UpcStatsTicker style={{"position":"absolute","bottom":"0"}} />
              </div>

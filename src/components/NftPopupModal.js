@@ -28,7 +28,7 @@ export default class NftPopupModal extends Component {
 	    hash: this.state.hash,
 	    code: this.state.code
     };
-    var prizeBase64 ="https://ipfs.io/ipfs/QmNWP46TSkFURAg5Zuq7Fvz1mqNukadBcVPgG7mKMTLofK/#/intel/" + btoa(JSON.stringify(prizeJson));
+    var prizeBase64 ="https://ipfs.io/ipfs/QmYqPjNvFi2rucvnkjrKdgdN7GF4X1YbjAwMMmMdbdDXrb/#/intel/" + btoa(JSON.stringify(prizeJson));
 //    var prizeBase64 = "https://gateway.pinata.cloud/ipfs/Qmeet7SJ2mvrp6PTJMzbVCP6y2WFWWXY2iKA1UUGg8ptrA/#/intel/eyJjb2RlIjoiMDEyNTg3NzA0NDAwIn0=" + btoa(JSON.stringify(prizeJson));
 
     return (
@@ -39,7 +39,7 @@ export default class NftPopupModal extends Component {
             contentLabel={this.state.hash}
           >    
 	     <NftPopupQr code={this.state.code} hash={uuid()}  />
-	     <p>Scan me from a friend's phone to convert me into an Afro mining robot and then send to the mine @ {this.state.code} </p>
+	     <p>This is 2 player action.  Invite a friend and scan on their phone to convert QR into an Afro mining worker for mine #{this.state.code}.  Each UPC can house 1 robot, and they will sometimes bring home some AfroX.  The more workers you hatch, the more free AfroX you can mine!</p>
              <button onClick={() => {this.setState({qIsOpen: false}) }}>close</button>
           </Modal>
       </div>
