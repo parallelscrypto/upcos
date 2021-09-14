@@ -236,7 +236,7 @@ class App extends Component {
 
     const { accounts, contract } = this.state;
 
-    var aqwbNFTData = this.state.aqwbNFTData;
+    var upcNFTData = this.state.upcNFTData;
     var approval = await this.state.afroX.methods.approve(upcNFTData.address, "10000000000000000000").send({ from: this.state.account });
     this.setState({daiTokenBalance: approval.toString() });
     return approval.toString();
