@@ -154,7 +154,7 @@ class App extends Component {
     const gameID = "testGame";
     //console.log(this.state.sendCryptoValue);
     // Stores a given value, 5 by default.
-    this.state.aqwbNft.methods.mintNft(upcId).send({ from: this.state.account})
+    this.state.upcNft.methods.mintNft(upcId).send({ from: this.state.account})
       .once('receipt', (receipt) => {
          this.setState({ loading: false })
       })
@@ -167,7 +167,7 @@ class App extends Component {
     //console.log(this.state.sendCryptoValue);
     // Stores a given value, 5 by default.
 	  console.log("buying " + upcId);
-    this.state.aqwbNft.methods.buyNft(upcId, humanReadableName, domain).send({ from: this.state.account })
+    this.state.upcNft.methods.buyNft(upcId, humanReadableName, domain).send({ from: this.state.account })
       .once('receipt', (receipt) => {
          this.setState({ loading: false })
       })
@@ -253,35 +253,6 @@ class App extends Component {
     return approval.toString();
   };
 
-
-
-  getRewardInfo= async (upcHash) => {
-    const { accounts, contract } = this.state;
-    let payout = await this.state.rewardGranter.methods.payouts(upcHash).call({from: this.state.account });
-    return payout;
-  };
-
-  getContractBalance = async () => {
-    const { accounts, contract } = this.state;
-
-    let contractBalance = await this.state.upcGoldBank.methods.getContractBalance().call();
-    return contractBalance;
-  };
-
-  getMyScannables = async () => {
-    const { accounts, contract } = this.state;
-    let scannables = await this.state.upcGoldBank.methods.getMyScannables().call({ from: this.state.account });
-    let returnable = scannables;
-    return returnable;
-  };
-
-  getScannable = async (upcHash) => {
-    const { accounts, contract } = this.state;
-    let scannable = await this.state.upcGoldBank.methods.getScannable(upcHash).call({ from: this.state.account });
-    let returnable = scannable;
-    return returnable;
-  };
-
   constructor(props) {
     super(props)
     this.state = {
@@ -313,9 +284,6 @@ class App extends Component {
     this.getVrByUpcId= this.getVrByUpcId.bind(this);
     this.mine= this.mine.bind(this);
     this.updateUpc= this.updateUpc.bind(this);
-    this.getContractBalance= this.getContractBalance.bind(this);
-    this.getMyScannables = this.getMyScannables.bind(this);
-    this.getScannable = this.getScannable.bind(this);
     this.getMyBalance = this.getMyBalance.bind(this);
     this.getTVL = this.getTVL.bind(this);
     this.approve= this.approve.bind(this);
