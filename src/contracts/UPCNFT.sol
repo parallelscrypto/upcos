@@ -40,6 +40,7 @@ contract UPCNFT is ERC721, Ownable {
 
     
     mapping(string => string)    public hashedHumanReadableLookup;
+    mapping(string => string)    public upcToDomainLookup;
 
 
 
@@ -48,8 +49,6 @@ contract UPCNFT is ERC721, Ownable {
     mapping(string => uint256)    public afroDomainToNftLookup;
     mapping(string => uint256)    public fireDomainToNftLookup;
 
-    
-    
     mapping(bytes32 => string)    public upcHashToDomain;
 
 
@@ -75,6 +74,12 @@ contract UPCNFT is ERC721, Ownable {
         _token = afroX(addy);
     }
 
+    function hasBeenMinted(string memory upcId) external view returns(bool) {
+        bytes32 upcHash = sha256(abi.encodePacked(upcId));
+        return nftsToMintByHash[upcHash].minted;
+    }
+    
+
     function getMyNfts() external view returns(NFTMeta[] memory) {
         return addressToNFTMeta[msg.sender];
     }
@@ -82,9 +87,34 @@ contract UPCNFT is ERC721, Ownable {
     function setCurrentNftPrice(uint  _price) external onlyOwner {
         currentNftPrice = _price;
     }
+    
+
+    function resolveDomain(string memory humanReadableName, uint tld) external view returns(NFTMeta memory) {
+        uint256 tmpTokenId = 0;
+        NFTMeta memory tmpNft;
+        if(tld == 1) {
+            tmpTokenId = upcDomainToNftLookup[humanReadableName];
+        }
+        else if(tld == 2) {
+            tmpTokenId = afroDomainToNftLookup[humanReadableName];
+        }
+        else if(tld == 3) {
+            tmpTokenId = fireDomainToNftLookup[humanReadableName];
+        }
+        
+        require(tmpTokenId > 0 , "Domain not found");
+        
+        int tokenIndex = -1;
+        tokenIndex = findTokenIndexByAddress(msg.sender, tmpTokenId);
+        
+        require(tokenIndex >= 0 , "Token not found for your address");
+        
+        tmpNft = addressToNFTMeta[msg.sender][uint(tokenIndex)];
+        return tmpNft;
+    }    
 
 
-    function buyNft(string memory upcId, string memory humanReadableName, uint tld) public {
+    function buyNft(string memory upcId, string memory humanReadableName, uint tld) public payable{
         bytes32 upcHash = sha256(abi.encodePacked(upcId));
         
         require(nftsToMintByHash[upcHash].bought == false , "Error, this UPC has already been purchased.");
@@ -118,16 +148,20 @@ contract UPCNFT is ERC721, Ownable {
         nftMeta.bought = true;
         nftsToMintByAddress[msg.sender].push(nftMeta);
         
-        NFTLookup memory nftLookup;
-        nftLookup.tokenId = newNftTokenId;
-        nftLookup.minted = false;
-        nftLookup.staker = msg.sender;
-        nftLookup.bought = true;
-        
-        nftLookup.ipfs = defaultIpfs;
-        nftLookup.vr = defaultVr;
 
-        nftsToMintByHash[upcHash] = nftLookup;
+        nftsToMintByHash[upcHash].minted = false;
+        nftsToMintByHash[upcHash].staker = msg.sender;
+        nftsToMintByHash[upcHash].humanReadableName = humanReadableName;
+        nftsToMintByHash[upcHash].tokenId = newNftTokenId;
+        nftsToMintByHash[upcHash].word = upcId;
+        nftsToMintByHash[upcHash].ipfs = defaultIpfs;
+        nftsToMintByHash[upcHash].vr = defaultVr;
+        nftsToMintByHash[upcHash].bought = true;
+        nftsToMintByHash[upcHash].upcHash = upcHash;
+
+        addressToNFTMeta[msg.sender].push(nftMeta);        
+        
+        
         
         if(tld == 1) {
             upcDomainToNftLookup[humanReadableName] = newNftTokenId;
@@ -144,7 +178,7 @@ contract UPCNFT is ERC721, Ownable {
 
 
     //returns the position in the address array that an nft holds
-    function findTokenIndexByAddress(address owner, uint256 tokenId) public payable returns (int) {
+    function findTokenIndexByAddress(address owner, uint256 tokenId) public view returns (int) {
         uint i = 0;
         int found = -1;
         for(i = 0; i < nftsToMintByAddress[owner].length; i++) {
@@ -238,6 +272,7 @@ contract UPCNFT is ERC721, Ownable {
     
         _safeMint(staker, tokenIdToMint);
         //_setTokenURI(tokenIdToMint, defaultIpfs);
+
         return tokenIdToMint;
 
     }

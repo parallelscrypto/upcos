@@ -67,7 +67,7 @@ let vid =
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalTutorial} closemodal={() => this.setState({ showModalTutorial: false })} type="pulse" ><iframe style={{height:"100vh"}} src="https://gateway.pinata.cloud/ipfs/QmStW8PBZjxjSkwnxvr15rHvRajCUkPRMEJGQejQu8EE4W" /></Modal>
       <Terminal
         style={{"minHeight":"75vh",backgroundColor: "#000",   backgroundImage: "url(" + MatrixBg + ")",}}
-        dangerMode={true}
+        dangerMode={false}
         ref={this.progressTerminal}
         commands={{
             bal: {
@@ -190,6 +190,45 @@ let vid =
 
               }
             },
+
+
+            nfts: {
+              description: 'Shows unminted nfts',
+              fn: () => {
+		  var nfts = this.props.getMyNfts();
+		  console.log(nfts);
+                  var buyForm =  <div>
+                          <form className="mb-3" onSubmit={(event) => {
+                              event.preventDefault()
+                              let upcId = this.state.account
+                              let humanReadableName = this.humanReadableName.value.toString()
+
+                              this.props.buyNft(upcId,humanReadableName, this.state.domain)
+                            }}>
+                            <div className="input-group mb-4">
+
+                            </div>
+                             <button
+                                 type="submit"
+                                 className="btn btn-primary btn-block btn-lg"
+                             >
+                                BUY NFT!
+                             </button>
+                          </form>
+                       </div>
+
+                      this.setState({buyModalContent:buyForm});
+                      this.setState({showModalBuy:true});
+
+
+              }
+            },
+
+
+
+
+
+
 
 
             xbuy: {

@@ -85,6 +85,7 @@ class Intel extends Component {
 	    withdraw={this.props.withdraw}
 	    getMyBalance={this.props.getMyBalance} 
 	    getVrByUpcId={this.props.getVrByUpcId} 
+	    getMyNfts={this.props.getMyNfts} 
 	    account={this.state.code} />
 
             <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
