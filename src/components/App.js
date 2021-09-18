@@ -160,6 +160,17 @@ class App extends Component {
       })
   };
 
+  upcInfo = async (upcId) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.upcNft.methods.upcInfo(upcId).call({ from: this.state.account });
+  };
+
+
+
 
   getMyNfts= async () => {
     const { accounts, contract } = this.state;
@@ -304,6 +315,7 @@ class App extends Component {
     this.swap= this.swap.bind(this);
     this.withdraw= this.withdraw.bind(this);
     this.getMyNfts= this.getMyNfts.bind(this);
+    this.upcInfo= this.upcInfo.bind(this);
   }
 
   render() {
@@ -348,6 +360,7 @@ class App extends Component {
 	swap={this.swap}
 	withdraw={this.withdraw}
 	getMyNfts={this.getMyNfts}
+	upcInfo={this.upcInfo}
       />
 
 

@@ -99,6 +99,40 @@ let vid =
                 return ''
               }
             },
+
+
+            info: {
+              description: 'Displays a progress counter.',
+              fn: (upcId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let info = this.props.upcInfo(this.state.account)
+		   .then(data => {
+                        terminal.pushToStdout(`staker: ${data['staker']}`);
+                        terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+                        terminal.pushToStdout(`token_id: ${data['tokenId']}`);
+                        terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
+                        terminal.pushToStdout(`upc: ${data['word']}`);
+                        terminal.pushToStdout(`minted: ${data['minted']}`);
+                  });
+		  
+
+                  const interval = setInterval(() => {
+                    if (this.state.progressBal != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({progressBal: info});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
             apr: {
               description: 'Displays a progress counter.',
               fn: () => {
