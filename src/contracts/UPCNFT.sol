@@ -38,10 +38,6 @@ contract UPCNFT is ERC721, Ownable {
         bool     bought;
     }    
 
-    
-    mapping(string => string)    public hashedHumanReadableLookup;
-    mapping(string => string)    public upcToDomainLookup;
-
 
 
     //tlds
@@ -49,9 +45,8 @@ contract UPCNFT is ERC721, Ownable {
     mapping(string => uint256)    public afroDomainToNftLookup;
     mapping(string => uint256)    public fireDomainToNftLookup;
 
-    mapping(bytes32 => string)    public upcHashToDomain;
-
-
+    mapping(string => NFTMeta)    public upcIdLookup;
+    mapping(uint256 => NFTMeta)    public nftIdLookup;
 
     mapping(address => NFTMeta[])    public addressToNFTMeta;
     mapping(address => NFTMeta[])    public nftsToMintByAddress;
@@ -87,11 +82,15 @@ contract UPCNFT is ERC721, Ownable {
     function setCurrentNftPrice(uint  _price) external onlyOwner {
         currentNftPrice = _price;
     }
+   
+   
+    function upcInfo(string memory upcId) external view returns(NFTMeta memory) {
+        return upcIdLookup[upcId];
+    }    
     
 
     function resolveDomain(string memory humanReadableName, uint tld) external view returns(NFTMeta memory) {
         uint256 tmpTokenId = 0;
-        NFTMeta memory tmpNft;
         if(tld == 1) {
             tmpTokenId = upcDomainToNftLookup[humanReadableName];
         }
@@ -106,11 +105,8 @@ contract UPCNFT is ERC721, Ownable {
         
         int tokenIndex = -1;
         tokenIndex = findTokenIndexByAddress(msg.sender, tmpTokenId);
-        
         require(tokenIndex >= 0 , "Token not found for your address");
-        
-        tmpNft = addressToNFTMeta[msg.sender][uint(tokenIndex)];
-        return tmpNft;
+        return addressToNFTMeta[msg.sender][uint(tokenIndex)];
     }    
 
 
@@ -147,6 +143,10 @@ contract UPCNFT is ERC721, Ownable {
         nftMeta.vr = defaultVr;
         nftMeta.bought = true;
         nftsToMintByAddress[msg.sender].push(nftMeta);
+        
+        upcIdLookup[upcId]           = nftMeta;
+        nftIdLookup[newNftTokenId]   = nftMeta;
+
         
 
         nftsToMintByHash[upcHash].minted = false;
@@ -211,22 +211,19 @@ contract UPCNFT is ERC721, Ownable {
 
 
     
-    function setVrByHash(bytes32 upcHash, string memory _vr) public {
-        require(msg.sender == nftsToMintByHash[upcHash].staker , "Only owner can set VR");
-        bytes memory testStr = bytes(_vr); // Uses memory
-        require(testStr.length > 0 , "VR value must be set");
-        nftsToMintByHash[upcHash].vr = _vr;
+    function setVr(string memory upcId, string memory _vr) public {
+        require(msg.sender == upcIdLookup[upcId].staker , "Only owner can set VR");
+        upcIdLookup[upcId].vr = _vr;
+        uint256 tmpTokenId = upcIdLookup[upcId].tokenId;
+        nftIdLookup[tmpTokenId].vr = _vr;
     }
     
     
-    function setIpfsByHash(bytes32 upcHash, string memory _ipfs) public {
-        require(msg.sender == nftsToMintByHash[upcHash].staker , "Only owner can set IPFS");
-        
-        bytes memory testStr = bytes(_ipfs); // Uses memory
-
-        
-        require(testStr.length > 0 , "IPFS value must be set");
-        nftsToMintByHash[upcHash].ipfs = _ipfs;
+    function setIpfs(string memory upcId, string memory _ipfs) public {
+        require(msg.sender == upcIdLookup[upcId].staker , "Only owner can set VR");
+        upcIdLookup[upcId].ipfs = _ipfs;
+        uint256 tmpTokenId = upcIdLookup[upcId].tokenId;
+        nftIdLookup[tmpTokenId].ipfs = _ipfs;
     }    
 
 
@@ -260,14 +257,14 @@ contract UPCNFT is ERC721, Ownable {
         nftMeta.humanReadableName = nftToMint.humanReadableName;
         
         addressToNFTMeta[staker].push(nftMeta);
-        hashedHumanReadableLookup[nftToMint.humanReadableName] = defaultIpfs;
-        
-        upcHashToDomain[upcHash] = nftToMint.humanReadableName;
-        
+
         //update this upc as minted
         nftsToMintByHash[upcHash].minted = true;
         nftsToMintByHash[upcHash].staker = msg.sender;
         nftsToMintByHash[upcHash].humanReadableName = nftToMint.humanReadableName;
+        upcIdLookup[upcId]               = nftMeta;
+        nftIdLookup[nftToMint.tokenId]   = nftMeta;
+
         
     
         _safeMint(staker, tokenIdToMint);
