@@ -103,10 +103,9 @@ contract UPCNFT is ERC721, Ownable {
         
         require(tmpTokenId > 0 , "Domain not found");
         
-        int tokenIndex = -1;
-        tokenIndex = findTokenIndexByAddress(msg.sender, tmpTokenId);
-        require(tokenIndex >= 0 , "Token not found for your address");
-        return addressToNFTMeta[msg.sender][uint(tokenIndex)];
+        
+        return nftIdLookup[tmpTokenId];
+        
     }    
 
 
@@ -274,3 +273,4 @@ contract UPCNFT is ERC721, Ownable {
 
     }
 }
+
