@@ -115,6 +115,8 @@ let vid =
                         terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
                         terminal.pushToStdout(`upc: ${data['word']}`);
                         terminal.pushToStdout(`minted: ${data['minted']}`);
+                        terminal.pushToStdout(`vr: ${data['vr']}`);
+                        terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
                   });
 		  
 
