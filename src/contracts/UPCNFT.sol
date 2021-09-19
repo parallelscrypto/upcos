@@ -24,6 +24,7 @@ contract UPCNFT is ERC721, Ownable {
         string   humanReadableName;
         bool     minted;
         bool     bought;
+        uint     tld;
     }
     
     struct NFTLookup {
@@ -36,6 +37,7 @@ contract UPCNFT is ERC721, Ownable {
         string   humanReadableName;
         uint256  tokenId;
         bool     bought;
+        uint     tld;
     }    
 
 
@@ -44,6 +46,8 @@ contract UPCNFT is ERC721, Ownable {
     mapping(string => uint256)    public upcDomainToNftLookup;
     mapping(string => uint256)    public afroDomainToNftLookup;
     mapping(string => uint256)    public fireDomainToNftLookup;
+    
+    mapping(uint => string )     public tlds;
 
     mapping(string => NFTMeta)    public upcIdLookup;
     mapping(uint256 => NFTMeta)    public nftIdLookup;
@@ -63,6 +67,16 @@ contract UPCNFT is ERC721, Ownable {
         defaultIpfs = "QmejN35QPpmJXZ55jgVjVU1NgTGwgGg5GufWd81rRCZPF4";
         defaultVr = "https://hubs.mozilla.com/KNWZVgf/austere-carefree-nation";
         currentNftPrice = 1 ether;
+        tlds[0] = "upc";
+        tlds[1] = "afro";
+        tlds[2] = "fire";
+    }
+
+    function _transfer(address from, address to, uint256 tokenId) internal virtual override {
+        super._transfer(from,to,tokenId);
+        nftIdLookup[tokenId].staker = to;
+        string memory upcId = nftIdLookup[tokenId].word;
+        upcIdLookup[upcId].staker = to;
     }
 
     function setPayToken(address  addy) external onlyOwner {
@@ -91,13 +105,13 @@ contract UPCNFT is ERC721, Ownable {
 
     function resolveDomain(string memory humanReadableName, uint tld) external view returns(NFTMeta memory) {
         uint256 tmpTokenId = 0;
-        if(tld == 1) {
+        if(tld == 0) {
             tmpTokenId = upcDomainToNftLookup[humanReadableName];
         }
-        else if(tld == 2) {
+        else if(tld == 1) {
             tmpTokenId = afroDomainToNftLookup[humanReadableName];
         }
-        else if(tld == 3) {
+        else if(tld == 2) {
             tmpTokenId = fireDomainToNftLookup[humanReadableName];
         }
         
@@ -109,18 +123,18 @@ contract UPCNFT is ERC721, Ownable {
     }    
 
 
-    function buyNft(string memory upcId, string memory humanReadableName, uint tld) public payable{
+    function buyNft(string memory upcId, string memory humanReadableName, uint _tld) public payable{
         bytes32 upcHash = sha256(abi.encodePacked(upcId));
         
         require(nftsToMintByHash[upcHash].bought == false , "Error, this UPC has already been purchased.");
         
-        if(tld == 1) {
+        if(_tld == 0) {
             require(upcDomainToNftLookup[humanReadableName] < 1 , "Error, this UPC DOMAIN NAME has already been purchased.");
         }
-        else if(tld == 2) {
+        else if(_tld == 1) {
             require(afroDomainToNftLookup[humanReadableName] < 1 , "Error, this AFRO DOMAIN NAME has already been purchased.");
         }
-        else if(tld == 3) {
+        else if(_tld == 2) {
             require(fireDomainToNftLookup[humanReadableName] < 1 , "Error, this FIRE DOMAIN NAME has already been purchased.");
         }
         
@@ -141,12 +155,10 @@ contract UPCNFT is ERC721, Ownable {
         nftMeta.minted = false;
         nftMeta.vr = defaultVr;
         nftMeta.bought = true;
+        nftMeta.tld =  _tld;
         nftsToMintByAddress[msg.sender].push(nftMeta);
         
         upcIdLookup[upcId]           = nftMeta;
-        nftIdLookup[newNftTokenId]   = nftMeta;
-
-        
 
         nftsToMintByHash[upcHash].minted = false;
         nftsToMintByHash[upcHash].staker = msg.sender;
@@ -162,13 +174,13 @@ contract UPCNFT is ERC721, Ownable {
         
         
         
-        if(tld == 1) {
+        if(_tld == 0) {
             upcDomainToNftLookup[humanReadableName] = newNftTokenId;
         }
-        else if(tld == 2) {
+        else if(_tld == 1) {
             afroDomainToNftLookup[humanReadableName] = newNftTokenId;
         }
-        else if(tld == 3) {
+        else if(_tld == 2) {
             fireDomainToNftLookup[humanReadableName] = newNftTokenId;
         }
                 
@@ -261,10 +273,14 @@ contract UPCNFT is ERC721, Ownable {
         nftsToMintByHash[upcHash].minted = true;
         nftsToMintByHash[upcHash].staker = msg.sender;
         nftsToMintByHash[upcHash].humanReadableName = nftToMint.humanReadableName;
-        upcIdLookup[upcId]               = nftMeta;
         nftIdLookup[nftToMint.tokenId]   = nftMeta;
 
-        
+        upcIdLookup[upcId].minted  = true;
+
+        uint tmpTld = upcIdLookup[upcId].tld;
+        nftIdLookup[nftToMint.tokenId].tld = tmpTld;
+
+
     
         _safeMint(staker, tokenIdToMint);
         //_setTokenURI(tokenIdToMint, defaultIpfs);
@@ -273,4 +289,3 @@ contract UPCNFT is ERC721, Ownable {
 
     }
 }
-
