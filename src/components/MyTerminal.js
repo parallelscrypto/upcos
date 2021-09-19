@@ -110,6 +110,7 @@ let vid =
 		   .then(data => {
                         terminal.pushToStdout(`staker: ${data['staker']}`);
                         terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+                        terminal.pushToStdout(`tld: ${data['tld']}`);
                         terminal.pushToStdout(`token_id: ${data['tokenId']}`);
                         terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
                         terminal.pushToStdout(`upc: ${data['word']}`);
@@ -146,6 +147,7 @@ let vid =
 		   .then(data => {
                         terminal.pushToStdout(`staker: ${data['staker']}`);
                         terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+                        terminal.pushToStdout(`tld: ${data['tld']}`);
                         terminal.pushToStdout(`token_id: ${data['tokenId']}`);
                         terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
                         terminal.pushToStdout(`upc: ${data['word']}`);
