@@ -240,9 +240,9 @@ let vid =
                         <select id="lang" 
 		      onChange={(e) => { this.setState({domain: e.target.value}) } }
 			      >
-                           <option value="1" selected>.upc</option>
-                           <option value="2">.afro</option>
-                           <option value="3">.fire</option>
+                           <option value="0" selected>.upc</option>
+                           <option value="1">.afro</option>
+                           <option value="2">.fire</option>
                         </select>
 
                     </div>
