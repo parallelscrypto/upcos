@@ -108,15 +108,27 @@ let vid =
                   const terminal = this.progressTerminal.current
                   let info = this.props.nftInfo(nftId)
 		   .then(data => {
+                        terminal.pushToStdout(`<data>`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`staker: ${data['staker']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`tld: ${data['tld']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`token_id: ${data['tokenId']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`upc: ${data['word']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`minted: ${data['minted']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`vr: ${data['vr']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`</data>`);
                   });
 		  
 
@@ -145,15 +157,27 @@ let vid =
                   const terminal = this.progressTerminal.current
                   let info = this.props.upcInfo(this.state.account)
 		   .then(data => {
+                        terminal.pushToStdout(`<data>`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`staker: ${data['staker']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`tld: ${data['tld']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`token_id: ${data['tokenId']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`upc: ${data['word']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`minted: ${data['minted']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`vr: ${data['vr']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`</data>`);
                   });
 		  
 
