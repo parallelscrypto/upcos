@@ -86,6 +86,8 @@ class Intel extends Component {
 	    getMyBalance={this.props.getMyBalance} 
 	    getVrByUpcId={this.props.getVrByUpcId} 
 	    getMyNfts={this.props.getMyNfts} 
+	    setVr={this.props.setVr} 
+	    setIpfs={this.props.setIpfs} 
 	    upcInfo={this.props.upcInfo} 
 	    nftInfo={this.props.nftInfo} 
 	    account={this.state.code} />

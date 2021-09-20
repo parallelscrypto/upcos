@@ -300,6 +300,75 @@ let vid =
 
 
 
+            xipfs: {
+              description: 'Displays a progress counter.',
+              fn: (_ipfsLink) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let approval = this.props.setIpfs(this.state.account, _ipfsLink);
+                      approval.then((value) => {
+                         approval = value;
+                         // expected output: "Success!"
+                      });
+
+
+                  const interval = setInterval(() => {
+                    if (this.state.approved != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({approved: approval});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
+
+
+
+
+
+
+
+
+
+            xvr: {
+              description: 'Displays a progress counter.',
+              fn: (_vrLink) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let approval = this.props.setVr(this.state.account, _vrLink);
+                      approval.then((value) => {
+                         approval = value;
+			 terminal.pushToStdout(`Approved: ${approval}`)
+                         // expected output: "Success!"
+                      });
+
+
+                  const interval = setInterval(() => {
+                    if (this.state.approved != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({approved: approval});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
+
+
+
 
 
 
@@ -324,7 +393,7 @@ let vid =
                     } else {
                       this.setState({approved: approval});
                       var self = this;
-                      this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Approved: ${approval}`))
+                      this.setState({ progress: this.state.progress + 10 })
                     }
                   }, 1500)
                 })
@@ -334,32 +403,77 @@ let vid =
             },
 
 
+            ipfs: {
+              description: 'Displays a progress counter.',
+              fn: () => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+		  var self = this;
+                  let info = this.props.upcInfo(this.state.account)
+		   .then(data => {
+			var fullIpfs = "https://ipfs.io/ipfs/" + data['ipfs'];
+			var link = <a href={fullIpfs} >View my VR</a>
+			   self.setState({vrLink: link});
+			   self.setState({showModal: true});
+                  });
+		  
+
+                  const interval = setInterval(() => {
+                    if (this.state.progressBal != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({progressBal: info});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+
+
+            },
+
+
+
             vr: {
               description: 'Displays a progress counter.',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
                   const terminal = this.progressTerminal.current
-                  let approval = this.props.getVrByUpcId(this.state.account);
-	          var self = this;
-                  approval.then((value) => {
-		     self.setState({approved: "true"});
-		     self.setState({showModal: true});
-                     var link = <a href={value}>Click to visit my VR</a>
-		     self.setState({vrLink: link});
+		  var self = this;
+                  let info = this.props.upcInfo(this.state.account)
+		   .then(data => {
+			var link = <a href={data['vr']} >View my IPFS Website!</a>
+			   self.setState({vrLink: link});
+			   self.setState({showModal: true});
+                  });
+		  
 
-		     axios.get(value)
-                     .then(function (response) {
-                       // handle success
-                       console.log(response);
-                     })
-		     terminal.pushToStdout(value)
-	          });
+                  const interval = setInterval(() => {
+                    if (this.state.progressBal != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({progressBal: info});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
                 })
 
                 return ''
               }
+
+
             },
+
+
+
             withdraw: {
               description: 'Displays a progress counter.',
               fn: () => {
@@ -401,6 +515,7 @@ let vid =
                   let approval = this.props.swap(amount);
                   approval.then((value) => {
                      approval = value;
+		     terminal.pushToStdout(`You have just swapped POLY for AfroX.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
                      // expected output: "Success!"
                   });
 
@@ -412,7 +527,7 @@ let vid =
                     } else {
                       this.setState({approved: approval});
                       var self = this;
-                      this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Congrats! You just mined some crypto. \n  Type 'bal' to see your new balance! ${approval}`))
+                      this.setState({ progress: this.state.progress + 10 } )
                     }
                   }, 1500)
                 })
@@ -434,6 +549,7 @@ let vid =
                   let approval = this.props.mine();
                   approval.then((value) => {
                      approval = value;
+		     terminal.pushToStdout(`Congrats! You just mined some crypto. \n  Type 'bal' to see your new balance! ${approval}`)
                      // expected output: "Success!"
                   });
 
@@ -445,7 +561,7 @@ let vid =
                     } else {
                       this.setState({approved: approval});
                       var self = this;
-                      this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Congrats! You just mined some crypto. \n  Type 'bal' to see your new balance! ${approval}`))
+                      this.setState({ progress: this.state.progress + 10 })
                     }
                   }, 1500)
                 })
@@ -463,6 +579,7 @@ let vid =
                   let approval = this.props.mintNft(this.state.account);
                       approval.then((value) => {
                          approval = value;
+		         terminal.pushToStdout(`Congrats! You own UPCNFT # ${approval}`)
                          // expected output: "Success!"
                       });
 
@@ -474,7 +591,7 @@ let vid =
                     } else {
                       this.setState({approved: approval});
                       var self = this;
-                      this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Congrats! You own UPCNFT # ${approval}`))
+                      this.setState({ progress: this.state.progress + 10 } )
                     }
                   }, 1500)
                 })

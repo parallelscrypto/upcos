@@ -190,6 +190,33 @@ class App extends Component {
   };
 
 
+  setIpfs= async (upcId, ipfsLink) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    this.state.upcNft.methods.setIpfs(upcId, ipfsLink).send({ from: this.state.account })
+      .once('receipt', (receipt) => {
+         this.setState({ loading: false })
+      })
+  };
+
+
+
+  setVr= async (upcId, vrLink) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    this.state.upcNft.methods.setVr(upcId, vrLink).send({ from: this.state.account })
+      .once('receipt', (receipt) => {
+         this.setState({ loading: false })
+      })
+  };
+
+
 
 
   buyNft = async (upcId, humanReadableName, domain) => {
@@ -323,6 +350,8 @@ class App extends Component {
     this.swap= this.swap.bind(this);
     this.withdraw= this.withdraw.bind(this);
     this.getMyNfts= this.getMyNfts.bind(this);
+    this.setVr= this.setVr.bind(this);
+    this.setIpfs= this.setIpfs.bind(this);
     this.upcInfo= this.upcInfo.bind(this);
     this.nftInfo= this.nftInfo.bind(this);
   }
@@ -369,6 +398,8 @@ class App extends Component {
 	swap={this.swap}
 	withdraw={this.withdraw}
 	getMyNfts={this.getMyNfts}
+	setVr={this.setVr}
+	setIpfs={this.setIpfs}
 	upcInfo={this.upcInfo}
 	nftInfo={this.nftInfo}
       />
