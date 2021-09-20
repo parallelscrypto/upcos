@@ -108,7 +108,10 @@ let vid =
                   const terminal = this.progressTerminal.current
                   let info = this.props.nftInfo(nftId)
 		   .then(data => {
-                        terminal.pushToStdout(`<data>`);
+
+			var tmpStamp = data['latestTimestamp'];
+                        var newDate = new Date(parseInt(tmpStamp));
+                        terminal.pushToStdout(`<xinfo>`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`staker: ${data['staker']}`);
                         terminal.pushToStdout(`=====`);
@@ -128,9 +131,9 @@ let vid =
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`latest_update: ${data['latestTimestamp']}`);
+                        terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`</data>`);
+                        terminal.pushToStdout(`</xinfo>`);
                   });
 		  
 
@@ -159,11 +162,12 @@ let vid =
                   const terminal = this.progressTerminal.current
                   let info = this.props.upcInfo(this.state.account)
 		   .then(data => {
-                        var newDate = new Date();
-                        newDate.setTime(data['latestTimestamp']);
-                        var dateString = newDate.toUTCString();
+			var tmpStamp = parseInt(data['latestTimestamp']);
+                        var newDate = new Date(tmpStamp * 1000);
+			   console.log(tmpStamp);
+			   console.log(newDate);
 
-                        terminal.pushToStdout(`<data>`);
+                        terminal.pushToStdout(`<info>`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`staker: ${data['staker']}`);
                         terminal.pushToStdout(`=====`);
@@ -183,9 +187,9 @@ let vid =
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`latest_update: ${dateString}`);
+                        terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`</data>`);
+                        terminal.pushToStdout(`</info>`);
                   });
 		  
 
