@@ -64,8 +64,8 @@ contract UPCNFT is ERC721, Ownable {
 
     constructor() ERC721("upc://", "NFT_UPC") Ownable()  {
         bank = payable(msg.sender);
-        defaultIpfs = "QmejN35QPpmJXZ55jgVjVU1NgTGwgGg5GufWd81rRCZPF4";
-        defaultVr = "https://hubs.mozilla.com/KNWZVgf/austere-carefree-nation";
+        defaultIpfs = "ipfs/QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU";
+        defaultVr = "https://hubs.mozilla.com/scenes/q7PG7Tn";
         currentNftPrice = 1 ether;
         tlds[0] = "upc";
         tlds[1] = "afro";
@@ -97,6 +97,11 @@ contract UPCNFT is ERC721, Ownable {
         currentNftPrice = _price;
     }
    
+      
+    function nftInfo(uint nftId) external view returns(NFTMeta memory) {
+        return nftIdLookup[nftId];
+    }    
+    
    
     function upcInfo(string memory upcId) external view returns(NFTMeta memory) {
         return upcIdLookup[upcId];
@@ -150,10 +155,10 @@ contract UPCNFT is ERC721, Ownable {
         nftMeta.staker = msg.sender;
         nftMeta.upcHash = upcHash;
         nftMeta.word = upcId;
-        nftMeta.ipfs = defaultIpfs;
+        //nftMeta.ipfs = defaultIpfs;
         nftMeta.humanReadableName = humanReadableName;
         nftMeta.minted = false;
-        nftMeta.vr = defaultVr;
+        //nftMeta.vr = defaultVr;
         nftMeta.bought = true;
         nftMeta.tld =  _tld;
         nftsToMintByAddress[msg.sender].push(nftMeta);
@@ -165,8 +170,8 @@ contract UPCNFT is ERC721, Ownable {
         nftsToMintByHash[upcHash].humanReadableName = humanReadableName;
         nftsToMintByHash[upcHash].tokenId = newNftTokenId;
         nftsToMintByHash[upcHash].word = upcId;
-        nftsToMintByHash[upcHash].ipfs = defaultIpfs;
-        nftsToMintByHash[upcHash].vr = defaultVr;
+        //nftsToMintByHash[upcHash].ipfs = defaultIpfs;
+        //nftsToMintByHash[upcHash].vr = defaultVr;
         nftsToMintByHash[upcHash].bought = true;
         nftsToMintByHash[upcHash].upcHash = upcHash;
 
@@ -263,7 +268,8 @@ contract UPCNFT is ERC721, Ownable {
         nftMeta.staker = nftToMint.staker;
         nftMeta.upcHash = nftToMint.upcHash;
         nftMeta.word = nftToMint.word;
-        nftMeta.ipfs = nftToMint.ipfs;
+        nftMeta.ipfs = defaultIpfs;
+        nftMeta.vr = defaultVr;
         nftMeta.minted = true;
         nftMeta.humanReadableName = nftToMint.humanReadableName;
         
@@ -276,6 +282,9 @@ contract UPCNFT is ERC721, Ownable {
         nftIdLookup[nftToMint.tokenId]   = nftMeta;
 
         upcIdLookup[upcId].minted  = true;
+        upcIdLookup[upcId].ipfs    = defaultIpfs;
+        upcIdLookup[upcId].vr      = defaultVr;
+
 
         uint tmpTld = upcIdLookup[upcId].tld;
         nftIdLookup[nftToMint.tokenId].tld = tmpTld;
