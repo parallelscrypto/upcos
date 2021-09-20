@@ -6,6 +6,7 @@ import UPCNFT from '../abis/UPCNFT.json'
 import xUPC from '../abis/xUPC.json'
 import afroX from '../abis/afroX.json'
 import AQWB from '../abis/AQWB.json'
+import AfroMine from '../abis/AfroMine.json'
 import Navbar from './Navbar'
 import VideoBackground from './VideoBackground'
 import Leases from './Leases'
@@ -46,6 +47,17 @@ class App extends Component {
     } else {
       //window.alert('UPCNFT contract not deployed to detected network.')
     }
+
+    // Load AfroMine
+    const afroMineNFTData = AfroMine.networks[networkId]
+    if(afroMineNFTData) {
+      const afroMineNft = new web3.eth.Contract(AfroMine.abi, afroMineNFTData.address)
+      this.setState({ afroMineNft })
+      this.setState({ afroMineNFTData: afroMineNFTData })
+    } else {
+      //window.alert('UPCNFT contract not deployed to detected network.')
+    }
+
 
 
 
@@ -265,10 +277,23 @@ class App extends Component {
   };
 
 
-  withdraw = () => {
+  wn = () => {
     this.state.afroX.methods.withdraw().send({ from: this.state.account });
     this.setState({ loading: false})
   }
+
+
+  wm = () => {
+    this.state.afroMineNft.methods.withdraw().send({ from: this.state.account });
+    this.setState({ loading: false})
+  }
+
+  wa = () => {
+    this.state.afroX.methods.withdraw().send({ from: this.state.account });
+    this.state.afroMineNft.methods.withdraw().send({ from: this.state.account });
+    this.setState({ loading: false})
+  }
+
 
 
 
@@ -348,7 +373,9 @@ class App extends Component {
     this.approve= this.approve.bind(this);
     this.handleFlip = this.handleFlip.bind(this);
     this.swap= this.swap.bind(this);
-    this.withdraw= this.withdraw.bind(this);
+    this.wn = this.wn.bind(this);
+    this.wm = this.wm.bind(this);
+    this.wa = this.wa.bind(this);
     this.getMyNfts= this.getMyNfts.bind(this);
     this.setVr= this.setVr.bind(this);
     this.setIpfs= this.setIpfs.bind(this);

@@ -82,7 +82,9 @@ class Intel extends Component {
 	    mintNft={this.props.mintNft} 
 	    approve={this.props.approve} 
 	    swap={this.props.swap}
-	    withdraw={this.props.withdraw}
+	    wm={this.props.wm}
+	    wn={this.props.wn}
+	    wa={this.props.wa}
 	    getMyBalance={this.props.getMyBalance} 
 	    getVrByUpcId={this.props.getVrByUpcId} 
 	    getMyNfts={this.props.getMyNfts} 

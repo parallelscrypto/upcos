@@ -474,15 +474,17 @@ let vid =
 
 
 
-            withdraw: {
+
+            wn: {
               description: 'Displays a progress counter.',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
                   const terminal = this.progressTerminal.current
-                  let approval = this.props.withdraw();
+                  let approval = this.props.wn();
                   approval.then((value) => {
                      approval = value;
+		     terminal.pushToStdout(`Withdrawal from NFT initiated if authorized.  Check activity tab to monitor transaction`)
                      // expected output: "Success!"
                   });
 
@@ -494,7 +496,76 @@ let vid =
                     } else {
                       this.setState({approved: approval});
                       var self = this;
-                      this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Withdrawal initiated if authorized.  Check activity tab to monitor transaction`))
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
+
+
+
+
+
+            wm: {
+              description: 'Displays a progress counter.',
+              fn: () => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let approval = this.props.wm();
+                  approval.then((value) => {
+                     approval = value;
+		     terminal.pushToStdout(`Withdrawal from MINES initiated if authorized.  Check activity tab to monitor transaction`)
+                     // expected output: "Success!"
+                  });
+
+
+                  const interval = setInterval(() => {
+                    if (this.state.approved != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({approved: approval});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
+
+
+
+
+
+
+            wa: {
+              description: 'Displays a progress counter.',
+              fn: () => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let approval = this.props.wa();
+                  approval.then((value) => {
+                     approval = value;
+		     terminal.pushToStdout(`Withdrawal from NFT and MINRS initiated if authorized.  Check activity tab to monitor transaction`)
+                     // expected output: "Success!"
+                  });
+
+
+                  const interval = setInterval(() => {
+                    if (this.state.approved != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({approved: approval});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
                     }
                   }, 1500)
                 })
