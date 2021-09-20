@@ -423,7 +423,9 @@ class App extends Component {
 	mintNft={this.mintNft}
 	mine={this.mine}
 	swap={this.swap}
-	withdraw={this.withdraw}
+	wn={this.wn}
+	wm={this.wm}
+	wa={this.wa}
 	getMyNfts={this.getMyNfts}
 	setVr={this.setVr}
 	setIpfs={this.setIpfs}
