@@ -25,6 +25,7 @@ contract UPCNFT is ERC721, Ownable {
         bool     minted;
         bool     bought;
         uint     tld;
+        uint256  latestTimestamp;
     }
     
     struct NFTLookup {
@@ -38,9 +39,11 @@ contract UPCNFT is ERC721, Ownable {
         uint256  tokenId;
         bool     bought;
         uint     tld;
+        uint256  latestTimestamp;
     }    
 
 
+    uint256  public latestTokenId;
 
     //tlds
     mapping(string => uint256)    public upcDomainToNftLookup;
@@ -148,6 +151,7 @@ contract UPCNFT is ERC721, Ownable {
         _token.transferFrom(msg.sender, address(this), currentNftPrice);
         _tokenIds.increment();
         uint256 newNftTokenId = _tokenIds.current();
+        latestTokenId = newNftTokenId;
         
         //add the metadata to the array to alert that an nft is available for minting
         NFTMeta memory nftMeta;
@@ -230,16 +234,20 @@ contract UPCNFT is ERC721, Ownable {
     function setVr(string memory upcId, string memory _vr) public {
         require(msg.sender == upcIdLookup[upcId].staker , "Only owner can set VR");
         upcIdLookup[upcId].vr = _vr;
+        upcIdLookup[upcId].latestTimestamp = block.timestamp;
         uint256 tmpTokenId = upcIdLookup[upcId].tokenId;
         nftIdLookup[tmpTokenId].vr = _vr;
+        nftIdLookup[tmpTokenId].latestTimestamp = block.timestamp;
     }
     
     
     function setIpfs(string memory upcId, string memory _ipfs) public {
         require(msg.sender == upcIdLookup[upcId].staker , "Only owner can set VR");
         upcIdLookup[upcId].ipfs = _ipfs;
+        upcIdLookup[upcId].latestTimestamp = block.timestamp;
         uint256 tmpTokenId = upcIdLookup[upcId].tokenId;
         nftIdLookup[tmpTokenId].ipfs = _ipfs;
+        nftIdLookup[tmpTokenId].latestTimestamp = block.timestamp;
     }    
 
 
@@ -281,13 +289,15 @@ contract UPCNFT is ERC721, Ownable {
         nftsToMintByHash[upcHash].humanReadableName = nftToMint.humanReadableName;
         nftIdLookup[nftToMint.tokenId]   = nftMeta;
 
-        upcIdLookup[upcId].minted  = true;
-        upcIdLookup[upcId].ipfs    = defaultIpfs;
-        upcIdLookup[upcId].vr      = defaultVr;
+        upcIdLookup[upcId].minted             = true;
+        upcIdLookup[upcId].ipfs               = defaultIpfs;
+        upcIdLookup[upcId].vr                 = defaultVr;
+        upcIdLookup[upcId].latestTimestamp    = block.timestamp;
 
 
         uint tmpTld = upcIdLookup[upcId].tld;
         nftIdLookup[nftToMint.tokenId].tld = tmpTld;
+        nftIdLookup[nftToMint.tokenId].latestTimestamp = block.timestamp;
 
 
     

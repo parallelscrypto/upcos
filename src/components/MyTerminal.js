@@ -128,6 +128,8 @@ let vid =
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
                         terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`latest_update: ${data['latestTimestamp']}`);
+                        terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`</data>`);
                   });
 		  
@@ -157,6 +159,10 @@ let vid =
                   const terminal = this.progressTerminal.current
                   let info = this.props.upcInfo(this.state.account)
 		   .then(data => {
+                        var newDate = new Date();
+                        newDate.setTime(data['latestTimestamp']);
+                        var dateString = newDate.toUTCString();
+
                         terminal.pushToStdout(`<data>`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`staker: ${data['staker']}`);
@@ -176,6 +182,8 @@ let vid =
                         terminal.pushToStdout(`vr: ${data['vr']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`latest_update: ${dateString}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`</data>`);
                   });
