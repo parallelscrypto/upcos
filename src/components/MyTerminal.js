@@ -412,8 +412,8 @@ let vid =
 		  var self = this;
                   let info = this.props.upcInfo(this.state.account)
 		   .then(data => {
-			var fullIpfs = "https://ipfs.io/ipfs/" + data['ipfs'];
-			var link = <a href={fullIpfs} >View my VR</a>
+			var fullIpfs = "https://ipfs.io/" + data['ipfs'];
+			var link = <a href={fullIpfs} >View my IPFS Website!</a>
 			   self.setState({vrLink: link});
 			   self.setState({showModal: true});
                   });
@@ -448,7 +448,7 @@ let vid =
 		  var self = this;
                   let info = this.props.upcInfo(this.state.account)
 		   .then(data => {
-			var link = <a href={data['vr']} >View my IPFS Website!</a>
+			var link = <a href={data['vr']} >View my VR Experience!</a>
 			   self.setState({vrLink: link});
 			   self.setState({showModal: true});
                   });
