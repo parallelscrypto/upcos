@@ -17,6 +17,7 @@ contract UPCNFT is ERC721, Ownable {
     struct NFTMeta {
         uint256  tokenId;
         address  staker;  //address of the staker
+        address  og;  //address of the staker
         bytes32  upcHash;
         string   word;
         string   ipfs;
@@ -25,11 +26,13 @@ contract UPCNFT is ERC721, Ownable {
         bool     minted;
         bool     bought;
         uint     tld;
+        uint256  createdTimestamp;
         uint256  latestTimestamp;
     }
     
     struct NFTLookup {
         address  staker;  //address of the staker
+        address  og;  //address of the staker
         bool     minted;
         bytes32  upcHash;
         string   word;
@@ -39,6 +42,7 @@ contract UPCNFT is ERC721, Ownable {
         uint256  tokenId;
         bool     bought;
         uint     tld;
+        uint256  createdTimestamp;
         uint256  latestTimestamp;
     }    
 
@@ -78,8 +82,13 @@ contract UPCNFT is ERC721, Ownable {
     function _transfer(address from, address to, uint256 tokenId) internal virtual override {
         super._transfer(from,to,tokenId);
         nftIdLookup[tokenId].staker = to;
+        nftIdLookup[tokenId].latestTimestamp = block.timestamp;
+
+        
         string memory upcId = nftIdLookup[tokenId].word;
         upcIdLookup[upcId].staker = to;
+        upcIdLookup[upcId].latestTimestamp = block.timestamp;
+        
     }
 
     function setPayToken(address  addy) external onlyOwner {
@@ -272,32 +281,39 @@ contract UPCNFT is ERC721, Ownable {
 
 
         NFTMeta memory nftMeta;
-        nftMeta.tokenId = nftToMint.tokenId;
-        nftMeta.staker = nftToMint.staker;
-        nftMeta.upcHash = nftToMint.upcHash;
-        nftMeta.word = nftToMint.word;
-        nftMeta.ipfs = defaultIpfs;
-        nftMeta.vr = defaultVr;
-        nftMeta.minted = true;
-        nftMeta.humanReadableName = nftToMint.humanReadableName;
+        nftMeta.tokenId                 = nftToMint.tokenId;
+        nftMeta.staker                  = nftToMint.staker;
+        nftMeta.og                      = nftToMint.staker;
+        nftMeta.upcHash                 = nftToMint.upcHash;
+        nftMeta.word                    = nftToMint.word;
+        nftMeta.ipfs                    = defaultIpfs;
+        nftMeta.vr                      = defaultVr;
+        nftMeta.minted                  = true;
+        nftMeta.humanReadableName       = nftToMint.humanReadableName;
         
         addressToNFTMeta[staker].push(nftMeta);
 
         //update this upc as minted
-        nftsToMintByHash[upcHash].minted = true;
-        nftsToMintByHash[upcHash].staker = msg.sender;
+        nftsToMintByHash[upcHash].minted            = true;
+        nftsToMintByHash[upcHash].staker            = msg.sender;
         nftsToMintByHash[upcHash].humanReadableName = nftToMint.humanReadableName;
-        nftIdLookup[nftToMint.tokenId]   = nftMeta;
+        nftIdLookup[nftToMint.tokenId]              = nftMeta;
 
         upcIdLookup[upcId].minted             = true;
         upcIdLookup[upcId].ipfs               = defaultIpfs;
         upcIdLookup[upcId].vr                 = defaultVr;
         upcIdLookup[upcId].latestTimestamp    = block.timestamp;
+        upcIdLookup[upcId].createdTimestamp   = block.timestamp;
+        upcIdLookup[upcId].og                 = msg.sender;
 
 
-        uint tmpTld = upcIdLookup[upcId].tld;
-        nftIdLookup[nftToMint.tokenId].tld = tmpTld;
-        nftIdLookup[nftToMint.tokenId].latestTimestamp = block.timestamp;
+        uint tmpTld                           = upcIdLookup[upcId].tld;
+        nftIdLookup[nftToMint.tokenId].tld    = tmpTld;
+        
+        
+        nftIdLookup[nftToMint.tokenId].latestTimestamp  = block.timestamp;
+        nftIdLookup[nftToMint.tokenId].createdTimestamp = block.timestamp;
+
 
 
     

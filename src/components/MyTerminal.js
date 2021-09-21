@@ -109,11 +109,17 @@ let vid =
                   let info = this.props.nftInfo(nftId)
 		   .then(data => {
 
-			var tmpStamp = data['latestTimestamp'];
-                        var newDate = new Date(parseInt(tmpStamp));
+			var tmpStamp = parseInt(data['latestTimestamp']);
+                        var newDate = new Date(tmpStamp * 1000);
+
+			var tmpStamp = parseInt(data['createdTimestamp']);
+                        var created = new Date(tmpStamp * 1000);
+
                         terminal.pushToStdout(`<xinfo>`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`staker: ${data['staker']}`);
+                        terminal.pushToStdout(`og_owner: ${data['og']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`owner: ${data['staker']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
                         terminal.pushToStdout(`=====`);
@@ -132,6 +138,8 @@ let vid =
                         terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`created_date: ${created.toString()}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`</xinfo>`);
                   });
@@ -164,12 +172,15 @@ let vid =
 		   .then(data => {
 			var tmpStamp = parseInt(data['latestTimestamp']);
                         var newDate = new Date(tmpStamp * 1000);
-			   console.log(tmpStamp);
-			   console.log(newDate);
+
+			var tmpStamp = parseInt(data['createdTimestamp']);
+                        var created = new Date(tmpStamp * 1000);
 
                         terminal.pushToStdout(`<info>`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`staker: ${data['staker']}`);
+                        terminal.pushToStdout(`og_owner: ${data['og']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`owner: ${data['staker']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
                         terminal.pushToStdout(`=====`);
@@ -188,6 +199,8 @@ let vid =
                         terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`created_date: ${created.toString()}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`</info>`);
                   });
