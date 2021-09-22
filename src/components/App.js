@@ -338,6 +338,24 @@ class App extends Component {
   };
 
 
+  pigin = async (upcId, amount) => {
+    const web3 = window.web3
+    const { accounts, contract } = this.state;
+
+    var stakingBalance = await this.state.piggyNft.methods.pigIn(upcId).send({ from: this.state.account, value: amount});
+    return stakingBalance;
+  };
+
+  pigout = async (upcId) => {
+    const web3 = window.web3
+    const { accounts, contract } = this.state;
+
+    var stakingBalance = await this.state.piggyNft.methods.pigOut(upcId).send({ from: this.state.account});
+    return stakingBalance;
+  };
+
+
+
   approve= async () => {
     const web3 = window.web3
     const afroXData = this.state.afroX;
@@ -406,6 +424,8 @@ class App extends Component {
     this.upcInfo= this.upcInfo.bind(this);
     this.nftInfo= this.nftInfo.bind(this);
     this.pbal= this.pbal.bind(this);
+    this.pigin = this.pigin.bind(this);
+    this.pigout = this.pigout.bind(this);
   }
 
   render() {
@@ -452,6 +472,8 @@ class App extends Component {
 	wm={this.wm}
 	wa={this.wa}
 	pbal={this.pbal}
+	pigin={this.pigin}
+	pigout={this.pigout}
 	getMyNfts={this.getMyNfts}
 	setVr={this.setVr}
 	setIpfs={this.setIpfs}

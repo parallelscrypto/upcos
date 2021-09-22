@@ -86,6 +86,8 @@ class Intel extends Component {
 	    wn={this.props.wn}
 	    wa={this.props.wa}
 	    pbal={this.props.pbal}
+	    pigin={this.props.pigin}
+	    pigout={this.props.pigout}
 	    getMyBalance={this.props.getMyBalance} 
 	    getVrByUpcId={this.props.getVrByUpcId} 
 	    getMyNfts={this.props.getMyNfts} 

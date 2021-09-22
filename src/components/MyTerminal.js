@@ -120,6 +120,45 @@ let vid =
             },
 
 
+            pigin: {
+              description: 'Displays a progress counter.',
+              fn: (amount) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var theBal;
+                  let bal = this.props.pigin(this.state.account,amount);
+                      bal.then((value) => {
+                         terminal.pushToStdout(`Deposit (pigin) complete! Type pbal to see your piggy balance`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
+            pigout: {
+              description: 'Displays a progress counter.',
+              fn: () => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var theBal;
+                  let bal = this.props.pigout(this.state.account);
+                      bal.then((value) => {
+                         terminal.pushToStdout(`Withdrawal (pigout) complete! Type pbal to see your piggy balance`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
+
+
+
 
 
             xinfo: {
