@@ -4,6 +4,7 @@ import Iframe from 'react-iframe'
 import Web3 from 'web3'
 import UPCNFT from '../abis/UPCNFT.json'
 import xUPC from '../abis/xUPC.json'
+import piggy from '../abis/PiggyBank.json'
 import afroX from '../abis/afroX.json'
 import AQWB from '../abis/AQWB.json'
 import AfroMine from '../abis/AfroMine.json'
@@ -60,6 +61,17 @@ class App extends Component {
 
 
 
+    // Load PiggyBank 
+    const piggyData = piggy.networks[networkId]
+    if(piggyData) {
+      const piggyNft = new web3.eth.Contract(piggy.abi, piggyData.address)
+      this.setState({ piggyNft })
+      this.setState({ piggyData: piggyData })
+    } else {
+      //window.alert('UPCNFT contract not deployed to detected network.')
+    }
+
+
 
 
     // Load UPCNFT
@@ -94,7 +106,6 @@ class App extends Component {
     for(introTimer;introTimer<10;introTimer++) {
         setTimeout(function() {
 		var elapsed = new Date().getTime() - start;
-		console.log(elapsed)
 		if(elapsed >= 7000) {
                   self.setState({ loading: false })
 		}
@@ -151,6 +162,9 @@ class App extends Component {
     var vrLink = await this.state.upcNft.methods.getMyNfts().call({ from: this.state.account})
     return vrLink.toString();
   };
+
+
+
 
   swap = async (amount) => {
     const { accounts, contract } = this.state;
@@ -305,12 +319,22 @@ class App extends Component {
     this.setState({ loading: false})
   }
 
+
   getMyBalance = async () => {
     const { accounts, contract } = this.state;
 
     var stakingBalance = await this.state.afroX.methods.balanceOf(this.state.account).call({ from: this.state.account });
     this.setState({daiTokenBalance: stakingBalance.toString() });
     return stakingBalance.toString();
+  };
+
+
+  pbal = async (upcId) => {
+    const web3 = window.web3
+    const { accounts, contract } = this.state;
+
+    var stakingBalance = await this.state.piggyNft.methods.upcBalance(upcId).call({ from: this.state.account });
+    return stakingBalance;
   };
 
 
@@ -381,6 +405,7 @@ class App extends Component {
     this.setIpfs= this.setIpfs.bind(this);
     this.upcInfo= this.upcInfo.bind(this);
     this.nftInfo= this.nftInfo.bind(this);
+    this.pbal= this.pbal.bind(this);
   }
 
   render() {
@@ -426,6 +451,7 @@ class App extends Component {
 	wn={this.wn}
 	wm={this.wm}
 	wa={this.wa}
+	pbal={this.pbal}
 	getMyNfts={this.getMyNfts}
 	setVr={this.setVr}
 	setIpfs={this.setIpfs}

@@ -100,6 +100,28 @@ let vid =
               }
             },
 
+            pbal: {
+              description: 'Displays a progress counter.',
+              fn: () => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var theBal;
+                  let bal = this.props.pbal(this.state.account);
+                      bal.then((value) => {
+                         theBal =window.web3.utils.fromWei(value, "ether");
+                         terminal.pushToStdout(`piggy_balance: ${theBal} MATIC`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
+
+
+
             xinfo: {
               description: 'Displays a progress counter.',
               fn: (nftId) => {
