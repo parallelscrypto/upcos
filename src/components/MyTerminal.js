@@ -70,8 +70,28 @@ let vid =
         dangerMode={false}
         ref={this.progressTerminal}
         commands={{
+            apr: {
+              description: 'Approve the Underground to spend 10 of your AfroX.  You MUST run this command FIRST or all of your `buy` and `xbuy` commands will fail',
+              fn: () => {
+                  const terminal = this.progressTerminal.current
+                var progress = 0;
+                this.setState({approved: false});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let approval = this.props.approve();
+                  approval.then((value) => {
+		     terminal.pushToStdout(`You have approved the Underground to transfer 1 AfroX from your wallet when you buy an NFT.  This approval is good for 10 NFTs.  After you have bought 10, you must run this command again, or your 'buy' and 'xbuy' commands will fail`)
+                     // expected output: "Success!"
+                  });
+                })
+
+		terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
+                return ''
+              }
+            },
+
             bal: {
-              description: 'Displays a progress counter.',
+              description: 'Display your AfroX balance',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -101,7 +121,7 @@ let vid =
             },
 
             pbal: {
-              description: 'Displays a progress counter.',
+              description: 'Display the piggy bank balance of the current UPC',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -121,7 +141,7 @@ let vid =
 
 
             pigin: {
-              description: 'Displays a progress counter.',
+		    description: 'Inject POLY into current UPC. Example: Type `pigin 1000000000000000000` to inject 1 POLY to current UPC.  You can inject into any UPC regardless of ownership',
               fn: (amount) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -139,7 +159,7 @@ let vid =
             },
 
             pigout: {
-              description: 'Displays a progress counter.',
+              description: 'Withdraw all POLY from a UPC if you own the NFT for the UPC',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -155,14 +175,8 @@ let vid =
                 return ''
               }
             },
-
-
-
-
-
-
             xinfo: {
-              description: 'Displays a progress counter.',
+              description: 'Display information about a NFT by passing the NFT ID.  Example `xinfo 35` will return information about NFT #35.',
               fn: (nftId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -224,7 +238,7 @@ let vid =
 
 
             info: {
-              description: 'Displays a progress counter.',
+              description: 'Display information regarding the current UPC',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -282,53 +296,14 @@ let vid =
                 return ''
               }
             },
-            apr: {
-              description: 'Displays a progress counter.',
-              fn: () => {
-                var progress = 0;
-                this.setState({progressBal: ''});
-                this.setState({progress: 0});
-                this.setState({approved: false});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  let approval = this.props.approve();
-
-
-                  const intervalApprov = setInterval(() => {
-                    if (!this.state.approved) { // Stop at 100%
-                      terminal.clearStdout();
-                      this.setState({ progress: this.state.progress + 1 }, () => terminal.pushToStdout(`Request Processing: ${this.state.progress}`))
-                    }
-                  }, 1000)
-                      approval.then((value) => {
-                         approval = value;
-                         // expected output: "Success!"
-
-                         const interval = setInterval(() => {
-                           if (!value) { // Stop at 100%
-                             this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Request Processing: ${progress}`))
-                           } else {
-                             this.setState({approved: true});
-                             var self = this;
-                             this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Approved: ${approval}`))
-                             
-                             clearInterval(interval)
-                           }
-                         }, 1500)
-                  });
-                })
-
-                return ''
-              }
-            },
             tut: {
-              description: 'Displays a progress counter.',
+              description: 'Display tutorial',
               fn: () => {
                       this.setState({showModalTutorial:true});
               }
             },
             buy: {
-              description: 'Displays a progress counter.',
+              description: 'Buy an NFT using the GUI interface',
               fn: (humanReadableName) => {
                   var buyForm =  <div>
 		  <Barcode value={this.state.account} format="EAN13" />
@@ -374,44 +349,8 @@ let vid =
               }
             },
 
-
-            nfts: {
-              description: 'Shows unminted nfts',
-              fn: () => {
-		  var nfts = this.props.getMyNfts();
-		  console.log(nfts);
-                  var buyForm =  <div>
-                          <form className="mb-3" onSubmit={(event) => {
-                              event.preventDefault()
-                              let upcId = this.state.account
-                              let humanReadableName = this.humanReadableName.value.toString()
-
-                              this.props.buyNft(upcId,humanReadableName, this.state.domain)
-                            }}>
-                            <div className="input-group mb-4">
-
-                            </div>
-                             <button
-                                 type="submit"
-                                 className="btn btn-primary btn-block btn-lg"
-                             >
-                                BUY NFT!
-                             </button>
-                          </form>
-                       </div>
-
-                      this.setState({buyModalContent:buyForm});
-                      this.setState({showModalBuy:true});
-
-
-              }
-            },
-
-
-
-
             xipfs: {
-              description: 'Displays a progress counter.',
+              description: 'Set your IPFS resource by passing the ipfs/hash value.  Example `xipfs ipfs/QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU` will set your IPFS resource to our welcome page.  The public will use the `ipfs` command to view what you set using this command ' ,
               fn: (_ipfsLink) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -439,15 +378,8 @@ let vid =
               }
             },
 
-
-
-
-
-
-
-
-
             xvr: {
+		    description: 'Set your VR resource by passing the ipfs/hash value.  Example `xvr https://link.to.your.vr`` will set your vr resource so that when the public scans this upc and types `vr` they will see `https://link.to.your.vr`.  This does not have to be a vr link, it can be a regular website if you choose' ,
               description: 'Displays a progress counter.',
               fn: (_vrLink) => {
                 this.setState({progressBal: ''});
@@ -476,15 +408,8 @@ let vid =
                 return ''
               }
             },
-
-
-
-
-
-
-
             xbuy: {
-              description: 'Displays a progress counter.',
+		    description: 'Buy a UPC NFT without the GUI popup.  Usage: `xbuy <domain_name> <tld_integer={0,1,2}>` ',
               fn: (humanReadableName,domain) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -492,6 +417,9 @@ let vid =
                   let approval = this.props.buyNft(this.state.account, humanReadableName,domain);
                       approval.then((value) => {
                          approval = value;
+			 var congrats = "Thank you for your purchase! You now own NFT for " + this.state.account;
+                         terminal.pushToStdout(congrats)
+			      
                          // expected output: "Success!"
                       });
 
@@ -514,7 +442,7 @@ let vid =
 
 
             ipfs: {
-              description: 'Displays a progress counter.',
+              description: 'Display UPC ipfs resource',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -550,7 +478,7 @@ let vid =
 
 
             vr: {
-              description: 'Displays a progress counter.',
+              description: 'Display UPC vr resource',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -586,7 +514,7 @@ let vid =
 
 
             wn: {
-              description: 'Displays a progress counter.',
+              description: '',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -620,7 +548,7 @@ let vid =
 
 
             wm: {
-              description: 'Displays a progress counter.',
+              description: '',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -655,7 +583,7 @@ let vid =
 
 
             wa: {
-              description: 'Displays a progress counter.',
+              description: '',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -688,7 +616,7 @@ let vid =
 
 
             swap: {
-              description: 'Displays a progress counter.',
+		    description: 'Swaps POLY for AfroX.  Specify the amount of AfroX in wei.  Example: to buy 5 AfroX type `swap 5000000000000000000`',
               fn: (amount) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -720,7 +648,7 @@ let vid =
 
 
             mine: {
-              description: 'Displays a progress counter.',
+              description: 'Mine some AfroX',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -733,18 +661,6 @@ let vid =
 		     terminal.pushToStdout(`Congrats! You just mined some crypto. \n  Type 'bal' to see your new balance! ${approval}`)
                      // expected output: "Success!"
                   });
-
-
-                  const interval = setInterval(() => {
-                    if (this.state.approved != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({approved: approval});
-                      var self = this;
-                      this.setState({ progress: this.state.progress + 10 })
-                    }
-                  }, 1500)
                 })
 
                 return ''
@@ -752,7 +668,7 @@ let vid =
             },
 
             mint: {
-              description: 'Displays a progress counter.',
+              description: 'Mint an NFT for which you have successfully executed the `buy` or `xbuy` command',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -760,7 +676,7 @@ let vid =
                   let approval = this.props.mintNft(this.state.account);
                       approval.then((value) => {
                          approval = value;
-		         terminal.pushToStdout(`Congrats! You own UPCNFT # ${approval}`)
+		         terminal.pushToStdout(`Congrats! You own UPCNFT for ${upcId}`)
                          // expected output: "Success!"
                       });
 
@@ -781,7 +697,7 @@ let vid =
               }
             }
           }}
-        welcomeMessage={'Welcome to UPC Matrix! \n Type `tut` for tutorial'}
+        welcomeMessage={'Welcome to UPC Underground! \n Type `tut` for tutorial'}
         promptLabel={promptlabel}
         autoFocus={true}
 	promptLabelStyle={{"color":"green", "fontWeight":"bold", "fontSize":"1.1em"}}
