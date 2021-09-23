@@ -59,7 +59,9 @@ let vid =
 
 
 
-    var promptlabel = this.state.account + '@upc_shell>';
+    var addy = this.props.address;
+    addy  = addy.substr(0,10);
+    var promptlabel =  addy + '_@_' + this.state.account + '>';
     return (
       <div>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModal} closemodal={() => this.setState({ showModal: false })} type="pulse" >{this.state.vrLink}</Modal>

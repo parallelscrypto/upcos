@@ -78,6 +78,7 @@ class Intel extends Component {
 
 	    <MyTerminal 
 	    buyNft={this.props.buyNft} 
+	    address={this.props.address} 
 	    mine={this.props.mine} 
 	    mintNft={this.props.mintNft} 
 	    approve={this.props.approve} 
