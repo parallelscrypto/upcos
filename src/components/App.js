@@ -204,6 +204,15 @@ class App extends Component {
     return this.state.upcNft.methods.nftInfo(nftId).call({ from: this.state.account });
   };
 
+  upcInfo = async (upcId) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.upcNft.methods.upcInfo(upcId).call({ from: this.state.account });
+  };
+
 
 
   getMyNfts= async () => {

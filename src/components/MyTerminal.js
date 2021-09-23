@@ -236,6 +236,65 @@ let vid =
               }
             },
 
+            srch: {
+              description: 'Display information regarding the current UPC',
+              fn: (upcId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let info = this.props.upcInfo(upcId)
+		   .then(data => {
+			var tmpStamp = parseInt(data['latestTimestamp']);
+                        var newDate = new Date(tmpStamp * 1000);
+
+			var tmpStamp = parseInt(data['createdTimestamp']);
+                        var created = new Date(tmpStamp * 1000);
+
+                        terminal.pushToStdout(`<info>`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`og_owner: ${data['og']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`owner: ${data['staker']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`tld: ${data['tld']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`token_id: ${data['tokenId']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`upc: ${data['word']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`minted: ${data['minted']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`vr: ${data['vr']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`created_date: ${created.toString()}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`</info>`);
+                  });
+		  
+
+                  const interval = setInterval(() => {
+                    if (this.state.progressBal != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({progressBal: info});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
 
             info: {
               description: 'Display information regarding the current UPC',
