@@ -113,7 +113,7 @@ let vid =
                     } else {
                       this.setState({progressBal: bal});
                       var self = this;
-                      this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Balance: ${theBal}` + " xUPC"))
+                      this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Balance: ${theBal}` + " IntelX"))
                     }
                   }, 1500)
                 })
@@ -121,6 +121,27 @@ let vid =
                 return ''
               }
             },
+
+
+            last : {
+              description: 'Display the highest NFT ID in the collection (smart contract)',
+              fn: () => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var latest;
+                  let bal = this.props.latestTokenId();
+                      bal.then((value) => {
+                         latest = value;
+                         terminal.pushToStdout(`latest_id: ${latest}`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
 
             pbal: {
               description: 'Display the piggy bank balance of the current UPC',
@@ -177,8 +198,8 @@ let vid =
                 return ''
               }
             },
-            xinfo: {
-              description: 'Display information about a NFT by passing the NFT ID.  Example `xinfo 35` will return information about NFT #35.',
+            xintel: {
+              description: 'Display intel about a NFT by passing the NFT ID.  Example `xintel 35` will return intel about NFT #35.',
               fn: (nftId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -192,7 +213,7 @@ let vid =
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
 
-                        terminal.pushToStdout(`<xinfo>`);
+                        terminal.pushToStdout(`<xintel>`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`og_owner: ${data['og']}`);
                         terminal.pushToStdout(`=====`);
@@ -218,7 +239,7 @@ let vid =
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`created_date: ${created.toString()}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`</xinfo>`);
+                        terminal.pushToStdout(`</xintel>`);
                   });
 		  
 
@@ -239,7 +260,7 @@ let vid =
             },
 
             srch: {
-              description: 'Display information regarding the current UPC',
+              description: 'Display intel regarding the current UPC given the UPC. Example `srch 078742254609` will return intel for upc 078742254609',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -252,7 +273,7 @@ let vid =
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
 
-                        terminal.pushToStdout(`<info>`);
+                        terminal.pushToStdout(`<intel>`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`og_owner: ${data['og']}`);
                         terminal.pushToStdout(`=====`);
@@ -278,7 +299,7 @@ let vid =
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`created_date: ${created.toString()}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`</info>`);
+                        terminal.pushToStdout(`</intel>`);
                   });
 		  
 
@@ -298,8 +319,8 @@ let vid =
               }
             },
 
-            info: {
-              description: 'Display information regarding the current UPC',
+            intel: {
+              description: 'Display intel from context of the current UPC terminal',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -312,7 +333,7 @@ let vid =
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
 
-                        terminal.pushToStdout(`<info>`);
+                        terminal.pushToStdout(`<intel>`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`og_owner: ${data['og']}`);
                         terminal.pushToStdout(`=====`);
@@ -338,7 +359,7 @@ let vid =
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`created_date: ${created.toString()}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`</info>`);
+                        terminal.pushToStdout(`</intel>`);
                   });
 		  
 
@@ -677,7 +698,7 @@ let vid =
 
 
             swap: {
-		    description: 'Swaps POLY for AfroX.  Specify the amount of AfroX in wei.  Example: to buy 5 AfroX type `swap 5000000000000000000`',
+		    description: 'Swaps POLY for AfroX.  Specify the amount of AfroX in wei.  This will trigger a transaction that will mint equiv. AfroX for 1:1.  Example: to buy 5 AfroX type `swap 5000000000000000000`. In other words, this would send 5 matic for 5 AfroX',
               fn: (amount) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {

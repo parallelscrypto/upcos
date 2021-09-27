@@ -5,7 +5,7 @@ import Web3 from 'web3'
 import UPCNFT from '../abis/UPCNFT.json'
 import xUPC from '../abis/xUPC.json'
 import piggy from '../abis/PiggyBank.json'
-import afroX from '../abis/afroX.json'
+import intelX from '../abis/intelX.json'
 import AQWB from '../abis/AQWB.json'
 import AfroMine from '../abis/AfroMine.json'
 import Navbar from './Navbar'
@@ -88,11 +88,11 @@ class App extends Component {
 
 
 
-    // Load afroX
-    const afroXData = afroX.networks[networkId]
-    if(afroXData) {
-      const AFROX = new web3.eth.Contract(afroX.abi, afroXData.address)
-      this.setState({ afroX: AFROX })
+    // Load intelX
+    const intelXData = intelX.networks[networkId]
+    if(intelXData) {
+      const AFROX = new web3.eth.Contract(intelX.abi, intelXData.address)
+      this.setState({ intelX: AFROX })
     } else {
       //window.alert('UPCGoldBank contract not deployed to detected network.')
     }
@@ -168,7 +168,7 @@ class App extends Component {
 
   swap = async (amount) => {
     const { accounts, contract } = this.state;
-    this.state.afroX.methods.swap().send({ value: amount, from: this.state.account})
+    this.state.intelX.methods.swap().send({ value: amount, from: this.state.account})
       .once('receipt', (receipt) => {
          this.setState({ loading: false })
       })
@@ -193,6 +193,15 @@ class App extends Component {
     //console.log(this.state.sendCryptoValue);
     // Stores a given value, 5 by default.
     return this.state.upcNft.methods.upcInfo(upcId).call({ from: this.state.account });
+  };
+
+  latestTokenId = async (upcId) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.upcNft.methods.latestTokenId().call({ from: this.state.account });
   };
 
   nftInfo = async (nftId) => {
@@ -292,7 +301,7 @@ class App extends Component {
 
 
   wn = () => {
-    this.state.afroX.methods.withdraw().send({ from: this.state.account });
+    this.state.intelX.methods.withdraw().send({ from: this.state.account });
     this.setState({ loading: false})
   }
 
@@ -303,7 +312,7 @@ class App extends Component {
   }
 
   wa = () => {
-    this.state.afroX.methods.withdraw().send({ from: this.state.account });
+    this.state.intelX.methods.withdraw().send({ from: this.state.account });
     this.state.afroMineNft.methods.withdraw().send({ from: this.state.account });
     this.setState({ loading: false})
   }
@@ -323,7 +332,7 @@ class App extends Component {
   getMyBalance = async () => {
     const { accounts, contract } = this.state;
 
-    var stakingBalance = await this.state.afroX.methods.balanceOf(this.state.account).call({ from: this.state.account });
+    var stakingBalance = await this.state.intelX.methods.balanceOf(this.state.account).call({ from: this.state.account });
     this.setState({daiTokenBalance: stakingBalance.toString() });
     return stakingBalance.toString();
   };
@@ -358,23 +367,23 @@ class App extends Component {
 
   approve= async () => {
     const web3 = window.web3
-    const afroXData = this.state.afroX;
+    const intelXData = this.state.intelX;
 
     const { accounts, contract } = this.state;
 
     var upcNFTData = this.state.upcNFTData;
-    var approval = await this.state.afroX.methods.approve(upcNFTData.address, "10000000000000000000").send({ from: this.state.account });
+    var approval = await this.state.intelX.methods.approve(upcNFTData.address, "10000000000000000000").send({ from: this.state.account });
     this.setState({daiTokenBalance: approval.toString() });
     return approval.toString();
   };
 
   mine= async () => {
     const web3 = window.web3
-    const afroXData = this.state.afroX;
+    const intelXData = this.state.intelX;
 
     const { accounts, contract } = this.state;
 
-    var approval = await this.state.afroX.methods.mine().send({ from: this.state.account });
+    var approval = await this.state.intelX.methods.mine().send({ from: this.state.account });
     this.setState({daiTokenBalance: approval.toString() });
     return approval.toString();
   };
@@ -423,6 +432,7 @@ class App extends Component {
     this.setIpfs= this.setIpfs.bind(this);
     this.upcInfo= this.upcInfo.bind(this);
     this.nftInfo= this.nftInfo.bind(this);
+    this.latestTokenId= this.latestTokenId.bind(this);
     this.pbal= this.pbal.bind(this);
     this.pigin = this.pigin.bind(this);
     this.pigout = this.pigout.bind(this);
@@ -475,6 +485,7 @@ class App extends Component {
 	setIpfs={this.setIpfs}
 	upcInfo={this.upcInfo}
 	nftInfo={this.nftInfo}
+	latestTokenId={this.latestTokenId}
       />
 
 
