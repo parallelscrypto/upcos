@@ -4,9 +4,6 @@ import MyTerminal from './MyTerminal'
 import NftPopupTicker from './NftPopupTicker'
 import UpcStatsTicker from './UpcStatsTicker'
 import ReactCardFlip from 'react-card-flip';
-import equalizer from './extra/equalizer.mp4';
-import fps from './extra/fps.mp4';
-import heartbeat from './extra/heartbeat.mp4';
 import Modal from 'react-modal';
 
 
@@ -54,25 +51,7 @@ class Intel extends Component {
 
 
   render() {
-	  
-      let vidBg;
-      const rndInt = Math.floor(Math.random() * 3) + 1
-      if(rndInt == 1) {
-          vidBg = fps;
-      }
-      else if(rndInt == 2) {
-          vidBg = equalizer;
-      }
-      else if(rndInt == 3) {
-          vidBg = heartbeat;
-      }
-      let vid = 
-      <div>
-         <video style={{"position":"fixed","zIndex":"-1","opacity":"0.9","width":"100vw"}} autoPlay loop muted>
-           <source src={vidBg} type='video/mp4' />
-         </video>
-      </div>;
-    
+
     return (
 	    <div>
 

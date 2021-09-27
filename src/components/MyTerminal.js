@@ -5,7 +5,6 @@ import MatrixBg from './extra/matrixbg.png'
 import Modal from "react-animated-modal";
 import Iframe from 'react-iframe';
 import axios from "axios";
-import equalizer from './extra/equalizer.mp4';
 import 'react-dropdown/style.css';
 var Barcode = require('react-barcode');
 
@@ -48,16 +47,6 @@ export default class MyTerminal extends Component {
   }
 
   render () {
-
-
-let vid =
-<div>
-<video style={{"position":"fixed","zIndex":"-1","opacity":"0.4"}} autoPlay loop muted>
-    <source src={equalizer} type='video/mp4' />
-</video>
-</div>;
-
-
 
     var addy = this.props.address;
     addy  = addy.substr(0,10);
