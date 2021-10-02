@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import Terminal from 'react-console-emulator'
 import ScratchCard from './ScratchCard'
-import MatrixBg from './extra/matrixbg.png'
 import Modal from "react-animated-modal";
 import Iframe from 'react-iframe';
 import axios from "axios";
 import 'react-dropdown/style.css';
+import QRCode from "react-qr-code";
 var Barcode = require('react-barcode');
 
 const commands = {
@@ -31,7 +31,9 @@ export default class MyTerminal extends Component {
        showModal: false,
        showModalBuy: false,
        showModalTutorial: false,
+       showQrModal: false,
        buyModalContent: '',
+       qrContent: '',
        progressBal: '',
        domain: '',
     }
@@ -50,19 +52,20 @@ export default class MyTerminal extends Component {
 
     var addy = this.props.address;
     addy  = addy.substr(0,10);
-    var promptlabel =  addy + '_@_' + this.state.account + '>';
+    var promptlabel =  addy + '_@' + this.state.account + '>';
     return (
       <div>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModal} closemodal={() => this.setState({ showModal: false })} type="pulse" >{this.state.vrLink}</Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalBuy} closemodal={() => this.setState({ showModalBuy: false })} type="pulse" > {this.state.buyModalContent}</Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalTutorial} closemodal={() => this.setState({ showModalTutorial: false })} type="pulse" ><iframe style={{height:"100vh"}} src="https://gateway.pinata.cloud/ipfs/QmStW8PBZjxjSkwnxvr15rHvRajCUkPRMEJGQejQu8EE4W" /></Modal>
+      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showQrModal} closemodal={() => this.setState({ showQrModal: false })} type="pulse" ><QRCode size={128} value={this.state.account} onClick={() => { this.setState({qIsOpen: true})}}/><br/>{this.state.account}</Modal>
       <Terminal
-        style={{"minHeight":"75vh",backgroundColor: "#000",   backgroundImage: "url(" + MatrixBg + ")",}}
+        style={{"minHeight":"75vh",backgroundColor: "#000"}}
         dangerMode={false}
         ref={this.progressTerminal}
         commands={{
             apr: {
-              description: 'Approve the Underground to spend 10 of your AfroX.  You MUST run this command FIRST or all of your `buy` and `xbuy` commands will fail',
+              description: 'Approve the Underground to spend 10 of your IntelX.  You MUST run this command FIRST or all of your `buy` and `xbuy` commands will fail',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -71,7 +74,7 @@ export default class MyTerminal extends Component {
                   const terminal = this.progressTerminal.current
                   let approval = this.props.approve();
                   approval.then((value) => {
-		     terminal.pushToStdout(`You have approved the Underground to transfer 1 AfroX from your wallet when you buy an NFT.  This approval is good for 10 NFTs.  After you have bought 10, you must run this command again, or your 'buy' and 'xbuy' commands will fail`)
+		     terminal.pushToStdout(`You have approved the Underground to transfer 1 IntelX from your wallet when you buy an NFT.  This approval is good for 10 NFTs.  After you have bought 10, you must run this command again, or your 'buy' and 'xbuy' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
@@ -82,7 +85,7 @@ export default class MyTerminal extends Component {
             },
 
             bal: {
-              description: 'Display your AfroX balance',
+              description: 'Display your IntelX balance',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -187,7 +190,7 @@ export default class MyTerminal extends Component {
                 return ''
               }
             },
-            xintel: {
+            xit: {
               description: 'Display intel about a NFT by passing the NFT ID.  Example `xintel 35` will return intel about NFT #35.',
               fn: (nftId) => {
                 this.setState({progressBal: ''});
@@ -308,7 +311,7 @@ export default class MyTerminal extends Component {
               }
             },
 
-            intel: {
+            it: {
               description: 'Display intel from context of the current UPC terminal',
               fn: () => {
                 this.setState({progressBal: ''});
@@ -367,6 +370,13 @@ export default class MyTerminal extends Component {
                 return ''
               }
             },
+            qr: {
+              description: 'Display QR code for this UPC',
+              fn: () => {
+                      this.setState({showQrModal:true});
+              }
+            },
+
             tut: {
               description: 'Display tutorial',
               fn: () => {
@@ -687,7 +697,7 @@ export default class MyTerminal extends Component {
 
 
             swap: {
-		    description: 'Swaps POLY for AfroX.  Specify the amount of AfroX in wei.  This will trigger a transaction that will mint equiv. AfroX for 1:1.  Example: to buy 5 AfroX type `swap 5000000000000000000`. In other words, this would send 5 matic for 5 AfroX',
+		    description: 'Swaps POLY for IntelX.  Specify the amount of IntelX in wei.  This will trigger a transaction that will mint equiv. IntelX for 1:1.  Example: to buy 5 IntelX type `swap 5000000000000000000`. In other words, this would send 5 matic for 5 IntelX',
               fn: (amount) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -695,7 +705,7 @@ export default class MyTerminal extends Component {
                   let approval = this.props.swap(amount);
                   approval.then((value) => {
                      approval = value;
-		     terminal.pushToStdout(`You have just swapped POLY for AfroX.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
+		     terminal.pushToStdout(`You have just swapped POLY for IntelX.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
                      // expected output: "Success!"
                   });
 
@@ -719,7 +729,7 @@ export default class MyTerminal extends Component {
 
 
             mine: {
-              description: 'Mine some AfroX',
+              description: 'Mine some IntelX',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -768,7 +778,7 @@ export default class MyTerminal extends Component {
               }
             }
           }}
-        welcomeMessage={'Welcome to UPC Underground! \n Type `tut` for tutorial'}
+        welcomeMessage={'Welcome to UPC Underground! \n Type `help` to see available commands'}
         promptLabel={promptlabel}
         autoFocus={true}
 	promptLabelStyle={{"color":"green", "fontWeight":"bold", "fontSize":"1.1em"}}
