@@ -6,7 +6,10 @@ import Iframe from 'react-iframe';
 import axios from "axios";
 import 'react-dropdown/style.css';
 import QRCode from "react-qr-code";
+import Card from 'react-playing-card';
+import ScratchOff from './ScratchOff';
 var Barcode = require('react-barcode');
+var sha256 = require('js-sha256');
 
 const commands = {
   echo: {
@@ -36,6 +39,7 @@ export default class MyTerminal extends Component {
        qrContent: '',
        progressBal: '',
        domain: '',
+       card: '',
     }
 
     this.selectDomain = this.selectDomain.bind(this);
@@ -53,12 +57,28 @@ export default class MyTerminal extends Component {
     var addy = this.props.address;
     addy  = addy.substr(0,10);
     var promptlabel =  addy + '_@' + this.state.account + '>';
+	  
+    var upcHash  = sha256(this.state.account)
+    var srcImg = 'https://avatars.dicebear.com/api/big-smile/'  + upcHash + ".svg";
+    var cardValue = {
+       value:  upcHash,
+       intent: "upcHero"
+    }
+    var cardValueStr = JSON.stringify(cardValue);
+    var myCard = 
+    <div>
+	<p><b>Say hello to the hero of this UPC!</b></p>
+        <p><img src={srcImg} height="200" width="200"/></p>
+	<p><QRCode size={128} value={cardValueStr} onClick={() => { this.setState({qIsOpen: true})}}/></p>
+    </div>
+
     return (
       <div>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModal} closemodal={() => this.setState({ showModal: false })} type="pulse" >{this.state.vrLink}</Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalBuy} closemodal={() => this.setState({ showModalBuy: false })} type="pulse" > {this.state.buyModalContent}</Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalTutorial} closemodal={() => this.setState({ showModalTutorial: false })} type="pulse" ><iframe style={{height:"100vh"}} src="https://gateway.pinata.cloud/ipfs/QmStW8PBZjxjSkwnxvr15rHvRajCUkPRMEJGQejQu8EE4W" /></Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showQrModal} closemodal={() => this.setState({ showQrModal: false })} type="pulse" ><QRCode size={128} value={this.state.account} onClick={() => { this.setState({qIsOpen: true})}}/><br/>{this.state.account}</Modal>
+      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showCardModal} closemodal={() => this.setState({ showCardModal: false })} type="pulse" > {myCard}</Modal>
       <Terminal
         style={{"minHeight":"75vh",backgroundColor: "#000"}}
         dangerMode={false}
@@ -376,7 +396,12 @@ export default class MyTerminal extends Component {
                       this.setState({showQrModal:true});
               }
             },
-
+            hero: {
+              description: 'Display hero for this UPC',
+              fn: () => {
+                      this.setState({showCardModal:true});
+              }
+            },
             tut: {
               description: 'Display tutorial',
               fn: () => {
@@ -783,7 +808,6 @@ export default class MyTerminal extends Component {
         autoFocus={true}
 	promptLabelStyle={{"color":"green", "fontWeight":"bold", "fontSize":"1.1em"}}
       />
-
       </div>
     )
   }

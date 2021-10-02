@@ -39,7 +39,7 @@ export default class NftPopupModal extends Component {
             contentLabel={this.state.hash}
           >    
 	     <NftPopupQr code={this.state.code} hash={uuid()}  />
-	     <p>This is 2 player action.  Invite a friend and scan on their phone to convert QR into an Afro mining worker for mine #{this.state.code}.  Each UPC can house 1 robot, and they will sometimes bring home some AfroX.  The more workers you hatch, the more free AfroX you can mine!</p>
+	     <p>This is 2 player action.  Invite a friend and scan on their phone to convert QR into an IntelX mining agent for mine #{this.state.code}.  Each wallet addresss can plant one agent per upc, and agents acquire IntelX for you.  The more workers you hatch, the more IntelX you can mine!</p>
              <button onClick={() => {this.setState({qIsOpen: false}) }}>close</button>
           </Modal>
       </div>
