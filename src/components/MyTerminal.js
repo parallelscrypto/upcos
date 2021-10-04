@@ -35,6 +35,7 @@ export default class MyTerminal extends Component {
        showModalBuy: false,
        showCardModal: false,
        showProductModal: false,
+       showProductContent: '',
        showModalTutorial: false,
        showQrModal: false,
        buyModalContent: '',
@@ -45,9 +46,27 @@ export default class MyTerminal extends Component {
     }
 
     this.selectDomain = this.selectDomain.bind(this);
-
+    this.prodLookup= this.prodLookup.bind(this);
   }
 
+  prodLookup= async (upc) => {
+    var xhr = new XMLHttpRequest();
+    var self = this;
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+           var resp = xhr.responseXML.body.outerHTML;
+
+           var fullResp = '<html>' + resp + '</html>';
+           self.setState({showProductContent:fullResp});
+           self.setState({showProductModal:true});
+        }
+    }
+
+
+    xhr.open('GET', 'https://cors.bridged.cc/https://www.upcitemdb.com/upc/' + upc );
+    xhr.responseType = 'document';
+    xhr.send();
+  }
 
   selectDomain(event) {
      this.setState({domain: event.target.value});
@@ -73,12 +92,7 @@ export default class MyTerminal extends Component {
         <p><img src={srcImg} height="200" width="200"/></p>
 	<p><QRCode size={128} value={cardValueStr} onClick={() => { this.setState({qIsOpen: true})}}/></p>
     </div>
-    var productUrl = "https://www.upcitemdb.com/upc/" + this.state.account;
-    var myProduct = 
-    <div>
-       <iframe src={productUrl}></iframe>
-    </div>
-
+    var myProduct = <iframe srcDoc={this.state.showProductContent}> </iframe>
 
 
     return (
@@ -409,7 +423,8 @@ export default class MyTerminal extends Component {
             prd: {
               description: 'Display product information for UPC',
               fn: () => {
-                      this.setState({showProductModal:true});
+                      this.prodLookup(this.state.account);
+                      //this.setState({showProductModal:true});
               }
             },
 
