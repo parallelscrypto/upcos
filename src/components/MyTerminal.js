@@ -33,6 +33,8 @@ export default class MyTerminal extends Component {
        vrLink: '',
        showModal: false,
        showModalBuy: false,
+       showCardModal: false,
+       showProductModal: false,
        showModalTutorial: false,
        showQrModal: false,
        buyModalContent: '',
@@ -71,6 +73,13 @@ export default class MyTerminal extends Component {
         <p><img src={srcImg} height="200" width="200"/></p>
 	<p><QRCode size={128} value={cardValueStr} onClick={() => { this.setState({qIsOpen: true})}}/></p>
     </div>
+    var productUrl = "https://www.upcitemdb.com/upc/" + this.state.account;
+    var myProduct = 
+    <div>
+       <iframe src={productUrl}></iframe>
+    </div>
+
+
 
     return (
       <div>
@@ -79,6 +88,7 @@ export default class MyTerminal extends Component {
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalTutorial} closemodal={() => this.setState({ showModalTutorial: false })} type="pulse" ><iframe style={{height:"100vh"}} src="https://gateway.pinata.cloud/ipfs/QmStW8PBZjxjSkwnxvr15rHvRajCUkPRMEJGQejQu8EE4W" /></Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showQrModal} closemodal={() => this.setState({ showQrModal: false })} type="pulse" ><QRCode size={128} value={this.state.account} onClick={() => { this.setState({qIsOpen: true})}}/><br/>{this.state.account}</Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showCardModal} closemodal={() => this.setState({ showCardModal: false })} type="pulse" > {myCard}</Modal>
+      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
       <Terminal
         style={{"minHeight":"75vh",backgroundColor: "#000"}}
         dangerMode={false}
@@ -396,6 +406,13 @@ export default class MyTerminal extends Component {
                       this.setState({showQrModal:true});
               }
             },
+            prd: {
+              description: 'Display product information for UPC',
+              fn: () => {
+                      this.setState({showProductModal:true});
+              }
+            },
+
             hero: {
               description: 'Display hero for this UPC',
               fn: () => {
