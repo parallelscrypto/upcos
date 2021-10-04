@@ -423,6 +423,8 @@ export default class MyTerminal extends Component {
             prd: {
               description: 'Display product information for UPC',
               fn: () => {
+                      const terminal = this.progressTerminal.current
+                      terminal.pushToStdout(`Please wait... searching for data on upc # ${this.state.account}`);
                       this.prodLookup(this.state.account);
                       //this.setState({showProductModal:true});
               }
