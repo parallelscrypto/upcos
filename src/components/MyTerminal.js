@@ -92,7 +92,7 @@ export default class MyTerminal extends Component {
         <p><img src={srcImg} height="200" width="200"/></p>
 	<p><QRCode size={128} value={cardValueStr} onClick={() => { this.setState({qIsOpen: true})}}/></p>
     </div>
-    var myProduct = <iframe srcDoc={this.state.showProductContent}> </iframe>
+    var myProduct = <iframe srcDoc={this.state.showProductContent} style={{height:"100vh", width:"100vw"}}> </iframe>
 
 
     return (
