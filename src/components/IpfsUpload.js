@@ -53,8 +53,10 @@ console.log(this.state.file);
 
   render () {
     return (
-
       <div>
+	  <p>Your hash is: {this.state.uploadHash}!</p>
+	  <p>Copy the hash above and execute the command `xipfs /ipfs/` plus the text below</p>
+	  <p>For example if your hash is 'abcd', go to terminal and type `xipfs /ipfs/abcd`.  This will  assign your upload to your upc</p>
           <input id="upload" ref="upload" type="file"
                      onChange={(event)=> { 
                          this.getBase64(event) 
