@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Terminal from 'react-console-emulator'
 import ScratchCard from './ScratchCard'
+import IpfsUpload from './IpfsUpload'
 import Modal from "react-animated-modal";
 import Iframe from 'react-iframe';
 import axios from "axios";
@@ -34,6 +35,7 @@ export default class MyTerminal extends Component {
        showModal: false,
        showModalBuy: false,
        showCardModal: false,
+       showUploadModal: false,
        showProductModal: false,
        showProductContent: '',
        showModalTutorial: false,
@@ -95,6 +97,11 @@ export default class MyTerminal extends Component {
     var myProduct = <iframe srcDoc={this.state.showProductContent} style={{height:"100vh", width:"100vw"}}> </iframe>
 
 
+    var myUpload = <IpfsUpload /> 
+
+
+
+
     return (
       <div>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModal} closemodal={() => this.setState({ showModal: false })} type="pulse" >{this.state.vrLink}</Modal>
@@ -103,6 +110,7 @@ export default class MyTerminal extends Component {
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showQrModal} closemodal={() => this.setState({ showQrModal: false })} type="pulse" ><QRCode size={128} value={this.state.account} onClick={() => { this.setState({qIsOpen: true})}}/><br/>{this.state.account}</Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showCardModal} closemodal={() => this.setState({ showCardModal: false })} type="pulse" > {myCard}</Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
+      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showUploadModal} closemodal={() => this.setState({ showUploadModal: false })} type="pulse" > {myUpload}</Modal>
       <Terminal
         style={{"minHeight":"75vh",backgroundColor: "#000"}}
         dangerMode={false}
@@ -420,7 +428,7 @@ export default class MyTerminal extends Component {
                       this.setState({showQrModal:true});
               }
             },
-            prd: {
+            411: {
               description: 'Display product information for UPC',
               fn: () => {
                       const terminal = this.progressTerminal.current
@@ -429,7 +437,13 @@ export default class MyTerminal extends Component {
                       //this.setState({showProductModal:true});
               }
             },
-
+            up: {
+              description: 'Upload a file to ipfs',
+              fn: () => {
+                      this.setState({showUploadModal:true});
+              }
+            },
+           
             hero: {
               description: 'Display hero for this UPC',
               fn: () => {
