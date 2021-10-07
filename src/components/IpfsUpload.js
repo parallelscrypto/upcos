@@ -1,28 +1,59 @@
 import ReactFileReader from 'react-file-reader';
+import Modal from "react-animated-modal";
+import {CopyToClipboard} from 'react-copy-to-clipboard';
 const React = require('react')
-const ipfsClient = require('ipfs-http-client')
-const axios = require('axios');
 const FormData = require('form-data');
 
 export default class IpfsUpload extends React.Component {
   constructor () {
     super()
     this.state = {
-      added_file_hash: null,
+      uploadHash: "",
+      uploadButton: "",
       imgUpload: null,
       file: null,
+      showUploaderModal: false,
     }
-    this.ipfs = ipfsClient('/ip4/127.0.0.1/tcp/5001')
 
     // bind methods
     this.pinFileToIPFS= this.pinFileToIPFS.bind(this)
     this.getBase64= this.getBase64.bind(this)
+    this.getUploadHash= this.getUploadHash.bind(this)
+    this.getUploadButton= this.getUploadButton.bind(this)
   }
 
   async pinFileToIPFS() {
 
-console.log(this.state.file);
+       this.setState({
+           uploadHash: "Uploading..."
+       });
+
        var xmlHttpRequest = new XMLHttpRequest();
+       var  self =  this;
+       xmlHttpRequest.onreadystatechange = function() {
+           if (xmlHttpRequest.readyState == XMLHttpRequest.DONE) {
+	       var resp = JSON.parse(xmlHttpRequest.responseText);
+               var fullIpfsPaste =  "xipfs ipfs/"  +  resp.IpfsHash;
+               var  respMessage = 
+                    <div>
+                       <p><b>Your hash is {resp.IpfsHash} </b></p>
+                       <CopyToClipboard text={fullIpfsPaste}
+                         onCopy={() => self.setState({copied: true})}>
+                         <button>Copy to clipboard with button</button>
+                       </CopyToClipboard>
+                       <p>Copy/Paste above command into terminal to assign current upload to this UPC</p>
+                    </div>
+
+
+
+               self.setState({
+                   uploadHash: respMessage
+               });
+           }
+       }
+
+
+
        xmlHttpRequest.open("POST", 'https://cors.bridged.cc/https://api.pinata.cloud/pinning/pinFileToIPFS', true);
        xmlHttpRequest.setRequestHeader("pinata_api_key", "981ec5b37a624a6c6126");
        xmlHttpRequest.setRequestHeader("pinata_secret_api_key", "b637f14db8620f6e16b3b079a74b95b9b0b82d8007432f6f54e0d8af921d2c31");
@@ -31,17 +62,31 @@ console.log(this.state.file);
        xmlHttpRequest.setRequestHeader("Access-Control-Allow-Origin", "*");
        var formData = new FormData();
        formData.append("file", this.state.file);
-       xmlHttpRequest.send(formData);
+       await xmlHttpRequest.send(formData);
+       var resp = xmlHttpRequest.response
   };
+
+  getUploadButton() {
+     return this.state.uploadButton;
+  }
+
+  getUploadHash() {
+     return this.state.uploadHash;
+  }
+
 
   getBase64(e) {
     var file = e.target.files[0]
     let reader = new FileReader()
     reader.readAsDataURL(file)
     reader.onload = () => {
+
+     var uplButton =  <button onClick={() => this.pinFileToIPFS()}> Upload </button>
+
       this.setState({
         imgUpload: reader.result,
         file: file,
+        uploadButton: uplButton,
       })
       console.log(reader.result)
     };
@@ -52,19 +97,21 @@ console.log(this.state.file);
 
 
   render () {
+    var uploadHash = this.getUploadHash();
+    var uploadButton = this.getUploadButton();
     return (
       <div>
-	  <p>Your hash is: {this.state.uploadHash}!</p>
-	  <p>Copy the hash above and execute the command `xipfs /ipfs/` plus the text below</p>
-	  <p>For example if your hash is 'abcd', go to terminal and type `xipfs /ipfs/abcd`.  This will  assign your upload to your upc</p>
+<Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showUploaderModal} closemodal={() => this.setState({ showUploaderModal: false })} type="pulse" > {this.state.uploader}</Modal>
+
+        <h2>Pick a file to upload</h2>
+        <p>{uploadHash}</p>
+
           <input id="upload" ref="upload" type="file"
                      onChange={(event)=> { 
                          this.getBase64(event) 
                     }}
           />
-          <button onClick={() => this.pinFileToIPFS()}>
-              Upload
-          </button>
+        {uploadButton}
       </div>
     )
   }
