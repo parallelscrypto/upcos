@@ -32,8 +32,9 @@ export default class IpfsUpload extends React.Component {
        var  self =  this;
        xmlHttpRequest.onreadystatechange = function() {
            if (xmlHttpRequest.readyState == XMLHttpRequest.DONE) {
+	       var filename = self.state.file.name;
 	       var resp = JSON.parse(xmlHttpRequest.responseText);
-               var fullIpfsPaste =  "xipfs ipfs/"  +  resp.IpfsHash;
+               var fullIpfsPaste =  "xipfs ipfs/"  +  resp.IpfsHash + "/" + filename;
                var  respMessage = 
                     <div>
                        <p><b>Your hash is {resp.IpfsHash} </b></p>
@@ -61,7 +62,10 @@ export default class IpfsUpload extends React.Component {
        xmlHttpRequest.setRequestHeader("Conteht-Type", "multipart/form-data");
        xmlHttpRequest.setRequestHeader("Access-Control-Allow-Origin", "*");
        var formData = new FormData();
+       var pinOptions = {"wrapWithDirectory": true}
+
        formData.append("file", this.state.file);
+       formData.append("pinataOptions", JSON.stringify(pinOptions));
        await xmlHttpRequest.send(formData);
        var resp = xmlHttpRequest.response
   };
@@ -88,7 +92,6 @@ export default class IpfsUpload extends React.Component {
         file: file,
         uploadButton: uplButton,
       })
-      console.log(reader.result)
     };
     reader.onerror = function (error) {
       console.log('Error: ', error);
