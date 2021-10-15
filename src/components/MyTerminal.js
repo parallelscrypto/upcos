@@ -65,7 +65,7 @@ export default class MyTerminal extends Component {
     }
 
 
-    xhr.open('GET', 'https://cors.bridged.cc/https://www.upcitemdb.com/upc/' + upc );
+    xhr.open('GET', 'https://competent-kowalevski-330f95.netlify.app/.netlify/functions/cors/https://www.upcitemdb.com/upc/' + upc );
     xhr.responseType = 'document';
     xhr.send();
   }

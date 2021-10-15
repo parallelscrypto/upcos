@@ -55,7 +55,7 @@ export default class IpfsUpload extends React.Component {
 
 
 
-       xmlHttpRequest.open("POST", 'https://cors.bridged.cc/https://api.pinata.cloud/pinning/pinFileToIPFS', true);
+       xmlHttpRequest.open("POST", 'https://competent-kowalevski-330f95.netlify.app/.netlify/functions/cors/https://api.pinata.cloud/pinning/pinFileToIPFS', true);
        xmlHttpRequest.setRequestHeader("pinata_api_key", "981ec5b37a624a6c6126");
        xmlHttpRequest.setRequestHeader("pinata_secret_api_key", "b637f14db8620f6e16b3b079a74b95b9b0b82d8007432f6f54e0d8af921d2c31");
        xmlHttpRequest.setRequestHeader("Content-Disposition", "form-data");
