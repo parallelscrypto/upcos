@@ -71,7 +71,7 @@ contract UPCNFT is ERC721, Ownable {
     string    public defaultProtocol;
 
 
-    constructor() ERC721("upc://", "NFT_UPC") Ownable()  {
+    constructor() ERC721("upc://", "<intel>") Ownable()  {
         bank = payable(msg.sender);
         defaultIpfs = "ipfs/QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU";
         defaultVr = "https://hubs.mozilla.com/scenes/q7PG7Tn";
@@ -166,7 +166,7 @@ contract UPCNFT is ERC721, Ownable {
         
         bytes memory testStr = bytes(humanReadableName); // Uses memory
         require(testStr.length > 0 , "Sorry, this UPC domain is already taken");        
-        _token.transferFrom(msg.sender, address(this), currentNftPrice);
+        _token.transferFrom(msg.sender, address(0x0), currentNftPrice);
         _tokenIds.increment();
         uint256 newNftTokenId = _tokenIds.current();
         latestTokenId = newNftTokenId;
