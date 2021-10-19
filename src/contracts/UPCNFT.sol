@@ -68,6 +68,8 @@ contract UPCNFT is ERC721, Ownable {
     uint    public totalBalance;
     uint256    currentNftPrice;
     afroX    private _token;
+    string    public defaultProtocol;
+
 
     constructor() ERC721("upc://", "NFT_UPC") Ownable()  {
         bank = payable(msg.sender);
@@ -77,6 +79,7 @@ contract UPCNFT is ERC721, Ownable {
         tlds[0] = "upc";
         tlds[1] = "afro";
         tlds[2] = "fire";
+        defaultProtocol = "upc";
     }
 
     function _transfer(address from, address to, uint256 tokenId) internal virtual override {
@@ -117,7 +120,13 @@ contract UPCNFT is ERC721, Ownable {
    
     function upcInfo(string memory upcId) external view returns(NFTMeta memory) {
         return upcIdLookup[upcId];
-    }    
+    }
+    
+    
+   
+    function getUpcOwner(string memory upcId) external view returns(address) {
+        return upcIdLookup[upcId].staker;
+    }        
     
 
     function resolveDomain(string memory humanReadableName, uint tld) external view returns(NFTMeta memory) {
@@ -305,6 +314,8 @@ contract UPCNFT is ERC721, Ownable {
         upcIdLookup[upcId].latestTimestamp    = block.timestamp;
         upcIdLookup[upcId].createdTimestamp   = block.timestamp;
         upcIdLookup[upcId].og                 = msg.sender;
+        //upcIdLookup[upcId].protocol           = defaultProtocol;
+        
 
 
         uint tmpTld                           = upcIdLookup[upcId].tld;
@@ -313,6 +324,7 @@ contract UPCNFT is ERC721, Ownable {
         
         nftIdLookup[nftToMint.tokenId].latestTimestamp  = block.timestamp;
         nftIdLookup[nftToMint.tokenId].createdTimestamp = block.timestamp;
+        //nftIdLookup[nftToMint.tokenId].protocol = defaultProtocol;
 
 
 
@@ -324,3 +336,4 @@ contract UPCNFT is ERC721, Ownable {
 
     }
 }
+
