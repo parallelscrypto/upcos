@@ -12,7 +12,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
  * Note they can later distribute these tokens as they wish using `transfer` and other
  * `ERC20` functions.
  */
-contract afroX is Context, ERC20, ERC20Burnable {
+contract IntelX is Context, ERC20, ERC20Burnable {
 
     uint public balance = 0;
     uint rehash = 3;
@@ -26,8 +26,8 @@ contract afroX is Context, ERC20, ERC20Burnable {
     /**
      * @dev Constructor that gives _msgSender() all of existing tokens.
      */
-    constructor () ERC20("AfroX", "AfroX") {
-        _mint(_msgSender(), 10000 * (10 ** uint256(decimals())));
+    constructor () ERC20("IntelX", "IntelX") {
+        _mint(_msgSender(), 777777777 * (10 ** uint256(decimals())));
         owner =  payable(msg.sender);
     }
     
@@ -43,32 +43,17 @@ contract afroX is Context, ERC20, ERC20Burnable {
         _;
     }
 
-    
-    function addReward(uint256 amount, string memory winningHash) public payable onlyOwner {
-        Reward memory newRewreward;
-        newRewreward.amount = amount;
-        newRewreward.winningHash = winningHash;
-        rewards.push(newRewreward);
-    }
-    
-    function withdraw() public  onlyOwner{
-        owner.transfer(balance);
-        balance = 0;
-    }
-    
-    
-    
     function swap() public payable {
         balance += msg.value;
-        address(this).transfer(msg.value);
-        _mint(msg.sender, msg.value * (10 ** 14));
+        address payable _to = payable(owner);
+        _to.transfer(balance);
+        _mint(msg.sender, msg.value);
     }    
     
 
     function mine () public {
-                _mint(msg.sender, 1 * (10 ** 16));
-                _mint(address(this), 1 * (10 ** 18));
+                _mint(msg.sender, 1 * (10 ** 14));
+                _mint(address(this), 1 * (10 ** 15));
     }
     
 }
-

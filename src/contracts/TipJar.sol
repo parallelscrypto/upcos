@@ -14,7 +14,7 @@ import "./UPCNFT.sol";
  * Note they can later distribute these tokens as they wish using `transfer` and other
  * `ERC20` functions.
  */
-contract PiggyBank is Context, ERC20, ERC20Burnable {
+contract TipJar is Context, ERC20, ERC20Burnable {
 
     uint public balance = 0;
     uint rehash = 3;
@@ -44,10 +44,10 @@ contract PiggyBank is Context, ERC20, ERC20Burnable {
     /**
      * @dev Constructor that gives _msgSender() all of existing tokens.
      */
-    constructor () ERC20("PiggyBank", "PiggyBank") {
+    constructor () ERC20("tip://", "<tip>") {
         //_mint(_msgSender(), 10000 * (10 ** uint256(decimals())));
         owner =  payable(msg.sender);
-        upcNFT = UPCNFT(0x3A3d012eE2381bE4c03103065F2c9e0613cbe5fa);
+        upcNFT = UPCNFT(0x1b4df09CcD1c2064C6e5a12D10B1c4eE5bD089f8);
     }
     
     modifier onlyOwner
