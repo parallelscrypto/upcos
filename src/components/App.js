@@ -7,7 +7,7 @@ import xUPC from '../abis/xUPC.json'
 import piggy from '../abis/TipJar.json'
 import intelX from '../abis/intelX.json'
 import AQWB from '../abis/AQWB.json'
-import AfroMine from '../abis/AfroMine.json'
+import UpcDAO from '../abis/UpcDAO.json'
 import Navbar from './Navbar'
 import VideoBackground from './VideoBackground'
 import Leases from './Leases'
@@ -49,10 +49,10 @@ class App extends Component {
       //window.alert('UPCNFT contract not deployed to detected network.')
     }
 
-    // Load AfroMine
-    const afroMineNFTData = AfroMine.networks[networkId]
+    // Load UpcDAO
+    const afroMineNFTData = UpcDAO.networks[networkId]
     if(afroMineNFTData) {
-      const afroMineNft = new web3.eth.Contract(AfroMine.abi, afroMineNFTData.address)
+      const afroMineNft = new web3.eth.Contract(UpcDAO.abi, afroMineNFTData.address)
       this.setState({ afroMineNft })
       this.setState({ afroMineNFTData: afroMineNFTData })
     } else {
