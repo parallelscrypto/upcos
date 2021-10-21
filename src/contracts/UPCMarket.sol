@@ -51,7 +51,13 @@ contract UPCMarket is IERC721Receiver {
         auctionDetails[auctionId].winningBidder = msg.sender;
         auctionDetails[auctionId].bidIsComplete = true;
         auctionDetails[auctionId].inProgress = false;
+        details.nftContract.safeTransferFrom(address(this), msg.sender, auctionId);
         
+        address payable  winnerPay  = payable(details.seller);
+        winnerPay.transfer(msg.value);
+        // Send money to seller
+        // Do event logging
+        delete auctionDetails[auctionId];      
     }
  
      
@@ -77,24 +83,5 @@ contract UPCMarket is IERC721Receiver {
         
         delete auctionDetails[auctionId];
     }
-        
-    
-    //winning bidder calls the withdraw function
-    function collectNft(uint256 auctionId) external {
-        AuctionDetails storage details = auctionDetails[auctionId];
-
-        require(details.bidIsComplete == true , "bid not complete");
-        require(msg.sender == details.winningBidder, "Only winning bidder can collect token");
-        // Collect money from winning bidder
-
-        details.nftContract.safeTransferFrom(address(this), details.winningBidder, details.tokenId);
-        
-        address payable  winnerPay  = payable(details.seller);
-        winnerPay.transfer(details.price);
-        // Send money to seller
-        // Do event logging
-        delete auctionDetails[auctionId];
-    }
     
 }
-
