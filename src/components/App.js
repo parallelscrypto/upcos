@@ -8,6 +8,7 @@ import piggy from '../abis/TipJar.json'
 import intelX from '../abis/intelX.json'
 import AQWB from '../abis/AQWB.json'
 import UpcDAO from '../abis/UpcDAO.json'
+import UPCMarket from '../abis/UPCMarket.json'
 import Navbar from './Navbar'
 import VideoBackground from './VideoBackground'
 import Leases from './Leases'
@@ -19,6 +20,7 @@ import Intel from './Intel'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './App.css'
 import 'react-tabs/style/react-tabs.css';
+const market_address = "0x5Cd036705fd68468a8dEFdBD812dfd30e467015B";
 
 class App extends Component {
 
@@ -58,6 +60,17 @@ class App extends Component {
     } else {
       //window.alert('UPCNFT contract not deployed to detected network.')
     }
+
+    // Load UPCMarket
+    const upcMarketData = UPCMarket.networks[networkId]
+    if(upcMarketData) {
+      const upcMarket = new web3.eth.Contract(UPCMarket.abi, upcMarketData.address)
+      this.setState({ upcMarket })
+      this.setState({ upcMarketData: upcMarketData })
+    } else {
+      //window.alert('UPCNFT contract not deployed to detected network.')
+    }
+
 
 
 
@@ -142,6 +155,66 @@ class App extends Component {
          this.setState({ loading: false })
       })
   };
+
+
+  getSaleInfo = async (nftId) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.upcMarket.methods.auctionDetails(nftId).call({ from: this.state.account });
+  };
+
+
+
+  setMarketPrice = async (nftId, price) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    var result = await this.state.upcMarket.methods.setPrice(nftId, price).send({ from: this.state.account})
+    return result.toString();
+  };
+
+
+  sendToMarket = async (nftId) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    var result = await this.state.upcNft.methods.safeTransferFrom(this.state.account, market_address, nftId).send({ from: this.state.account})
+    return result.toString();
+  };
+
+  buyFromMarket = async (nftId,amount) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    var result = await this.state.upcMarket.methods.completeSale(nftId).send({ value: amount, from: this.state.account})
+    return result.toString();
+  };
+
+
+
+  collectFromMarket = async (nftId) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    var result = await this.state.upcMarket.methods.collectNft(nftId).send({from: this.state.account})
+    return result.toString();
+  };
+
+
+
+
+
 
 
   getVrByUpcId = async (upcId) => {
@@ -436,6 +509,11 @@ class App extends Component {
     this.pbal= this.pbal.bind(this);
     this.pigin = this.pigin.bind(this);
     this.pigout = this.pigout.bind(this);
+    this.setMarketPrice= this.setMarketPrice.bind(this);
+    this.sendToMarket= this.sendToMarket.bind(this);
+    this.buyFromMarket= this.buyFromMarket.bind(this);
+    this.collectFromMarket= this.collectFromMarket.bind(this);
+    this.getSaleInfo= this.getSaleInfo.bind(this);
   }
 
   render() {
@@ -480,7 +558,12 @@ class App extends Component {
 	pbal={this.pbal}
 	pigin={this.pigin}
 	pigout={this.pigout}
+	setMarketPrice={this.setMarketPrice}
+	sendToMarket={this.sendToMarket}
+	buyFromMarket={this.buyFromMarket}
+	collectFromMarket={this.collectFromMarket}
 	getMyNfts={this.getMyNfts}
+	getSaleInfo={this.getSaleInfo}
 	setVr={this.setVr}
 	setIpfs={this.setIpfs}
 	upcInfo={this.upcInfo}

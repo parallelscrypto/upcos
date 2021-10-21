@@ -13,6 +13,7 @@ contract UPCMarket is IERC721Receiver {
         address winningBidder;
         uint256 tokenId;
         uint256 price;
+        bool inProgress;
     }    
 
     mapping (uint256 => AuctionDetails) public auctionDetails;
@@ -33,6 +34,7 @@ contract UPCMarket is IERC721Receiver {
             seller: _from,
             winningBidder: address(0),
             tokenId: _tokenId,
+            inProgress: false,
             price: 10000000000000000
         });
         
@@ -43,10 +45,13 @@ contract UPCMarket is IERC721Receiver {
      
     function completeSale(uint256 auctionId) payable external {
         AuctionDetails storage details = auctionDetails[auctionId];
+        require(details.inProgress == true, "Sale not in progress yet.  Initial price not set");
         require(msg.value >= details.price, "Please send sufficient number of tokens");
         auctionDetails[auctionId].price = msg.value;
         auctionDetails[auctionId].winningBidder = msg.sender;
         auctionDetails[auctionId].bidIsComplete = true;
+        auctionDetails[auctionId].inProgress = false;
+        
     }
  
      
@@ -57,6 +62,7 @@ contract UPCMarket is IERC721Receiver {
         require(details.bidIsComplete == false , "Sale must be ongoing in order to set price");
         // Collect money from winning bidder
         auctionDetails[auctionId].price = price;
+        auctionDetails[auctionId].inProgress = true;
     }
     
     //winning bidder calls the withdraw function

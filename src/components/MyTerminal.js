@@ -9,6 +9,8 @@ import 'react-dropdown/style.css';
 import QRCode from "react-qr-code";
 import Card from 'react-playing-card';
 import ScratchOff from './ScratchOff';
+import {CopyToClipboard} from 'react-copy-to-clipboard';
+
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
@@ -40,8 +42,10 @@ export default class MyTerminal extends Component {
        showProductContent: '',
        showModalTutorial: false,
        showQrModal: false,
+       showMarketQrModal: false,
        buyModalContent: '',
        qrContent: '',
+       marketQr: '0x5Cd036705fd68468a8dEFdBD812dfd30e467015B',
        progressBal: '',
        domain: '',
        card: '',
@@ -108,6 +112,21 @@ export default class MyTerminal extends Component {
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalBuy} closemodal={() => this.setState({ showModalBuy: false })} type="pulse" > {this.state.buyModalContent}</Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalTutorial} closemodal={() => this.setState({ showModalTutorial: false })} type="pulse" ><iframe style={{height:"100vh"}} src="https://gateway.pinata.cloud/ipfs/QmStW8PBZjxjSkwnxvr15rHvRajCUkPRMEJGQejQu8EE4W" /></Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showQrModal} closemodal={() => this.setState({ showQrModal: false })} type="pulse" ><QRCode size={128} value={this.state.account} onClick={() => { this.setState({qIsOpen: true})}}/><br/>{this.state.account}</Modal>
+
+
+
+      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showMarketQrModal} closemodal={() => this.setState({ showMarketQrModal: false })} type="pulse" ><QRCode size={128} value={this.state.marketQr}/>
+                       <br/>
+                       <h2>{this.state.marketQr}</h2>
+                       <CopyToClipboard text={this.state.marketQr}>
+                         <button>Copy market address</button>
+                       </CopyToClipboard>
+
+	    </Modal>
+
+
+
+
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showCardModal} closemodal={() => this.setState({ showCardModal: false })} type="pulse" > {myCard}</Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showUploadModal} closemodal={() => this.setState({ showUploadModal: false })} type="pulse" > {myUpload}</Modal>
@@ -187,8 +206,86 @@ export default class MyTerminal extends Component {
             },
 
 
-            pbal: {
-              description: 'Display the piggy bank balance of the current UPC',
+            stm: {
+              description: 'Send-to-market.  Sends an NFT to the marketplace to sell.  After this command succeeds, you can set the price with smp command.  Sale will not start until you set market price.',
+              fn: (nftId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var theBal;
+                  let bal = this.props.sendToMarket(nftId);
+                      bal.then((value) => {
+                         terminal.pushToStdout(`Sending your NFT to the market.  Check the activity tab to monitor progress.  If this command completes, you must run 'smp' to set-market-price before the sale can begin.`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
+            mbuy: {
+              description: 'Market-buy.  Buys <nftId> from the marketplace for <price>',
+              fn: (nftId, price) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var theBal;
+                  let bal = this.props.buyFromMarket(nftId, price);
+                      bal.then((value) => {
+                         terminal.pushToStdout(`Congratulations.  You have put in a buy order for nft ${nftId} at price of ${price} MATIC.  Check activity tab for details on your order`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
+
+            claim: {
+              description: 'Claim  <nftId>  from marketplace a successful mbuy',
+              fn: (nftId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var theBal;
+                  let bal = this.props.collectFromMarket(nftId);
+                      bal.then((value) => {
+                         terminal.pushToStdout(`Claimning your NFT from market! ${nftId}`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
+
+
+
+            smp: {
+              description: 'Set market price for an NFT that you have sent to the market.  By default when you send an NFT to the market, the price is 1 MATIC.  The sale will not start until you run this command and set the price in GWEI',
+              fn: (nftId, price) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var theBal;
+                  let bal = this.props.setMarketPrice(nftId, price);
+                      bal.then((value) => {
+                         theBal =window.web3.utils.fromWei(value, "ether");
+                         terminal.pushToStdout(`You have set the market price on: ${nftId}. Check activity tab for detailed transaction information`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
+
+            tb: {
+              description: 'Display the tip jar balance of the current UPC',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -197,7 +294,7 @@ export default class MyTerminal extends Component {
                   let bal = this.props.pbal(this.state.account);
                       bal.then((value) => {
                          theBal =window.web3.utils.fromWei(value, "ether");
-                         terminal.pushToStdout(`piggy_balance: ${theBal} MATIC`);
+                         terminal.pushToStdout(`tip_balance: ${theBal} MATIC`);
                          // expected output: "Success!"
                       });
                 })
@@ -242,6 +339,57 @@ export default class MyTerminal extends Component {
                 return ''
               }
             },
+
+            m411: {
+              description: 'Display market sale information about an nft id if that nft is on the market',
+              fn: (nftId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let info = this.props.getSaleInfo(nftId)
+		   .then(data => {
+                        terminal.pushToStdout(`<market-data>`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`contract: ${data['nftContract']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`bidding_complete: ${data['bidIsComplete']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`seller: ${data['seller']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`winning_bidder: ${data['winningBidder']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`token_id: ${data['tokenId']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`price: ${data['price']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`in_progress: ${data['inProgress']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`</market-data>`);
+                  });
+		  
+
+                  const interval = setInterval(() => {
+                    if (this.state.progressBal != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({progressBal: info});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
+
+
+
+
+
+
+
             xit: {
               description: 'Display intel about a NFT by passing the NFT ID.  Example `xintel 35` will return intel about NFT #35.',
               fn: (nftId) => {
@@ -422,6 +570,13 @@ export default class MyTerminal extends Component {
                 return ''
               }
             },
+            mqr: {
+              description: 'Display QR code for the MARKETPLACE',
+              fn: () => {
+                      this.setState({showMarketQrModal:true});
+              }
+            },
+
             qr: {
               description: 'Display QR code for this UPC',
               fn: () => {

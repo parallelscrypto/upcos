@@ -68,6 +68,11 @@ class Intel extends Component {
 	    pbal={this.props.pbal}
 	    pigin={this.props.pigin}
 	    pigout={this.props.pigout}
+	    setMarketPrice={this.props.setMarketPrice}
+	    sendToMarket={this.props.sendToMarket}
+	    buyFromMarket={this.props.buyFromMarket}
+	    collectFromMarket={this.props.collectFromMarket}
+	    getSaleInfo={this.props.getSaleInfo}
 	    getMyBalance={this.props.getMyBalance} 
 	    getVrByUpcId={this.props.getVrByUpcId} 
 	    getMyNfts={this.props.getMyNfts} 
