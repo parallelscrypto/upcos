@@ -30,23 +30,9 @@ contract IntelX is Context, ERC20, ERC20Burnable {
         _mint(_msgSender(), 777777777 * (10 ** uint256(decimals())));
         owner =  payable(msg.sender);
     }
-    
-    modifier onlyOwner
-    {
-        require(
-            msg.sender == owner,
-            "Sender not authorized."
-        );
-        // Do not forget the "_;"! It will
-        // be replaced by the actual function
-        // body when the modifier is used.
-        _;
-    }
 
     function swap() public payable {
-        balance += msg.value;
-        address payable _to = payable(owner);
-        _to.transfer(balance);
+        owner.transfer(msg.value);
         _mint(msg.sender, msg.value);
     }    
     
