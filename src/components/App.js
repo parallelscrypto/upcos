@@ -349,6 +349,35 @@ class App extends Component {
 
 
 
+  upcInfoNav = async (upcId) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.snbNft.methods.upcInfo(upcId).call({ from: this.state.account });
+  };
+
+  latestTokenIdNav = async (upcId) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.snbNft.methods.latestTokenId().call({ from: this.state.account });
+  };
+
+  nftInfoNav = async (nftId) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.snbNft.methods.nftInfo(nftId).call({ from: this.state.account });
+  };
+
+
+
 
 
 
@@ -578,6 +607,10 @@ class App extends Component {
     this.upcInfo= this.upcInfo.bind(this);
     this.nftInfo= this.nftInfo.bind(this);
     this.latestTokenId= this.latestTokenId.bind(this);
+    this.upcInfoNav= this.upcInfoNav.bind(this);
+    this.nftInfoNav= this.nftInfoNav.bind(this);
+    this.latestTokenIdNav= this.latestTokenIdNav.bind(this);
+
     this.pbal= this.pbal.bind(this);
     this.pigin = this.pigin.bind(this);
     this.pigout = this.pigout.bind(this);
@@ -643,6 +676,11 @@ class App extends Component {
 	getSaleInfo={this.getSaleInfo}
 	setVr={this.setVr}
 	setIpfs={this.setIpfs}
+
+	upcInfoNav={this.upcInfoNav}
+	nftInfoNav={this.nftInfoNav}
+	latestTokenIdNav={this.latestTokenIdNav}
+
 	upcInfo={this.upcInfo}
 	nftInfo={this.nftInfo}
 	latestTokenId={this.latestTokenId}

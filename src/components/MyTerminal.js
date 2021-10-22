@@ -265,9 +265,29 @@ export default class MyTerminal extends Component {
               }
             },
 
+            slast : {
+              description: 'Display the highest NFT ID in the SuperNavalnyBrothers (SNB) collection',
+              fn: () => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var latest;
+                  let bal = this.props.latestTokenIdNav();
+                      bal.then((value) => {
+                         latest = value;
+                         terminal.pushToStdout(`latest_id: ${latest}`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
+
 
             last : {
-              description: 'Display the highest NFT ID in the collection (smart contract)',
+              description: 'Display the highest NFT ID in the UPC collection',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -343,8 +363,8 @@ export default class MyTerminal extends Component {
             },
 
 
-            tb: {
-              description: 'Display the tip jar balance of the current UPC',
+            ab: {
+              description: 'Display the Guardian Angel tip jar balance of the current UPC',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -353,7 +373,7 @@ export default class MyTerminal extends Component {
                   let bal = this.props.pbal(this.state.account);
                       bal.then((value) => {
                          theBal =window.web3.utils.fromWei(value, "ether");
-                         terminal.pushToStdout(`tip_balance: ${theBal} MATIC`);
+                         terminal.pushToStdout(`angel_balance: ${theBal} MATIC`);
                          // expected output: "Success!"
                       });
                 })
@@ -363,16 +383,16 @@ export default class MyTerminal extends Component {
             },
 
 
-            pigin: {
-		    description: 'Inject POLY into current UPC. Example: Type `pigin 1000000000000000000` to inject 1 POLY to current UPC.  You can inject into any UPC regardless of ownership',
-              fn: (amount) => {
+            angel: {
+		    description: 'Be a guardian angel by injecting POLY into a UPC. Example: Type `ga 1000000000000000000` to inject 1 POLY to current UPC. Whoever owns the UPC can then withdraw it with the `tyvm` command',
+              fn: (upcId, amount) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
                   const terminal = this.progressTerminal.current
                   var theBal;
-                  let bal = this.props.pigin(this.state.account,amount);
-                      bal.then((value) => {
-                         terminal.pushToStdout(`Deposit (pigin) complete! Type pbal to see your piggy balance`);
+                  let bal = this.props.pigin(upcId, amount);
+                      bal.then((amount, value) => {
+                         terminal.pushToStdout(`Thank you for being an Underground Angel! Type ab to see your angel balance`);
                          // expected output: "Success!"
                       });
                 })
@@ -381,8 +401,8 @@ export default class MyTerminal extends Component {
               }
             },
 
-            pigout: {
-              description: 'Withdraw all POLY from a UPC if you own the NFT for the UPC',
+            tyvm: {
+              description: 'Say Thank YOU! and Withdraw all POLY from a UPC if you own the NFT for the UPC',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -390,7 +410,7 @@ export default class MyTerminal extends Component {
                   var theBal;
                   let bal = this.props.pigout(this.state.account);
                       bal.then((value) => {
-                         terminal.pushToStdout(`Withdrawal (pigout) complete! Type pbal to see your piggy balance`);
+                         terminal.pushToStdout(`Your balance has increased thanks to a Guardian Angel! TYVM Guardian Angel!`);
                          // expected output: "Success!"
                       });
                 })
@@ -443,13 +463,70 @@ export default class MyTerminal extends Component {
               }
             },
 
+            snxi: {
+              description: 'Display intel about a NFT by passing the NFT ID.  Example `xintel 35` will return intel about NFT #35.',
+              fn: (nftId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let info = this.props.nftInfoNav(nftId)
+		   .then(data => {
+
+			var tmpStamp = parseInt(data['latestTimestamp']);
+                        var newDate = new Date(tmpStamp * 1000);
+
+			var tmpStamp = parseInt(data['createdTimestamp']);
+                        var created = new Date(tmpStamp * 1000);
+
+                        terminal.pushToStdout(`<xintel>`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`og_owner: ${data['og']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`owner: ${data['staker']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`tld: ${data['tld']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`token_id: ${data['tokenId']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`upc: ${data['word']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`minted: ${data['minted']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`vr: ${data['vr']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`created_date: ${created.toString()}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`</xintel>`);
+                  });
+		  
+
+                  const interval = setInterval(() => {
+                    if (this.state.progressBal != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({progressBal: info});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
 
 
 
-
-
-
-            xit: {
+            xi: {
               description: 'Display intel about a NFT by passing the NFT ID.  Example `xintel 35` will return intel about NFT #35.',
               fn: (nftId) => {
                 this.setState({progressBal: ''});
@@ -570,7 +647,68 @@ export default class MyTerminal extends Component {
               }
             },
 
-            it: {
+
+            sni: {
+              description: 'Display intel from context of the current UPC terminal',
+              fn: () => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let info = this.props.upcInfoNav(this.state.account)
+		   .then(data => {
+			var tmpStamp = parseInt(data['latestTimestamp']);
+                        var newDate = new Date(tmpStamp * 1000);
+
+			var tmpStamp = parseInt(data['createdTimestamp']);
+                        var created = new Date(tmpStamp * 1000);
+
+                        terminal.pushToStdout(`<intel>`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`og_owner: ${data['og']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`owner: ${data['staker']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`tld: ${data['tld']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`token_id: ${data['tokenId']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`upc: ${data['word']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`minted: ${data['minted']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`vr: ${data['vr']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`created_date: ${created.toString()}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`</intel>`);
+                  });
+		  
+
+                  const interval = setInterval(() => {
+                    if (this.state.progressBal != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({progressBal: info});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
+
+            i: {
               description: 'Display intel from context of the current UPC terminal',
               fn: () => {
                 this.setState({progressBal: ''});
@@ -629,6 +767,10 @@ export default class MyTerminal extends Component {
                 return ''
               }
             },
+
+
+
+
             mqr: {
               description: 'Display QR code for the MARKETPLACE',
               fn: () => {
