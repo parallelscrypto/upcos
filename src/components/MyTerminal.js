@@ -136,7 +136,7 @@ export default class MyTerminal extends Component {
         ref={this.progressTerminal}
         commands={{
             apr: {
-              description: 'Approve the Underground to spend 10 of your IntelX.  You MUST run this command FIRST or all of your `buy` and `xbuy` commands will fail',
+              description: 'Approve the Underground to spend 50 of your IntelX.  You MUST run this command FIRST or all of your `buy` and `xbuy` commands will fail',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -145,13 +145,93 @@ export default class MyTerminal extends Component {
                   const terminal = this.progressTerminal.current
                   let approval = this.props.approve();
                   approval.then((value) => {
-		     terminal.pushToStdout(`You have approved the Underground to transfer 1 IntelX from your wallet when you buy an NFT.  This approval is good for 10 NFTs.  After you have bought 10, you must run this command again, or your 'buy' and 'xbuy' commands will fail`)
+		     terminal.pushToStdout(`You have approved the Underground to transfer sufficient IntelX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'buy' and 'xbuy' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
 
 		terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
                 return ''
+              }
+            },
+
+
+            xbuy: {
+		    description: 'Buy a UPC NFT without the GUI popup.  Usage: `xbuy <domain_name> <tld_integer={0,1,2}>` ',
+              fn: (humanReadableName,domain) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let approval = this.props.buyNft(this.state.account, humanReadableName,domain);
+                      approval.then((value) => {
+                         approval = value;
+			 var congrats = "Thank you for your purchase! You now own NFT for " + this.state.account;
+                         terminal.pushToStdout(congrats)
+			      
+                         // expected output: "Success!"
+                      });
+
+
+                  const interval = setInterval(() => {
+                    if (this.state.approved != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({approved: approval});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
+            buy: {
+              description: 'Buy an NFT using the GUI interface',
+              fn: (humanReadableName) => {
+                  var buyForm =  <div>
+		  <Barcode value={this.state.account} format="EAN13" />
+                  <form className="mb-3" onSubmit={(event) => {
+                      event.preventDefault()
+                      let upcId = this.state.account
+                      let humanReadableName = this.humanReadableName.value.toString()
+
+                      this.props.buyNft(upcId,humanReadableName, this.state.domain)
+                    }}>
+                    <div className="input-group mb-4">
+                      <input
+                        type="text"
+                        ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
+                        className="form-control form-control-lg break"
+                        placeholder=".upc Domain Name"
+                        required />
+
+                        <select id="lang" 
+		      onChange={(e) => { this.setState({domain: e.target.value}) } }
+			      >
+                           <option selected>Select a domain</option>
+                           <option value="0">.upc</option>
+                           <option value="1">.afro</option>
+                           <option value="2">.fire</option>
+                        </select>
+
+                    </div>
+                    <button
+                   type="submit"
+                   className="btn btn-primary btn-block btn-lg"
+                  >
+                  BUY NFT!
+              </button>
+                  </form>
+
+
+             </div>
+
+                      this.setState({buyModalContent:buyForm});
+                      this.setState({showModalBuy:true});
+
+
               }
             },
 
@@ -206,8 +286,8 @@ export default class MyTerminal extends Component {
             },
 
 
-            stm: {
-              description: 'Send-to-market.  Sends an NFT to the marketplace to sell.  After this command succeeds, you can set the price with smp command.  Sale will not start until you set market price.',
+            flip: {
+              description: 'This sends the nft to our decentralized marketplace after you have put in the hard work of renovating this UPC property!  After this command succeeds, you can set-market-price with smp command.  Sale will not start until you set market price (smp)',
               fn: (nftId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -241,27 +321,6 @@ export default class MyTerminal extends Component {
                 return ''
               }
             },
-
-
-            claim: {
-              description: 'Claim  <nftId>  from marketplace a successful mbuy',
-              fn: (nftId) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.collectFromMarket(nftId);
-                      bal.then((value) => {
-                         terminal.pushToStdout(`Claimning your NFT from market! ${nftId}`);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
-              }
-            },
-
-
 
 
             smp: {
@@ -611,52 +670,6 @@ export default class MyTerminal extends Component {
                       this.setState({showModalTutorial:true});
               }
             },
-            buy: {
-              description: 'Buy an NFT using the GUI interface',
-              fn: (humanReadableName) => {
-                  var buyForm =  <div>
-		  <Barcode value={this.state.account} format="EAN13" />
-                  <form className="mb-3" onSubmit={(event) => {
-                      event.preventDefault()
-                      let upcId = this.state.account
-                      let humanReadableName = this.humanReadableName.value.toString()
-
-                      this.props.buyNft(upcId,humanReadableName, this.state.domain)
-                    }}>
-                    <div className="input-group mb-4">
-                      <input
-                        type="text"
-                        ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
-                        className="form-control form-control-lg break"
-                        placeholder=".upc Domain Name"
-                        required />
-
-                        <select id="lang" 
-		      onChange={(e) => { this.setState({domain: e.target.value}) } }
-			      >
-                           <option value="0" selected>.upc</option>
-                           <option value="1">.afro</option>
-                           <option value="2">.fire</option>
-                        </select>
-
-                    </div>
-                    <button
-                   type="submit"
-                   className="btn btn-primary btn-block btn-lg"
-                  >
-                  BUY NFT!
-              </button>
-                  </form>
-
-
-             </div>
-
-                      this.setState({buyModalContent:buyForm});
-                      this.setState({showModalBuy:true});
-
-
-              }
-            },
 
             xipfs: {
               description: 'Set your IPFS resource by passing the ipfs/hash value.  Example `xipfs ipfs/QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU` will set your IPFS resource to our welcome page.  The public will use the `ipfs` command to view what you set using this command ' ,
@@ -698,37 +711,6 @@ export default class MyTerminal extends Component {
                       approval.then((value) => {
                          approval = value;
 			 terminal.pushToStdout(`Approved: ${approval}`)
-                         // expected output: "Success!"
-                      });
-
-
-                  const interval = setInterval(() => {
-                    if (this.state.approved != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({approved: approval});
-                      var self = this;
-                      this.setState({ progress: this.state.progress + 10 })
-                    }
-                  }, 1500)
-                })
-
-                return ''
-              }
-            },
-            xbuy: {
-		    description: 'Buy a UPC NFT without the GUI popup.  Usage: `xbuy <domain_name> <tld_integer={0,1,2}>` ',
-              fn: (humanReadableName,domain) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  let approval = this.props.buyNft(this.state.account, humanReadableName,domain);
-                      approval.then((value) => {
-                         approval = value;
-			 var congrats = "Thank you for your purchase! You now own NFT for " + this.state.account;
-                         terminal.pushToStdout(congrats)
-			      
                          // expected output: "Success!"
                       });
 
@@ -970,6 +952,139 @@ export default class MyTerminal extends Component {
 		     terminal.pushToStdout(`Congrats! You just mined some crypto. \n  Type 'bal' to see your new balance! ${approval}`)
                      // expected output: "Success!"
                   });
+                })
+
+                return ''
+              }
+            },
+
+            snapr: {
+              description: 'Approve the Underground to spend 50 of your IntelX.  You MUST run this command FIRST or all of your `snbuy` and `xsnbuy` commands will fail',
+              fn: () => {
+                  const terminal = this.progressTerminal.current
+                var progress = 0;
+                this.setState({approved: false});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let approval = this.props.approveNav();
+                  approval.then((value) => {
+		     terminal.pushToStdout(`You have approved the Underground to transfer sufficient IntelX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'buy' and 'xbuy' commands will fail`)
+                     // expected output: "Success!"
+                  });
+                })
+
+		terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
+                return ''
+              }
+            },
+
+
+            xsnbuy: {
+		    description: 'Buy a SNB NFT without the GUI popup.  Usage: `xsnbuy <domain_name> <tld_integer={0,1,2}>` ',
+              fn: (humanReadableName,domain) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let approval = this.props.buyNftNav(this.state.account, humanReadableName,domain);
+                      approval.then((value) => {
+                         approval = value;
+			 var congrats = "Thank you for your purchase! You now own SNB NFT for " + this.state.account;
+                         terminal.pushToStdout(congrats)
+			      
+                         // expected output: "Success!"
+                      });
+
+
+                  const interval = setInterval(() => {
+                    if (this.state.approved != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({approved: approval});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
+            snbuy: {
+              description: 'Buy an SNB NFT using the GUI interface',
+              fn: (humanReadableName) => {
+                  var buyForm =  <div>
+		  <Barcode value={this.state.account} format="EAN13" />
+                  <form className="mb-3" onSubmit={(event) => {
+                      event.preventDefault()
+                      let upcId = this.state.account
+                      let humanReadableName = this.humanReadableName.value.toString()
+
+                      this.props.buyNftNav(upcId,humanReadableName, this.state.domain)
+                    }}>
+                    <div className="input-group mb-4">
+                      <input
+                        type="text"
+                        ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
+                        className="form-control form-control-lg break"
+                        placeholder=".upc Domain Name"
+                        required />
+
+                        <select id="lang" 
+		      onChange={(e) => { this.setState({domain: e.target.value}) } }
+			      >
+                           <option selected>Select a domain</option>
+                           <option value="0">.upc</option>
+                           <option value="1">.afro</option>
+                           <option value="2">.fire</option>
+                        </select>
+
+                    </div>
+                    <button
+                   type="submit"
+                   className="btn btn-primary btn-block btn-lg"
+                  >
+                  BUY NFT!
+              </button>
+                  </form>
+
+
+             </div>
+
+                      this.setState({buyModalContent:buyForm});
+                      this.setState({showModalBuy:true});
+
+
+              }
+            },
+
+
+
+
+            snmint: {
+              description: 'Mint an SNB NFT for which you have successfully executed the `snbuy` or `xsnbuy` command',
+              fn: (upcId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let approval = this.props.mintNftNav(this.state.account);
+                      approval.then((value) => {
+                         approval = value;
+		         terminal.pushToStdout(`Congrats! You own UPCNFT for ${upcId}`)
+                         // expected output: "Success!"
+                      });
+
+
+                  const interval = setInterval(() => {
+                    if (this.state.approved != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({approved: approval});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 } )
+                    }
+                  }, 1500)
                 })
 
                 return ''

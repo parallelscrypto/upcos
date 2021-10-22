@@ -3,6 +3,7 @@ import ReactCardFlip from 'react-card-flip';
 import Iframe from 'react-iframe'
 import Web3 from 'web3'
 import UPCNFT from '../abis/UPCNFT.json'
+import SuperNavalnyBros from '../abis/SuperNavalnyBros.json'
 import xUPC from '../abis/xUPC.json'
 import piggy from '../abis/TipJar.json'
 import intelX from '../abis/intelX.json'
@@ -91,9 +92,21 @@ class App extends Component {
     const upcNFTData = UPCNFT.networks[networkId]
     if(upcNFTData) {
       const upcNft = new web3.eth.Contract(UPCNFT.abi, upcNFTData.address)
-           console.log(upcNft);
       this.setState({ upcNft })
       this.setState({ upcNFTData: upcNFTData })
+    } else {
+      //window.alert('UPCNFT contract not deployed to detected network.')
+    }
+
+
+
+
+    // Load UPCNFT
+    const snbNFTData = SuperNavalnyBros.networks[networkId]
+    if(snbNFTData) {
+      const snbNft = new web3.eth.Contract(SuperNavalnyBros.abi, snbNFTData.address)
+      this.setState({ snbNft })
+      this.setState({ snbNFTData: snbNFTData })
     } else {
       //window.alert('UPCNFT contract not deployed to detected network.')
     }
@@ -247,6 +260,20 @@ class App extends Component {
       })
   };
 
+  approve= async () => {
+    const web3 = window.web3
+    const intelXData = this.state.intelX;
+
+    const { accounts, contract } = this.state;
+
+    var upcNFTData = this.state.upcNFTData;
+    var approval = await this.state.intelX.methods.approve(upcNFTData.address, "50000000000000000000").send({ from: this.state.account });
+    this.setState({daiTokenBalance: approval.toString() });
+    return approval.toString();
+  };
+
+
+
   mintNft = async (upcId) => {
     const { accounts, contract } = this.state;
 
@@ -258,6 +285,75 @@ class App extends Component {
          this.setState({ loading: false })
       })
   };
+
+
+  buyNft = async (upcId, humanReadableName, domain) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+	  console.log("buying " + upcId);
+    this.state.upcNft.methods.buyNft(upcId, humanReadableName, domain).send({ from: this.state.account })
+      .once('receipt', (receipt) => {
+         this.setState({ loading: false })
+      })
+  };
+
+
+
+
+////nav nft
+
+
+  approveNav= async () => {
+    const web3 = window.web3
+    const intelXData = this.state.intelX;
+
+    const { accounts, contract } = this.state;
+
+    var snbNFTData = this.state.snbNFTData;
+    var approval = await this.state.intelX.methods.approve(snbNFTData.address, "50000000000000000000").send({ from: this.state.account });
+    this.setState({daiTokenBalance: approval.toString() });
+    return approval.toString();
+  };
+
+
+
+  mintNftNav = async (upcId) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    this.state.snbNft.methods.mintNft(upcId).send({ from: this.state.account})
+      .once('receipt', (receipt) => {
+         this.setState({ loading: false })
+      })
+  };
+
+
+  buyNftNav = async (upcId, humanReadableName, domain) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+	  console.log("buying " + upcId);
+    this.state.snbNft.methods.buyNft(upcId, humanReadableName, domain).send({ from: this.state.account })
+      .once('receipt', (receipt) => {
+         this.setState({ loading: false })
+      })
+  };
+
+
+
+
+
+
+
+////end nav nft
+
 
   upcInfo = async (upcId) => {
     const { accounts, contract } = this.state;
@@ -323,23 +419,6 @@ class App extends Component {
          this.setState({ loading: false })
       })
   };
-
-
-
-
-  buyNft = async (upcId, humanReadableName, domain) => {
-    const { accounts, contract } = this.state;
-
-    const gameID = "testGame";
-    //console.log(this.state.sendCryptoValue);
-    // Stores a given value, 5 by default.
-	  console.log("buying " + upcId);
-    this.state.upcNft.methods.buyNft(upcId, humanReadableName, domain).send({ from: this.state.account })
-      .once('receipt', (receipt) => {
-         this.setState({ loading: false })
-      })
-  };
-
 
   getTVL= async () => {
   };
@@ -438,18 +517,6 @@ class App extends Component {
 
 
 
-  approve= async () => {
-    const web3 = window.web3
-    const intelXData = this.state.intelX;
-
-    const { accounts, contract } = this.state;
-
-    var upcNFTData = this.state.upcNFTData;
-    var approval = await this.state.intelX.methods.approve(upcNFTData.address, "10000000000000000000").send({ from: this.state.account });
-    this.setState({daiTokenBalance: approval.toString() });
-    return approval.toString();
-  };
-
   mine= async () => {
     const web3 = window.web3
     const intelXData = this.state.intelX;
@@ -487,14 +554,19 @@ class App extends Component {
     }
     this.handleChange = this.handleChange.bind(this);
     this.listNfts= this.listNfts.bind(this);
+
+    this.buyNftNav= this.buyNftNav.bind(this);
+    this.mintNftNav= this.mintNftNav.bind(this);
+    this.approveNav= this.approveNav.bind(this);
+
     this.buyNft= this.buyNft.bind(this);
     this.mintNft= this.mintNft.bind(this);
+    this.approve= this.approve.bind(this);
     this.getVrByUpcId= this.getVrByUpcId.bind(this);
     this.mine= this.mine.bind(this);
     this.updateUpc= this.updateUpc.bind(this);
     this.getMyBalance = this.getMyBalance.bind(this);
     this.getTVL = this.getTVL.bind(this);
-    this.approve= this.approve.bind(this);
     this.handleFlip = this.handleFlip.bind(this);
     this.swap= this.swap.bind(this);
     this.wn = this.wn.bind(this);
@@ -546,10 +618,15 @@ class App extends Component {
         updateUpc={this.updateUpc}
 	getMyBalance={this.getMyBalance}
 	intel={this.state.intel}
+
+	approveNav={this.approveNav}
+	buyNftNav={this.buyNftNav}
+	mintNftNav={this.mintNftNav}
+
 	approve={this.approve}
 	buyNft={this.buyNft}
-	getVrByUpcId={this.getVrByUpcId}
 	mintNft={this.mintNft}
+	getVrByUpcId={this.getVrByUpcId}
 	mine={this.mine}
 	swap={this.swap}
 	wn={this.wn}
