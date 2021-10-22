@@ -86,7 +86,7 @@ export default class MyTerminal extends Component {
     var promptlabel =  addy + '_@' + this.state.account + '>';
 	  
     var upcHash  = sha256(this.state.account)
-    var srcImg = 'https://avatars.dicebear.com/api/big-smile/'  + upcHash + ".svg";
+    var srcImg = 'https://avatars.dicebear.com/api/adventurer/'  + upcHash + ".svg";
     var cardValue = {
        value:  upcHash,
        intent: "upcHero"
