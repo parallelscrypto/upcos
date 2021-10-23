@@ -32,7 +32,7 @@ export default class NftPopupQr extends Component {
   render() {
     return (
 	    <div>
-	       <NftPopupModal code={this.state.code} hash={this.state.hash} qIsOpen={this.state.modalIsOpen}/>
+	       <NftPopupModal style={{"backgroundColor":"black"}} code={this.state.code} hash={this.state.hash} qIsOpen={this.state.modalIsOpen}/>
 	    </div>
     )
   }

@@ -8,7 +8,8 @@ import Image2 from './extra/img-2.jpg'
 import Image3 from './extra/img-3.jpg'
 import Image4 from './extra/img-4.jpg'
 import QRCode from "react-qr-code";
-import Typewriter from 'typewriter-effect';
+//import Typewriter from 'typewriter-effect';
+import TypeWriterEffect from "./react-typewriter-effect/src/Typewriter";
 var Barcode = require('react-barcode');
 
 
@@ -49,12 +50,12 @@ export default class IntroTypewriter extends Component {
       <div 
 	 style={{textAlign:"center", color:"white", transform:'translateY(50vh)' , transform:'translateY(50vw)'}}
       >
-         <Typewriter
-            options={{
-              strings: message,
-              autoStart: true,
-              loop: true,
-            }}
+         <TypeWriterEffect
+            textStyle={{ fontFamily: 'Red Hat Display' }}
+            startDelay={2000}
+            cursorColor="red"
+            text={message}
+            typeSpeed={10}
          />
 	<Barcode value={this.state.code} format="EAN13" />
       </div>

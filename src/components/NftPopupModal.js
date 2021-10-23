@@ -38,8 +38,8 @@ export default class NftPopupModal extends Component {
             isOpen={this.state.qIsOpen}
             contentLabel={this.state.hash}
           >    
+	     <div>Buy a DAO token to help govern this UPC.  It is up to the UPC owner to elect a governance council from the pool of available avatars!  Available positions for governance are <ul><li>President</li><li>VP</li><li>Minister of Peace</li><li>Minister of Justice</li></ul>  This QR may be the next president of UPC # {this.state.code}! Play with a friend to find the next leaders of this UPC!</div>
 	     <NftPopupQr code={this.state.code} hash={uuid()}  />
-	     <p>This is 2 player action.  Invite a friend and scan on their phone to convert QR into an IntelX mining agent for mine #{this.state.code}.  Each wallet addresss can plant one agent per upc, and agents acquire IntelX for you.  The more workers you hatch, the more IntelX you can mine!</p>
              <button onClick={() => {this.setState({qIsOpen: false}) }}>close</button>
           </Modal>
       </div>
