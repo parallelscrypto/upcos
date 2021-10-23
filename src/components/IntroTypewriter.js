@@ -45,19 +45,18 @@ export default class IntroTypewriter extends Component {
 
   render() {
 
-    var message = ["Welcome to UpcOS! " , "Now loading UPC experience @"+ this.state.code , "...Blastoff!"]
+    var message = ["<loading>", "Welcome to UpcOS! " , "experience @"+ this.state.code , "</loading>"]
     return (
       <div 
 	 style={{textAlign:"center", color:"green", transform:'translateY(50vh)' , transform:'translateY(50vw)'}}
       >
          <TypeWriterEffect
-            textStyle={{ fontFamily: 'Red Hat Display' }}
             style={{transform:'translateY(150vw)'}}
-            startDelay={1}
-            multiTextDelay={1000}
+            startDelay={500}
+            multiTextDelay={500}
             cursorColor="white"
             multiText={message}
-            typeSpeed={1}
+            typeSpeed={50}
          />
 	<Barcode value={this.state.code} format="EAN13" />
       </div>

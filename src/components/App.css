@@ -4,6 +4,10 @@
   text-align: center;
 }
 
+.react-typewriter-text {
+   text-align: center;
+}
+
 .react-modal-body {
 position: relative;
 background-color: #fff;
