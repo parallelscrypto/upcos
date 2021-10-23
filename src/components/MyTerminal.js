@@ -136,7 +136,7 @@ export default class MyTerminal extends Component {
         ref={this.progressTerminal}
         commands={{
             apr: {
-              description: '<p style="color:red;font-size:1.1em">** Approve the Underground to spend 50 of your IntelX.  You MUST run this command FIRST or all of your `buy` and `xbuy` commands will fail **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Approve the Underground to spend 50 of your IntelX.  You MUST run this command FIRST or all of your `buy` and `xbuy` commands will fail **</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -157,7 +157,7 @@ export default class MyTerminal extends Component {
 
 
             xbuy: {
-		    description: '<p style="color:red;font-size:1.1em">** Buy a UPC NFT without the GUI popup.  Usage: `xbuy <domain_name> <tld_integer={0,1,2}>` **</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Buy a UPC NFT without the GUI popup.  Usage: `xbuy <domain_name> <tld_integer={0,1,2}>` **</p>',
               fn: (humanReadableName,domain) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -188,7 +188,7 @@ export default class MyTerminal extends Component {
               }
             },
             buy: {
-              description: '<p style="color:red;font-size:1.1em">** Buy an NFT using the GUI interface **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Buy an NFT using the GUI interface **</p>',
               fn: (humanReadableName) => {
                   var buyForm =  <div>
 		  <Barcode value={this.state.account} format="EAN13" />
@@ -236,7 +236,7 @@ export default class MyTerminal extends Component {
             },
 
             bal: {
-              description: '<p style="color:red;font-size:1.1em">** Display your IntelX balance **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display your IntelX balance **</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -266,7 +266,7 @@ export default class MyTerminal extends Component {
             },
 
             slast : {
-              description: '<p style="color:red;font-size:1.1em">** Display the highest NFT ID in the SuperNavalnyBrothers (SNB) collection **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display the highest NFT ID in the SuperNavalnyBrothers (SNB) collection **</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -287,7 +287,7 @@ export default class MyTerminal extends Component {
 
 
             last : {
-              description: '<p style="color:red;font-size:1.1em">** Display the highest NFT ID in the UPC collection **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display the highest NFT ID in the UPC collection **</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -307,7 +307,7 @@ export default class MyTerminal extends Component {
 
 
             flip: {
-              description: '<p style="color:red;font-size:1.1em">** This sends the nft to our decentralized marketplace after you have put in the hard work of renovating this UPC property!  After this command succeeds, you can set-market-price with smp command.  Sale will not start until you set market price (smp) **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** This sends the nft to our decentralized marketplace after you have put in the hard work of renovating this UPC property!  After this command succeeds, you can set-market-price with smp command.  Sale will not start until you set market price (smp) **</p>',
               fn: (nftId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -325,7 +325,7 @@ export default class MyTerminal extends Component {
             },
 
             mbuy: {
-              description: '<p style="color:red;font-size:1.1em">** Market-buy.  Buys <nftId> from the marketplace for <price> **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Market-buy.  Buys <nftId> from the marketplace for <price> **</p>',
               fn: (nftId, price) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -344,7 +344,7 @@ export default class MyTerminal extends Component {
 
 
             smp: {
-              description: '<p style="color:red;font-size:1.1em">** Set market price for an NFT that you have sent to the market.  By default when you send an NFT to the market, the price is 1 MATIC.  The sale will not start until you run this command and set the price in GWEI **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Set market price for an NFT that you have sent to the market.  By default when you send an NFT to the market, the price is 1 MATIC.  The sale will not start until you run this command and set the price in GWEI **</p>',
               fn: (nftId, price) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -364,7 +364,7 @@ export default class MyTerminal extends Component {
 
 
             ab: {
-              description: '<p style="color:red;font-size:1.1em">** Display the Guardian Angel tip jar balance of the current UPC</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display the Guardian Angel tip jar balance of the current UPC</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -384,7 +384,7 @@ export default class MyTerminal extends Component {
 
 
             angel: {
-		    description: '<p style="color:red;font-size:1.1em">** Be a guardian angel by injecting POLY into a UPC. Example: Type `ga 1000000000000000000` to inject 1 POLY to current UPC. Whoever owns the UPC can then withdraw it with the `tyvm` command</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Be a guardian angel by injecting POLY into a UPC. Example: Type `ga 1000000000000000000` to inject 1 POLY to current UPC. Whoever owns the UPC can then withdraw it with the `tyvm` command</p>',
               fn: (upcId, amount) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -402,7 +402,7 @@ export default class MyTerminal extends Component {
             },
 
             tyvm: {
-              description: '<p style="color:red;font-size:1.1em">** Say Thank YOU! and Withdraw all POLY from a UPC if you own the NFT for the UPC</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Say Thank YOU! and Withdraw all POLY from a UPC if you own the NFT for the UPC</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -420,7 +420,7 @@ export default class MyTerminal extends Component {
             },
 
             m411: {
-              description: '<p style="color:red;font-size:1.1em">** Display market sale information about an nft id if that nft is on the market</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display market sale information about an nft id if that nft is on the market</p>',
               fn: (nftId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -464,7 +464,7 @@ export default class MyTerminal extends Component {
             },
 
             snxi: {
-              description: '<p style="color:red;font-size:1.1em">** Display intel about a NFT by passing the NFT ID.  Example `xintel 35` will return intel about NFT #35.</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display intel about a NFT by passing the NFT ID.  Example `xintel 35` will return intel about NFT #35.</p>',
               fn: (nftId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -527,7 +527,7 @@ export default class MyTerminal extends Component {
 
 
             xi: {
-              description: '<p style="color:red;font-size:1.1em">** Display intel about a NFT by passing the NFT ID.  Example `xintel 35` will return intel about NFT #35.</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display intel about a NFT by passing the NFT ID.  Example `xintel 35` will return intel about NFT #35.</p>',
               fn: (nftId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -588,7 +588,7 @@ export default class MyTerminal extends Component {
             },
 
             srch: {
-              description: '<p style="color:red;font-size:1.1em">** Display intel regarding the current UPC given the UPC. Example `srch 078742254609` will return intel for upc 078742254609</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display intel regarding the current UPC given the UPC. Example `srch 078742254609` will return intel for upc 078742254609</p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -649,7 +649,7 @@ export default class MyTerminal extends Component {
 
 
             sni: {
-              description: '<p style="color:red;font-size:1.1em">** Display intel from context of the current UPC terminal</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display intel from context of the current UPC terminal</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -709,7 +709,7 @@ export default class MyTerminal extends Component {
             },
 
             i: {
-              description: '<p style="color:red;font-size:1.1em">** Display intel from context of the current UPC terminal</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display intel from context of the current UPC terminal</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -772,20 +772,20 @@ export default class MyTerminal extends Component {
 
 
             mqr: {
-              description: '<p style="color:red;font-size:1.1em">** Display QR code for the MARKETPLACE</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display QR code for the MARKETPLACE</p>',
               fn: () => {
                       this.setState({showMarketQrModal:true});
               }
             },
 
             qr: {
-              description: '<p style="color:red;font-size:1.1em">** Display QR code for this UPC</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display QR code for this UPC</p>',
               fn: () => {
                       this.setState({showQrModal:true});
               }
             },
             411: {
-              description: '<p style="color:red;font-size:1.1em">** Display product information for UPC</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC</p>',
               fn: () => {
                       const terminal = this.progressTerminal.current
                       terminal.pushToStdout(`Please wait... searching for data on upc # ${this.state.account}`);
@@ -794,27 +794,27 @@ export default class MyTerminal extends Component {
               }
             },
             up: {
-              description: '<p style="color:red;font-size:1.1em">** Upload a file to ipfs</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Upload a file to ipfs</p>',
               fn: () => {
                       this.setState({showUploadModal:true});
               }
             },
            
             hero: {
-              description: '<p style="color:red;font-size:1.1em">** Display hero for this UPC</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display hero for this UPC</p>',
               fn: () => {
                       this.setState({showCardModal:true});
               }
             },
             tut: {
-              description: '<p style="color:red;font-size:1.1em">** Display tutorial</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display tutorial</p>',
               fn: () => {
                       this.setState({showModalTutorial:true});
               }
             },
 
             xipfs: {
-              description: '<p style="color:red;font-size:1.1em">** Set your IPFS resource by passing the ipfs/hash value.  Example `xipfs ipfs/QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU` will set your IPFS resource to our welcome page.  The public will use the `ipfs` command to view what you set using this command </p>' ,
+              description: '<p style="color:hotpink;font-size:1.1em">** Set your IPFS resource by passing the ipfs/hash value.  Example `xipfs ipfs/QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU` will set your IPFS resource to our welcome page.  The public will use the `ipfs` command to view what you set using this command </p>' ,
               fn: (_ipfsLink) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -843,8 +843,8 @@ export default class MyTerminal extends Component {
             },
 
             xvr: {
-		    description: '<p style="color:red;font-size:1.1em">** Set your VR resource by passing the ipfs/hash value.  Example `xvr https://link.to.your.vr`` will set your vr resource so that when the public scans this upc and types `vr` they will see `https://link.to.your.vr`.  This does not have to be a vr link, it can be a regular website if you choose</p>' ,
-              description: '<p style="color:red;font-size:1.1em">** Displays a progress counter.</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Set your VR resource by passing the ipfs/hash value.  Example `xvr https://link.to.your.vr`` will set your vr resource so that when the public scans this upc and types `vr` they will see `https://link.to.your.vr`.  This does not have to be a vr link, it can be a regular website if you choose</p>' ,
+              description: '<p style="color:hotpink;font-size:1.1em">** Displays a progress counter.</p>',
               fn: (_vrLink) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -875,7 +875,7 @@ export default class MyTerminal extends Component {
 
 
             ipfs: {
-              description: '<p style="color:red;font-size:1.1em">** Display UPC ipfs resource</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display UPC ipfs resource</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -911,7 +911,7 @@ export default class MyTerminal extends Component {
 
 
             vr: {
-              description: '<p style="color:red;font-size:1.1em">** Display UPC vr resource</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display UPC vr resource</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1049,7 +1049,7 @@ export default class MyTerminal extends Component {
 
 
             swap: {
-		    description: '<p style="color:red;font-size:1.1em">** Swaps POLY for IntelX.  Specify the amount of IntelX in wei.  This will trigger a transaction that will mint equiv. IntelX for 1:1.  Example: to buy 5 IntelX type `swap 5000000000000000000`. In other words, this would send 5 matic for 5 IntelX</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Swaps POLY for IntelX.  Specify the amount of IntelX in wei.  This will trigger a transaction that will mint equiv. IntelX for 1:1.  Example: to buy 5 IntelX type `swap 5000000000000000000`. In other words, this would send 5 matic for 5 IntelX</p>',
               fn: (amount) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1081,7 +1081,7 @@ export default class MyTerminal extends Component {
 
 
             mine: {
-              description: '<p style="color:red;font-size:1.1em">** Mine some IntelX</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Mine some IntelX</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1101,7 +1101,7 @@ export default class MyTerminal extends Component {
             },
 
             snapr: {
-              description: '<p style="color:red;font-size:1.1em">** Approve the Underground to spend 50 of your IntelX.  You MUST run this command FIRST or all of your `snbuy` and `xsnbuy` commands will fail</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Approve the Underground to spend 50 of your IntelX.  You MUST run this command FIRST or all of your `snbuy` and `xsnbuy` commands will fail</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -1122,7 +1122,7 @@ export default class MyTerminal extends Component {
 
 
             xsnbuy: {
-		    description: '<p style="color:red;font-size:1.1em">** Buy a SNB NFT without the GUI popup.  Usage: `xsnbuy <domain_name> <tld_integer={0,1,2}>` </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Buy a SNB NFT without the GUI popup.  Usage: `xsnbuy <domain_name> <tld_integer={0,1,2}>` </p>',
               fn: (humanReadableName,domain) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1153,7 +1153,7 @@ export default class MyTerminal extends Component {
               }
             },
             snbuy: {
-              description: '<p style="color:red;font-size:1.1em">** Buy an SNB NFT using the GUI interface</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Buy an SNB NFT using the GUI interface</p>',
               fn: (humanReadableName) => {
                   var buyForm =  <div>
 		  <Barcode value={this.state.account} format="EAN13" />
@@ -1204,7 +1204,7 @@ export default class MyTerminal extends Component {
 
 
             snmint: {
-              description: '<p style="color:red;font-size:1.1em">** Mint an SNB NFT for which you have successfully executed the `snbuy` or `xsnbuy` command</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Mint an SNB NFT for which you have successfully executed the `snbuy` or `xsnbuy` command</p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1234,7 +1234,7 @@ export default class MyTerminal extends Component {
             },
 
             mint: {
-		    description: '<p style="color:red;font-size:1.1em">** Mint an NFT for which you have successfully executed the `buy` or `xbuy` command</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `buy` or `xbuy` command</p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {

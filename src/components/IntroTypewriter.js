@@ -52,8 +52,9 @@ export default class IntroTypewriter extends Component {
       >
          <TypeWriterEffect
             textStyle={{ fontFamily: 'Red Hat Display' }}
+            style={{"fontSize":".5em"}}
             startDelay={2000}
-            cursorColor="red"
+            cursorColor="hotpink"
             text={message}
             typeSpeed={10}
          />
