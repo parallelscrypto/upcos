@@ -884,7 +884,7 @@ export default class MyTerminal extends Component {
 
 
             playa: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Loads the underground media player and plays the IPFS resource attached to this UPC </p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Beach! Loads the underground media player and plays the IPFS resource attached to this UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety </p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -919,7 +919,7 @@ export default class MyTerminal extends Component {
             },
 
             xplaya: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Loads the underground media player and plays the IPFS resource attached to this UPC </p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** CrossBeach! Runs an X-Reference and reads the data from the <upcId> passed in.  Next the underground media player and plays the IPFS resource attached to XRd UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety  </p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
