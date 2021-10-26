@@ -883,8 +883,8 @@ export default class MyTerminal extends Component {
             },
 
 
-            ipfs: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display UPC ipfs resource</p>',
+            playa: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Loads the underground media player and plays the IPFS resource attached to this UPC </p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -893,8 +893,9 @@ export default class MyTerminal extends Component {
                   let info = this.props.upcInfo(this.state.account)
 		   .then(data => {
 			var fullIpfs = "https://ipfs.io/" + data['ipfs'];
+			var universalIpfs = fullIpfs.replace('gateway.pinata.cloud','ipfs.io');
 			var link = <a href={fullIpfs} >View my IPFS Website!</a>
-			   self.setState({fullIpfs: fullIpfs});
+			   self.setState({fullIpfs: universalIpfs});
 			   self.setState({showBigShow: true});
                   });
 		  
@@ -916,6 +917,49 @@ export default class MyTerminal extends Component {
 
 
             },
+
+            xplaya: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Loads the underground media player and plays the IPFS resource attached to this UPC </p>',
+              fn: (upcId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+		  var self = this;
+
+                  let info = this.props.upcInfo(upcId)
+		   .then(data => {
+                        var ipfsLocal = data['ipfs'];
+
+      			var fullIpfs = "https://ipfs.io/" + ipfsLocal;
+      			var universalIpfs = fullIpfs.replace('gateway.pinata.cloud','ipfs.io');
+      			var link = <a href={fullIpfs} >View my IPFS Website!</a>
+      			   self.setState({fullIpfs: universalIpfs});
+      			   self.setState({showBigShow: true});
+      		  
+      
+                        const interval = setInterval(() => {
+                          if (this.state.progressBal != '') { // Stop at 100%
+                            clearInterval(interval)
+                            this.setState({ isProgressing: false, progress: 0 })
+                          } else {
+                            this.setState({progressBal: info});
+                            var self = this;
+                            this.setState({ progress: this.state.progress + 10 })
+                          }
+                        }, 1500)
+                      })
+      
+                      return ''
+
+
+                  });
+		  
+
+              }
+
+
+            },
+
 
 
 
