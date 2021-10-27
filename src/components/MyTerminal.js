@@ -10,6 +10,8 @@ import QRCode from "react-qr-code";
 import Card from 'react-playing-card';
 import ScratchOff from './ScratchOff';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+import Clock from 'react-live-clock';
+
 
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
@@ -85,7 +87,7 @@ export default class MyTerminal extends Component {
     var addy = this.props.address;
     addy  = addy.substr(0,10);
     var promptlabel =  addy + '_@' + this.state.account + '>';
-	  
+    var welcomeMsg = "Welcome to UPC Underground! \n TERMINAL#" + this.state.account  +"\n Type `help` to see available commands"
     var upcHash  = sha256(this.state.account)
     var srcImg = 'https://avatars.dicebear.com/api/adventurer/'  + upcHash + ".svg";
     var cardValue = {
@@ -109,6 +111,8 @@ export default class MyTerminal extends Component {
 
     return (
       <div>
+
+      <Clock format={'HH:mm:ss M-D-Y'} ticking={true} timezone={'US/Pacific'} />
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModal} closemodal={() => this.setState({ showModal: false })} type="pulse" >{this.state.vrLink}</Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalBuy} closemodal={() => this.setState({ showModalBuy: false })} type="pulse" > {this.state.buyModalContent}</Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalTutorial} closemodal={() => this.setState({ showModalTutorial: false })} type="pulse" ><iframe style={{height:"100vh"}} src="https://gateway.pinata.cloud/ipfs/QmStW8PBZjxjSkwnxvr15rHvRajCUkPRMEJGQejQu8EE4W" /></Modal>
@@ -137,7 +141,7 @@ export default class MyTerminal extends Component {
         dangerMode={false}
         ref={this.progressTerminal}
         commands={{
-            apr: {
+            step0: {
               description: '<p style="color:hotpink;font-size:1.1em">** Approve the Underground to spend 50 of your IntelX.  You MUST run this command FIRST or all of your `buy` and `xbuy` commands will fail **</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
@@ -158,8 +162,8 @@ export default class MyTerminal extends Component {
             },
 
 
-            xbuy: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Buy a UPC NFT without the GUI popup.  Usage: `xbuy <domain_name> <tld_integer={0,1,2}>` **</p>',
+            step1b: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Buy a UPC NFT without the GUI popup.  Example: If you are currently scanned into UPC #222222222222 and you would like to buy the domain `foo.fire`, you would type the following `step1b foo 2`.  The `2` after `foo` corresponds to the domain ending that you are purchasing.  The choices are 0=.upc, 1=.afro, 2=.fire  **</p>',
               fn: (humanReadableName,domain) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -189,8 +193,8 @@ export default class MyTerminal extends Component {
                 return ''
               }
             },
-            buy: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Buy an NFT using the GUI interface **</p>',
+            step1: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Buy an NFT using the GUI interface.  After completing this step, check the `Activity` tab below to make sure that your purchase went through.  After your transaction has been processed successfully, you can move to the last phase `step 2` **</p>',
               fn: (humanReadableName) => {
                   var buyForm =  <div>
 		  <Barcode value={this.state.account} format="EAN13" />
@@ -236,6 +240,40 @@ export default class MyTerminal extends Component {
 
               }
             },
+
+
+
+            step2: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `buy` or `xbuy` command</p>',
+              fn: (upcId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let approval = this.props.mintNft(this.state.account);
+                      approval.then((value) => {
+                         approval = value;
+		         terminal.pushToStdout(`Congrats! You own UPCNFT for ${upcId}`)
+                         // expected output: "Success!"
+                      });
+
+
+                  const interval = setInterval(() => {
+                    if (this.state.approved != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({approved: approval});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 } )
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
+
+
 
             bal: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display your IntelX balance **</p>',
@@ -893,6 +931,11 @@ export default class MyTerminal extends Component {
                   let info = this.props.upcInfo(this.state.account)
 		   .then(data => {
 			var fullIpfs = "https://upcunderground.mypinata.cloud/" + data['ipfs'];
+			if(fullIpfs.includes('QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU') ) {
+
+			   fullIpfs = fullIpfs.replace('upcunderground.mypinata.cloud','ipfs.io');
+			}
+
 			var link = <a href={fullIpfs} >View my IPFS Website!</a>
 			   self.setState({fullIpfs: fullIpfs});
 			   self.setState({showBigShow: true});
@@ -1016,6 +1059,11 @@ export default class MyTerminal extends Component {
                         var ipfsLocal = data['ipfs'];
 
       			var fullIpfs = "https://upcunderground.mypinata.cloud/" + ipfsLocal;
+			if(fullIpfs.includes('QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU') ) {
+
+			   fullIpfs = fullIpfs.replace('upcunderground.mypinata.cloud','ipfs.io');
+			}
+
       			var link = <a href={fullIpfs} >View my IPFS Website!</a>
       			   self.setState({fullIpfs: fullIpfs});
       			   self.setState({showBigShow: true});
@@ -1393,37 +1441,8 @@ export default class MyTerminal extends Component {
               }
             },
 
-            mint: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `buy` or `xbuy` command</p>',
-              fn: (upcId) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  let approval = this.props.mintNft(this.state.account);
-                      approval.then((value) => {
-                         approval = value;
-		         terminal.pushToStdout(`Congrats! You own UPCNFT for ${upcId}`)
-                         // expected output: "Success!"
-                      });
-
-
-                  const interval = setInterval(() => {
-                    if (this.state.approved != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({approved: approval});
-                      var self = this;
-                      this.setState({ progress: this.state.progress + 10 } )
-                    }
-                  }, 1500)
-                })
-
-                return ''
-              }
-            }
           }}
-        welcomeMessage={'Welcome to UPC Underground! \n Type `help` to see available commands'}
+        welcomeMessage={welcomeMsg}
         promptLabel={promptlabel}
         autoFocus={true}
         dangerMode={true}
