@@ -919,7 +919,7 @@ export default class MyTerminal extends Component {
 
 
             iplaya: {
-              description: '<p style="color:hotpink;font-size:1.1em">** RawBeachMediaPlayer! Loads the media player and plays the RAW IPFS resource attached to this UPC. Raw resources can include IPNS resources.  Just run rplaya /ipfs/##hash##` or `rplaya /ipns/##hash##` and load those raw resouces.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety </p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** RawBeachMediaPlayer! Loads the media player and plays the RAW IPFS resource attached to this UPC. Raw resources can include IPNS resources.  Just run iplaya /ipfs/##hash##` or `iplaya /ipns/##hash##` and load those raw resouces.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety </p>',
               fn: (rawHash) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -927,7 +927,7 @@ export default class MyTerminal extends Component {
 		  var self = this;
                   let info = this.props.upcInfo(this.state.account)
 		   .then(data => {
-			var fullIpfs = "https://upcunderground.mypinata.cloud/" + rawHash;
+			var fullIpfs = "https://ipfs.io/" + rawHash;
 			var link = <a href={fullIpfs} >View my IPFS Website!</a>
 			   self.setState({fullIpfs: fullIpfs});
 			   self.setState({showBigShow: true});
@@ -955,8 +955,8 @@ export default class MyTerminal extends Component {
 
 
 
-            nplaya: {
-              description: '<p style="color:hotpink;font-size:1.1em">** CrossBeachMediaPlayer! Runs an X-Reference and reads the data from the <upcId> passed in.  Next the XBMP loads and plays the IPFS resource attached to XRd UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety  </p>',
+            jplaya: {
+              description: '<p style="color:hotpink;font-size:1.1em">** CrossBeachMediaPlayer! Runs an X-Reference and reads the data from the <nftId> passed in.  Next the XBMP loads and plays the IPFS resource attached to XRd UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety  </p>',
               fn: (nftId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -968,6 +968,10 @@ export default class MyTerminal extends Component {
                         var ipfsLocal = data['ipfs'];
 
       			var fullIpfs = "https://upcunderground.mypinata.cloud/" + ipfsLocal;
+			if(fullIpfs.includes('QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU') ) {
+
+			   fullIpfs = fullIpfs.replace('upcunderground.mypinata.cloud','ipfs.io');
+			}
       			   self.setState({fullIpfs: fullIpfs});
       			   self.setState({showBigShow: true});
       		  
@@ -1218,16 +1222,16 @@ export default class MyTerminal extends Component {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
                   const terminal = this.progressTerminal.current
-		     terminal.pushToStdout(`type 'rplaya ipns/app.ens.eth'  ===TO GO TO==  ENS App`);
-		     terminal.pushToStdout(`type 'rplaya ipns/app.uniswap.org'  ===TO GO TO== Uniswap App `);
-		     terminal.pushToStdout(`type 'rplaya ipns/elasticdao.org'  ===TO GO TO== ElasticDAO `);
-		     terminal.pushToStdout(`type 'rplaya ipns/gnosis-auction.eth'  ===TO GO TO== gnosis-auction.eth `);
-		     terminal.pushToStdout(`type 'rplaya ipns/olympusdao.eth'  ===TO GO TO== Olympus DAO `);
-		     terminal.pushToStdout(`type 'rplaya ipns/powerindex.io'  ===TO GO TO== PowerIndex `);
-		     terminal.pushToStdout(`type 'rplaya ipns/rekt.eth'  ===TO GO TO== Rekt `);
-		     terminal.pushToStdout(`type 'rplaya ipns/sourcify.eth'  ===TO GO TO== Sourcify `);
-		     terminal.pushToStdout(`type 'rplaya ipns/tornado.cash'  ===TO GO TO== Tornado Cash `);
-		     terminal.pushToStdout(`type 'rplaya ipns/zkeducation.eth'  ===TO GO TO== Zero Knowledge Education `);
+		     terminal.pushToStdout(`type 'iplaya ipns/app.ens.eth'  ===TO GO TO==  ENS App`);
+		     terminal.pushToStdout(`type 'iplaya ipns/app.uniswap.org'  ===TO GO TO== Uniswap App `);
+		     terminal.pushToStdout(`type 'iplaya ipns/elasticdao.org'  ===TO GO TO== ElasticDAO `);
+		     terminal.pushToStdout(`type 'iplaya ipns/gnosis-auction.eth'  ===TO GO TO== gnosis-auction.eth `);
+		     terminal.pushToStdout(`type 'iplaya ipns/olympusdao.eth'  ===TO GO TO== Olympus DAO `);
+		     terminal.pushToStdout(`type 'iplaya ipns/powerindex.io'  ===TO GO TO== PowerIndex `);
+		     terminal.pushToStdout(`type 'iplaya ipns/rekt.eth'  ===TO GO TO== Rekt `);
+		     terminal.pushToStdout(`type 'iplaya ipns/sourcify.eth'  ===TO GO TO== Sourcify `);
+		     terminal.pushToStdout(`type 'iplaya ipns/tornado.cash'  ===TO GO TO== Tornado Cash `);
+		     terminal.pushToStdout(`type 'iplaya ipns/zkeducation.eth'  ===TO GO TO== Zero Knowledge Education `);
                 })
 
                 return ''
