@@ -10,7 +10,6 @@ import QRCode from "react-qr-code";
 import Card from 'react-playing-card';
 import ScratchOff from './ScratchOff';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
-import Clock from 'react-live-clock';
 
 
 var Barcode = require('react-barcode');
@@ -56,7 +55,62 @@ export default class MyTerminal extends Component {
 
     this.selectDomain = this.selectDomain.bind(this);
     this.prodLookup= this.prodLookup.bind(this);
+    this.DisplayTime = this.DisplayTime.bind(this);
+    this.getTimeZoneTimeObj= this.getTimeZoneTimeObj.bind(this);
   }
+
+
+
+  componentDidMount = async () => {
+    var self = this;
+    setInterval(function() {
+        return self.DisplayTime(-300);
+     }, 3000);
+
+    return this.DisplayTime(-300);
+  }
+
+
+
+
+
+
+
+  DisplayTime = (timeZoneOffsetminutes) => {
+  if (!document.all && !document.getElementById)
+  return
+  var timeElement=document.getElementById? document.getElementById("curTime"): document.all.tick2
+  let d = new Date();
+  var requiredDate=d.getUTCDate(timeZoneOffsetminutes)
+
+  var hours=d.getHours();
+  var minutes=d.getMinutes();
+  var seconds=d.getSeconds();
+
+
+  var day=d.getDate();
+  var month=d.getMonth() + 1;
+  var year=d.getUTCFullYear();
+
+
+  if (hours>12) hours=hours-12;
+  if (hours==0) hours=12;
+  if (minutes<=9) minutes="0"+minutes;
+  if (seconds<=9) seconds="0"+seconds;
+  var currentTime=hours+":"+minutes+":"+seconds + " " + day + "/" + month + "/" + year;
+  timeElement.innerHTML="<font style='font-family:Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&subset=latin,cyrillic-ext,latin-extfont-size:14px;color:#fff;'>"+currentTime+"</b>"
+  }
+
+//window.onload=DisplayTime(-330);
+
+  getTimeZoneTimeObj = (timeZoneOffsetminutes) => {
+     var localdate = new Date()
+     var timeZoneDate = new Date(localdate.getTime() + ((localdate.getTimezoneOffset()- timeZoneOffsetminutes)*60*1000));
+    return {'h':timeZoneDate.getHours(),'m':timeZoneDate.getMinutes(),'s':timeZoneDate.getSeconds()};
+  }
+
+
+
 
   prodLookup= async (upc) => {
     var xhr = new XMLHttpRequest();
@@ -108,11 +162,9 @@ export default class MyTerminal extends Component {
 
 
 
-
     return (
       <div>
-
-      <Clock format={'HH:mm:ss M-D-Y'} ticking={true} timezone={'US/Pacific'} />
+      <div id="curTime"></div>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModal} closemodal={() => this.setState({ showModal: false })} type="pulse" >{this.state.vrLink}</Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalBuy} closemodal={() => this.setState({ showModalBuy: false })} type="pulse" > {this.state.buyModalContent}</Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalTutorial} closemodal={() => this.setState({ showModalTutorial: false })} type="pulse" ><iframe style={{height:"100vh"}} src="https://gateway.pinata.cloud/ipfs/QmStW8PBZjxjSkwnxvr15rHvRajCUkPRMEJGQejQu8EE4W" /></Modal>
