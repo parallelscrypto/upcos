@@ -892,10 +892,9 @@ export default class MyTerminal extends Component {
 		  var self = this;
                   let info = this.props.upcInfo(this.state.account)
 		   .then(data => {
-			var fullIpfs = "https://ipfs.io/" + data['ipfs'];
-			var universalIpfs = fullIpfs.replace('gateway.pinata.cloud','ipfs.io');
+			var fullIpfs = "https://upcunderground.mypinata.cloud/" + data['ipfs'];
 			var link = <a href={fullIpfs} >View my IPFS Website!</a>
-			   self.setState({fullIpfs: universalIpfs});
+			   self.setState({fullIpfs: fullIpfs});
 			   self.setState({showBigShow: true});
                   });
 		  
@@ -919,7 +918,7 @@ export default class MyTerminal extends Component {
             },
 
 
-            rplaya: {
+            iplaya: {
               description: '<p style="color:hotpink;font-size:1.1em">** RawBeachMediaPlayer! Loads the media player and plays the RAW IPFS resource attached to this UPC. Raw resources can include IPNS resources.  Just run rplaya /ipfs/##hash##` or `rplaya /ipns/##hash##` and load those raw resouces.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety </p>',
               fn: (rawHash) => {
                 this.setState({progressBal: ''});
@@ -928,10 +927,9 @@ export default class MyTerminal extends Component {
 		  var self = this;
                   let info = this.props.upcInfo(this.state.account)
 		   .then(data => {
-			var fullIpfs = "https://ipfs.io/" + rawHash;
-			var universalIpfs = fullIpfs.replace('gateway.pinata.cloud','ipfs.io');
+			var fullIpfs = "https://upcunderground.mypinata.cloud/" + rawHash;
 			var link = <a href={fullIpfs} >View my IPFS Website!</a>
-			   self.setState({fullIpfs: universalIpfs});
+			   self.setState({fullIpfs: fullIpfs});
 			   self.setState({showBigShow: true});
                   });
 		  
@@ -953,6 +951,50 @@ export default class MyTerminal extends Component {
 
 
             },
+
+
+
+
+            nplaya: {
+              description: '<p style="color:hotpink;font-size:1.1em">** CrossBeachMediaPlayer! Runs an X-Reference and reads the data from the <upcId> passed in.  Next the XBMP loads and plays the IPFS resource attached to XRd UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety  </p>',
+              fn: (nftId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+		  var self = this;
+
+                  let info = this.props.nftInfo(nftId)
+		   .then(data => {
+                        var ipfsLocal = data['ipfs'];
+
+      			var fullIpfs = "https://upcunderground.mypinata.cloud/" + ipfsLocal;
+      			   self.setState({fullIpfs: fullIpfs});
+      			   self.setState({showBigShow: true});
+      		  
+      
+                        const interval = setInterval(() => {
+                          if (this.state.progressBal != '') { // Stop at 100%
+                            clearInterval(interval)
+                            this.setState({ isProgressing: false, progress: 0 })
+                          } else {
+                            this.setState({progressBal: info});
+                            var self = this;
+                            this.setState({ progress: this.state.progress + 10 })
+                          }
+                        }, 1500)
+                      })
+      
+                      return ''
+
+
+                  });
+		  
+
+              }
+
+
+            },
+
 
 
 
@@ -969,10 +1011,9 @@ export default class MyTerminal extends Component {
 		   .then(data => {
                         var ipfsLocal = data['ipfs'];
 
-      			var fullIpfs = "https://ipfs.io/" + ipfsLocal;
-      			var universalIpfs = fullIpfs.replace('gateway.pinata.cloud','ipfs.io');
+      			var fullIpfs = "https://upcunderground.mypinata.cloud/" + ipfsLocal;
       			var link = <a href={fullIpfs} >View my IPFS Website!</a>
-      			   self.setState({fullIpfs: universalIpfs});
+      			   self.setState({fullIpfs: fullIpfs});
       			   self.setState({showBigShow: true});
       		  
       
