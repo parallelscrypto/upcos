@@ -157,7 +157,7 @@ export default class MyTerminal extends Component {
         <p><img src={srcImg} height="200" width="200"/></p>
 	<p><QRCode size={128} value={cardValueStr} onClick={() => { this.setState({qIsOpen: true})}}/></p>
     </div>
-    var myProduct = <iframe srcDoc={this.state.showProductContent} style={{height:"100vh", width:"100vw"}}> </iframe>
+    var myProduct = <iframe srcDoc={this.state.showProductContent} style={{height:"90vh", width:"90vw"}}> </iframe>
 
 
     var myUpload = <IpfsUpload /> 
@@ -189,7 +189,7 @@ export default class MyTerminal extends Component {
 
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showCardModal} closemodal={() => this.setState({ showCardModal: false })} type="pulse" > {myCard}</Modal>
-      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
+      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle","width":"95vw","height":"95vh"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showUploadModal} closemodal={() => this.setState({ showUploadModal: false })} type="pulse" > {myUpload}</Modal>
       <Terminal
         style={{"minHeight":"75vh",backgroundColor: "#000"}}
@@ -479,7 +479,7 @@ export default class MyTerminal extends Component {
 
 
             angel: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Be a guardian angel by injecting POLY into a UPC. Example: Type `ga 1000000000000000000` to inject 1 POLY to current UPC. Whoever owns the UPC can then withdraw it with the `tyvm` command</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Be a guardian angel by injecting MATIC into a UPC. Example: Type `ga 1000000000000000000` to inject 1 MATIC to current UPC. Whoever owns the UPC can then withdraw it with the `tyvm` command</p>',
               fn: (upcId, amount) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -497,7 +497,7 @@ export default class MyTerminal extends Component {
             },
 
             tyvm: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Say Thank YOU! and Withdraw all POLY from a UPC if you own the NFT for the UPC</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Say Thank YOU! and Withdraw all MATIC from a UPC if you own the NFT for the UPC</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -622,7 +622,7 @@ export default class MyTerminal extends Component {
 
 
             xi: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display intel about a NFT by passing the NFT ID.  Example `xintel 35` will return intel about NFT #35.</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display intel about a NFT by passing the NFT ID.  Example `xi 35` will return intel about NFT #35.</p>',
               fn: (nftId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -874,11 +874,13 @@ export default class MyTerminal extends Component {
             },
 
             qr: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display QR code for this UPC</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display QR for X-Referenced upcId</p>',
               fn: () => {
                       this.setState({showQrModal:true});
               }
             },
+
+
             411: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC</p>',
               fn: () => {
@@ -888,6 +890,16 @@ export default class MyTerminal extends Component {
                       //this.setState({showProductModal:true});
               }
             },
+            x411: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display product information for X-Referenced UPC</p>',
+              fn: (upcId) => {
+                      const terminal = this.progressTerminal.current
+                      terminal.pushToStdout(`Please wait... searching for data on upc # ${upcId}`);
+                      this.prodLookup(upcId);
+                      //this.setState({showProductModal:true});
+              }
+            },
+
             up: {
               description: '<p style="color:hotpink;font-size:1.1em">** Upload a file to ipfs</p>',
               fn: () => {
@@ -1337,7 +1349,7 @@ export default class MyTerminal extends Component {
 
 
             swap: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Swaps POLY for IntelX.  Specify the amount of IntelX in wei.  This will trigger a transaction that will mint equiv. IntelX for 1:1.  Example: to buy 5 IntelX type `swap 5000000000000000000`. In other words, this would send 5 matic for 5 IntelX</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Swaps MATIC for IntelX.  Specify the amount of IntelX in wei.  This will trigger a transaction that will mint equiv. IntelX for 1:1.  Example: to buy 5 IntelX type `swap 5000000000000000000`. In other words, this would send 5 matic for 5 IntelX</p>',
               fn: (amount) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1345,7 +1357,7 @@ export default class MyTerminal extends Component {
                   let approval = this.props.swap(amount);
                   approval.then((value) => {
                      approval = value;
-		     terminal.pushToStdout(`You have just swapped POLY for IntelX.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
+		     terminal.pushToStdout(`You have just swapped MATIC for IntelX.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
                      // expected output: "Success!"
                   });
 
