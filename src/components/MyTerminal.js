@@ -10,6 +10,7 @@ import QRCode from "react-qr-code";
 import Card from 'react-playing-card';
 import ScratchOff from './ScratchOff';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+import ReactPlayer from 'react-player'
 
 
 var Barcode = require('react-barcode');
@@ -44,6 +45,7 @@ export default class MyTerminal extends Component {
        showModalTutorial: false,
        showQrModal: false,
        showBigShow: false,
+       showBplayer: false,
        showMarketQrModal: false,
        buyModalContent: '',
        qrContent: '',
@@ -65,7 +67,7 @@ export default class MyTerminal extends Component {
     var self = this;
     setInterval(function() {
         return self.DisplayTime(-300);
-     }, 3000);
+     }, 1000);
 
     return this.DisplayTime(-300);
   }
@@ -169,6 +171,7 @@ export default class MyTerminal extends Component {
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalBuy} closemodal={() => this.setState({ showModalBuy: false })} type="pulse" > {this.state.buyModalContent}</Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalTutorial} closemodal={() => this.setState({ showModalTutorial: false })} type="pulse" ><iframe style={{height:"100vh"}} src="https://gateway.pinata.cloud/ipfs/QmStW8PBZjxjSkwnxvr15rHvRajCUkPRMEJGQejQu8EE4W" /></Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showBigShow} closemodal={() => this.setState({ showBigShow: false })} type="pulse" ><iframe style={{height:"100vh", width:"100vw"}} src={this.state.fullIpfs} /></Modal>
+      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showBplayer} closemodal={() => this.setState({ showBplayer: false })} type="pulse" ><ReactPlayer playing={'true'} controls={'true'} width={'100vw'} height={'100vh'} pip={'true'} stopOnUnmount={'false'} url={this.state.fullIpfs} /></Modal>
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showQrModal} closemodal={() => this.setState({ showQrModal: false })} type="pulse" ><QRCode size={128} value={this.state.account} onClick={() => { this.setState({qIsOpen: true})}}/><br/>{this.state.account}</Modal>
 
 
@@ -1069,6 +1072,54 @@ export default class MyTerminal extends Component {
 			}
       			   self.setState({fullIpfs: fullIpfs});
       			   self.setState({showBigShow: true});
+      		  
+      
+                        const interval = setInterval(() => {
+                          if (this.state.progressBal != '') { // Stop at 100%
+                            clearInterval(interval)
+                            this.setState({ isProgressing: false, progress: 0 })
+                          } else {
+                            this.setState({progressBal: info});
+                            var self = this;
+                            this.setState({ progress: this.state.progress + 10 })
+                          }
+                        }, 1500)
+                      })
+      
+                      return ''
+
+
+                  });
+		  
+
+              }
+
+
+            },
+
+
+
+            bplaya: {
+              description: '<p style="color:hotpink;font-size:1.1em">** BackgroundBeachMediaPlayer! Play music in the background while you workout or do whatever! Resources can be video or audio.</p>',
+              fn: (upcId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+		  var self = this;
+
+                  let info = this.props.upcInfo(upcId)
+		   .then(data => {
+                        var ipfsLocal = data['ipfs'];
+
+      			var fullIpfs = "https://upcunderground.mypinata.cloud/" + ipfsLocal;
+			if(fullIpfs.includes('QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU') ) {
+
+			   fullIpfs = fullIpfs.replace('upcunderground.mypinata.cloud','ipfs.io');
+			}
+
+      			var link = <a href={fullIpfs} >View my IPFS Website!</a>
+      			   self.setState({fullIpfs: fullIpfs});
+      			   self.setState({showBplayer: true});
       		  
       
                         const interval = setInterval(() => {
