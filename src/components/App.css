@@ -10,8 +10,7 @@
 
 .react-modal-body {
 position: relative;
-background-color: #fff;
-border-radius: 54px;
+background-color: #000;
 z-index: 103;
 width: 90vw;
 min-height: 90vh;

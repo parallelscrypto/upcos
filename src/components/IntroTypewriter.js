@@ -45,13 +45,13 @@ export default class IntroTypewriter extends Component {
 
   render() {
 
-    var message = ["<loading>", "Welcome to UpcOS! " , "experience @"+ this.state.code , "</loading>"]
+    var message = ["<loading>" , "TERMINAL#"+ this.state.code , "</loading>"]
     return (
       <div 
 	 style={{textAlign:"center", color:"green", transform:'translateY(50vh)' , transform:'translateY(50vw)'}}
       >
          <TypeWriterEffect
-            style={{transform:'translateY(150vw)'}}
+            style={{transform:'translateY(150vw)', fontFamily:'system-ui'}}
             startDelay={500}
             multiTextDelay={500}
             cursorColor="white"
