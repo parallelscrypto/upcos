@@ -206,7 +206,7 @@ export default class MyTerminal extends Component {
         commands={{
 
             swap: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** IntelX is the token used to write [[intel]] to UPC codes.  In order to acquire IntelX, you must run the `swap` command. This will `swap` MATIC that you have purchased likely from an exchange for IntelX from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of IntelX that you would like to exchange for the MATIC in your wallet in wei.  This will trigger a transaction that will mint equiv. IntelX for MATIC 1:1.  Example: to buy 5 IntelX type `swap 5000000000000000000`. In other words, this would send 5 MATIC from your wallet for 5 IntelX from the IntelX mint.  Visit <a href="000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** IntelX is the token used to write [[intel]] to UPC codes.  In order to acquire IntelX, you must run the `swap` command. This will `swap` MATIC that you have purchased likely from an exchange for IntelX from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of IntelX that you would like to exchange for the MATIC in your wallet in wei.  This will trigger a transaction that will mint equiv. IntelX for MATIC 1:1.  Example: to buy 5 IntelX type `swap 5000000000000000000`. In other words, this would send 5 MATIC from your wallet for 5 IntelX from the IntelX mint.  Visit <a href="upc://000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
               fn: (amount) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -238,7 +238,7 @@ export default class MyTerminal extends Component {
             },
 
             step0: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Approve the Underground to spend 50 of your IntelX.  After you have spent 50, you must run step0 again.    You MUST run this command FIRST or all of your `step1` and `step2` commands will fail. Visit <a href="/000000000011">[[000000000011]]</a> to view a video tutorial on step0**</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Approve the Underground to spend 50 of your IntelX.  After you have spent 50, you must run step0 again.    You MUST run this command FIRST or all of your `step1` and `step2` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on step0**</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
