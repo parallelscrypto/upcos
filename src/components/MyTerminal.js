@@ -254,7 +254,7 @@ export default class MyTerminal extends Component {
 
                          terminal.pushToStdout(`[[step0]]`);
 		terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
-                         terminal.pushToStdout(`[[/step9]]`);
+                         terminal.pushToStdout(`[[/step0]]`);
                 return ''
               }
             },
@@ -284,19 +284,24 @@ export default class MyTerminal extends Component {
                            <option selected>Select a domain</option>
                            <option value="0">.upc</option>
                            <option value="1">.afro</option>
-                           <option value="2">.fire</option>
+                           <option value="2">.nunya</option>
                            <option value="3">.barefoot</option>
-                           <option value="4">.verify</option>
-                           <option value="5">.rivalry</option>
-                           <option value="6">.prediction</option>
-                           <option value="7">.mp3</option>
-                           <option value="8">.mp4</option>
-                           <option value="8">.playlist</option>
-                           <option value="9">.txt</option>
-                           <option value="10">.app</option>
-                           <option value="11">.alexi</option>
-                           <option value="12">.profile</option>
-                           <option value="13">.peace</option>
+                           <option value="4">.peace</option>
+                           <option value="5">.verify</option>
+                           <option value="6">.rivalry</option>
+                           <option value="7">.prediction</option>
+                           <option value="8">.mp3</option>
+                           <option value="9">.mp4</option>
+                           <option value="19">.txt</option>
+                           <option value="11">.playlist</option>
+                           <option value="12">.app</option>
+                           <option value="13">.alexi</option>
+                           <option value="14">.profile</option>
+                           <option value="15">.ozzie</option>
+                           <option value="16">.strutt</option>
+                           <option value="17">.monkian</option>
+                           <option value="18">.underground-dictionary</option>
+                           <option value="19">.fire</option>
                         </select>
 
                     </div>
@@ -387,6 +392,125 @@ export default class MyTerminal extends Component {
               }
             },
 
+            flip: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Flip this NFT!  Send it to the decentralized marketplace after you have put in the hard work of renovating this UPC property!  After this command succeeds, you can set-market-price with smp command.  Sale will not start until you set market price (smp) **</p>',
+              fn: (nftId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var theBal;
+                  let bal = this.props.sendToMarket(nftId);
+                      bal.then((value) => {
+                         terminal.pushToStdout(`[[flip]]`);
+                         terminal.pushToStdout(`Sending your NFT to the market.  Check the activity tab to monitor progress.  If this command completes, you must run 'smp' to set-market-price before the sale can begin.`);
+                         terminal.pushToStdout(`[[/flip]]`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
+
+
+
+            mkt: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that are on the market **</p>',
+              fn: () => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var latest;
+                  let bal = this.props.latestTokenId();
+                      bal.then((value) => {
+                         latest = Math.round(value);
+			 var i = 0;
+			 for(i = 0; i < latest; i++) {
+
+                            let info = this.props.getSaleInfo(i)
+
+                             .then((data) => {
+				  if(data['tokenId'] > 0) {
+                                     terminal.pushToStdout(`\n`);
+                                     terminal.pushToStdout(`*********** ${data['tokenId']} ***********`);
+                                     terminal.pushToStdout(`[[market-data]]`);
+                                     terminal.pushToStdout(`=====`);
+                                     terminal.pushToStdout(`contract: ${data['nftContract']}`);
+                                     terminal.pushToStdout(`=====`);
+                                     terminal.pushToStdout(`bidding_complete: ${data['bidIsComplete']}`);
+                                     terminal.pushToStdout(`=====`);
+                                     terminal.pushToStdout(`seller: ${data['seller']}`);
+                                     terminal.pushToStdout(`=====`);
+                                     terminal.pushToStdout(`winning_bidder: ${data['winningBidder']}`);
+                                     terminal.pushToStdout(`=====`);
+                                     terminal.pushToStdout(`token_id: ${data['tokenId']}`);
+                                     terminal.pushToStdout(`=====`);
+                                     terminal.pushToStdout(`price: ${data['price']}`);
+                                     terminal.pushToStdout(`=====`);
+                                     terminal.pushToStdout(`in_progress: ${data['inProgress']}`);
+                                     terminal.pushToStdout(`=====`);
+                                     terminal.pushToStdout(`[[/market-data]]`);
+                                     terminal.pushToStdout(`*********** ${data['tokenId']} ***********`);
+                                     terminal.pushToStdout(`\n`);
+			          }
+                            });
+	
+			 }
+			      
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
+
+            mbuy: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Market-buy.  Buys [[nftId]] from the marketplace for [[price]] **</p>',
+              fn: (nftId, price) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var theBal;
+                  let bal = this.props.buyFromMarket(nftId, price);
+                      bal.then((value) => {
+                         terminal.pushToStdout(`[[mbuy]]`);
+                         terminal.pushToStdout(`Congratulations.  You have put in a buy order for nft ${nftId} at price of ${price} MATIC.  Check activity tab for details on your order`);
+                         terminal.pushToStdout(`[[/mbuy]]`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
+
+            smp: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Set market price for an NFT that you have sent to the market.  By default when you send an NFT to the market, the price is 1 MATIC.  The sale will not start until you run this command and set the price in GWEI **</p>',
+              fn: (nftId, price) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var theBal;
+                  let bal = this.props.setMarketPrice(nftId, price);
+                      bal.then((value) => {
+                         theBal =window.web3.utils.fromWei(value, "ether");
+                         terminal.pushToStdout(`[[smp]]`);
+                         terminal.pushToStdout(`You have set the market price on: ${nftId}. Check activity tab for detailed transaction information`);
+                         terminal.pushToStdout(`[[/smp]]`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
+
+
 
 
             bal: {
@@ -412,7 +536,7 @@ export default class MyTerminal extends Component {
                       var self = this;
                          terminal.pushToStdout(`[[intelx-balance]]`);
                       this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Balance: ${theBal}` + " IntelX"))
-                         terminal.pushToStdout(`[[intelx-balance]]`);
+                         terminal.pushToStdout(`[[/intelx-balance]]`);
                     }
                   }, 1500)
                 })
@@ -464,70 +588,6 @@ export default class MyTerminal extends Component {
                 return ''
               }
             },
-
-
-            flip: {
-              description: '<p style="color:hotpink;font-size:1.1em">** This sends the nft to our decentralized marketplace after you have put in the hard work of renovating this UPC property!  After this command succeeds, you can set-market-price with smp command.  Sale will not start until you set market price (smp) **</p>',
-              fn: (nftId) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.sendToMarket(nftId);
-                      bal.then((value) => {
-                         terminal.pushToStdout(`[[flip]]`);
-                         terminal.pushToStdout(`Sending your NFT to the market.  Check the activity tab to monitor progress.  If this command completes, you must run 'smp' to set-market-price before the sale can begin.`);
-                         terminal.pushToStdout(`[[/flip]]`);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
-              }
-            },
-
-            mbuy: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Market-buy.  Buys [[nftId]] from the marketplace for [[price]] **</p>',
-              fn: (nftId, price) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.buyFromMarket(nftId, price);
-                      bal.then((value) => {
-                         terminal.pushToStdout(`[[mbuy]]`);
-                         terminal.pushToStdout(`Congratulations.  You have put in a buy order for nft ${nftId} at price of ${price} MATIC.  Check activity tab for details on your order`);
-                         terminal.pushToStdout(`[[/mbuy]]`);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
-              }
-            },
-
-
-            smp: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Set market price for an NFT that you have sent to the market.  By default when you send an NFT to the market, the price is 1 MATIC.  The sale will not start until you run this command and set the price in GWEI **</p>',
-              fn: (nftId, price) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.setMarketPrice(nftId, price);
-                      bal.then((value) => {
-                         theBal =window.web3.utils.fromWei(value, "ether");
-                         terminal.pushToStdout(`[[smp]]`);
-                         terminal.pushToStdout(`You have set the market price on: ${nftId}. Check activity tab for detailed transaction information`);
-                         terminal.pushToStdout(`[[/smp]]`);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
-              }
-            },
-
 
             ab: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display the Guardian Angel tip jar balance of the current UPC</p>',
