@@ -204,6 +204,37 @@ export default class MyTerminal extends Component {
         dangerMode={false}
         ref={this.progressTerminal}
         commands={{
+
+            swap: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** IntelX is the token used to write [[intel]] to UPC codes.  In order to acquire IntelX, you must run the `swap` command. This will `swap` MATIC that you have purchased likely from an exchange for IntelX from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of IntelX that you would like to exchange for the MATIC in your wallet in wei.  This will trigger a transaction that will mint equiv. IntelX for MATIC 1:1.  Example: to buy 5 IntelX type `swap 5000000000000000000`. In other words, this would send 5 MATIC from your wallet for 5 IntelX from the IntelX mint.  Visit <a href="000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
+              fn: (amount) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let approval = this.props.swap(amount);
+                  approval.then((value) => {
+                     approval = value;
+		     terminal.pushToStdout(`You have just swapped MATIC for IntelX.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
+                     // expected output: "Success!"
+                  });
+
+
+                  const interval = setInterval(() => {
+                    if (this.state.approved != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({approved: approval});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 } )
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
+
             step0: {
               description: '<p style="color:hotpink;font-size:1.1em">** Approve the Underground to spend 50 of your IntelX.  After you have spent 50, you must run step0 again.    You MUST run this command FIRST or all of your `step1` and `step2` commands will fail. **</p>',
               fn: () => {
@@ -256,6 +287,7 @@ export default class MyTerminal extends Component {
                            <option value="6">.prediction</option>
                            <option value="7">.mp3</option>
                            <option value="8">.mp4</option>
+                           <option value="8">.playlist</option>
                            <option value="9">.txt</option>
                            <option value="10">.app</option>
                            <option value="11">.alexi</option>
@@ -1085,7 +1117,7 @@ export default class MyTerminal extends Component {
 
 
             jplaya: {
-              description: '<p style="color:hotpink;font-size:1.1em">** CrossBeachMediaPlayer! Runs an X-Reference and reads the data from the <nftId> passed in.  Next the XBMP loads and plays the IPFS resource attached to XRd UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety  </p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** CrossBeachMediaPlayer! Runs an X-Reference and reads the data from the [[nftId]] passed in.  Next the XBMP loads and plays the IPFS resource attached to XRd UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety  </p>',
               fn: (nftId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1131,7 +1163,7 @@ export default class MyTerminal extends Component {
 
 
             bplaya: {
-              description: '<p style="color:hotpink;font-size:1.1em">** BackgroundBeachMediaPlayer! Play music in the background while you workout or do whatever! Resources can be video or audio.</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** BackgroundBeachMediaPlayer! Play music in the background or with the screen off while you workout or do whatever! Resources can be video or audio, but only audio will play with the screen off. Playlists are being integrated into bplaya.</p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1181,7 +1213,7 @@ export default class MyTerminal extends Component {
 
 
             xplaya: {
-              description: '<p style="color:hotpink;font-size:1.1em">** CrossBeachMediaPlayer! Runs an X-Reference and reads the data from the <upcId> passed in.  Next the XBMP loads and plays the IPFS resource attached to XRd UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety  </p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** CrossBeachMediaPlayer! Runs an X-Reference and reads the data from the [[upcId]] passed in.  Next the XBMP loads and plays the IPFS resource attached to XRd UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety  </p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1365,37 +1397,6 @@ export default class MyTerminal extends Component {
             },
 
 
-
-
-            swap: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Swaps MATIC for IntelX.  Specify the amount of IntelX in wei.  This will trigger a transaction that will mint equiv. IntelX for 1:1.  Example: to buy 5 IntelX type `swap 5000000000000000000`. In other words, this would send 5 matic for 5 IntelX</p>',
-              fn: (amount) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  let approval = this.props.swap(amount);
-                  approval.then((value) => {
-                     approval = value;
-		     terminal.pushToStdout(`You have just swapped MATIC for IntelX.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
-                     // expected output: "Success!"
-                  });
-
-
-                  const interval = setInterval(() => {
-                    if (this.state.approved != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({approved: approval});
-                      var self = this;
-                      this.setState({ progress: this.state.progress + 10 } )
-                    }
-                  }, 1500)
-                })
-
-                return ''
-              }
-            },
 
 
             ipfs411: {
