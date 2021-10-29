@@ -252,6 +252,15 @@ export default class MyTerminal extends Component {
                            <option value="2">.fire</option>
                            <option value="3">.barefoot</option>
                            <option value="4">.verify</option>
+                           <option value="5">.rivalry</option>
+                           <option value="6">.prediction</option>
+                           <option value="7">.mp3</option>
+                           <option value="8">.mp4</option>
+                           <option value="9">.txt</option>
+                           <option value="10">.app</option>
+                           <option value="11">.alexi</option>
+                           <option value="12">.profile</option>
+                           <option value="13">.peace</option>
                         </select>
 
                     </div>
