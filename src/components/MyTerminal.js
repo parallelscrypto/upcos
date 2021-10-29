@@ -167,11 +167,17 @@ export default class MyTerminal extends Component {
     return (
       <div>
       <div id="curTime"></div>
+
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModal} closemodal={() => this.setState({ showModal: false })} type="pulse" >{this.state.vrLink}</Modal>
+
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalBuy} closemodal={() => this.setState({ showModalBuy: false })} type="pulse" > {this.state.buyModalContent}</Modal>
+
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalTutorial} closemodal={() => this.setState({ showModalTutorial: false })} type="pulse" ><iframe style={{height:"100vh"}} src="https://gateway.pinata.cloud/ipfs/QmStW8PBZjxjSkwnxvr15rHvRajCUkPRMEJGQejQu8EE4W" /></Modal>
+
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showBigShow} closemodal={() => this.setState({ showBigShow: false })} type="pulse" ><iframe style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
+
       <Modal style={{ "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showBplayer} closemodal={() => this.setState({ showBplayer: false })} type="pulse" ><ReactPlayer playing={'true'} controls={'true'} width={'90vw'} height={'90vh'} pip={'true'} stopOnUnmount={'false'} url={this.state.fullIpfs} /></Modal>
+
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showQrModal} closemodal={() => this.setState({ showQrModal: false })} type="pulse" ><QRCode size={128} value={this.state.account} onClick={() => { this.setState({qIsOpen: true})}}/><br/>{this.state.account}</Modal>
 
 
@@ -189,7 +195,9 @@ export default class MyTerminal extends Component {
 
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showCardModal} closemodal={() => this.setState({ showCardModal: false })} type="pulse" > {myCard}</Modal>
+
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle","width":"95vw","height":"95vh"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
+
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showUploadModal} closemodal={() => this.setState({ showUploadModal: false })} type="pulse" > {myUpload}</Modal>
       <Terminal
         style={{"minHeight":"75vh",backgroundColor: "#000"}}
@@ -197,7 +205,7 @@ export default class MyTerminal extends Component {
         ref={this.progressTerminal}
         commands={{
             step0: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Approve the Underground to spend 50 of your IntelX.  You MUST run this command FIRST or all of your `buy` and `xbuy` commands will fail **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Approve the Underground to spend 50 of your IntelX.  After you have spent 50, you must run step0 again.    You MUST run this command FIRST or all of your `step1` and `step2` commands will fail. **</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -206,7 +214,7 @@ export default class MyTerminal extends Component {
                   const terminal = this.progressTerminal.current
                   let approval = this.props.approve();
                   approval.then((value) => {
-		     terminal.pushToStdout(`You have approved the Underground to transfer sufficient IntelX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'buy' and 'xbuy' commands will fail`)
+		     terminal.pushToStdout(`You have approved the Underground to transfer sufficient IntelX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'step1' and 'step1b' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
@@ -215,6 +223,57 @@ export default class MyTerminal extends Component {
                 return ''
               }
             },
+            step1: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Buy an NFT using the GUI interface.  After completing this step, check the `Activity` tab below to make sure that your purchase went through.  After your transaction has been processed successfully, you can move to the last phase `step 2` **</p>',
+              fn: (humanReadableName) => {
+                  var buyForm =  <div>
+		  <Barcode value={this.state.account} format="EAN13" />
+                  <form className="mb-3" onSubmit={(event) => {
+                      event.preventDefault()
+                      let upcId = this.state.account
+                      let humanReadableName = this.humanReadableName.value.toString()
+
+                      this.props.buyNft(upcId,humanReadableName, this.state.domain)
+                    }}>
+                    <div className="input-group mb-4">
+                      <input
+                        type="text"
+                        ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
+                        className="form-control form-control-lg break"
+                        placeholder=".upc Domain Name"
+                        required />
+
+                        <select id="lang" 
+		      onChange={(e) => { this.setState({domain: e.target.value}) } }
+			      >
+                           <option selected>Select a domain</option>
+                           <option value="0">.upc</option>
+                           <option value="1">.afro</option>
+                           <option value="2">.fire</option>
+                           <option value="3">.barefoot</option>
+                           <option value="4">.verify</option>
+                        </select>
+
+                    </div>
+                    <button
+                   type="submit"
+                   className="btn btn-primary btn-block btn-lg"
+                  >
+                  BUY NFT!
+              </button>
+                  </form>
+
+
+             </div>
+
+                      this.setState({buyModalContent:buyForm});
+                      this.setState({showModalBuy:true});
+
+
+              }
+            },
+
+
 
 
             step1b: {
@@ -248,55 +307,6 @@ export default class MyTerminal extends Component {
                 return ''
               }
             },
-            step1: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Buy an NFT using the GUI interface.  After completing this step, check the `Activity` tab below to make sure that your purchase went through.  After your transaction has been processed successfully, you can move to the last phase `step 2` **</p>',
-              fn: (humanReadableName) => {
-                  var buyForm =  <div>
-		  <Barcode value={this.state.account} format="EAN13" />
-                  <form className="mb-3" onSubmit={(event) => {
-                      event.preventDefault()
-                      let upcId = this.state.account
-                      let humanReadableName = this.humanReadableName.value.toString()
-
-                      this.props.buyNft(upcId,humanReadableName, this.state.domain)
-                    }}>
-                    <div className="input-group mb-4">
-                      <input
-                        type="text"
-                        ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
-                        className="form-control form-control-lg break"
-                        placeholder=".upc Domain Name"
-                        required />
-
-                        <select id="lang" 
-		      onChange={(e) => { this.setState({domain: e.target.value}) } }
-			      >
-                           <option selected>Select a domain</option>
-                           <option value="0">.upc</option>
-                           <option value="1">.afro</option>
-                           <option value="2">.fire</option>
-                        </select>
-
-                    </div>
-                    <button
-                   type="submit"
-                   className="btn btn-primary btn-block btn-lg"
-                  >
-                  BUY NFT!
-              </button>
-                  </form>
-
-
-             </div>
-
-                      this.setState({buyModalContent:buyForm});
-                      this.setState({showModalBuy:true});
-
-
-              }
-            },
-
-
 
             step2: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `buy` or `xbuy` command</p>',
@@ -479,7 +489,7 @@ export default class MyTerminal extends Component {
 
 
             angel: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Be a guardian angel by injecting MATIC into a UPC. Example: Type `ga 1000000000000000000` to inject 1 MATIC to current UPC. Whoever owns the UPC can then withdraw it with the `tyvm` command</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Be a guardian angel by injecting MATIC into a UPC. Example: Type `angel 777777777777 1000000000000000000` to inject 1 MATIC into upc terminal# 777777777777. Whoever owns the NFT for the UPC (terminal) can then withdraw it with the `tyvm` command</p>',
               fn: (upcId, amount) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -559,7 +569,7 @@ export default class MyTerminal extends Component {
             },
 
             snxi: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display intel about a NFT by passing the NFT ID.  Example `xintel 35` will return intel about NFT #35.</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display intel about a Super Navalny Brothers NFT by passing the NFT ID.  Example `snxi 35` will return intel about SNB #35.</p>',
               fn: (nftId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -573,7 +583,7 @@ export default class MyTerminal extends Component {
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
 
-                        terminal.pushToStdout(`<xintel>`);
+                        terminal.pushToStdout(`[[xintel]]`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`og_owner: ${data['og']}`);
                         terminal.pushToStdout(`=====`);
@@ -599,7 +609,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`created_date: ${created.toString()}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`</xintel>`);
+                        terminal.pushToStdout(`[[/xintel]]`);
                   });
 		  
 
@@ -636,7 +646,7 @@ export default class MyTerminal extends Component {
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
 
-                        terminal.pushToStdout(`<xintel>`);
+                        terminal.pushToStdout(`[[xintel]]`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`og_owner: ${data['og']}`);
                         terminal.pushToStdout(`=====`);
@@ -662,7 +672,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`created_date: ${created.toString()}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`</xintel>`);
+                        terminal.pushToStdout(`[[/xintel]]`);
                   });
 		  
 
@@ -696,7 +706,7 @@ export default class MyTerminal extends Component {
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
 
-                        terminal.pushToStdout(`<intel>`);
+                        terminal.pushToStdout(`[[intel]]`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`og_owner: ${data['og']}`);
                         terminal.pushToStdout(`=====`);
@@ -722,7 +732,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`created_date: ${created.toString()}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`</intel>`);
+                        terminal.pushToStdout(`[[/intel]]`);
                   });
 		  
 
@@ -757,7 +767,7 @@ export default class MyTerminal extends Component {
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
 
-                        terminal.pushToStdout(`<intel>`);
+                        terminal.pushToStdout(`[[intel]]`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`og_owner: ${data['og']}`);
                         terminal.pushToStdout(`=====`);
@@ -783,7 +793,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`created_date: ${created.toString()}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`</intel>`);
+                        terminal.pushToStdout(`[[/intel]]`);
                   });
 		  
 
@@ -817,7 +827,7 @@ export default class MyTerminal extends Component {
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
 
-                        terminal.pushToStdout(`<intel>`);
+                        terminal.pushToStdout(`[[intel]]`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`og_owner: ${data['og']}`);
                         terminal.pushToStdout(`=====`);
@@ -843,7 +853,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`created_date: ${created.toString()}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`</intel>`);
+                        terminal.pushToStdout(`[[/intel]]`);
                   });
 		  
 
