@@ -214,7 +214,9 @@ export default class MyTerminal extends Component {
                   let approval = this.props.swap(amount);
                   approval.then((value) => {
                      approval = value;
+                         terminal.pushToStdout(`[[swap]]`);
 		     terminal.pushToStdout(`You have just swapped MATIC for IntelX.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
+                         terminal.pushToStdout(`[[/swap]]`);
                      // expected output: "Success!"
                   });
 
@@ -250,7 +252,9 @@ export default class MyTerminal extends Component {
                   });
                 })
 
+                         terminal.pushToStdout(`[[step0]]`);
 		terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
+                         terminal.pushToStdout(`[[/step9]]`);
                 return ''
               }
             },
@@ -327,7 +331,9 @@ export default class MyTerminal extends Component {
                       approval.then((value) => {
                          approval = value;
 			 var congrats = "Thank you for your purchase! You now own NFT for " + this.state.account;
+                         terminal.pushToStdout(`[[step1b]]`);
                          terminal.pushToStdout(congrats)
+                         terminal.pushToStdout(`[[/step1b]]`);
 			      
                          // expected output: "Success!"
                       });
@@ -350,7 +356,7 @@ export default class MyTerminal extends Component {
             },
 
             step2: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `buy` or `xbuy` command</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `step1` or `step1b` command</p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -358,7 +364,9 @@ export default class MyTerminal extends Component {
                   let approval = this.props.mintNft(this.state.account);
                       approval.then((value) => {
                          approval = value;
+                         terminal.pushToStdout(`[[step2]]`);
 		         terminal.pushToStdout(`Congrats! You own UPCNFT for ${upcId}`)
+                         terminal.pushToStdout(`[[/step2]]`);
                          // expected output: "Success!"
                       });
 
@@ -402,7 +410,9 @@ export default class MyTerminal extends Component {
                     } else {
                       this.setState({progressBal: bal});
                       var self = this;
+                         terminal.pushToStdout(`[[intelx-balance]]`);
                       this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Balance: ${theBal}` + " IntelX"))
+                         terminal.pushToStdout(`[[intelx-balance]]`);
                     }
                   }, 1500)
                 })
@@ -421,7 +431,9 @@ export default class MyTerminal extends Component {
                   let bal = this.props.latestTokenIdNav();
                       bal.then((value) => {
                          latest = value;
+                         terminal.pushToStdout(`[[slast]]`);
                          terminal.pushToStdout(`latest_id: ${latest}`);
+                         terminal.pushToStdout(`[[/slast]]`);
                          // expected output: "Success!"
                       });
                 })
@@ -442,7 +454,9 @@ export default class MyTerminal extends Component {
                   let bal = this.props.latestTokenId();
                       bal.then((value) => {
                          latest = value;
+                         terminal.pushToStdout(`[[last]]`);
                          terminal.pushToStdout(`latest_id: ${latest}`);
+                         terminal.pushToStdout(`[[/last]]`);
                          // expected output: "Success!"
                       });
                 })
@@ -461,7 +475,9 @@ export default class MyTerminal extends Component {
                   var theBal;
                   let bal = this.props.sendToMarket(nftId);
                       bal.then((value) => {
+                         terminal.pushToStdout(`[[flip]]`);
                          terminal.pushToStdout(`Sending your NFT to the market.  Check the activity tab to monitor progress.  If this command completes, you must run 'smp' to set-market-price before the sale can begin.`);
+                         terminal.pushToStdout(`[[/flip]]`);
                          // expected output: "Success!"
                       });
                 })
@@ -471,7 +487,7 @@ export default class MyTerminal extends Component {
             },
 
             mbuy: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Market-buy.  Buys <nftId> from the marketplace for <price> **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Market-buy.  Buys [[nftId]] from the marketplace for [[price]] **</p>',
               fn: (nftId, price) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -479,7 +495,9 @@ export default class MyTerminal extends Component {
                   var theBal;
                   let bal = this.props.buyFromMarket(nftId, price);
                       bal.then((value) => {
+                         terminal.pushToStdout(`[[mbuy]]`);
                          terminal.pushToStdout(`Congratulations.  You have put in a buy order for nft ${nftId} at price of ${price} MATIC.  Check activity tab for details on your order`);
+                         terminal.pushToStdout(`[[/mbuy]]`);
                          // expected output: "Success!"
                       });
                 })
@@ -499,7 +517,9 @@ export default class MyTerminal extends Component {
                   let bal = this.props.setMarketPrice(nftId, price);
                       bal.then((value) => {
                          theBal =window.web3.utils.fromWei(value, "ether");
+                         terminal.pushToStdout(`[[smp]]`);
                          terminal.pushToStdout(`You have set the market price on: ${nftId}. Check activity tab for detailed transaction information`);
+                         terminal.pushToStdout(`[[/smp]]`);
                          // expected output: "Success!"
                       });
                 })
@@ -519,7 +539,9 @@ export default class MyTerminal extends Component {
                   let bal = this.props.pbal(this.state.account);
                       bal.then((value) => {
                          theBal =window.web3.utils.fromWei(value, "ether");
+                         terminal.pushToStdout(`[[angel-balance]]`);
                          terminal.pushToStdout(`angel_balance: ${theBal} MATIC`);
+                         terminal.pushToStdout(`[[/angel-balance]]`);
                          // expected output: "Success!"
                       });
                 })
@@ -573,7 +595,7 @@ export default class MyTerminal extends Component {
                   const terminal = this.progressTerminal.current
                   let info = this.props.getSaleInfo(nftId)
 		   .then(data => {
-                        terminal.pushToStdout(`<market-data>`);
+                        terminal.pushToStdout(`[[market-data]]`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`contract: ${data['nftContract']}`);
                         terminal.pushToStdout(`=====`);
@@ -589,7 +611,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`in_progress: ${data['inProgress']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`</market-data>`);
+                        terminal.pushToStdout(`[[/market-data]]`);
                   });
 		  
 
@@ -624,7 +646,7 @@ export default class MyTerminal extends Component {
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
 
-                        terminal.pushToStdout(`[[xintel]]`);
+                        terminal.pushToStdout(`[[snxi]]`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`og_owner: ${data['og']}`);
                         terminal.pushToStdout(`=====`);
@@ -650,7 +672,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`created_date: ${created.toString()}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`[[/xintel]]`);
+                        terminal.pushToStdout(`[[/snxi]]`);
                   });
 		  
 
