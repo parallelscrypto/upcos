@@ -446,9 +446,11 @@ export default class MyTerminal extends Component {
                                      terminal.pushToStdout(`=====`);
                                      terminal.pushToStdout(`token_id: ${data['tokenId']}`);
                                      terminal.pushToStdout(`=====`);
-                                     terminal.pushToStdout(`price: ${data['price']}`);
+                                     terminal.pushToStdout(`asking_price (wei): ${data['price']}`);
                                      terminal.pushToStdout(`=====`);
                                      terminal.pushToStdout(`in_progress: ${data['inProgress']}`);
+                                     terminal.pushToStdout(`=====`);
+                                     terminal.pushToStdout(`fee (or 2%): ${data['fee']}`);
                                      terminal.pushToStdout(`=====`);
                                      terminal.pushToStdout(`[[/market-data]]`);
                                      terminal.pushToStdout(`*********** ${data['tokenId']} ***********`);

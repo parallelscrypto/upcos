@@ -21,7 +21,8 @@ import Intel from './Intel'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './App.css'
 import 'react-tabs/style/react-tabs.css';
-const market_address = "0x7e42A6D0c419E6525aeBF5085e602F465Fa0Fab3";
+//const market_address = "0x7e42A6D0c419E6525aeBF5085e602F465Fa0Fab3";
+const market_address = "0xAc2dC55B8114548A3b9ad1bAe72c6fE99e934D54";
 
 class App extends Component {
 

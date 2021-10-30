@@ -14,18 +14,20 @@ contract UPCMarket is IERC721Receiver {
         uint256 tokenId;
         uint256 price;
         bool inProgress;
+        uint fee;
     }    
 
     mapping (uint256 => AuctionDetails) public auctionDetails;
 
-    constructor() {}
+    address payable private  bank;
     
     
-    
+    constructor() {
+        bank = payable(msg.sender);
+    }
 
 
     function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes memory _data) public override returns(bytes4) {
-        
         
         
         auctionDetails[_tokenId] = AuctionDetails({
@@ -35,12 +37,22 @@ contract UPCMarket is IERC721Receiver {
             winningBidder: address(0),
             tokenId: _tokenId,
             inProgress: false,
-            price: 10000000000000000
+            price: 10000000000000000,
+            fee: 0
         });
         
 
         return 0x150b7a02;
      }
+
+
+
+    function calculateFee(uint amount) external pure returns (uint) {
+        require((amount / 10000) * 10000 == amount , 'too small');
+        return amount * 200 / 10000;  //2%
+    }
+
+
      
      
     function completeSale(uint256 auctionId) payable external {
@@ -54,7 +66,11 @@ contract UPCMarket is IERC721Receiver {
         details.nftContract.safeTransferFrom(address(this), msg.sender, auctionId);
         
         address payable  winnerPay  = payable(details.seller);
-        winnerPay.transfer(msg.value);
+        uint fee = this.calculateFee(msg.value);
+        uint sellerPay = msg.value - fee;
+        
+        
+        winnerPay.transfer(sellerPay);
         // Send money to seller
         // Do event logging
         delete auctionDetails[auctionId];      
@@ -67,7 +83,10 @@ contract UPCMarket is IERC721Receiver {
         require(msg.sender == details.seller, "Only seller can set price");
         require(details.bidIsComplete == false , "Sale must be ongoing in order to set price");
         // Collect money from winning bidder
+        
+        uint fee = this.calculateFee(price);
         auctionDetails[auctionId].price = price;
+        auctionDetails[auctionId].fee = fee;
         auctionDetails[auctionId].inProgress = true;
     }
     
@@ -79,9 +98,13 @@ contract UPCMarket is IERC721Receiver {
         
         //send any earnings before cancelling
         address payable  winnerPay  = payable(details.seller);
-        winnerPay.transfer(details.price);
+        
+        
+        bank.transfer(details.fee);
+        winnerPay.transfer(details.price - details.fee);
         
         delete auctionDetails[auctionId];
     }
     
 }
+
