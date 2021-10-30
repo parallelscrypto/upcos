@@ -142,8 +142,11 @@ export default class MyTerminal extends Component {
 
     var addy = this.props.address;
     addy  = addy.substr(0,10);
-    var promptlabel =  addy + '_@' + this.state.account + '>';
-    var welcomeMsg = "Welcome to UPC Underground! \n TERMINAL#" + this.state.account  +"\n Type `help` to see available commands"
+    var promptlabel =  addy + '_@[[' + this.state.account + ']]>';
+    var welcomeMsg = "Welcome to UPC Underground! \n TERMINAL [[" + this.state.account  +"]]\n Type `help` to see available commands \n Type `playa` to activate media resource [[" + this.state.account + "]]\n Type `swap` to get some IntelX <a href='upc://000000000011'>[[000000000011]]</a> \n Type `i` to check the [[intel]] encoded into [["+ this.state.account+"]]  <a href='upc://000000000012'>[[000000000012]]</a> \n Type `step0` to approve 50 of your IntelX to be spent.  <a href='upc://000000000013'>[[000000000013]]</a> \n Type `step1` to buy the UPC [[" + this.state.account + "]]" + "<a href='upc://000000000014'>[[000000000014]]</a> \n Type `step2` to mint if successful with step1 [[" + this.state.account + "]]" + "<a href='upc://000000000015'>[[000000000015]]</a> \n Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + "  <a href='upc://000000000016'>[[000000000016]]</a> \n Type `clear` to clear screen" ;
+
+
+
     var upcHash  = sha256(this.state.account)
     var srcImg = 'https://avatars.dicebear.com/api/adventurer/'  + upcHash + ".svg";
     var cardValue = {
@@ -302,6 +305,7 @@ export default class MyTerminal extends Component {
                            <option value="17">.monkian</option>
                            <option value="18">.underground-dictionary</option>
                            <option value="19">.fire</option>
+                           <option value="20">.deliver</option>
                         </select>
 
                     </div>
