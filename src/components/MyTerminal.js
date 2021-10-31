@@ -16,7 +16,7 @@ import ReactPlayer from 'react-player'
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
-var tlds = ['upc' , 'afro', 'nunya', 'barefoot', 'peace', 'verify', 'rivalry', 'prediction', 'mp3', 'mp4', 'txt', 'playlist', 'app', 'alexi', 'profile', 'ozzie', 'strutt', 'monkian', 'underground-dictionary', 'deliver' ];
+var tlds = ['upc' , 'afro', 'nunya', 'barefoot', 'peace', 'verify', 'rivalry', 'prediction', 'mp3', 'mp4', 'txt', 'playlist', 'app', 'alexi', 'profile', 'ozzie', 'strutt', 'monkian', 'underground-dictionary', 'fire', 'deliver', "grind", '11:11', 'BULLY_SMASH' ];
 const commands = {
   echo: {
     description: '** Echo a passed string.',
@@ -307,6 +307,9 @@ export default class MyTerminal extends Component {
                            <option value="18">.underground-dictionary</option>
                            <option value="19">.fire</option>
                            <option value="20">.deliver</option>
+                           <option value="21">.grind</option>
+                           <option value="22">.11:11</option>
+                           <option value="23">.BULLY_SMASH</option>
                         </select>
 
                     </div>
@@ -1136,6 +1139,42 @@ export default class MyTerminal extends Component {
                 return ''
               }
             },
+
+            comics: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display XKCD comic interface</p>',
+              fn: (rawHash) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+		  var self = this;
+                  let info = this.props.upcInfo(this.state.account)
+		   .then(data => {
+			var fullIpfs = "https://ipfs.io/ipfs/QmP7UYTMQFhsiRHfbgPgEngALzXWroSRVkEyWSbJTd23yf"
+			var link = <a href={fullIpfs} >View my IPFS Website!</a>
+			   self.setState({fullIpfs: fullIpfs});
+			   self.setState({showBigShow: true});
+                  });
+		  
+
+                  const interval = setInterval(() => {
+                    if (this.state.progressBal != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({progressBal: info});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+
+
+            },
+
+
 
 
             playa: {
