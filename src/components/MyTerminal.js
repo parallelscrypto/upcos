@@ -16,6 +16,7 @@ import ReactPlayer from 'react-player'
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
+var tlds = ['upc' , 'afro', 'nunya', 'barefoot', 'peace', 'verify', 'rivalry', 'prediction', 'mp3', 'mp4', 'txt', 'playlist', 'app', 'alexi', 'profile', 'ozzie', 'strutt', 'monkian', 'underground-dictionary', 'deliver' ];
 const commands = {
   echo: {
     description: '** Echo a passed string.',
@@ -706,6 +707,8 @@ export default class MyTerminal extends Component {
                   let info = this.props.nftInfoNav(nftId)
 		   .then(data => {
 
+			let hrTLD = tlds[data['tld']];
+		        let tld = hrTLD + " (" + data['tld'] + ")";
 			var tmpStamp = parseInt(data['latestTimestamp']);
                         var newDate = new Date(tmpStamp * 1000);
 
@@ -720,7 +723,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`tld: ${data['tld']}`);
+                        terminal.pushToStdout(`tld: ${tld}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`token_id: ${data['tokenId']}`);
                         terminal.pushToStdout(`=====`);
@@ -769,6 +772,8 @@ export default class MyTerminal extends Component {
                   let info = this.props.nftInfo(nftId)
 		   .then(data => {
 
+			let hrTLD = tlds[data['tld']];
+		        let tld = hrTLD + " (" + data['tld'] + ")";
 			var tmpStamp = parseInt(data['latestTimestamp']);
                         var newDate = new Date(tmpStamp * 1000);
 
@@ -783,7 +788,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`tld: ${data['tld']}`);
+                        terminal.pushToStdout(`tld: ${tld}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`token_id: ${data['tokenId']}`);
                         terminal.pushToStdout(`=====`);
@@ -835,6 +840,8 @@ export default class MyTerminal extends Component {
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
 
+			let hrTLD = tlds[data['tld']];
+		        let tld = hrTLD + " (" + data['tld'] + ")";
                         terminal.pushToStdout(`[[intel]]`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`og_owner: ${data['og']}`);
@@ -843,7 +850,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`tld: ${data['tld']}`);
+                        terminal.pushToStdout(`tld: ${tld}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`token_id: ${data['tokenId']}`);
                         terminal.pushToStdout(`=====`);
@@ -895,6 +902,8 @@ export default class MyTerminal extends Component {
 
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
+			let hrTLD = tlds[data['tld']];
+		        let tld = hrTLD + " (" + data['tld'] + ")";
 
                         terminal.pushToStdout(`[[intel]]`);
                         terminal.pushToStdout(`=====`);
@@ -904,7 +913,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`tld: ${data['tld']}`);
+                        terminal.pushToStdout(`tld: ${tld}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`token_id: ${data['tokenId']}`);
                         terminal.pushToStdout(`=====`);
@@ -955,6 +964,8 @@ export default class MyTerminal extends Component {
 
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
+			let hrTLD = tlds[data['tld']];
+		        let tld = hrTLD + " (" + data['tld'] + ")";
 
                         terminal.pushToStdout(`[[intel]]`);
                         terminal.pushToStdout(`=====`);
@@ -964,7 +975,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`tld: ${data['tld']}`);
+                        terminal.pushToStdout(`tld: ${tld}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`token_id: ${data['tokenId']}`);
                         terminal.pushToStdout(`=====`);
