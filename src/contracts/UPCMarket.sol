@@ -71,6 +71,7 @@ contract UPCMarket is IERC721Receiver {
         address payable  winnerPay  = payable(details.seller);
         uint fee = this.calculateFee(msg.value);
         uint sellerPay = msg.value - fee;
+        bank.transfer(fee);
         
         
         winnerPay.transfer(sellerPay);
@@ -122,7 +123,6 @@ contract UPCMarket is IERC721Receiver {
         address payable  winnerPay  = payable(details.seller);
         
         
-        bank.transfer(details.fee);
         winnerPay.transfer(details.price - details.fee);
         
         delete auctionDetails[auctionId];
