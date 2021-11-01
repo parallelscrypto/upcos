@@ -18,6 +18,7 @@ import Withdraw from './Withdraw'
 import Deposit from './Deposit'
 import IntroTypewriter from './IntroTypewriter'
 import Intel from './Intel'
+import UpcStatsTicker from './UpcStatsTicker'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './App.css'
 import 'react-tabs/style/react-tabs.css';
@@ -229,8 +230,6 @@ class App extends Component {
 
 
 
-
-
   getVrByUpcId = async (upcId) => {
     const { accounts, contract } = this.state;
 
@@ -403,6 +402,38 @@ class App extends Component {
     return this.state.upcNft.methods.latestTokenId().call({ from: this.state.account });
   };
 
+
+ refreshFeed = async () => {
+ var latest
+ var feedItems = []; 
+ let bal = this.latestTokenId();
+     bal.then((value) => {
+        latest = Math.round(value);
+        var i = 0;
+
+        let self = this;
+        for(i = 0; i < latest; i++) {
+
+           let info = this.getSaleInfo(i)
+            .then((data) => {
+                 if(data['tokenId'] > 0) {
+                    feedItems.push(data);
+                 }
+
+           });
+
+         }
+         var rand = Math.floor(Math.random() * (9999999999 - 0 + 1)) + 0;
+         this.setState({marketInfo:feedItems});
+        // expected output: "Success!"
+     }); 
+     return feedItems;
+  }
+
+
+
+
+
   nftInfo = async (nftId) => {
     const { accounts, contract } = this.state;
 
@@ -462,10 +493,10 @@ class App extends Component {
   componentDidMount(){
     var self = this;
 
-//     this.setState({ upcBal });
     setInterval(function() {
-        return self.getTVL();
-     }, 2000);
+//    return self.refreshFeed()
+     }, 20000);
+//    return this.refreshFeed()
   }
 
  
@@ -560,6 +591,8 @@ class App extends Component {
 
   constructor(props) {
     super(props)
+    //var marketInfo = this.refreshFeed()
+    var marketInfo = ["Loading market data..."];
     this.state = {
       account: '0x0',
       upcGoldBank: {},
@@ -569,7 +602,8 @@ class App extends Component {
       upc: '',
       isFlipped: false,
       intel: "",
-      code: ""
+      marketInfo: marketInfo,
+      code: "",
     }
 
     var self = this;
@@ -584,6 +618,7 @@ class App extends Component {
     }
     this.handleChange = this.handleChange.bind(this);
     this.listNfts= this.listNfts.bind(this);
+    this.refreshFeed= this.refreshFeed.bind(this);
 
     this.buyNftNav= this.buyNftNav.bind(this);
     this.mintNftNav= this.mintNftNav.bind(this);
@@ -633,6 +668,8 @@ class App extends Component {
     let leases
     let evictions
     var loadAnim 
+
+    //this.latestTokenId();
     if(this.state.loading) {
             let data = this.state.intel; 
             loadAnim = 
@@ -646,7 +683,10 @@ class App extends Component {
     }
     else if(this.state.intel) {
       deposit = "";
-      deposit = <Intel
+                
+      deposit = 
+        <div>
+        <Intel
 	address={this.state.account}
         handleChange={this.handleChange}
         updateUpc={this.updateUpc}
@@ -677,6 +717,7 @@ class App extends Component {
 	getSaleInfo={this.getSaleInfo}
 	setVr={this.setVr}
 	setIpfs={this.setIpfs}
+	refreshFeed={this.refreshFeed}
 
 	upcInfoNav={this.upcInfoNav}
 	nftInfoNav={this.nftInfoNav}
@@ -686,8 +727,8 @@ class App extends Component {
 	nftInfo={this.nftInfo}
 	latestTokenId={this.latestTokenId}
       />
-
-
+      <UpcStatsTicker latestTokenId={this.latestTokenId} getSaleInfo={this.getSaleInfo} marketInfo={this.state.marketInfo} style={{"position":"absolute","bottom":"0"}} />
+      </div>
     } else {
       leases= <Leases
         daiTokenBalance={this.state.daiTokenBalance}
