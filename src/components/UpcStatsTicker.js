@@ -48,7 +48,7 @@ let self = this;
             .then((data) => {
                  if(data['tokenId'] > 0) {
 console.log(data);
-                    var data = "token_id: " + data['tokenId'] + " price: " + data['price'] + " ; "
+                    var data = " [[token_id: " + data['tokenId'] + ", price: " + data['price'] + ", in_progress:" + data['inProgress'] + ";]] "
                     feedItems.push(data);
                     self.setState({marketInfo:feedItems});
                     self.setState({random:434});
@@ -91,11 +91,11 @@ console.log(data);
         <Ticker
           direction="toRight"
           offset="100%"
-          speed={0.5}
+          speed={5.5}
           move={this.state.move}
         >
           {(index) => (
-            <b mktInfo={this.state.random} style={{color:"orange"}}>{this.state.marketInfo}</b>
+            <b mktInfo={this.state.random} style={{whiteSpace:"nowrap",color:"orange"}}>{this.state.marketInfo}</b>
           )}
         </Ticker>
 	    
