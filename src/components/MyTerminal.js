@@ -498,6 +498,52 @@ export default class MyTerminal extends Component {
             },
 
 
+            shrn: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Set human readable name for an NFT that you have sent to the market.  By default when you send an NFT to the market, the HRN is Anonymous UPC.  This is a chance to add some branding to your UPC **</p>',
+              fn: (nftId, hrn) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var theBal;
+                  let bal = this.props.setHRNMarket(nftId, hrn);
+                      bal.then((value) => {
+                         terminal.pushToStdout(`[[shrn]]`);
+                         terminal.pushToStdout(`You have set the HRN on: ${nftId}. Check activity tab for detailed transaction information`);
+                         terminal.pushToStdout(`[[/shrn]]`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
+
+
+            supc: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Set UPC for an NFT that you have sent to the market.  By default when you send an NFT to the market, the UPC is 000000000000.  This is a chance to add some branding to your UPC <a href="upc://000000000022">[[000000000022]]</a>  **</p>',
+              fn: (nftId, upcId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var theBal;
+                  let bal = this.props.setUpcMarket(nftId, upcId);
+                      bal.then((value) => {
+                         terminal.pushToStdout(`[[supc]]`);
+                         terminal.pushToStdout(`You have set the UPC ID on: ${nftId}. Check activity tab for detailed transaction information`);
+                         terminal.pushToStdout(`[[/supc]]`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
+
+
+
+
             smp: {
               description: '<p style="color:hotpink;font-size:1.1em">** Set market price for an NFT that you have sent to the market.  By default when you send an NFT to the market, the price is 1 MATIC.  The sale will not start until you run this command and set the price in GWEI **</p>',
               fn: (nftId, price) => {
@@ -507,7 +553,6 @@ export default class MyTerminal extends Component {
                   var theBal;
                   let bal = this.props.setMarketPrice(nftId, price);
                       bal.then((value) => {
-                         theBal =window.web3.utils.fromWei(value, "ether");
                          terminal.pushToStdout(`[[smp]]`);
                          terminal.pushToStdout(`You have set the market price on: ${nftId}. Check activity tab for detailed transaction information`);
                          terminal.pushToStdout(`[[/smp]]`);
@@ -518,6 +563,7 @@ export default class MyTerminal extends Component {
                 return ''
               }
             },
+
 
 
 
@@ -672,6 +718,10 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`bidding_complete: ${data['bidIsComplete']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`seller: ${data['seller']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`upc: ${data['upcId']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`winning_bidder: ${data['winningBidder']}`);
                         terminal.pushToStdout(`=====`);

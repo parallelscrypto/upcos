@@ -23,7 +23,9 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './App.css'
 import 'react-tabs/style/react-tabs.css';
 //const market_address = "0x7e42A6D0c419E6525aeBF5085e602F465Fa0Fab3";
-const market_address = "0xAc2dC55B8114548A3b9ad1bAe72c6fE99e934D54";
+//const market_address = "0xAc2dC55B8114548A3b9ad1bAe72c6fE99e934D54";
+const market_address = "0x8C355f920d1a042dC055C90eFA1FE9245611ea5a";
+
 
 class App extends Component {
 
@@ -181,6 +183,25 @@ class App extends Component {
     return this.state.upcMarket.methods.auctionDetails(nftId).call({ from: this.state.account });
   };
 
+  setUpcMarket = async (nftId, upc) => {
+    const { accounts, contract } = this.state;
+
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    var result = await this.state.upcMarket.methods.setUpc(nftId, upc).send({ from: this.state.account})
+    return result.toString();
+  };
+
+
+
+  setHRNMarket = async (nftId, hrn) => {
+    const { accounts, contract } = this.state;
+
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    var result = await this.state.upcMarket.methods.setHumanReadableName(nftId, hrn).send({ from: this.state.account})
+    return result.toString();
+  };
 
 
   setMarketPrice = async (nftId, price) => {
@@ -655,6 +676,9 @@ class App extends Component {
     this.buyFromMarket= this.buyFromMarket.bind(this);
     this.collectFromMarket= this.collectFromMarket.bind(this);
     this.getSaleInfo= this.getSaleInfo.bind(this);
+
+    this.setUpcMarket = this.setUpcMarket.bind(this);
+    this.setHRNMarket = this.setHRNMarket.bind(this);
   }
 
   render() {
@@ -722,6 +746,11 @@ class App extends Component {
 	upcInfoNav={this.upcInfoNav}
 	nftInfoNav={this.nftInfoNav}
 	latestTokenIdNav={this.latestTokenIdNav}
+
+
+	setHRNMarket={this.setHRNMarket}
+	setUpcMarket={this.setUpcMarket}
+
 
 	upcInfo={this.upcInfo}
 	nftInfo={this.nftInfo}

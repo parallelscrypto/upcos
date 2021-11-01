@@ -48,7 +48,7 @@ let self = this;
             .then((data) => {
                  if(data['tokenId'] > 0) {
 console.log(data);
-                    var data = " [[token_id: " + data['tokenId'] + ", price: " + data['price'] + ", in_progress:" + data['inProgress'] + ";]] "
+var data = " [[token_id: " + data['tokenId'] + ", price: " + data['price'] + ", in_progress:" + data['inProgress']  + ", human_readable_name:" + data['humanReadableName']  + ", upcId:" + data['upcId'] + ";]] "
                     feedItems.push(data);
                     self.setState({marketInfo:feedItems});
                     self.setState({random:434});
@@ -61,25 +61,20 @@ console.log(data);
          //this.setState({marketInfo:feedItems});
         // expected output: "Success!"
      }); 
-     return ['still loading...'];
+     return ['[[still loading]]'];
   }
 
-  componentWillMount(){
-    //var localFeed = ["loaded"];
-    //var localFeed = this.refreshFeed()
-    //if(localFeed.length < 1 ) {
-    //   localFeed = ["Still loading data..."];
-    //}
-    //this.setState({marketInfo:localFeed});
+
+
+  componentDidMount(){
     return this.refreshFeed()
   }
-
 
 
   constructor(props) {
     super(props)
     this.state = {
-       marketInfo: ['still loading market data']
+       marketInfo: [' - [[downloading Underground Market ticker data...]] - ']
     }
     //var localFeed = this.refreshFeed()
   }
@@ -91,7 +86,7 @@ console.log(data);
         <Ticker
           direction="toRight"
           offset="100%"
-          speed={5.5}
+          speed={4.5}
           move={this.state.move}
         >
           {(index) => (

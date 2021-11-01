@@ -15,6 +15,8 @@ contract UPCMarket is IERC721Receiver {
         uint256 price;
         bool inProgress;
         uint fee;
+        string   upcId;
+        string   humanReadableName;
     }    
 
     mapping (uint256 => AuctionDetails) public auctionDetails;
@@ -38,7 +40,9 @@ contract UPCMarket is IERC721Receiver {
             tokenId: _tokenId,
             inProgress: false,
             price: 10000000000000000,
-            fee: 0
+            fee: 0,
+            upcId: "000000000000",
+            humanReadableName: "AnonymousUPC"
         });
         
 
@@ -48,7 +52,6 @@ contract UPCMarket is IERC721Receiver {
 
 
     function calculateFee(uint amount) external pure returns (uint) {
-        require((amount / 10000) * 10000 == amount , 'too small');
         return amount * 200 / 10000;  //2%
     }
 
@@ -76,6 +79,25 @@ contract UPCMarket is IERC721Receiver {
         delete auctionDetails[auctionId];      
     }
  
+ 
+    function setUpc(uint256 auctionId, string memory upcId) external {
+        AuctionDetails storage details = auctionDetails[auctionId];
+        require(msg.sender == details.seller, "Only seller can set price");
+        require(details.bidIsComplete == false , "Sale must be ongoing in order to set price");
+        // Collect money from winning bidder
+        
+        auctionDetails[auctionId].upcId = upcId;
+    }
+        
+ 
+    function setHumanReadableName(uint256 auctionId, string memory humanReadableName) external {
+        AuctionDetails storage details = auctionDetails[auctionId];
+        require(msg.sender == details.seller, "Only seller can set price");
+        require(details.bidIsComplete == false , "Sale must be ongoing in order to set price");
+        // Collect money from winning bidder
+        
+        auctionDetails[auctionId].humanReadableName = humanReadableName;
+    }
      
 
     function setPrice(uint256 auctionId, uint256 price) external {
@@ -107,4 +129,3 @@ contract UPCMarket is IERC721Receiver {
     }
     
 }
-

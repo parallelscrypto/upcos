@@ -67,6 +67,9 @@ class Intel extends Component {
 	    latestTokenIdNav={this.props.latestTokenIdNav} 
 
 
+	    setHRNMarket={this.props.setHRNMarket}
+	    setUpcMarket={this.props.setUpcMarket}
+
 	    buyNft={this.props.buyNft} 
 	    mintNft={this.props.mintNft} 
 	    approve={this.props.approve} 
