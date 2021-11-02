@@ -144,7 +144,7 @@ export default class MyTerminal extends Component {
     var addy = this.props.address;
     addy  = addy.substr(0,10);
     var promptlabel =  addy + '_@[[' + this.state.account + ']]>';
-    var welcomeMsg = "Welcome to UPC Underground! \n TERMINAL [[" + this.state.account  +"]]\n Type `help` to see available commands \n <b style='color:hotpink'>Type `playa` to activate content encoded into [[" + this.state.account + "]] </b> \n <a href='upc://000000000011'>[[000000000011]]</a> Type `swap` to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type `i` to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type `step0` to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type `step1` to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type `step2` to mint if successful with step1 [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <b style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </b> \n Type `clear` to clear screen" ;
+    var welcomeMsg = "Welcome to UPCOS! \n TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n <i style='color:hotpink'>Type `playa` to activate content encoded into [[" + this.state.account + "]] </i> \n <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`step0`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`step1`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`step2`</i> to mint if successful with step1 [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`hero`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 
 
@@ -164,7 +164,7 @@ export default class MyTerminal extends Component {
     var myProduct = <iframe srcDoc={this.state.showProductContent} style={{height:"90vh", width:"90vw"}}> </iframe>
 
 
-    var myUpload = <IpfsUpload /> 
+    var myUpload = <IpfsUpload upc={this.state.account} xpayload={this.props.setIpfs} /> 
 
 
 
@@ -178,7 +178,7 @@ export default class MyTerminal extends Component {
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalTutorial} closemodal={() => this.setState({ showModalTutorial: false })} type="pulse" ><iframe style={{height:"100vh"}} src="https://gateway.pinata.cloud/ipfs/QmStW8PBZjxjSkwnxvr15rHvRajCUkPRMEJGQejQu8EE4W" /></Modal>
 
-      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showBigShow} closemodal={() => this.setState({ showBigShow: false })} type="pulse" ><iframe style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
+      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showBigShow} closemodal={() => this.setState({ showBigShow: false })} type="pulse" > [[upc://{this.state.account}]] <iframe style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
 
       <Modal style={{ "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showBplayer} closemodal={() => this.setState({ showBplayer: false })} type="pulse" ><ReactPlayer playing={'true'} controls={'true'} width={'90vw'} height={'90vh'} pip={'true'} stopOnUnmount={'false'} url={this.state.fullIpfs} /></Modal>
 
@@ -446,6 +446,10 @@ export default class MyTerminal extends Component {
                                      terminal.pushToStdout(`=====`);
                                      terminal.pushToStdout(`contract: ${data['nftContract']}`);
                                      terminal.pushToStdout(`=====`);
+                                     terminal.pushToStdout(`upc_id: ${data['upcId']}`);
+                                     terminal.pushToStdout(`=====`);
+                                     terminal.pushToStdout(`listing_title: ${data['humanReadableName']}`);
+                                     terminal.pushToStdout(`=====`);
                                      terminal.pushToStdout(`bidding_complete: ${data['bidIsComplete']}`);
                                      terminal.pushToStdout(`=====`);
                                      terminal.pushToStdout(`seller: ${data['seller']}`);
@@ -498,8 +502,8 @@ export default class MyTerminal extends Component {
             },
 
 
-            shrn: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Set human readable name for an NFT that you have sent to the market.  By default when you send an NFT to the market, the HRN is Anonymous UPC.  This is a chance to add some branding to your UPC **</p>',
+            sttl: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Set listing title  for an NFT that you have sent to the market.  By default when you send an NFT to the market, the title is Anonymous UPC.  This is a chance to add some marketing to your UPC **</p>',
               fn: (nftId, hrn) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -507,9 +511,9 @@ export default class MyTerminal extends Component {
                   var theBal;
                   let bal = this.props.setHRNMarket(nftId, hrn);
                       bal.then((value) => {
-                         terminal.pushToStdout(`[[shrn]]`);
-                         terminal.pushToStdout(`You have set the HRN on: ${nftId}. Check activity tab for detailed transaction information`);
-                         terminal.pushToStdout(`[[/shrn]]`);
+                         terminal.pushToStdout(`[[sttl]]`);
+                         terminal.pushToStdout(`You have set the title on: ${nftId}. Check activity tab for detailed transaction information`);
+                         terminal.pushToStdout(`[[/sttl]]`);
                          // expected output: "Success!"
                       });
                 })
@@ -719,7 +723,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`seller: ${data['seller']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+                        terminal.pushToStdout(`listing_title: ${data['humanReadableName']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`upc: ${data['upcId']}`);
                         terminal.pushToStdout(`=====`);
@@ -788,7 +792,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`vr: ${data['vr']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
+                        terminal.pushToStdout(`payload: ${data['ipfs']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
                         terminal.pushToStdout(`=====`);
@@ -853,7 +857,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`vr: ${data['vr']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
+                        terminal.pushToStdout(`payload: ${data['ipfs']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
                         terminal.pushToStdout(`=====`);
@@ -915,7 +919,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`vr: ${data['vr']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
+                        terminal.pushToStdout(`payload: ${data['ipfs']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
                         terminal.pushToStdout(`=====`);
@@ -978,7 +982,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`vr: ${data['vr']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
+                        terminal.pushToStdout(`payload: ${data['ipfs']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
                         terminal.pushToStdout(`=====`);
@@ -1040,7 +1044,7 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`vr: ${data['vr']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`ipfs: ${data['ipfs']}`);
+                        terminal.pushToStdout(`payload: ${data['ipfs']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
                         terminal.pushToStdout(`=====`);
@@ -1111,27 +1115,13 @@ export default class MyTerminal extends Component {
             },
            
             hero: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display hero for this UPC</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display hero that the owner of [[' +this.state.account+ ']] owns with this UPC</p>',
               fn: () => {
                       this.setState({showCardModal:true});
               }
             },
-            ezgo: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display cringey video.  Updated regularly</p>',
-              fn: () => {
-                      this.setState({showModalTutorial:true});
-              }
-            },
-            ezcome: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display funny video.  Updated regularly</p>',
-              fn: () => {
-                      this.setState({showModalTutorial:true});
-              }
-            },
-
-
-            xipfs: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Set your IPFS resource by passing the ipfs/hash value.  Example `xipfs ipfs/QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU` will set your IPFS resource to our welcome page.  The public will use the `ipfs` command to view what you set using this command </p>' ,
+            xpayload: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Set your payload resource by passing the ipfs/hash value.  Example `xpayload ipfs/QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU` will set your IPFS resource to our welcome page.  The public will use the `ipfs` command to view what you set using this command </p>' ,
               fn: (_ipfsLink) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1240,6 +1230,9 @@ export default class MyTerminal extends Component {
 			if(fullIpfs.includes('QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU') ) {
 
 			   fullIpfs = fullIpfs.replace('upcunderground.mypinata.cloud','ipfs.io');
+			}
+			if(data['ipfs'] == "") {
+			   fullIpfs = "https://ipfs.io/ipfs/QmP7UYTMQFhsiRHfbgPgEngALzXWroSRVkEyWSbJTd23yf";
 			}
 
 			var link = <a href={fullIpfs} >View my IPFS Website!</a>

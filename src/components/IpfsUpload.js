@@ -13,6 +13,7 @@ export default class IpfsUpload extends React.Component {
       imgUpload: null,
       file: null,
       showUploaderModal: false,
+      progress: 0,
     }
 
     // bind methods
@@ -34,7 +35,7 @@ export default class IpfsUpload extends React.Component {
            if (xmlHttpRequest.readyState == XMLHttpRequest.DONE) {
 	       var filename = self.state.file.name;
 	       var resp = JSON.parse(xmlHttpRequest.responseText);
-               var fullIpfsPaste =  "xipfs ipfs/"  +  resp.IpfsHash + "/" + filename;
+               var fullIpfsPaste =  "xpayload ipfs/"  +  resp.IpfsHash + "/" + filename;
                var  respMessage = 
                     <div>
                        <p><b>Your hash is {resp.IpfsHash} </b></p>
@@ -48,9 +49,20 @@ export default class IpfsUpload extends React.Component {
 
 
                self.setState({
-                   uploadHash: respMessage
+                   uploadHash: respMessage,
+                   rawHash: resp.IpfsHash
                });
            }
+       }
+
+       xmlHttpRequest.onprogress = function(evt) {
+	   var resp = JSON.parse(xmlHttpRequest.responseText);
+           var filename = self.state.file.name;
+           var link = " ipfs/"  +  resp.IpfsHash + "/" + filename;
+           console.log(self.props.upc);
+           console.log(link);
+       
+           self.props.xpayload(self.props.upc, link);
        }
 
 

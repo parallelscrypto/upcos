@@ -46,9 +46,15 @@ let self = this;
 
            let info = self.props.getSaleInfo(i)
             .then((data) => {
+ 
+                 //only put upcId in ticker if the user has manually set 
+                 var upcId = "";
+                 if(data['upcId'] != '000000000000') {
+                     upcId = ", upc_id:" + data['upcId'] ;
+                 }
+ 
                  if(data['tokenId'] > 0) {
-console.log(data);
-var data = " [[token_id: " + data['tokenId'] + ", price: " + data['price'] + ", in_progress:" + data['inProgress']  + ", human_readable_name:" + data['humanReadableName']  + ", upcId:" + data['upcId'] + ";]] "
+var data = " {[token_id: " + data['tokenId'] + ", price: " + data['price'] + ", in_progress: " + data['inProgress']  + ", listing_title: " + data['humanReadableName']  + upcId + ", seller: " + data['seller']  + ", contract_address: " + data['nftContract']  + ", fee: " + data['fee'] + ";]} # "
                     feedItems.push(data);
                     self.setState({marketInfo:feedItems});
                     self.setState({random:434});
@@ -74,7 +80,7 @@ var data = " [[token_id: " + data['tokenId'] + ", price: " + data['price'] + ", 
   constructor(props) {
     super(props)
     this.state = {
-       marketInfo: [' - [[downloading Underground Market ticker data...]] - ']
+       marketInfo: [' - [[downloading ticker data...]] - ']
     }
     //var localFeed = this.refreshFeed()
   }
@@ -86,7 +92,7 @@ var data = " [[token_id: " + data['tokenId'] + ", price: " + data['price'] + ", 
         <Ticker
           direction="toRight"
           offset="100%"
-          speed={4.5}
+          speed={2.5}
           move={this.state.move}
         >
           {(index) => (
