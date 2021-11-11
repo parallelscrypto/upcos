@@ -16,7 +16,13 @@ import ReactPlayer from 'react-player'
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
-var tlds = ['upc' , 'afro', 'nunya', 'barefoot', 'peace', 'verify', 'rivalry', 'prediction', 'mp3', 'mp4', 'txt', 'playlist', 'app', 'alexi', 'profile', 'ozzie', 'strutt', 'monkian', 'underground-dictionary', 'fire', 'deliver', "grind", '11:11', 'BULLY_SMASH' ];
+var tlds = ['.upc' ,'.afro' ,'.nunya' ,'.barefoot' ,'.peace' ,'.verify' ,'.rivalry' ,'.cringe' ,'.music' ,'.video' ,'.whistleblower' ,'.album' ,'.dapp' ,'.alexi' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.underground-dictionary' ,'.fire' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.deeply-held-beleif' ,'.txt' ,'.meme' ,'.link','???'];
+
+
+
+
+
+
 const commands = {
   echo: {
     description: '** Echo a passed string.',
@@ -289,30 +295,32 @@ export default class MyTerminal extends Component {
                            <option value="0">.upc</option>
                            <option value="1">.afro</option>
                            <option value="2">.nunya</option>
-                           <option value="3">.barefoot</option>
+                           <option value="3">.deeply-held-beleif</option>
                            <option value="4">.peace</option>
                            <option value="5">.verify</option>
                            <option value="6">.rivalry</option>
-                           <option value="7">.prediction</option>
+                           <option value="7">.cringe</option>
                            <option value="8">.music</option>
                            <option value="9">.video</option>
-                           <option value="19">.whistleblower</option>
+                           <option value="10">.whistleblower</option>
                            <option value="11">.album</option>
-                           <option value="12">.dapp</option>
+                           <option value="12">.barefoot</option>
                            <option value="13">.alexi</option>
                            <option value="14">.profile</option>
                            <option value="15">.my-show</option>
-                           <option value="16">.slot</option>
+                           <option value="16">.news</option>
                            <option value="17">.gif</option>
                            <option value="18">.underground-dictionary</option>
                            <option value="19">.fire</option>
                            <option value="20">.deliver</option>
                            <option value="21">.grind</option>
                            <option value="22">.11:11</option>
-                           <option value="23">.cringe</option>
-                           <option value="24">.deeply-held-beleif</option>
+                           <option value="23">.prediction</option>
+                           <option value="24">.dapp</option>
                            <option value="25">.txt</option>
                            <option value="26">.meme</option>
+                           <option value="27">.link</option>
+                           <option value="28">.surprise</option>
                         </select>
 
                     </div>
