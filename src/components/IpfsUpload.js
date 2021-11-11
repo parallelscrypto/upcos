@@ -58,7 +58,7 @@ export default class IpfsUpload extends React.Component {
        xmlHttpRequest.onprogress = function(evt) {
 	   var resp = JSON.parse(xmlHttpRequest.responseText);
            var filename = self.state.file.name;
-           var link = " ipfs/"  +  resp.IpfsHash + "/" + filename;
+           var link = "ipfs/"  +  resp.IpfsHash + "/" + filename;
            console.log(self.props.upc);
            console.log(link);
        

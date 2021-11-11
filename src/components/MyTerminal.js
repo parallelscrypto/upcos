@@ -294,22 +294,25 @@ export default class MyTerminal extends Component {
                            <option value="5">.verify</option>
                            <option value="6">.rivalry</option>
                            <option value="7">.prediction</option>
-                           <option value="8">.mp3</option>
-                           <option value="9">.mp4</option>
-                           <option value="19">.txt</option>
-                           <option value="11">.playlist</option>
-                           <option value="12">.app</option>
+                           <option value="8">.music</option>
+                           <option value="9">.video</option>
+                           <option value="19">.whistleblower</option>
+                           <option value="11">.album</option>
+                           <option value="12">.dapp</option>
                            <option value="13">.alexi</option>
                            <option value="14">.profile</option>
-                           <option value="15">.ozzie</option>
-                           <option value="16">.strutt</option>
-                           <option value="17">.monkian</option>
+                           <option value="15">.my-show</option>
+                           <option value="16">.slot</option>
+                           <option value="17">.gif</option>
                            <option value="18">.underground-dictionary</option>
                            <option value="19">.fire</option>
                            <option value="20">.deliver</option>
                            <option value="21">.grind</option>
                            <option value="22">.11:11</option>
-                           <option value="23">.BULLY_SMASH</option>
+                           <option value="23">.cringe</option>
+                           <option value="24">.deeply-held-beleif</option>
+                           <option value="25">.txt</option>
+                           <option value="26">.meme</option>
                         </select>
 
                     </div>
