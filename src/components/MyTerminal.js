@@ -16,7 +16,18 @@ import ReactPlayer from 'react-player'
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
-var tlds = ['.upc' ,'.afro' ,'.nunya' ,'.barefoot' ,'.peace' ,'.verify' ,'.rivalry' ,'.cringe' ,'.music' ,'.video' ,'.whistleblower' ,'.album' ,'.dapp' ,'.alexi' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.underground-dictionary' ,'.fire' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.deeply-held-beleif' ,'.txt' ,'.meme' ,'.link','???'];
+
+var tlds = ['.upc' ,'.afro' ,'.nunya' ,'.deeply-held-beleif' ,'.peace' ,'.verify' ,'.rivalry' ,'.cringe' ,'.music' ,'.video' ,'.whistleblower' ,'.album' ,'.barefoot' ,'.alexi' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.underground-dictionary' ,'.fire' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.meme' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem', '.stretch', '.workout', '.recipe', '.moment-in-time'];
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -155,7 +166,66 @@ export default class MyTerminal extends Component {
 
 
     var upcHash  = sha256(this.state.account)
-    var srcImg = 'https://avatars.dicebear.com/api/adventurer/'  + upcHash + ".svg";
+    var avatarType;
+    switch(upcHash.substring(0,1)) {
+
+	 case '0':
+	   avatarType = "adventurer";
+	   break;
+	 case '1':
+	   avatarType = "adventurer-neutral";
+	   break;
+	 case '2':
+	   avatarType = "avataaars";
+	   break;
+	 case '3':
+	   avatarType = "big-ears";
+	   break;
+	 case '4':
+	   avatarType = "big-ears-neutral";
+	   break;
+	 case '5':
+	   avatarType = "big-smile";
+	   break;
+	 case '6':
+	   avatarType = "bottts";
+	   break;
+	 case '7':
+	   avatarType = "croodles";
+	   break;
+	 case '8':
+	   avatarType = "croodles-neutral";
+	   break;
+	 case '9':
+	   avatarType = "gridy";
+	   break;
+	 case 'a':
+	   avatarType = "micah";
+	   break;
+	 case 'b':
+	   avatarType = "open-peeps";
+	   break;
+	 case 'c':
+	   avatarType = "miniavs";
+	   break;
+	 case 'd':
+	   avatarType = "personas";
+	   break;
+	 case 'e':
+	   avatarType = "pixel-art";
+	   break;
+	 case 'f':
+	   avatarType = "pixel-art-neutral";
+	   break;
+	 case '0':
+	   avatarType = "jdenticon";
+	   break;
+
+    }
+
+    
+    var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
+    console.log(srcImg);
     var cardValue = {
        value:  upcHash,
        intent: "upcHero"
@@ -321,6 +391,12 @@ export default class MyTerminal extends Component {
                            <option value="26">.meme</option>
                            <option value="27">.link</option>
                            <option value="28">.surprise</option>
+                           <option value="29">.freestyle</option>
+                           <option value="30">.poem</option>
+                           <option value="31">.stretch</option>
+                           <option value="32">.workout</option>
+                           <option value="33">.recipe</option>
+                           <option value="34">.moment-in-time</option>
                         </select>
 
                     </div>

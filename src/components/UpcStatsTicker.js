@@ -54,7 +54,22 @@ let self = this;
                  }
  
                  if(data['tokenId'] > 0) {
-var data = " {[token_id: " + data['tokenId'] + ", price: " + data['price'] + ", in_progress: " + data['inProgress']  + ", listing_title: " + data['humanReadableName']  + upcId + ", seller: " + data['seller']  + ", contract_address: " + data['nftContract']  + ", fee: " + data['fee'] + ";]} # "
+
+	           var price = window.web3.utils.fromWei(data['price'], "ether") + " MATIC ";
+	           var fee= window.web3.utils.fromWei(data['fee'], "ether") + " MATIC ";
+
+
+
+
+	           var seller = data['seller'];
+		   seller = seller.substring(0,14) + "...";
+
+
+	           var contractAddress = data['nftContract'];
+		   contractAddress = contractAddress.substring(0,14) + "...";
+
+
+var data = " {[token_id: " + data['tokenId'] + ", price: " + price + ", in_progress: " + data['inProgress']  + ", listing_title: " + data['humanReadableName']  + upcId + ", seller: " + seller  + ", contract_address: " + contractAddress  + ", fee: " + fee + ";]} # "
                     feedItems.push(data);
                     self.setState({marketInfo:feedItems});
                     self.setState({random:434});
