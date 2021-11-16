@@ -48,7 +48,7 @@ export default class IntroTypewriter extends Component {
     var message = ["<loading>" , "TERMINAL", "[[" + this.state.code + "]]" , "</loading>"]
     return (
       <div 
-	 style={{textAlign:"center", color:"green", transform:'translateY(50vh)' , transform:'translateY(50vw)'}}
+	 style={{textAlign:"center", color:"hotpink", transform:'translateY(50vh)' , transform:'translateY(50vw)'}}
       >
          <TypeWriterEffect
             style={{transform:'translateY(150vw)', fontFamily:'system-ui'}}
