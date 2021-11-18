@@ -34,8 +34,14 @@ export default class IntroTypewriter extends Component {
       tmpCode = this.state.data;
        tmpCode = tmpCode.substring(7);
        scan = JSON.parse(atob(tmpCode));
-       console.log(scan.code);
        this.setState({code: scan.code});
+       var customColor = "#";
+       customColor += scan.code.substring(0,6);
+	    console.log(customColor);
+       this.setState({customColor});
+
+
+
     }
     catch(e){
 	    console.log("errerr" );
@@ -48,17 +54,18 @@ export default class IntroTypewriter extends Component {
     var message = ["<loading>" , "TERMINAL", "[[" + this.state.code + "]]" , "</loading>"]
     return (
       <div 
-	 style={{textAlign:"center", color:"hotpink", transform:'translateY(50vh)' , transform:'translateY(50vw)'}}
+	 style={{background: this.state.customColor, textAlign:"center", color:"hotpink", transform:'translateY(50vh)' , transform:'translateY(50vw)'}}
       >
          <TypeWriterEffect
             style={{transform:'translateY(150vw)', fontFamily:'system-ui'}}
-            startDelay={500}
-            multiTextDelay={500}
+            startDelay={400}
+            multiTextDelay={400}
             cursorColor="white"
             multiText={message}
-            typeSpeed={50}
+            typeSpeed={40}
          />
 	<Barcode value={this.state.code} format="EAN13" />
+	<p><b style={{color:"red"}}>&#60;3 619</b></p>
       </div>
     )
   }
