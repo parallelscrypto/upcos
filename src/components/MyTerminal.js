@@ -17,7 +17,7 @@ var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
 
-var tlds = ['.upc' ,'.afro' ,'.nunya' ,'.deeply-held-beleif' ,'.peace' ,'.verify' ,'.rivalry' ,'.cringe' ,'.music' ,'.video' ,'.whistleblower' ,'.album' ,'.barefoot' ,'.alexi' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.underground-dictionary' ,'.fire' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.meme' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem', '.stretch', '.workout', '.recipe', '.moment-in-time'];
+var tlds = ['.upc' ,'.afro' ,'.nunya' ,'.deeply-held-beleif' ,'.peace' ,'.verify' ,'.rivalry' ,'.cringe' ,'.music' ,'.video' ,'.whistleblower' ,'.album' ,'.barefoot' ,'.alexi' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.underground-dictionary' ,'.fire' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem', '.stretch', '.workout', '.recipe', '.moment-in-time', '.meme'];
 
 
 
@@ -388,7 +388,7 @@ export default class MyTerminal extends Component {
                            <option value="23">.prediction</option>
                            <option value="24">.dapp</option>
                            <option value="25">.txt</option>
-                           <option value="26">.meme</option>
+                           <option value="26">.homeless</option>
                            <option value="27">.link</option>
                            <option value="28">.surprise</option>
                            <option value="29">.freestyle</option>
@@ -397,6 +397,7 @@ export default class MyTerminal extends Component {
                            <option value="32">.workout</option>
                            <option value="33">.recipe</option>
                            <option value="34">.moment-in-time</option>
+                           <option value="35">.meme</option>
                         </select>
 
                     </div>
