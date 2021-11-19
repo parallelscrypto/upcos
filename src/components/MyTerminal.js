@@ -527,9 +527,10 @@ export default class MyTerminal extends Component {
                             let info = this.props.getSaleInfo(i)
 
                              .then((data) => {
-				     console.log(i);
-				     console.log(info);
-				  if(data['tokenId'] > 0) {
+
+				  var price  = window.web3.utils.fromWei(data['price'], "ether");
+				  var fee    = window.web3.utils.fromWei(data['fee'], "ether");
+				  if(data['inProgress'] == true) {
                                      terminal.pushToStdout(`\n`);
                                      terminal.pushToStdout(`*********** ${data['tokenId']} ***********`);
                                      terminal.pushToStdout(`[[market-data]]`);
@@ -548,11 +549,11 @@ export default class MyTerminal extends Component {
                                      terminal.pushToStdout(`=====`);
                                      terminal.pushToStdout(`token_id: ${data['tokenId']}`);
                                      terminal.pushToStdout(`=====`);
-                                     terminal.pushToStdout(`asking_price (wei): ${data['price']}`);
+                                     terminal.pushToStdout(`asking_price (MATIC): ${price}`);
                                      terminal.pushToStdout(`=====`);
                                      terminal.pushToStdout(`in_progress: ${data['inProgress']}`);
                                      terminal.pushToStdout(`=====`);
-                                     terminal.pushToStdout(`fee (or 2%): ${data['fee']}`);
+                                     terminal.pushToStdout(`fee (or 2%): ${fee}`);
                                      terminal.pushToStdout(`=====`);
                                      terminal.pushToStdout(`[[/market-data]]`);
                                      terminal.pushToStdout(`*********** ${data['tokenId']} ***********`);
@@ -805,6 +806,9 @@ export default class MyTerminal extends Component {
                   const terminal = this.progressTerminal.current
                   let info = this.props.getSaleInfo(nftId)
 		   .then(data => {
+
+			var price  = window.web3.utils.fromWei(data['price'], "ether");
+			var fee    = window.web3.utils.fromWei(data['fee'], "ether");
                         terminal.pushToStdout(`[[market-data]]`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`contract: ${data['nftContract']}`);
@@ -821,9 +825,11 @@ export default class MyTerminal extends Component {
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`token_id: ${data['tokenId']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`price: ${data['price']}`);
+                        terminal.pushToStdout(`asking_price (MATIC): ${price}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`in_progress: ${data['inProgress']}`);
+                        terminal.pushToStdout(`=====`);
+		        terminal.pushToStdout(`fee (or 2%): ${fee}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`[[/market-data]]`);
                   });

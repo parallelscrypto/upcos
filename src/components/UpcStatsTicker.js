@@ -103,16 +103,17 @@ var data = " {[token_id: " + data['tokenId'] + ", price: " + price + ", in_progr
 
   render() {
     return (
-      <div>
+      <div style={{background:"black"}}>
 
         <Ticker
           direction="toRight"
           offset="100%"
           speed={2.5}
           move={this.state.move}
+	  style={{background:"black"}}
         >
           {(index) => (
-            <b mktInfo={this.state.random} style={{whiteSpace:"nowrap",color:"orange"}}>{this.state.marketInfo}</b>
+            <b mktInfo={this.state.random} style={{whiteSpace:"nowrap",background:"black", color:"white"}}>{this.state.marketInfo}</b>
           )}
         </Ticker>
 	    

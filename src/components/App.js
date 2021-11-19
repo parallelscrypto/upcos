@@ -757,7 +757,7 @@ class App extends Component {
 	nftInfo={this.nftInfo}
 	latestTokenId={this.latestTokenId}
       />
-      <UpcStatsTicker latestTokenId={this.latestTokenId} getSaleInfo={this.getSaleInfo} marketInfo={this.state.marketInfo} style={{"position":"absolute","bottom":"0"}} />
+      <UpcStatsTicker latestTokenId={this.latestTokenId} getSaleInfo={this.getSaleInfo} marketInfo={this.state.marketInfo} style={{"position":"absolute","bottom":"0", background:"black"}} />
       </div>
     } else {
       leases= <Leases
@@ -778,7 +778,7 @@ class App extends Component {
     }
 
     return (
-      <div style={{height: '100vh', width: '100vw', border:'none'}} >
+      <div style={{background: "#bd9602", height: '100vh', width: '100vw', border:'none'}} >
 			       {deposit}
       </div>
     );

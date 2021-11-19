@@ -54,7 +54,7 @@ export default class IntroTypewriter extends Component {
     var message = ["<loading>" , "TERMINAL", "[[" + this.state.code + "]]" , "</loading>"]
     return (
       <div 
-	 style={{background: this.state.customColor, textAlign:"center", color:"hotpink", transform:'translateY(50vh)' , transform:'translateY(50vw)'}}
+	 style={{background: this.state.customColor, textAlign:"center", color:"white", transform:'translateY(50vh)' , transform:'translateY(50vw)'}}
       >
          <TypeWriterEffect
             style={{transform:'translateY(150vw)', fontFamily:'system-ui'}}
@@ -65,7 +65,7 @@ export default class IntroTypewriter extends Component {
             typeSpeed={40}
          />
 	<Barcode value={this.state.code} format="EAN13" />
-	<p><b style={{color:"red"}}>&#60;3 619</b></p>
+	<p><b style={{color:"white", fontSize:"7px"}}>&#60;3 619</b></p>
       </div>
     )
   }
