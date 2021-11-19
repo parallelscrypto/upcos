@@ -521,12 +521,14 @@ export default class MyTerminal extends Component {
                   let bal = this.props.latestTokenId();
                       bal.then((value) => {
                          latest = Math.round(value);
-			 var i = 0;
-			 for(i = 0; i < latest; i++) {
+			 var i = 1;
+			 for(i = 1; i < latest; i++) {
 
                             let info = this.props.getSaleInfo(i)
 
                              .then((data) => {
+				     console.log(i);
+				     console.log(info);
 				  if(data['tokenId'] > 0) {
                                      terminal.pushToStdout(`\n`);
                                      terminal.pushToStdout(`*********** ${data['tokenId']} ***********`);

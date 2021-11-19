@@ -37,7 +37,7 @@ export default class IntroTypewriter extends Component {
        this.setState({code: scan.code});
        var customColor = "#";
        customColor += scan.code.substring(0,6);
-	    console.log(customColor);
+       customColor = "#000000";
        this.setState({customColor});
 
 
