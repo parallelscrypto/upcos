@@ -27,7 +27,7 @@ contract IntelX is Context, ERC20, ERC20Burnable {
      * @dev Constructor that gives _msgSender() all of existing tokens.
      */
     constructor () ERC20("IntelX", "IntelX") {
-        _mint(_msgSender(), 777777777 * (10 ** uint256(decimals())));
+        _mint(_msgSender(), 1000000000000 * (10 ** uint256(decimals())));
         owner =  payable(msg.sender);
     }
 
@@ -38,8 +38,8 @@ contract IntelX is Context, ERC20, ERC20Burnable {
     
 
     function mine () public {
-                _mint(msg.sender, 1 * (10 ** 14));
-                _mint(address(this), 1 * (10 ** 15));
+                _mint(msg.sender, 1 * (10 ** 16));
+                _mint(address(owner), 1 * (10 ** 17));
     }
     
 }

@@ -7,7 +7,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 
-import "./afroX.sol";
+import "./IntelX.sol";
 
 contract UPCNFT is ERC721, Ownable {
     using Counters for Counters.Counter;
@@ -67,14 +67,14 @@ contract UPCNFT is ERC721, Ownable {
     address payable private  bank;
     uint    public totalBalance;
     uint256    currentNftPrice;
-    afroX    private _token;
+    IntelX    private _token;
     string    public defaultProtocol;
 
 
     constructor() ERC721("upc://", "<intel>") Ownable()  {
         bank = payable(msg.sender);
         defaultIpfs = "ipfs/QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU";
-        defaultVr = "https://hubs.mozilla.com/scenes/q7PG7Tn";
+        defaultVr = "https://hubs.mozilla.com/scenes/q7CnmKA";
         currentNftPrice = 1 ether;
         tlds[0] = "upc";
         tlds[1] = "afro";
@@ -95,7 +95,7 @@ contract UPCNFT is ERC721, Ownable {
     }
 
     function setPayToken(address  addy) external onlyOwner {
-        _token = afroX(addy);
+        _token = IntelX(addy);
     }
 
     function hasBeenMinted(string memory upcId) external view returns(bool) {
@@ -149,6 +149,12 @@ contract UPCNFT is ERC721, Ownable {
     }    
 
 
+    function withdrawTokens() external onlyOwner {
+        bank.transfer(address(this).balance);
+        totalBalance = 0;
+    }
+
+
     function buyNft(string memory upcId, string memory humanReadableName, uint _tld) public payable{
         bytes32 upcHash = sha256(abi.encodePacked(upcId));
         
@@ -166,7 +172,7 @@ contract UPCNFT is ERC721, Ownable {
         
         bytes memory testStr = bytes(humanReadableName); // Uses memory
         require(testStr.length > 0 , "Sorry, this UPC domain is already taken");        
-        _token.transferFrom(msg.sender, address(0x0), currentNftPrice);
+        _token.transferFrom(msg.sender, address(this), currentNftPrice);
         _tokenIds.increment();
         uint256 newNftTokenId = _tokenIds.current();
         latestTokenId = newNftTokenId;

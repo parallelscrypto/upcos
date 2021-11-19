@@ -47,7 +47,7 @@ contract TipJar is Context, ERC20, ERC20Burnable {
     constructor () ERC20("tip://", "<tip>") {
         //_mint(_msgSender(), 10000 * (10 ** uint256(decimals())));
         owner =  payable(msg.sender);
-        upcNFT = UPCNFT(0x1b4df09CcD1c2064C6e5a12D10B1c4eE5bD089f8);
+        upcNFT = UPCNFT(0x2465807D010163E04Dab35c4A4918dFDF235c4f6);
     }
     
     modifier onlyOwner
