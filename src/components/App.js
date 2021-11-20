@@ -778,7 +778,7 @@ class App extends Component {
     }
 
     return (
-      <div style={{background: "#bd9602", height: '100vh', width: '100vw', border:'none'}} >
+      <div style={{background: "#388189", height: '100vh', width: '100vw', border:'none'}} >
 			       {deposit}
       </div>
     );
