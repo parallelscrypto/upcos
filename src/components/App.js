@@ -3,10 +3,12 @@ import ReactCardFlip from 'react-card-flip';
 import Iframe from 'react-iframe'
 import Web3 from 'web3'
 import UPCNFT from '../abis/UPCNFT.json'
+import AfroNFT from '../abis/AfroNFT.json'
 import SuperNavalnyBros from '../abis/SuperNavalnyBros.json'
 import xUPC from '../abis/xUPC.json'
 import piggy from '../abis/TipJar.json'
 import intelX from '../abis/intelX.json'
+import TubmanX from '../abis/TubmanX.json'
 import AQWB from '../abis/AQWB.json'
 import UpcDAO from '../abis/UpcDAO.json'
 import UPCMarket from '../abis/UPCMarket.json'
@@ -25,7 +27,7 @@ import 'react-tabs/style/react-tabs.css';
 //const market_address = "0x7e42A6D0c419E6525aeBF5085e602F465Fa0Fab3";
 //const market_address = "0xAc2dC55B8114548A3b9ad1bAe72c6fE99e934D54";
 //const market_address = "0x3f13e9b043A4eA779D6c3abbE4015b1ecDAcf1f3";
-const market_address = "0xD841c64B593c192362b37bba92A52681Fdeacef6";
+const market_address = "0x4670072008ae9bfeeaD4D10336121D52150aAf50";
 
 
 class App extends Component {
@@ -93,10 +95,10 @@ class App extends Component {
 
 
 
-    // Load UPCNFT
-    const upcNFTData = UPCNFT.networks[networkId]
+    // Load AfroNFT
+    const upcNFTData = AfroNFT.networks[networkId]
     if(upcNFTData) {
-      const upcNft = new web3.eth.Contract(UPCNFT.abi, upcNFTData.address)
+      const upcNft = new web3.eth.Contract(AfroNFT.abi, upcNFTData.address)
       this.setState({ upcNft })
       this.setState({ upcNFTData: upcNFTData })
     } else {
@@ -119,8 +121,8 @@ class App extends Component {
 
 
 
-    // Load intelX
-    const intelXData = intelX.networks[networkId]
+    // Load PAY currency
+    const intelXData = TubmanX.networks[networkId]
     if(intelXData) {
       const AFROX = new web3.eth.Contract(intelX.abi, intelXData.address)
       this.setState({ intelX: AFROX })
@@ -778,7 +780,7 @@ class App extends Component {
     }
 
     return (
-      <div style={{background: "#388189", height: '100vh', width: '100vw', border:'none'}} >
+      <div style={{background: "#6119ef", height: '100vh', width: '100vw', border:'none'}} >
 			       {deposit}
       </div>
     );
