@@ -4,6 +4,7 @@ import Iframe from 'react-iframe'
 import Web3 from 'web3'
 import UPCNFT from '../abis/UPCNFT.json'
 import AfroNFT from '../abis/AfroNFT.json'
+import MLS from '../abis/MalcolmsLittleSecret.json'
 import SuperNavalnyBros from '../abis/SuperNavalnyBros.json'
 import xUPC from '../abis/xUPC.json'
 import piggy from '../abis/TipJar.json'
@@ -27,7 +28,7 @@ import 'react-tabs/style/react-tabs.css';
 //const market_address = "0x7e42A6D0c419E6525aeBF5085e602F465Fa0Fab3";
 //const market_address = "0xAc2dC55B8114548A3b9ad1bAe72c6fE99e934D54";
 //const market_address = "0x3f13e9b043A4eA779D6c3abbE4015b1ecDAcf1f3";
-const market_address = "0x4670072008ae9bfeeaD4D10336121D52150aAf50";
+const market_address = "0x01517053401610EB2487d7ADEb11cF76fc0d9804";
 
 
 class App extends Component {
@@ -95,10 +96,10 @@ class App extends Component {
 
 
 
-    // Load AfroNFT
-    const upcNFTData = AfroNFT.networks[networkId]
+    // Load MLS
+    const upcNFTData = MLS.networks[networkId]
     if(upcNFTData) {
-      const upcNft = new web3.eth.Contract(AfroNFT.abi, upcNFTData.address)
+      const upcNft = new web3.eth.Contract(MLS.abi, upcNFTData.address)
       this.setState({ upcNft })
       this.setState({ upcNFTData: upcNFTData })
     } else {
@@ -780,7 +781,7 @@ class App extends Component {
     }
 
     return (
-      <div style={{background: "#6119ef", height: '100vh', width: '100vw', border:'none'}} >
+      <div style={{background: "#8a0303", height: '100vh', width: '100vw', border:'none'}} >
 			       {deposit}
       </div>
     );

@@ -149,11 +149,12 @@ export default class MyTerminal extends Component {
     var addy = this.props.address;
     addy  = addy.substr(0,10);
     var promptlabel =  addy + '_@[[' + this.state.account + ']]>';
-    var welcomeMsg = "Welcome to the UPCVerse \n IDefineActingBlackOS Loaded \n You do YOU, fork the haterz! \n Lets repurpose these barz \n Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n <i style='color:hotpink'>Type `playa` to activate content encoded into [[" + this.state.account + "]] </i> \n <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`step0`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`step1`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`step2`</i> to mint if successful with step1 [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`uncan`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+    var welcomeMsg = "Welcome to the UPCVerse \n MalcolmsLittleSecretOS Loaded \n *Protect your privacy! Resist! \n *Crypto exposes government corruption \n *We are fearless in the face of assassination \n *2nd ammendment applies to ALL Americans \n *Lets repurpose these bars \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n <i style='color:hotpink'>Type `playa` to activate content encoded into [[" + this.state.account + "]] </i> \n <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`step0`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`step1`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`step2`</i> to mint if successful with step1 [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 
 
     var upcHash  = sha256(this.state.account)
+    upcHash = sha256(upcHash);
     upcHash = sha256(upcHash);
     var avatarType;
     switch(upcHash.substring(0,1)) {
@@ -222,7 +223,7 @@ export default class MyTerminal extends Component {
     var cardValueStr = JSON.stringify(cardValue);
     var myCard = 
     <div>
-	<p><b>Say hello to the uncan of this UPC!</b></p>
+	<p><b>Say hello to the hero of this UPC!</b></p>
         <p><img src={srcImg} height="200" width="200"/></p>
 	<p><QRCode size={128} value={cardValueStr} onClick={() => { this.setState({qIsOpen: true})}}/></p>
     </div>
@@ -512,12 +513,10 @@ export default class MyTerminal extends Component {
                       bal.then((value) => {
                          latest = Math.round(value);
 			 var i = 1;
-			 for(i = 1; i < latest; i++) {
+			 for(i = 1; i < latest + 2; i++) {
 
                             let info = this.props.getSaleInfo(i)
-
                              .then((data) => {
-
 				  var price  = window.web3.utils.fromWei(data['price'], "ether");
 				  var fee    = window.web3.utils.fromWei(data['fee'], "ether");
 				  if(data['inProgress'] == true) {
@@ -1209,8 +1208,8 @@ export default class MyTerminal extends Component {
               }
             },
            
-            mynga: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display uncan that the owner of [[' +this.state.account+ ']] owns with this UPC</p>',
+            x: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display hero that lives inside of UPC [[' +this.state.account+ ']]</p>',
               fn: () => {
                       this.setState({showCardModal:true});
               }

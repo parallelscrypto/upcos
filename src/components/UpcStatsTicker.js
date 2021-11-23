@@ -42,7 +42,7 @@ let self = this;
         latest = Math.round(value);
         var i = 0;
 
-        for(i = 0; i < latest; i++) {
+        for(i = 0; i < latest + 2; i++) {
 
            let info = self.props.getSaleInfo(i)
             .then((data) => {
