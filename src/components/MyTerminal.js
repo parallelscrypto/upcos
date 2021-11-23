@@ -1524,6 +1524,45 @@ export default class MyTerminal extends Component {
 
             },
 
+            room: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display UPC vr resource</p>',
+              fn: () => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+		  var self = this;
+                  let info = this.props.upcInfo(this.state.account)
+		   .then(data => {
+
+			var loc = "https://hubs.mozilla.com/link"
+			var link = <a href={loc} >Dial into a room</a>
+
+
+			//var link = <a href={data['vr']} >View my VR Experience!</a>
+
+			   self.setState({vrLink: link});
+			   self.setState({showModal: true});
+                  });
+		  
+
+                  const interval = setInterval(() => {
+                    if (this.state.progressBal != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({progressBal: info});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+
+
+            },
+
 
 
 
