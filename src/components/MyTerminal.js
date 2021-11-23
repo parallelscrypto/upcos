@@ -17,7 +17,7 @@ var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
 
-var tlds = ['.tubman' ,'.thurgood' ,'.malcolm' ,'.pac' ,'.seale' ,'.fredhampton' ,'.huey' ,'.stokely' ,'.mandella' ,'.TULSA' ,'.marley' ,'.dick-rowland' ,'.barefoot' ,'.alexi' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.GREENWOOD' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc'];
+var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'self-improvement-today' ,'jokes' ,'alexi' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc']
 
 
 
@@ -149,7 +149,7 @@ export default class MyTerminal extends Component {
     var addy = this.props.address;
     addy  = addy.substr(0,10);
     var promptlabel =  addy + '_@[[' + this.state.account + ']]>';
-    var welcomeMsg = "Welcome to the UPCVerse \n MalcolmsLittleSecretOS Loaded \n *Protect your privacy! Resist! \n *Crypto exposes government corruption \n *We are fearless in the face of assassination \n *2nd ammendment applies to ALL Americans \n *Lets repurpose these bars \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n <i style='color:hotpink'>Type `playa` to activate content encoded into [[" + this.state.account + "]] </i> \n <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`step0`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`step1`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`step2`</i> to mint if successful with step1 [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+    var welcomeMsg = "Welcome to the UPCVerse \n HomelessInclusionOS Loaded \n *Mission: Including `the unincludable` \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n <i style='color:hotpink'>Type `playa` to activate content encoded into [[" + this.state.account + "]] </i> \n <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`step0`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`step1`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`step2`</i> to mint if successful with step1 [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 
 
@@ -352,43 +352,34 @@ export default class MyTerminal extends Component {
 		      onChange={(e) => { this.setState({domain: e.target.value}) } }
 			      >
                            <option selected>Select a domain</option>
-                           <option value="0">.tubman</option>
-                           <option value="1">.thurgood</option>
-                           <option value="2">.malcolm</option>
-                           <option value="3">.pac</option>
-                           <option value="4">.seale</option>
-                           <option value="5">.fredhampton</option>
-                           <option value="6">.huey</option>
-                           <option value="7">.stokely</option>
-                           <option value="8">.mandella</option>
-                           <option value="9">.TULSA</option>
-                           <option value="10">.marley</option>
-                           <option value="11">.dick-rowland</option>
-                           <option value="12">.barefoot</option>
-                           <option value="13">.alexi</option>
-                           <option value="14">.profile</option>
-                           <option value="15">.my-show</option>
-                           <option value="16">.news</option>
-                           <option value="17">.gif</option>
-                           <option value="18">.GREENWOOD</option>
-                           <option value="19">.BLACK-WALL-STREET</option>
-                           <option value="20">.deliver</option>
-                           <option value="21">.grind</option>
-                           <option value="22">.11:11</option>
-                           <option value="23">.prediction</option>
-                           <option value="24">.dapp</option>
-                           <option value="25">.txt</option>
-                           <option value="26">.homeless</option>
-                           <option value="27">.link</option>
-                           <option value="28">.surprise</option>
-                           <option value="29">.freestyle</option>
-                           <option value="30">.poem</option>
-                           <option value="31">.stretch</option>
-                           <option value="32">.workout</option>
-                           <option value="33">.recipe</option>
-                           <option value="34">.moment-in-time</option>
-                           <option value="35">.meme</option>
-                           <option value="36">.upc</option>
+                           <option value="0">.watch-this</option>
+                           <option value="1">.hear-this</option>
+                           <option value="2">.will-work</option>
+                           <option value="3">.self-improvement-today</option>
+                           <option value="4">.jokes</option>
+                           <option value="5">.alexi</option>
+                           <option value="6">.profile</option>
+                           <option value="7">.my-show</option>
+                           <option value="8">.news</option>
+                           <option value="9">.gif</option>
+                           <option value="10">.BLACK-WALL-STREET</option>
+                           <option value="11">.deliver</option>
+                           <option value="12">.grind</option>
+                           <option value="13">.11:11</option>
+                           <option value="14">.prediction</option>
+                           <option value="15">.dapp</option>
+                           <option value="16">.txt</option>
+                           <option value="17">.homeless</option>
+                           <option value="18">.link</option>
+                           <option value="19">.surprise</option>
+                           <option value="20">.freestyle</option>
+                           <option value="21">.poem</option>
+                           <option value="22">.stretch</option>
+                           <option value="23">.workout</option>
+                           <option value="24">.recipe</option>
+                           <option value="25">.moment-in-time</option>
+                           <option value="26">.meme</option>
+                           <option value="27">.upc</option>
                         </select>
 
                     </div>
@@ -683,9 +674,9 @@ export default class MyTerminal extends Component {
                     } else {
                       this.setState({progressBal: bal});
                       var self = this;
-                         terminal.pushToStdout(`[[tubmanx-balance]]`);
-                      this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Balance: ${theBal}` + " TubmanX"))
-                         terminal.pushToStdout(`[[/tubmanx-balance]]`);
+                         terminal.pushToStdout(`[[inclusion-balance]]`);
+                      this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Balance: ${theBal}` + " InclusionX"))
+                         terminal.pushToStdout(`[[/inclusionx-balance]]`);
                     }
                   }, 1500)
                 })
