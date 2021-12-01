@@ -11,6 +11,7 @@ import Card from 'react-playing-card';
 import ScratchOff from './ScratchOff';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import ReactPlayer from 'react-player'
+import ReactCardFlip from 'react-card-flip';
 
 
 var Barcode = require('react-barcode');
@@ -51,6 +52,7 @@ export default class MyTerminal extends Component {
        showModalTutorial: false,
        showQrModal: false,
        showBigShow: false,
+       showBigShow2: false,
        showBplayer: false,
        showMarketQrModal: false,
        buyModalContent: '',
@@ -63,10 +65,17 @@ export default class MyTerminal extends Component {
 
     this.selectDomain = this.selectDomain.bind(this);
     this.prodLookup= this.prodLookup.bind(this);
+    this.handleFlip= this.handleFlip.bind(this);
     this.DisplayTime = this.DisplayTime.bind(this);
     this.getTimeZoneTimeObj= this.getTimeZoneTimeObj.bind(this);
   }
 
+
+
+  handleFlip(e) {
+    e.preventDefault();
+    this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
+  }
 
 
   componentDidMount = async () => {
@@ -144,14 +153,100 @@ export default class MyTerminal extends Component {
 	  console.log("domain is " + this.state.domain);
   }
 
+  play= async () => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+		  var self = this;
+                  let info = this.props.upcInfo(this.state.account)
+		   .then(data => {
+			var fullIpfs = "https://upcunderground.mypinata.cloud/" + data['ipfs'];
+			if(fullIpfs.includes('QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU') ) {
+
+			   fullIpfs = fullIpfs.replace('upcunderground.mypinata.cloud','ipfs.io');
+			}
+			if(data['ipfs'] == "") {
+			   fullIpfs = "https://ipfs.io/ipfs/QmP7UYTMQFhsiRHfbgPgEngALzXWroSRVkEyWSbJTd23yf";
+			}
+
+			var link = <a href={fullIpfs} >View my IPFS Website!</a>
+			   self.setState({fullIpfs: fullIpfs});
+			   self.setState({showBigShow: true});
+                  });
+		  
+
+                  const interval = setInterval(() => {
+                    if (this.state.progressBal != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({progressBal: info});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+
+  }
+
+
+
+
+  play2= async () => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+		  var self = this;
+                  let info = this.props.upcInfo(this.state.account)
+		   .then(data => {
+			var fullIpfs = "https://upcunderground.mypinata.cloud/" + data['ipfs'];
+			if(fullIpfs.includes('QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU') ) {
+
+			   fullIpfs = fullIpfs.replace('upcunderground.mypinata.cloud','ipfs.io');
+			}
+			if(data['ipfs'] == "") {
+			   fullIpfs = "https://ipfs.io/ipfs/QmP7UYTMQFhsiRHfbgPgEngALzXWroSRVkEyWSbJTd23yf";
+			}
+
+			var link = <a href={fullIpfs} >View my IPFS Website!</a>
+			   self.setState({fullIpfs: fullIpfs});
+			   self.setState({showBigShow2: true});
+                  });
+		  
+
+                  const interval = setInterval(() => {
+                    if (this.state.progressBal != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({progressBal: info});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+
+  }
+
+
   render () {
 
     var addy = this.props.address;
     addy  = addy.substr(0,10);
     var promptlabel =  addy + '_@[[' + this.state.account + ']]>';
-    var welcomeMsg = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n <i style='color:hotpink'>Type `playa` to activate content encoded into [[" + this.state.account + "]] </i> \n <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`step0`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`step1`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`step2`</i> to mint if successful with step1 [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+    var welcomeMsg = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`step0`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`step1`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`step2`</i> to mint if successful with step1 [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 
+var playButton =
+<i style='color:hotpink'>Type `pl` or click  <a onClick={() => { this.setState({qIsOpen: true})}}>[[" + this.state.account + "]] </a> to activate payload </i>
+	
+
+
+		  console.log(playButton);
 
     var upcHash  = sha256(this.state.account)
     upcHash = sha256(upcHash);
@@ -235,16 +330,33 @@ export default class MyTerminal extends Component {
 
 
     return (
+      <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
+      <div>
+                    <button
+                        onClick={(e) => { 
+this.handleFlip(e)
+this.play()
+}}
+                  >Play this UPC!</button>
+                    <button
+                        onClick={(e) => {this.handleFlip(e) }}
+                  >Hack this UPC!</button>
+
+
+
+
+      </div>
       <div>
       <div id="curTime"></div>
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModal} closemodal={() => this.setState({ showModal: false })} type="pulse" >{this.state.vrLink}</Modal>
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalBuy} closemodal={() => this.setState({ showModalBuy: false })} type="pulse" > {this.state.buyModalContent}</Modal>
+      <Modal style={{ left:"1vw", height:"95vh", width:"95vw"}} visible={this.state.showBigShow2} closemodal={() => this.setState({ showBigShow2: false })} type="pulse"> [[upc://{this.state.account}]] <iframe style={{left:"1vw", height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalTutorial} closemodal={() => this.setState({ showModalTutorial: false })} type="pulse" ><iframe style={{height:"100vh"}} src="https://gateway.pinata.cloud/ipfs/QmStW8PBZjxjSkwnxvr15rHvRajCUkPRMEJGQejQu8EE4W" /></Modal>
 
-      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showBigShow} closemodal={() => this.setState({ showBigShow: false })} type="pulse" > [[upc://{this.state.account}]] <iframe style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
+      <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type="pulse" > [[upc://{this.state.account}]] <iframe style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
 
       <Modal style={{ "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showBplayer} closemodal={() => this.setState({ showBplayer: false })} type="pulse" ><ReactPlayer playing={'true'} controls={'true'} width={'90vw'} height={'90vh'} pip={'true'} stopOnUnmount={'false'} url={this.state.fullIpfs} /></Modal>
 
@@ -269,6 +381,7 @@ export default class MyTerminal extends Component {
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle","width":"95vw","height":"95vh"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showUploadModal} closemodal={() => this.setState({ showUploadModal: false })} type="pulse" > {myUpload}</Modal>
+                    <button onClick={(e) => { this.handleFlip(e)}} >Overview this UPC!</button>
       <Terminal
         style={{"minHeight":"75vh",backgroundColor: "#000"}}
         dangerMode={false}
@@ -1302,51 +1415,18 @@ export default class MyTerminal extends Component {
 
 
 
-            playa: {
+            pl: {
               description: '<p style="color:hotpink;font-size:1.1em">** BeachMediaPlayer! Loads the media player and plays the IPFS resource attached to this UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety </p>',
               fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-		  var self = this;
-                  let info = this.props.upcInfo(this.state.account)
-		   .then(data => {
-			var fullIpfs = "https://upcunderground.mypinata.cloud/" + data['ipfs'];
-			if(fullIpfs.includes('QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU') ) {
-
-			   fullIpfs = fullIpfs.replace('upcunderground.mypinata.cloud','ipfs.io');
-			}
-			if(data['ipfs'] == "") {
-			   fullIpfs = "https://ipfs.io/ipfs/QmP7UYTMQFhsiRHfbgPgEngALzXWroSRVkEyWSbJTd23yf";
-			}
-
-			var link = <a href={fullIpfs} >View my IPFS Website!</a>
-			   self.setState({fullIpfs: fullIpfs});
-			   self.setState({showBigShow: true});
-                  });
-		  
-
-                  const interval = setInterval(() => {
-                    if (this.state.progressBal != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({progressBal: info});
-                      var self = this;
-                      this.setState({ progress: this.state.progress + 10 })
-                    }
-                  }, 1500)
-                })
-
-                return ''
+		      this.play();
               }
 
 
             },
 
 
-            iplaya: {
-              description: '<p style="color:hotpink;font-size:1.1em">** RawBeachMediaPlayer! Loads the media player and plays the RAW IPFS resource attached to this UPC. Raw resources can include IPNS resources.  Just run iplaya /ipfs/##hash##` or `iplaya /ipns/##hash##` and load those raw resouces.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety </p>',
+            ipl: {
+              description: '<p style="color:hotpink;font-size:1.1em">** RawBeachMediaPlayer! Loads the media player and plays the RAW IPFS resource attached to this UPC. Raw resources can include IPNS resources.  Just run ip /ipfs/##hash##` or `ipl /ipns/##hash##` and load those raw resouces.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety </p>',
               fn: (rawHash) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1382,7 +1462,7 @@ export default class MyTerminal extends Component {
 
 
 
-            jplaya: {
+            jp: {
               description: '<p style="color:hotpink;font-size:1.1em">** CrossBeachMediaPlayer! Runs an X-Reference and reads the data from the [[nftId]] passed in.  Next the XBMP loads and plays the IPFS resource attached to XRd UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety  </p>',
               fn: (nftId) => {
                 this.setState({progressBal: ''});
@@ -1428,8 +1508,8 @@ export default class MyTerminal extends Component {
 
 
 
-            bplaya: {
-              description: '<p style="color:hotpink;font-size:1.1em">** BackgroundBeachMediaPlayer! Play music in the background or with the screen off while you workout or do whatever! Resources can be video or audio, but only audio will play with the screen off. Playlists are being integrated into bplaya.</p>',
+            bp: {
+              description: '<p style="color:hotpink;font-size:1.1em">** BackgroundBeachMediaPlayer! Play music in the background or with the screen off while you workout or do whatever! Resources can be video or audio, but only audio will play with the screen off. Playlists are being integrated into bp.</p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1478,7 +1558,7 @@ export default class MyTerminal extends Component {
 
 
 
-            xplaya: {
+            xp: {
               description: '<p style="color:hotpink;font-size:1.1em">** CrossBeachMediaPlayer! Runs an X-Reference and reads the data from the [[upcId]] passed in.  Next the XBMP loads and plays the IPFS resource attached to XRd UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety  </p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
@@ -1606,16 +1686,16 @@ export default class MyTerminal extends Component {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
                   const terminal = this.progressTerminal.current
-		     terminal.pushToStdout(`type 'iplaya ipns/app.ens.eth'  ===TO GO TO==  ENS App`);
-		     terminal.pushToStdout(`type 'iplaya ipns/app.uniswap.org'  ===TO GO TO== Uniswap App `);
-		     terminal.pushToStdout(`type 'iplaya ipns/elasticdao.org'  ===TO GO TO== ElasticDAO `);
-		     terminal.pushToStdout(`type 'iplaya ipns/gnosis-auction.eth'  ===TO GO TO== gnosis-auction.eth `);
-		     terminal.pushToStdout(`type 'iplaya ipns/olympusdao.eth'  ===TO GO TO== Olympus DAO `);
-		     terminal.pushToStdout(`type 'iplaya ipns/powerindex.io'  ===TO GO TO== PowerIndex `);
-		     terminal.pushToStdout(`type 'iplaya ipns/rekt.eth'  ===TO GO TO== Rekt `);
-		     terminal.pushToStdout(`type 'iplaya ipns/sourcify.eth'  ===TO GO TO== Sourcify `);
-		     terminal.pushToStdout(`type 'iplaya ipns/tornado.cash'  ===TO GO TO== Tornado Cash `);
-		     terminal.pushToStdout(`type 'iplaya ipns/zkeducation.eth'  ===TO GO TO== Zero Knowledge Education `);
+		     terminal.pushToStdout(`type 'ip ipns/app.ens.eth'  ===TO GO TO==  ENS App`);
+		     terminal.pushToStdout(`type 'ip ipns/app.uniswap.org'  ===TO GO TO== Uniswap App `);
+		     terminal.pushToStdout(`type 'ip ipns/elasticdao.org'  ===TO GO TO== ElasticDAO `);
+		     terminal.pushToStdout(`type 'ip ipns/gnosis-auction.eth'  ===TO GO TO== gnosis-auction.eth `);
+		     terminal.pushToStdout(`type 'ip ipns/olympusdao.eth'  ===TO GO TO== Olympus DAO `);
+		     terminal.pushToStdout(`type 'ip ipns/powerindex.io'  ===TO GO TO== PowerIndex `);
+		     terminal.pushToStdout(`type 'ip ipns/rekt.eth'  ===TO GO TO== Rekt `);
+		     terminal.pushToStdout(`type 'ip ipns/sourcify.eth'  ===TO GO TO== Sourcify `);
+		     terminal.pushToStdout(`type 'ip ipns/tornado.cash'  ===TO GO TO== Tornado Cash `);
+		     terminal.pushToStdout(`type 'ip ipns/zkeducation.eth'  ===TO GO TO== Zero Knowledge Education `);
                 })
 
                 return ''
@@ -1784,7 +1864,10 @@ export default class MyTerminal extends Component {
         dangerMode={true}
 	promptLabelStyle={{"color":"green", "fontWeight":"bold", "fontSize":"1.1em"}}
       />
+
       </div>
+      </ReactCardFlip>
+
     )
   }
 }
