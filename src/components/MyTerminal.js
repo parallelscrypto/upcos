@@ -157,9 +157,11 @@ export default class MyTerminal extends Component {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
                   const terminal = this.progressTerminal.current
+                  terminal.clearStdout();
 		  var self = this;
                   let info = this.props.upcInfo(this.state.account)
 		   .then(data => {
+                        terminal.clearStdout();
 			var fullIpfs = "https://upcunderground.mypinata.cloud/" + data['ipfs'];
 			if(fullIpfs.includes('QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU') ) {
 
@@ -198,9 +200,11 @@ export default class MyTerminal extends Component {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
                   const terminal = this.progressTerminal.current
+                  terminal.clearStdout();
 		  var self = this;
                   let info = this.props.upcInfo(this.state.account)
 		   .then(data => {
+                        terminal.clearStdout();
 			var fullIpfs = "https://upcunderground.mypinata.cloud/" + data['ipfs'];
 			if(fullIpfs.includes('QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU') ) {
 
@@ -238,7 +242,7 @@ export default class MyTerminal extends Component {
     var addy = this.props.address;
     addy  = addy.substr(0,10);
     var promptlabel =  addy + '_@[[' + this.state.account + ']]>';
-    var welcomeMsg = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`step0`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`step1`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`step2`</i> to mint if successful with step1 [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+    var welcomeMsg = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`prep`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 
 var playButton =
@@ -331,17 +335,27 @@ var playButton =
 
     return (
       <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
-      <div>
+      <div style={{paddingTop: "20px"}}>
                     <button
                         onClick={(e) => { 
 this.handleFlip(e)
 this.play()
 }}
-                  >Play this UPC!</button>
+                  >Play [[{this.state.account}]]!</button>
+
                     <button
                         onClick={(e) => {this.handleFlip(e) }}
-                  >Hack this UPC!</button>
+                  >Hack [[{this.state.account}]]!</button>
 
+                    <button
+                        onClick={(e) => { 
+
+const terminal = this.progressTerminal.current
+terminal.clearStdout();
+this.handleFlip(e)
+this.prodLookup(this.state.account);
+}}
+                  >*Product [[{this.state.account}]] Info*</button>
 
 
 
@@ -356,7 +370,7 @@ this.play()
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalTutorial} closemodal={() => this.setState({ showModalTutorial: false })} type="pulse" ><iframe style={{height:"100vh"}} src="https://gateway.pinata.cloud/ipfs/QmStW8PBZjxjSkwnxvr15rHvRajCUkPRMEJGQejQu8EE4W" /></Modal>
 
-      <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type="pulse" > [[upc://{this.state.account}]] <iframe style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
+      <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type="pulse" > [[upc://{this.state.account}]] <iframe style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
 
       <Modal style={{ "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showBplayer} closemodal={() => this.setState({ showBplayer: false })} type="pulse" ><ReactPlayer playing={'true'} controls={'true'} width={'90vw'} height={'90vh'} pip={'true'} stopOnUnmount={'false'} url={this.state.fullIpfs} /></Modal>
 
@@ -420,8 +434,8 @@ this.play()
               }
             },
 
-            step0: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Approve the Underground to spend 50 of your IntelX.  After you have spent 50, you must run step0 again.    You MUST run this command FIRST or all of your `step1` and `step2` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on step0**</p>',
+            prep: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Approve the Underground to spend 50 of your IntelX.  After you have spent 50, you must run prep again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on prep**</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -430,18 +444,18 @@ this.play()
                   const terminal = this.progressTerminal.current
                   let approval = this.props.approve();
                   approval.then((value) => {
-		     terminal.pushToStdout(`You have approved the Underground to transfer sufficient IntelX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'step1' and 'step1b' commands will fail`)
+		     terminal.pushToStdout(`You have approved the Underground to transfer sufficient IntelX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
 
-                         terminal.pushToStdout(`[[step0]]`);
+                         terminal.pushToStdout(`[[prep]]`);
 		terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
-                         terminal.pushToStdout(`[[/step0]]`);
+                         terminal.pushToStdout(`[[/prep]]`);
                 return ''
               }
             },
-            step1: {
+            hack: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Buy an NFT using the GUI interface.  After completing this step, check the `Activity` tab below to make sure that your purchase went through.  After your transaction has been processed successfully, you can move to the last phase `step 2` Visit <a href="upc://000000000012">[[000000000012]]</a> to view a video tutorial on swap**</p>',
               fn: (humanReadableName) => {
                   var buyForm =  <div>
@@ -517,8 +531,8 @@ this.play()
 
 
 
-            step1b: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Buy a UPC NFT without the GUI popup.  Example: If you are currently scanned into UPC #222222222222 and you would like to buy the domain `foo.fire`, you would type the following `step1b foo 2`.  The `2` after `foo` corresponds to the domain ending that you are purchasing.  The choices are 0=.upc, 1=.afro, 2=.fire  **</p>',
+            xhack: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Buy a UPC NFT without the GUI popup.  Example: If you are currently scanned into UPC #222222222222 and you would like to buy the domain `foo.fire`, you would type the following `hackb foo 2`.  The `2` after `foo` corresponds to the domain ending that you are purchasing.  The choices are 0=.upc, 1=.afro, 2=.fire  **</p>',
               fn: (humanReadableName,domain) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -527,9 +541,9 @@ this.play()
                       approval.then((value) => {
                          approval = value;
 			 var congrats = "Thank you for your purchase! You now own NFT for " + this.state.account;
-                         terminal.pushToStdout(`[[step1b]]`);
+                         terminal.pushToStdout(`[[hackb]]`);
                          terminal.pushToStdout(congrats)
-                         terminal.pushToStdout(`[[/step1b]]`);
+                         terminal.pushToStdout(`[[/hackb]]`);
 			      
                          // expected output: "Success!"
                       });
@@ -551,8 +565,9 @@ this.play()
               }
             },
 
-            step2: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `step1` or `step1b` command</p>',
+
+            own: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `hack` or `xhack` command</p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -560,9 +575,42 @@ this.play()
                   let approval = this.props.mintNft(this.state.account);
                       approval.then((value) => {
                          approval = value;
-                         terminal.pushToStdout(`[[step2]]`);
+                         terminal.pushToStdout(`[[own]]`);
 		         terminal.pushToStdout(`Congrats! You own UPCNFT for ${upcId}`)
-                         terminal.pushToStdout(`[[/step2]]`);
+                         terminal.pushToStdout(`[[/own]]`);
+                         // expected output: "Success!"
+                      });
+
+
+                  const interval = setInterval(() => {
+                    if (this.state.approved != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({approved: approval});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 } )
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
+
+
+            pwn: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `hack` or `xhack` command</p>',
+              fn: (upcId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let approval = this.props.mintNft(this.state.account);
+                      approval.then((value) => {
+                         approval = value;
+                         terminal.pushToStdout(`[[own]]`);
+		         terminal.pushToStdout(`Congrats! You own UPCNFT for ${upcId}`)
+                         terminal.pushToStdout(`[[/own]]`);
                          // expected output: "Success!"
                       });
 

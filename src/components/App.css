@@ -10,7 +10,7 @@
 }
 
 .react-modal-body {
-position: absolute;
+position: relative;
 background-color: #000;
 z-index: 103;
 width: 100vw;
@@ -18,7 +18,7 @@ top: 0px;
 min-height: 100vh;
 display: table-cell;
 text-align: center;
-vertical-align: middle;
+vertical-align: top;
 }
 
 body {
