@@ -10,7 +10,8 @@ import QRCode from "react-qr-code";
 import Card from 'react-playing-card';
 import ScratchOff from './ScratchOff';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
-import ReactPlayer from 'react-player'
+//import ReactPlayer from 'react-player'
+import ReactPlayer from 'react-player/youtube';
 import ReactCardFlip from 'react-card-flip';
 
 
@@ -337,6 +338,7 @@ var playButton =
       <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
       <div style={{paddingTop: "20px"}}>
                     <button
+	                style={{width: "33vw"}}
                         onClick={(e) => { 
 this.handleFlip(e)
 this.play()
@@ -344,10 +346,12 @@ this.play()
                   >Play [[{this.state.account}]]!</button>
 
                     <button
+	                style={{width: "33vw"}}
                         onClick={(e) => {this.handleFlip(e) }}
                   >Hack [[{this.state.account}]]!</button>
 
                     <button
+	                style={{width: "33vw"}}
                         onClick={(e) => { 
 
 const terminal = this.progressTerminal.current
@@ -355,9 +359,11 @@ terminal.clearStdout();
 this.handleFlip(e)
 this.prodLookup(this.state.account);
 }}
-                  >*Product [[{this.state.account}]] Info*</button>
+                  >*Product [[{this.state.account}]]</button>
 
-
+		  <ReactPlayer 
+	          width="100vw"
+                  url='https://www.youtube.com/watch?v=ysz5S6PUM-U' />
 
       </div>
       <div>
