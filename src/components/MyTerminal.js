@@ -18,7 +18,7 @@ import ReactCardFlip from 'react-card-flip';
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
-var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`prep`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'self-improvement-today' ,'jokes' ,'alexi' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc']
 
@@ -42,7 +42,7 @@ export default class MyTerminal extends Component {
     this.progressTerminal = React.createRef()
     var player = <ReactPlayer 
           width="100vw"
-          url='https://www.youtube.com/watch?v=ysz5S6PUM-U' 
+          url='https://www.youtube.com/watch?v=iAYMJk9IsDA' 
           />
 
     this.state = {
@@ -178,44 +178,8 @@ export default class MyTerminal extends Component {
 	  console.log("domain is " + this.state.domain);
   }
 
-  play= async () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  terminal.clearStdout();
-		  var self = this;
-                  let info = this.props.upcInfo(this.state.account)
-		   .then(data => {
-                        terminal.clearStdout();
-			var fullIpfs = "https://upcunderground.mypinata.cloud/" + data['ipfs'];
-			if(fullIpfs.includes('QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU') ) {
-
-			   fullIpfs = fullIpfs.replace('upcunderground.mypinata.cloud','ipfs.io');
-			}
-			if(data['ipfs'] == "") {
-			   fullIpfs = "https://ipfs.io/ipfs/QmP7UYTMQFhsiRHfbgPgEngALzXWroSRVkEyWSbJTd23yf";
-			}
-
-			var link = <a href={fullIpfs} >View my IPFS Website!</a>
-			   self.setState({fullIpfs: fullIpfs});
-			   self.setState({showBigShow: true});
-                  });
-		  
-
-                  const interval = setInterval(() => {
-                    if (this.state.progressBal != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({progressBal: info});
-                      var self = this;
-                      this.setState({ progress: this.state.progress + 10 })
-                    }
-                  }, 1500)
-                })
-
-                return ''
-
+  hero = async () => {
+      this.setState({showCardModal:true});
   }
 
 
@@ -268,7 +232,7 @@ export default class MyTerminal extends Component {
     addy  = addy.substr(0,10);
     var promptlabel =  addy + '_@[[' + this.state.account + ']]>';
 
-    var welcomeMsg = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`prep`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+    var welcomeMsg = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 var playButton =
 <i style='color:hotpink'>Type `pl` or click  <a onClick={() => { this.setState({qIsOpen: true})}}>[[" + this.state.account + "]] </a> to activate payload </i>
@@ -363,33 +327,46 @@ var playButton =
       <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
       <div style={{paddingTop: "20px"}}>
                     <button
-	                style={{width: "33vw"}}
+	                style={{width: "25vw"}}
                         onClick={(e) => { 
 this.handleFlip(e)
 this.play()
 }}
-                  >Play [[{this.state.account}]]!</button>
+                  >play [[{this.state.account}]]</button>
 
                     <button
-	                style={{width: "33vw"}}
+	                style={{width: "25vw"}}
                         onClick={(e) => {
 				this.handleFlip(e) 
                                 this.printWelcomeMsg();
 			}}
-                  >Hack [[{this.state.account}]]!</button>
+                  >hack [[{this.state.account}]]</button>
+
+
+
 
                     <button
-	                style={{width: "33vw"}}
+	                style={{width: "25vw"}}
                         onClick={(e) => { 
+                                     const terminal = this.progressTerminal.current
+                                     terminal.clearStdout();
+                                     this.handleFlip(e)
+                                     this.hero();
+                        }}
+                  >hero [[{this.state.account}]]</button>
 
-const terminal = this.progressTerminal.current
-terminal.clearStdout();
-this.handleFlip(e)
-this.prodLookup(this.state.account);
 
-			
-}}
-                  >*Product [[{this.state.account}]]</button>
+
+
+                    <button
+	                style={{width: "25vw"}}
+                        onClick={(e) => { 
+                                     const terminal = this.progressTerminal.current
+                                     terminal.clearStdout();
+                                     this.handleFlip(e)
+                                     this.prodLookup(this.state.account);
+                        }}
+                  >product [[{this.state.account}]]</button>
 
                  {this.state.player}
       </div>
@@ -467,8 +444,8 @@ this.prodLookup(this.state.account);
               }
             },
 
-            prep: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Approve the Underground to spend 50 of your IntelX.  After you have spent 50, you must run prep again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on prep**</p>',
+            recon: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Approve the Underground to spend 50 of your IntelX.  After you have spent 50, you must run recon again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on recon **</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -482,9 +459,9 @@ this.prodLookup(this.state.account);
                   });
                 })
 
-                         terminal.pushToStdout(`[[prep]]`);
+                         terminal.pushToStdout(`[[recon]]`);
 		terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
-                         terminal.pushToStdout(`[[/prep]]`);
+                         terminal.pushToStdout(`[[/recon]]`);
                 return ''
               }
             },
@@ -1350,15 +1327,6 @@ this.prodLookup(this.state.account);
             },
 
 
-
-
-            mqr: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display QR code for the MARKETPLACE</p>',
-              fn: () => {
-                      this.setState({showMarketQrModal:true});
-              }
-            },
-
             qr: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display QR for X-Referenced upcId</p>',
               fn: () => {
@@ -1396,7 +1364,7 @@ this.prodLookup(this.state.account);
             x: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display hero that lives inside of UPC [[' +this.state.account+ ']]</p>',
               fn: () => {
-                      this.setState({showCardModal:true});
+		      this.hero();
               }
             },
             xpayload: {
@@ -1496,8 +1464,8 @@ this.prodLookup(this.state.account);
 
 
 
-            pl: {
-              description: '<p style="color:hotpink;font-size:1.1em">** BeachMediaPlayer! Loads the media player and plays the IPFS resource attached to this UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety </p>',
+            dj: {
+              description: '<p style="color:hotpink;font-size:1.1em">** OWN the DJ booth with player!  This command plays the IPFS resource attached to this UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety </p>',
               fn: () => {
 		      this.play();
               }
@@ -1506,8 +1474,8 @@ this.prodLookup(this.state.account);
             },
 
 
-            ipl: {
-              description: '<p style="color:hotpink;font-size:1.1em">** RawBeachMediaPlayer! Loads the media player and plays the RAW IPFS resource attached to this UPC. Raw resources can include IPNS resources.  Just run ip /ipfs/##hash##` or `ipl /ipns/##hash##` and load those raw resouces.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety </p>',
+            idj: {
+              description: '<p style="color:hotpink;font-size:1.1em">** DjMediaPlayer! Loads the media player and plays the RAW IPFS resource attached to this UPC. Raw resources can include IPNS resources.  Just run ip /ipfs/##hash##` or `ipl /ipns/##hash##` and load those raw resouces.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety </p>',
               fn: (rawHash) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1543,8 +1511,8 @@ this.prodLookup(this.state.account);
 
 
 
-            jp: {
-              description: '<p style="color:hotpink;font-size:1.1em">** CrossBeachMediaPlayer! Runs an X-Reference and reads the data from the [[nftId]] passed in.  Next the XBMP loads and plays the IPFS resource attached to XRd UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety  </p>',
+            ndj: {
+              description: '<p style="color:hotpink;font-size:1.1em">** NFT ID DjMediaPlayer! Runs an X-Reference and reads the data from the [[nftId]] passed in.  Next the XBMP loads and plays the IPFS resource attached to XRd UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety  </p>',
               fn: (nftId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1587,60 +1555,8 @@ this.prodLookup(this.state.account);
 
             },
 
-
-
-            bp: {
-              description: '<p style="color:hotpink;font-size:1.1em">** BackgroundBeachMediaPlayer! Play music in the background or with the screen off while you workout or do whatever! Resources can be video or audio, but only audio will play with the screen off. Playlists are being integrated into bp.</p>',
-              fn: (upcId) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-		  var self = this;
-
-                  let info = this.props.upcInfo(upcId)
-		   .then(data => {
-                        var ipfsLocal = data['ipfs'];
-
-      			var fullIpfs = "https://upcunderground.mypinata.cloud/" + ipfsLocal;
-			if(fullIpfs.includes('QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU') ) {
-
-			   fullIpfs = fullIpfs.replace('upcunderground.mypinata.cloud','ipfs.io');
-			}
-
-      			var link = <a href={fullIpfs} >View my IPFS Website!</a>
-      			   self.setState({fullIpfs: fullIpfs});
-      			   self.setState({showBplayer: true});
-      		  
-      
-                        const interval = setInterval(() => {
-                          if (this.state.progressBal != '') { // Stop at 100%
-                            clearInterval(interval)
-                            this.setState({ isProgressing: false, progress: 0 })
-                          } else {
-                            this.setState({progressBal: info});
-                            var self = this;
-                            this.setState({ progress: this.state.progress + 10 })
-                          }
-                        }, 1500)
-                      })
-      
-                      return ''
-
-
-                  });
-		  
-
-              }
-
-
-            },
-
-
-
-
-
-            xp: {
-              description: '<p style="color:hotpink;font-size:1.1em">** CrossBeachMediaPlayer! Runs an X-Reference and reads the data from the [[upcId]] passed in.  Next the XBMP loads and plays the IPFS resource attached to XRd UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety  </p>',
+            xdj: {
+              description: '<p style="color:hotpink;font-size:1.1em">** DjMediaPlayer! Runs an X-Reference and reads the data from the [[############]] passed in.  Next the DMP loads and plays the IPFS resource attached to XRd UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety  </p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1686,7 +1602,7 @@ this.prodLookup(this.state.account);
             },
 
             room: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display UPC vr resource</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Create a VR room or dial into an existing room</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
