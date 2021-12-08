@@ -18,6 +18,7 @@ import ReactCardFlip from 'react-card-flip';
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
+var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`prep`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'self-improvement-today' ,'jokes' ,'alexi' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc']
 
@@ -39,11 +40,17 @@ export default class MyTerminal extends Component {
   constructor(props) {
     super(props)
     this.progressTerminal = React.createRef()
+    var player = <ReactPlayer 
+          width="100vw"
+          url='https://www.youtube.com/watch?v=ysz5S6PUM-U' 
+          />
+
     this.state = {
        account: props.account,
        progress: 0,
        approved: '',
        vrLink: '',
+       player: player,
        showModal: false,
        showModalBuy: false,
        showCardModal: false,
@@ -71,11 +78,28 @@ export default class MyTerminal extends Component {
     this.getTimeZoneTimeObj= this.getTimeZoneTimeObj.bind(this);
   }
 
+  printWelcomeMsg() {
+     const terminal = this.progressTerminal.current
+     terminal.pushToStdout(welcomeMsgDefault);
+  }
+
 
 
   handleFlip(e) {
     e.preventDefault();
     this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
+    var player;
+    if(this.state.isFlipped) {
+       player = <ReactPlayer 
+          width="100vw"
+          url='https://www.youtube.com/watch?v=ysz5S6PUM-U' 
+          />
+    }
+    else {
+       player = "";
+    }
+
+    this.setState(prevState => ({ player: player }));
   }
 
 
@@ -243,8 +267,8 @@ export default class MyTerminal extends Component {
     var addy = this.props.address;
     addy  = addy.substr(0,10);
     var promptlabel =  addy + '_@[[' + this.state.account + ']]>';
-    var welcomeMsg = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`prep`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
+    var welcomeMsg = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`prep`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 var playButton =
 <i style='color:hotpink'>Type `pl` or click  <a onClick={() => { this.setState({qIsOpen: true})}}>[[" + this.state.account + "]] </a> to activate payload </i>
@@ -332,6 +356,7 @@ var playButton =
 
     var myUpload = <IpfsUpload upc={this.state.account} xpayload={this.props.setIpfs} /> 
 
+    var player;				
 
 
     return (
@@ -347,7 +372,10 @@ this.play()
 
                     <button
 	                style={{width: "33vw"}}
-                        onClick={(e) => {this.handleFlip(e) }}
+                        onClick={(e) => {
+				this.handleFlip(e) 
+                                this.printWelcomeMsg();
+			}}
                   >Hack [[{this.state.account}]]!</button>
 
                     <button
@@ -358,13 +386,12 @@ const terminal = this.progressTerminal.current
 terminal.clearStdout();
 this.handleFlip(e)
 this.prodLookup(this.state.account);
+
+			
 }}
                   >*Product [[{this.state.account}]]</button>
 
-		  <ReactPlayer 
-	          width="100vw"
-                  url='https://www.youtube.com/watch?v=ysz5S6PUM-U' />
-
+                 {this.state.player}
       </div>
       <div>
       <div id="curTime"></div>
