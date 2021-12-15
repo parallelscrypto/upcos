@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import Terminal from 'react-console-emulator'
 import ScratchCard from './ScratchCard'
 import IpfsUpload from './IpfsUpload'
+import TrebleCleff from './TrebleCleff'
+import BassCleff from './BassCleff'
 import Modal from "react-animated-modal";
 import Iframe from 'react-iframe';
 import axios from "axios";
@@ -52,6 +54,7 @@ export default class MyTerminal extends Component {
        vrLink: '',
        player: player,
        showModal: false,
+       bassCleff: '',
        showModalBuy: false,
        showCardModal: false,
        showUploadModal: false,
@@ -72,6 +75,7 @@ export default class MyTerminal extends Component {
     }
 
     this.selectDomain = this.selectDomain.bind(this);
+    this.firstLookup= this.firstLookup.bind(this);
     this.prodLookup= this.prodLookup.bind(this);
     this.handleFlip= this.handleFlip.bind(this);
     this.DisplayTime = this.DisplayTime.bind(this);
@@ -80,6 +84,7 @@ export default class MyTerminal extends Component {
 
   printWelcomeMsg() {
      const terminal = this.progressTerminal.current
+     terminal.clearStdout();
      terminal.pushToStdout(welcomeMsgDefault);
   }
 
@@ -105,18 +110,32 @@ export default class MyTerminal extends Component {
 
   componentDidMount = async () => {
     var self = this;
+    this.firstLookup();
     setInterval(function() {
         return self.DisplayTime(-300);
      }, 1000);
 
     return this.DisplayTime(-300);
+
   }
 
 
+  firstLookup= async () => {
+          var self = this;
+          let info = this.props.upcInfo(this.props.account)
+           .then(data => {
+                var owner= data['staker'];
+                var nftId= data['tokenId'];
+                var addy = this.props.address;
+		if(addy == owner) {
 
-
-
-
+	           var bc = <BassCleff handleFlip={this.handleFlip} angel={this.angel} flip={this.flip} printWelcomeMsg={this.printWelcomeMsg} upload={this.upload} account={this.state.account} />
+                   self.setState({nftId: nftId});
+                   self.setState({bassCleff: bc});
+		   
+		}
+	   })
+  }
 
   DisplayTime = (timeZoneOffsetminutes) => {
   if (!document.all && !document.getElementById)
@@ -154,6 +173,68 @@ export default class MyTerminal extends Component {
 
 
 
+  flip= async (nftId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var theBal;
+                  var nftId = this.state.nftId
+                  let bal = this.props.sendToMarket(nftId);
+                      bal.then((value) => {
+                         terminal.pushToStdout(`[[flip]]`);
+                         terminal.pushToStdout(`Sending your NFT to the market.  Check the activity tab to monitor progress.  If this command completes, you must run 'smp' to set-market-price before the sale can begin.`);
+                         terminal.pushToStdout(`[[/flip]]`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+  }
+
+  upload= async (upc) => {
+    var xhr = new XMLHttpRequest();
+    var self = this;
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+           var resp = xhr.responseXML.body.outerHTML;
+
+           var fullResp = '<html>' + resp + '</html>';
+           self.setState({showProductContent:fullResp});
+           self.setState({showProductModal:true});
+        }
+    }
+
+
+    xhr.open('GET', 'https://cors-container.herokuapp.com/https://www.upcitemdb.com/upc/' + upc );
+    xhr.responseType = 'document';
+    xhr.send();
+  }
+
+
+  angel = async (upc) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  terminal.clearStdout();
+                  var theBal;
+                  let bal = this.props.pbal(this.state.account);
+                      bal.then((value) => {
+                         theBal =window.web3.utils.fromWei(value, "ether");
+                         if(theBal > 0) {
+                            terminal.pushToStdout(`You have recieved MATIC from an angel.  Type 'tyvm' to withdraw the MATIC to your wallet`);
+                         }
+
+                         terminal.pushToStdout(`[[angel-balance]]`);
+                         terminal.pushToStdout(`angel_balance: ${theBal} MATIC`);
+                         terminal.pushToStdout(`[[/angel-balance]]`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+  }
+
+
   prodLookup= async (upc) => {
     var xhr = new XMLHttpRequest();
     var self = this;
@@ -183,9 +264,11 @@ export default class MyTerminal extends Component {
   }
 
 
+  upload = async () => {
+      this.setState({showUploadModal:true});
+  }
 
-
-  play2= async () => {
+  play= async () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
                   const terminal = this.progressTerminal.current
@@ -205,7 +288,7 @@ export default class MyTerminal extends Component {
 
 			var link = <a href={fullIpfs} >View my IPFS Website!</a>
 			   self.setState({fullIpfs: fullIpfs});
-			   self.setState({showBigShow2: true});
+			   self.setState({showBigShow: true});
                   });
 		  
 
@@ -325,50 +408,12 @@ var playButton =
 
     return (
       <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
-      <div style={{paddingTop: "20px"}}>
-                    <button
-	                style={{width: "25vw"}}
-                        onClick={(e) => { 
-this.handleFlip(e)
-this.play()
-}}
-                  >play [[{this.state.account}]]</button>
+      <div>
+	     <TrebleCleff handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} hero={this.hero} prodLookup={this.prodLookup} account={this.state.account} />
 
-                    <button
-	                style={{width: "25vw"}}
-                        onClick={(e) => {
-				this.handleFlip(e) 
-                                this.printWelcomeMsg();
-			}}
-                  >hack [[{this.state.account}]]</button>
-
-
-
-
-                    <button
-	                style={{width: "25vw"}}
-                        onClick={(e) => { 
-                                     const terminal = this.progressTerminal.current
-                                     terminal.clearStdout();
-                                     this.handleFlip(e)
-                                     this.hero();
-                        }}
-                  >hero [[{this.state.account}]]</button>
-
-
-
-
-                    <button
-	                style={{width: "25vw"}}
-                        onClick={(e) => { 
-                                     const terminal = this.progressTerminal.current
-                                     terminal.clearStdout();
-                                     this.handleFlip(e)
-                                     this.prodLookup(this.state.account);
-                        }}
-                  >product [[{this.state.account}]]</button>
 
                  {this.state.player}
+	     {this.state.bassCleff}
       </div>
       <div>
       <div id="curTime"></div>
@@ -644,20 +689,7 @@ this.play()
             flip: {
               description: '<p style="color:hotpink;font-size:1.1em">** Flip this NFT!  Send it to the decentralized marketplace after you have put in the hard work of renovating this UPC property!  After this command succeeds, you can set-market-price with smp command.  Sale will not start until you set market price (smp) **</p>',
               fn: (nftId) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.sendToMarket(nftId);
-                      bal.then((value) => {
-                         terminal.pushToStdout(`[[flip]]`);
-                         terminal.pushToStdout(`Sending your NFT to the market.  Check the activity tab to monitor progress.  If this command completes, you must run 'smp' to set-market-price before the sale can begin.`);
-                         terminal.pushToStdout(`[[/flip]]`);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
+		      this.flip(nftId);
               }
             },
 
@@ -903,21 +935,7 @@ this.play()
             ab: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display the Guardian Angel tip jar balance of the current UPC</p>',
               fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.pbal(this.state.account);
-                      bal.then((value) => {
-                         theBal =window.web3.utils.fromWei(value, "ether");
-                         terminal.pushToStdout(`[[angel-balance]]`);
-                         terminal.pushToStdout(`angel_balance: ${theBal} MATIC`);
-                         terminal.pushToStdout(`[[/angel-balance]]`);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
+                  this.angel();
               }
             },
 
