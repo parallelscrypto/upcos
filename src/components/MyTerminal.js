@@ -97,7 +97,7 @@ export default class MyTerminal extends Component {
     if(this.state.isFlipped) {
        player = <ReactPlayer 
           width="100vw"
-          url='https://www.youtube.com/watch?v=ysz5S6PUM-U' 
+          url='https://www.youtube.com/watch?v=o_l4Ab5FRwM' 
           />
     }
     else {
@@ -712,15 +712,25 @@ var playButton =
                             let info = this.props.getSaleInfo(i)
                              .then((data) => {
 				  var price  = window.web3.utils.fromWei(data['price'], "ether");
+				  var priceRaw    = data['price'];
+				  var tokenId = data['tokenId'];
 				  var fee    = window.web3.utils.fromWei(data['fee'], "ether");
+                                  var buyLink = "{{mbuy " + tokenId + " " + priceRaw + "}}";
+                                  var playLink = "{{ndj " + tokenId + "}}";
+                                  var upcLink= "{{xi " + tokenId + "}}";
+
 				  if(data['inProgress'] == true) {
                                      terminal.pushToStdout(`\n`);
                                      terminal.pushToStdout(`*********** ${data['tokenId']} ***********`);
                                      terminal.pushToStdout(`[[market-data]]`);
                                      terminal.pushToStdout(`=====`);
+                                     terminal.pushToStdout(`buy_now: ${buyLink}`);
+                                     terminal.pushToStdout(`=====`);
+                                     terminal.pushToStdout(`play_now: ${playLink}`);
+                                     terminal.pushToStdout(`=====`);
                                      terminal.pushToStdout(`contract: ${data['nftContract']}`);
                                      terminal.pushToStdout(`=====`);
-                                     terminal.pushToStdout(`upc_id: ${data['upcId']}`);
+                                     terminal.pushToStdout(`upc_id: ${upcLink}`);
                                      terminal.pushToStdout(`=====`);
                                      terminal.pushToStdout(`listing_title: ${data['humanReadableName']}`);
                                      terminal.pushToStdout(`=====`);
@@ -1110,7 +1120,7 @@ var playButton =
 
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
-
+                        var upcLink = "<a href='upc://"+ data['word'] +"'>[["+ data['word'] +"]]</a>";
                         terminal.pushToStdout(`[[xintel]]`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`og_owner: ${data['og']}`);
@@ -1125,7 +1135,7 @@ var playButton =
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`upc: ${data['word']}`);
+                        terminal.pushToStdout(`upc: ${upcLink}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`minted: ${data['minted']}`);
                         terminal.pushToStdout(`=====`);
