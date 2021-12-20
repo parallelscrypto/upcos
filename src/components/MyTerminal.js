@@ -44,7 +44,7 @@ export default class MyTerminal extends Component {
     this.progressTerminal = React.createRef()
     var player = <ReactPlayer 
           width="100vw"
-          url='https://www.youtube.com/watch?v=iAYMJk9IsDA' 
+          url='https://www.youtube.com/watch?v=eXvBjCO19QY' 
           />
 
     this.state = {
@@ -55,6 +55,7 @@ export default class MyTerminal extends Component {
        player: player,
        showModal: false,
        bassCleff: '',
+       upcRadioString: "Welcome to UPC NFT Radio!",
        showModalBuy: false,
        showCardModal: false,
        showUploadModal: false,
@@ -285,9 +286,10 @@ export default class MyTerminal extends Component {
 			if(data['ipfs'] == "") {
 			   fullIpfs = "https://ipfs.io/ipfs/QmP7UYTMQFhsiRHfbgPgEngALzXWroSRVkEyWSbJTd23yf";
 			}
-
+                        var radioString = "UPC DJ now playing [[" + data['word'] + "]] a.k.a {{" + data['ipfs'] + "}}"; 
 			var link = <a href={fullIpfs} >View my IPFS Website!</a>
 			   self.setState({fullIpfs: fullIpfs});
+			   self.setState({upcRadioString: radioString});
 			   self.setState({showBigShow: true});
                   });
 		  
@@ -425,7 +427,7 @@ var playButton =
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalTutorial} closemodal={() => this.setState({ showModalTutorial: false })} type="pulse" ><iframe style={{height:"100vh"}} src="https://gateway.pinata.cloud/ipfs/QmStW8PBZjxjSkwnxvr15rHvRajCUkPRMEJGQejQu8EE4W" /></Modal>
 
-      <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type="pulse" > [[upc://{this.state.account}]] <iframe style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
+      <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type="pulse" > [[upc://{this.state.account}]] <iframe title={this.state.upcRadioString} style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
 
       <Modal style={{ "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showBplayer} closemodal={() => this.setState({ showBplayer: false })} type="pulse" ><ReactPlayer playing={'true'} controls={'true'} width={'90vw'} height={'90vh'} pip={'true'} stopOnUnmount={'false'} url={this.state.fullIpfs} /></Modal>
 
@@ -1500,6 +1502,58 @@ var playButton =
 
 
             },
+
+
+
+            bdj: {
+              description: '<p style="color:hotpink;font-size:1.1em">** BackgroundBeachMediaPlayer! Play music in the background or with the screen off while you workout or do whatever! Resources can be video or audio, but only audio will play with the screen off. Playlists are being integrated into bplaya.</p>',
+              fn: (upcId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var self = this;
+
+                  let info = this.props.upcInfo(upcId)
+                   .then(data => {
+                        var ipfsLocal = data['ipfs'];
+
+                        var fullIpfs = "https://upcunderground.mypinata.cloud/" + ipfsLocal;
+                        if(fullIpfs.includes('QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU') ) {
+
+                           fullIpfs = fullIpfs.replace('upcunderground.mypinata.cloud','ipfs.io');
+                        }
+
+                        var link = <a href={fullIpfs} >View my IPFS Website!</a>
+                           self.setState({fullIpfs: fullIpfs});
+                           self.setState({showBplayer: true});
+
+
+                        const interval = setInterval(() => {
+                          if (this.state.progressBal != '') { // Stop at 100%
+                            clearInterval(interval)
+                            this.setState({ isProgressing: false, progress: 0 })
+                          } else {
+                            this.setState({progressBal: info});
+                            var self = this;
+                            this.setState({ progress: this.state.progress + 10 })
+                          }
+                        }, 1500)
+                      })
+
+                      return ''
+
+
+                  });
+
+
+              }
+
+
+            },
+
+
+
+
 
 
             idj: {
