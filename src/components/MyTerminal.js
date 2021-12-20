@@ -1117,7 +1117,7 @@ var playButton =
 		        let tld = hrTLD + " (" + data['tld'] + ")";
 			var tmpStamp = parseInt(data['latestTimestamp']);
                         var newDate = new Date(tmpStamp * 1000);
-
+                        var payload = "{{ idj " + data['ipfs'] + " }}";
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
                         var upcLink = "<a href='upc://"+ data['word'] +"'>[["+ data['word'] +"]]</a>";
@@ -1141,7 +1141,7 @@ var playButton =
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`vr: ${data['vr']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`payload: ${data['ipfs']}`);
+                        terminal.pushToStdout(`payload: ${payload}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
                         terminal.pushToStdout(`=====`);
