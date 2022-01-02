@@ -22,7 +22,7 @@ var sha256 = require('js-sha256');
 
 var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
-var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'self-improvement-today' ,'jokes' ,'alexi' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.wedding', '.bowlgame']
+var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'self-improvement-today' ,'jokes' ,'alexi' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame']
 
 
 
@@ -564,7 +564,7 @@ var playButton =
                            <option value="25">.moment-in-time</option>
                            <option value="26">.meme</option>
                            <option value="27">.upc</option>
-                           <option value="28">.wedding</option>
+                           <option value="28">.marriage</option>
                            <option value="29">.bowlgame</option>
                         </select>
 
@@ -694,6 +694,64 @@ var playButton =
               description: '<p style="color:hotpink;font-size:1.1em">** Flip this NFT!  Send it to the decentralized marketplace after you have put in the hard work of renovating this UPC property!  After this command succeeds, you can set-market-price with smp command.  Sale will not start until you set market price (smp) **</p>',
               fn: (nftId) => {
 		      this.flip(nftId);
+              }
+            },
+
+            grep: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that are on the market **</p>',
+              fn: (word) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var latest;
+                  let bal = this.props.latestTokenId();
+                      bal.then((value) => {
+                         latest = Math.round(value);
+			 var i = 1;
+			 for(i = 1; i < latest + 2; i++) {
+
+                            let info = this.props.nftInfo(i)
+                            
+		   .then(data => {
+
+			let hrTLD = tlds[data['tld']];
+		        let tld = hrTLD + " (" + data['tld'] + ")";
+			var tmpStamp = parseInt(data['latestTimestamp']);
+                        var newDate = new Date(tmpStamp * 1000);
+                        var payload = "{{ idj " + data['ipfs'] + " }}";
+			var tmpStamp = parseInt(data['createdTimestamp']);
+                        var created = new Date(tmpStamp * 1000);
+                        var upcLink = "<a href='upc://"+ data['word'] +"'>[["+ data['word'] +"]]</a>";
+
+			var fileName = data['ipfs'];
+                        var hrn = data['humanReadableName'];
+
+		        if(fileName.includes(word) || hrn.includes(word)) {
+				terminal.pushToStdout(`[[ai-xintel]]`);
+				terminal.pushToStdout(`=====`);
+				terminal.pushToStdout(`owner: ${data['staker']}`);
+				terminal.pushToStdout(`=====`);
+				terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+				terminal.pushToStdout(`=====`);
+				terminal.pushToStdout(`tld: ${tld}`);
+				terminal.pushToStdout(`=====`);
+				terminal.pushToStdout(`upc: ${upcLink}`);
+				terminal.pushToStdout(`=====`);
+				terminal.pushToStdout(`vr: ${data['vr']}`);
+				terminal.pushToStdout(`=====`);
+				terminal.pushToStdout(`payload: ${payload}`);
+				terminal.pushToStdout(`=====`);
+				terminal.pushToStdout(`[[/ai-xintel]]`);
+                        }
+                  });
+	
+        		 }
+        		      
+        		 // expected output: "Success!"
+        	      });
+                })
+
+                return ''
               }
             },
 
