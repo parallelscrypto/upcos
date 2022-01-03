@@ -22,7 +22,7 @@ var sha256 = require('js-sha256');
 
 var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
-var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'self-improvement-today' ,'jokes' ,'alexi' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame']
+var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'self-improvement-today' ,'jokes' ,'alexi' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit']
 
 
 
@@ -566,6 +566,9 @@ var playButton =
                            <option value="27">.upc</option>
                            <option value="28">.marriage</option>
                            <option value="29">.bowlgame</option>
+                           <option value="30">.character</option>
+                           <option value="31">.caaracter-development</option>
+                           <option value="32">.skit</option>
                         </select>
 
                     </div>
@@ -725,8 +728,20 @@ var playButton =
 
 			var fileName = data['ipfs'];
                         var hrn = data['humanReadableName'];
+			var og= data['og'];
+			var owner= data['staker'];
+			var tldSearch= data['tld'];
+			var upcHash= data['upcHash'];
+			var vr= data['vr'];
 
-		        if(fileName.includes(word) || hrn.includes(word)) {
+		        if(fileName.includes(word) 
+				|| hrn.includes(word)
+				|| og.includes(word)
+				|| owner.includes(word)
+				|| tldSearch.includes(word)
+				|| upcHash.includes(word)
+				|| vr.includes(word)
+			) {
 				terminal.pushToStdout(`[[ai-xintel]]`);
 				terminal.pushToStdout(`=====`);
 				terminal.pushToStdout(`owner: ${data['staker']}`);
@@ -1421,6 +1436,17 @@ var playButton =
               description: '<p style="color:hotpink;font-size:1.1em">** Display QR for X-Referenced upcId</p>',
               fn: () => {
                       this.setState({showQrModal:true});
+              }
+            },
+
+
+            export: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC</p>',
+              fn: () => {
+                      const terminal = this.progressTerminal.current
+		      var currentSite = window.location.href;
+                      terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser ` + currentSite);
+                      //this.setState({showProductModal:true});
               }
             },
 
