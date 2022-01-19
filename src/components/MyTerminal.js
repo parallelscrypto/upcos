@@ -20,7 +20,7 @@ import ReactCardFlip from 'react-card-flip';
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
-var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some InclusionX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your InclusionX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'self-improvement-today' ,'jokes' ,'alexi' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit']
 
@@ -42,6 +42,8 @@ export default class MyTerminal extends Component {
   constructor(props) {
     super(props)
     this.progressTerminal = React.createRef()
+
+	  
     var player = <ReactPlayer 
           width="100vw"
           url='https://www.youtube.com/watch?v=eXvBjCO19QY' 
@@ -53,6 +55,7 @@ export default class MyTerminal extends Component {
        approved: '',
        vrLink: '',
        player: player,
+       playerBack: '',
        showModal: false,
        bassCleff: '',
        upcRadioString: "Welcome to UPC NFT Radio!",
@@ -78,6 +81,8 @@ export default class MyTerminal extends Component {
     this.selectDomain = this.selectDomain.bind(this);
     this.firstLookup= this.firstLookup.bind(this);
     this.prodLookup= this.prodLookup.bind(this);
+    this.heroFront= this.heroFront.bind(this);
+    this.heroBack= this.heroBack.bind(this);
     this.handleFlip= this.handleFlip.bind(this);
     this.DisplayTime = this.DisplayTime.bind(this);
     this.getTimeZoneTimeObj= this.getTimeZoneTimeObj.bind(this);
@@ -94,24 +99,22 @@ export default class MyTerminal extends Component {
   handleFlip(e) {
     e.preventDefault();
     this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
-    var player;
     if(this.state.isFlipped) {
-       player = <ReactPlayer 
-          width="100vw"
-          url='https://www.youtube.com/watch?v=o_l4Ab5FRwM' 
-          />
+    this.heroBack();
     }
     else {
-       player = "";
+    this.heroFront();
     }
 
-    this.setState(prevState => ({ player: player }));
+    //this.setState(prevState => ({ player: player }));
   }
 
 
   componentDidMount = async () => {
     var self = this;
     this.firstLookup();
+    this.heroFront();
+    this.heroBack();
     setInterval(function() {
         return self.DisplayTime(-300);
      }, 1000);
@@ -137,6 +140,48 @@ export default class MyTerminal extends Component {
 		}
 	   })
   }
+
+
+  //set state player var
+  heroFront = async () => {
+          var self = this;
+	  var player;
+          let info = this.props.nftInfo(24)
+           .then(data => {
+
+                var vr   = data['vr'];
+                player = <ReactPlayer 
+                             width="100vw"
+                             url={data['vr']} 
+                         />
+
+
+                self.setState({player: player});
+                self.setState({playerBack: ''});
+	   })
+  }
+
+  //set state player var
+  heroBack = async () => {
+          var self = this;
+	  var playerBack;
+          let info = this.props.nftInfo(25)
+           .then(data => {
+
+                var vr   = data['vr'];
+                playerBack = <ReactPlayer 
+                             width="100vw"
+                             url={data['vr']} 
+                         />
+
+
+                self.setState({playerBack: playerBack});
+                self.setState({player: ''});
+	   })
+  }
+
+
+
 
   DisplayTime = (timeZoneOffsetminutes) => {
   if (!document.all && !document.getElementById)
@@ -317,7 +362,7 @@ export default class MyTerminal extends Component {
     addy  = addy.substr(0,10);
     var promptlabel =  addy + '_@[[' + this.state.account + ']]>';
 
-    var welcomeMsg = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some IntelX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your IntelX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+    var welcomeMsg = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some InclusionX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your InclusionX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 var playButton =
 <i style='color:hotpink'>Type `pl` or click  <a onClick={() => { this.setState({qIsOpen: true})}}>[[" + this.state.account + "]] </a> to activate payload </i>
@@ -414,6 +459,7 @@ var playButton =
 	     <TrebleCleff handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} hero={this.hero} prodLookup={this.prodLookup} account={this.state.account} />
 
 
+                 {this.state.playerBack}
                  {this.state.player}
 	     {this.state.bassCleff}
       </div>
@@ -460,7 +506,7 @@ var playButton =
         commands={{
 
             swap: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** IntelX is the token used to write [[intel]] to UPC codes.  In order to acquire IntelX, you must run the `swap` command. This will `swap` MATIC that you have purchased likely from an exchange for IntelX from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of IntelX that you would like to exchange for the MATIC in your wallet in wei.  This will trigger a transaction that will mint equiv. IntelX for MATIC 1:1.  Example: to buy 5 IntelX type `swap 5000000000000000000`. In other words, this would send 5 MATIC from your wallet for 5 IntelX from the IntelX mint.  Visit <a href="upc://000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** InclusionX is the token used to write [[intel]] to UPC codes.  In order to acquire InclusionX, you must run the `swap` command. This will `swap` MATIC that you have purchased likely from an exchange for InclusionX from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of InclusionX that you would like to exchange for the MATIC in your wallet in wei.  This will trigger a transaction that will mint equiv. InclusionX for MATIC 1:1.  Example: to buy 5 InclusionX type `swap 5000000000000000000`. In other words, this would send 5 MATIC from your wallet for 5 InclusionX from the InclusionX mint.  Visit <a href="upc://000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
               fn: (amount) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -469,7 +515,7 @@ var playButton =
                   approval.then((value) => {
                      approval = value;
                          terminal.pushToStdout(`[[swap]]`);
-		     terminal.pushToStdout(`You have just swapped MATIC for IntelX.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
+		     terminal.pushToStdout(`You have just swapped MATIC for InclusionX.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
                          terminal.pushToStdout(`[[/swap]]`);
                      // expected output: "Success!"
                   });
@@ -492,7 +538,7 @@ var playButton =
             },
 
             recon: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Approve the Underground to spend 50 of your IntelX.  After you have spent 50, you must run recon again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on recon **</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Approve Parallels to spend 50 of your InclusionX.  After you have spent 50, you must run recon again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on recon **</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -501,7 +547,7 @@ var playButton =
                   const terminal = this.progressTerminal.current
                   let approval = this.props.approve();
                   approval.then((value) => {
-		     terminal.pushToStdout(`You have approved the Underground to transfer sufficient IntelX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
+		     terminal.pushToStdout(`You have approved Parallels to transfer sufficient InclusionX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
@@ -944,7 +990,7 @@ var playButton =
 
 
             bal: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display your IntelX balance **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display your InclusionX balance **</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1027,6 +1073,27 @@ var playButton =
             },
 
 
+
+            wt: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Activate Walkie Talkie</p>',
+              fn: () => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var theBal;
+                  let bal = this.props.getWalkieTalkie(this.state.account);
+                      bal.then((value) => {
+			 var link = "<a href='"+value+"'>Click for Brave 2-Way-Chat on [[" + this.state.account + "]]</a>";
+                         terminal.pushToStdout(link);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
+
             angel: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Be a guardian angel by injecting MATIC into a UPC. Example: Type `angel 777777777777 1000000000000000000` to inject 1 MATIC into upc terminal# 777777777777. Whoever owns the NFT for the UPC (terminal) can then withdraw it with the `tyvm` command</p>',
               fn: (upcId, amount) => {
@@ -1036,7 +1103,7 @@ var playButton =
                   var theBal;
                   let bal = this.props.pigin(upcId, amount);
                       bal.then((amount, value) => {
-                         terminal.pushToStdout(`Thank you for being an Underground Angel! Type ab to see your angel balance`);
+                         terminal.pushToStdout(`Thank you for being an Parallels Angel! Type ab to see your angel balance`);
                          // expected output: "Success!"
                       });
                 })
@@ -1512,6 +1579,26 @@ var playButton =
               }
             },
 
+
+            xwt: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Set the Walkie Talkie resource for this UPC</p>' ,
+              fn: (_wtLink) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let approval = this.props.setWt(this.state.account, _wtLink);
+                      approval.then((value) => {
+                         approval = value;
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+              }
+            },
+
+
+
             xvr: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Set your VR resource by passing the ipfs/hash value.  Example `xvr https://link.to.your.vr`` will set your vr resource so that when the public scans this upc and types `vr` they will see `https://link.to.your.vr`.  This does not have to be a vr link, it can be a regular website if you choose</p>' ,
               description: '<p style="color:hotpink;font-size:1.1em">** Displays a progress counter.</p>',
@@ -1820,9 +1907,9 @@ var playButton =
 		  var self = this;
                   let info = this.props.upcInfo(this.state.account)
 		   .then(data => {
-			var link = <a href={data['vr']} >View my VR Experience!</a>
-			   self.setState({vrLink: link});
-			   self.setState({showModal: true});
+			 var vrLink = data['vr'];
+			 var link = "<a href='"+vrLink+"'>Click to visit VR for [[" + this.state.account + "]]</a>";
+                         terminal.pushToStdout(link);
                   });
 		  
 
@@ -1870,7 +1957,7 @@ var playButton =
 
 
             mine: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Mine some IntelX</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Mine some InclusionX</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1890,7 +1977,7 @@ var playButton =
             },
 
             snapr: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Approve the Underground to spend 50 of your IntelX.  You MUST run this command FIRST or all of your `snbuy` and `xsnbuy` commands will fail</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Approve Parallels to spend 50 of your InclusionX.  You MUST run this command FIRST or all of your `snbuy` and `xsnbuy` commands will fail</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -1899,7 +1986,7 @@ var playButton =
                   const terminal = this.progressTerminal.current
                   let approval = this.props.approveNav();
                   approval.then((value) => {
-		     terminal.pushToStdout(`You have approved the Underground to transfer sufficient IntelX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'buy' and 'xbuy' commands will fail`)
+		     terminal.pushToStdout(`You have approved Parallels to transfer sufficient InclusionX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'buy' and 'xbuy' commands will fail`)
                      // expected output: "Success!"
                   });
                 })

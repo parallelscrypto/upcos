@@ -15,6 +15,7 @@ import InclusionX from '../abis/InclusionX.json'
 import AQWB from '../abis/AQWB.json'
 import UpcDAO from '../abis/UpcDAO.json'
 import UPCMarket from '../abis/UPCMarket.json'
+import WalkieTalkie from '../abis/WalkieTalkie.json'
 import Navbar from './Navbar'
 import VideoBackground from './VideoBackground'
 import Leases from './Leases'
@@ -30,7 +31,8 @@ import 'react-tabs/style/react-tabs.css';
 //const market_address = "0x7e42A6D0c419E6525aeBF5085e602F465Fa0Fab3";
 //const market_address = "0xAc2dC55B8114548A3b9ad1bAe72c6fE99e934D54";
 //const market_address = "0x3f13e9b043A4eA779D6c3abbE4015b1ecDAcf1f3";
-const market_address = "0x59e09C81FF70efD0208B98E3843852aCA3962982";
+//const market_address = "0x59e09C81FF70efD0208B98E3843852aCA3962982";
+const market_address = "0xa1A93ACd1bfed3304a7D1E2db9f65B63A21eAa4c";
 
 
 class App extends Component {
@@ -78,6 +80,17 @@ class App extends Component {
       const upcMarket = new web3.eth.Contract(UPCMarket.abi, upcMarketData.address)
       this.setState({ upcMarket })
       this.setState({ upcMarketData: upcMarketData })
+    } else {
+      //window.alert('UPCNFT contract not deployed to detected network.')
+    }
+
+
+    // Load WalkieTalkie
+    const walkieData = WalkieTalkie.networks[networkId]
+    if(walkieData) {
+      const walkieNft = new web3.eth.Contract(WalkieTalkie.abi, walkieData.address)
+      this.setState({ walkieNft })
+      this.setState({ walkieData: walkieData })
     } else {
       //window.alert('UPCNFT contract not deployed to detected network.')
     }
@@ -430,6 +443,20 @@ class App extends Component {
   };
 
 
+
+  getWalkieTalkie= async (upcId) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.walkieNft.methods.getWalkieTalkie(upcId).call({ from: this.state.account });
+  };
+
+
+
+
+
  refreshFeed = async () => {
  var latest
  var feedItems = []; 
@@ -489,6 +516,19 @@ class App extends Component {
     //console.log(this.state.sendCryptoValue);
     // Stores a given value, 5 by default.
     this.state.upcNft.methods.setIpfs(upcId, ipfsLink).send({ from: this.state.account })
+      .once('receipt', (receipt) => {
+         this.setState({ loading: false })
+      })
+  };
+
+
+  setWt= async (upcId, wtLink) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    this.state.walkieNft.methods.setWalkieTalkie(upcId, wtLink).send({ from: this.state.account })
       .once('receipt', (receipt) => {
          this.setState({ loading: false })
       })
@@ -666,6 +706,7 @@ class App extends Component {
     this.wa = this.wa.bind(this);
     this.getMyNfts= this.getMyNfts.bind(this);
     this.setVr= this.setVr.bind(this);
+    this.setWt= this.setWt.bind(this);
     this.setIpfs= this.setIpfs.bind(this);
     this.upcInfo= this.upcInfo.bind(this);
     this.nftInfo= this.nftInfo.bind(this);
@@ -682,6 +723,7 @@ class App extends Component {
     this.buyFromMarket= this.buyFromMarket.bind(this);
     this.collectFromMarket= this.collectFromMarket.bind(this);
     this.getSaleInfo= this.getSaleInfo.bind(this);
+    this.getWalkieTalkie= this.getWalkieTalkie.bind(this);
 
     this.setUpcMarket = this.setUpcMarket.bind(this);
     this.setHRNMarket = this.setHRNMarket.bind(this);
@@ -746,8 +788,11 @@ class App extends Component {
 	getMyNfts={this.getMyNfts}
 	getSaleInfo={this.getSaleInfo}
 	setVr={this.setVr}
+	setWt={this.setWt}
 	setIpfs={this.setIpfs}
 	refreshFeed={this.refreshFeed}
+
+	getWalkieTalkie={this.getWalkieTalkie}
 
 	upcInfoNav={this.upcInfoNav}
 	nftInfoNav={this.nftInfoNav}
