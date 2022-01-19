@@ -22,7 +22,7 @@ var sha256 = require('js-sha256');
 
 var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some InclusionX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your InclusionX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
-var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'self-improvement-today' ,'jokes' ,'alexi' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai']
+var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'self-improvement-today' ,'jokes' ,'alexi' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit']
 
 
 
@@ -55,7 +55,6 @@ export default class MyTerminal extends Component {
        approved: '',
        vrLink: '',
        player: player,
-       playerBack: '',
        showModal: false,
        bassCleff: '',
        upcRadioString: "Welcome to UPC NFT Radio!",
@@ -82,7 +81,6 @@ export default class MyTerminal extends Component {
     this.firstLookup= this.firstLookup.bind(this);
     this.prodLookup= this.prodLookup.bind(this);
     this.heroFront= this.heroFront.bind(this);
-    this.heroBack= this.heroBack.bind(this);
     this.handleFlip= this.handleFlip.bind(this);
     this.DisplayTime = this.DisplayTime.bind(this);
     this.getTimeZoneTimeObj= this.getTimeZoneTimeObj.bind(this);
@@ -99,22 +97,22 @@ export default class MyTerminal extends Component {
   handleFlip(e) {
     e.preventDefault();
     this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
+    var player;
     if(this.state.isFlipped) {
-    this.heroBack();
+       this.heroFront(25);
     }
     else {
-    this.heroFront();
+       player = "";
     }
 
-    //this.setState(prevState => ({ player: player }));
+    this.setState(prevState => ({ player: player }));
   }
 
 
   componentDidMount = async () => {
     var self = this;
     this.firstLookup();
-    this.heroFront();
-    this.heroBack();
+    this.heroFront(24);
     setInterval(function() {
         return self.DisplayTime(-300);
      }, 1000);
@@ -143,10 +141,10 @@ export default class MyTerminal extends Component {
 
 
   //set state player var
-  heroFront = async () => {
+  heroFront = async (nftId) => {
           var self = this;
 	  var player;
-          let info = this.props.nftInfo(24)
+          let info = this.props.nftInfo(nftId)
            .then(data => {
 
                 var vr   = data['vr'];
@@ -157,26 +155,6 @@ export default class MyTerminal extends Component {
 
 
                 self.setState({player: player});
-                self.setState({playerBack: ''});
-	   })
-  }
-
-  //set state player var
-  heroBack = async () => {
-          var self = this;
-	  var playerBack;
-          let info = this.props.nftInfo(25)
-           .then(data => {
-
-                var vr   = data['vr'];
-                playerBack = <ReactPlayer 
-                             width="100vw"
-                             url={data['vr']} 
-                         />
-
-
-                self.setState({playerBack: playerBack});
-                self.setState({player: ''});
 	   })
   }
 
@@ -459,7 +437,6 @@ var playButton =
 	     <TrebleCleff handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} hero={this.hero} prodLookup={this.prodLookup} account={this.state.account} />
 
 
-                 {this.state.playerBack}
                  {this.state.player}
 	     {this.state.bassCleff}
       </div>
@@ -615,7 +592,6 @@ var playButton =
                            <option value="30">.character</option>
                            <option value="31">.caaracter-development</option>
                            <option value="32">.skit</option>
-                           <option value="33">.ai</option>
                         </select>
 
                     </div>
