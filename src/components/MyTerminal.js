@@ -22,7 +22,7 @@ var sha256 = require('js-sha256');
 
 var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some InclusionX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your InclusionX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
-var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'self-improvement-today' ,'jokes' ,'alexi' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit']
+var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'self-improvement-today' ,'jokes' ,'alexi' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript']
 
 
 
@@ -99,7 +99,7 @@ export default class MyTerminal extends Component {
     this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
     var player;
     if(this.state.isFlipped) {
-       this.heroFront(25);
+       this.heroFront();
     }
     else {
        player = "";
@@ -112,7 +112,7 @@ export default class MyTerminal extends Component {
   componentDidMount = async () => {
     var self = this;
     this.firstLookup();
-    this.heroFront(24);
+    this.heroFront('012587704400');
     setInterval(function() {
         return self.DisplayTime(-300);
      }, 1000);
@@ -141,10 +141,10 @@ export default class MyTerminal extends Component {
 
 
   //set state player var
-  heroFront = async (nftId) => {
+  heroFront = async (upcId) => {
           var self = this;
 	  var player;
-          let infoOwned = this.props.upcInfo(this.state.account)
+          let infoOwned = this.props.upcInfo(upcId)
            .then(data => {
 
 
@@ -158,18 +158,14 @@ export default class MyTerminal extends Component {
 		}
 		else {
 
-                  let info = this.props.nftInfo(nftId)
+                  let info = this.props.upcInfo('012587704400')
                     .then(data => {
-
-
                          var vr   = data['vr'];
                              player = <ReactPlayer 
                                           width="100vw"
                                           url={data['vr']} 
                                       />
                              self.setState({player: player});
-
-                           let info = this.props.nftInfo(nftId)
 	            })
 
 		}
@@ -358,7 +354,7 @@ export default class MyTerminal extends Component {
     addy  = addy.substr(0,10);
     var promptlabel =  addy + '_@[[' + this.state.account + ']]>';
 
-    var welcomeMsg = "Welcome to the UPCVerse \n Rollin On UPCS Experience Loaded \n *Mission: Utilize the existing UPC Grid Structure to provide high value quality entertainment for the vehicle (and home!) \n *Each UPC code is a UNIQUE Metaverse! \n *Record a video or take a pic and upload to [["+this.state.account+"]]! \n *! \n *Mirror one of your videos from certain Web2 services to  \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some InclusionX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your InclusionX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+    var welcomeMsg = "Welcome to the UPCVerse \n Rollin-On-UPCS Experience Loaded \n *Mission: Utilize the existing UPC Grid Structure to provide high value quality entertainment for the vehicle (and home!) \n *Each UPC code is a UNIQUE Metaverse! \n *Record a video or take a pic and upload to [["+this.state.account+"]]! \n *! \n *Mirror one of your videos from certain Web2 services to  \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some InclusionX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your InclusionX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 var playButton =
 <i style='color:hotpink'>Type `pl` or click  <a onClick={() => { this.setState({qIsOpen: true})}}>[[" + this.state.account + "]] </a> to activate payload </i>
@@ -608,8 +604,11 @@ var playButton =
                            <option value="28">.marriage</option>
                            <option value="29">.bowlgame</option>
                            <option value="30">.character</option>
-                           <option value="31">.caaracter-development</option>
+                           <option value="31">.character-development</option>
                            <option value="32">.skit</option>
+                           <option value="33">.ai</option>
+                           <option value="34">.wiki</option>
+                           <option value="35">.upcscript</option>
                         </select>
 
                     </div>
