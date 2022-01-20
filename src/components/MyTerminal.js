@@ -144,17 +144,35 @@ export default class MyTerminal extends Component {
   heroFront = async (nftId) => {
           var self = this;
 	  var player;
-          let info = this.props.nftInfo(nftId)
+          let infoOwned = this.props.upcInfo(this.state.account)
            .then(data => {
 
+
                 var vr   = data['vr'];
-                player = <ReactPlayer 
-                             width="100vw"
-                             url={data['vr']} 
-                         />
+                if(vr.includes('youtu')) {
+                    player = <ReactPlayer 
+                                 width="100vw"
+                                 url={data['vr']} 
+                             />
+                    self.setState({player: player});
+		}
+		else {
+
+                  let info = this.props.nftInfo(nftId)
+                    .then(data => {
 
 
-                self.setState({player: player});
+                         var vr   = data['vr'];
+                             player = <ReactPlayer 
+                                          width="100vw"
+                                          url={data['vr']} 
+                                      />
+                             self.setState({player: player});
+
+                           let info = this.props.nftInfo(nftId)
+	            })
+
+		}
 	   })
   }
 
@@ -340,7 +358,7 @@ export default class MyTerminal extends Component {
     addy  = addy.substr(0,10);
     var promptlabel =  addy + '_@[[' + this.state.account + ']]>';
 
-    var welcomeMsg = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some InclusionX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your InclusionX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+    var welcomeMsg = "Welcome to the UPCVerse \n Rollin On UPCS Experience Loaded \n *Mission: Utilize the existing UPC Grid Structure to provide high value quality entertainment for the vehicle (and home!) \n *Each UPC code is a UNIQUE Metaverse! \n *Record a video or take a pic and upload to [["+this.state.account+"]]! \n *! \n *Mirror one of your videos from certain Web2 services to  \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some InclusionX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your InclusionX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 var playButton =
 <i style='color:hotpink'>Type `pl` or click  <a onClick={() => { this.setState({qIsOpen: true})}}>[[" + this.state.account + "]] </a> to activate payload </i>
