@@ -22,7 +22,7 @@ var sha256 = require('js-sha256');
 
 var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some InclusionX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your InclusionX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
-var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'self-improvement-today' ,'jokes' ,'alexi' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript']
+var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'self-improvement-today' ,'jokes' ,'alexi' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.decentralized-email-list']
 
 
 
@@ -59,6 +59,7 @@ export default class MyTerminal extends Component {
        bassCleff: '',
        upcRadioString: "Welcome to UPC NFT Radio!",
        showModalBuy: false,
+       showModalSearch: false,
        showCardModal: false,
        showUploadModal: false,
        showProductModal: false,
@@ -70,6 +71,7 @@ export default class MyTerminal extends Component {
        showBplayer: false,
        showMarketQrModal: false,
        buyModalContent: '',
+       searchModalContent: '',
        qrContent: '',
        marketQr: '0x5Cd036705fd68468a8dEFdBD812dfd30e467015B',
        progressBal: '',
@@ -80,6 +82,8 @@ export default class MyTerminal extends Component {
     this.selectDomain = this.selectDomain.bind(this);
     this.firstLookup= this.firstLookup.bind(this);
     this.prodLookup= this.prodLookup.bind(this);
+    this.search= this.search.bind(this);
+    this.grep= this.grep.bind(this);
     this.heroFront= this.heroFront.bind(this);
     this.handleFlip= this.handleFlip.bind(this);
     this.DisplayTime = this.DisplayTime.bind(this);
@@ -273,6 +277,122 @@ export default class MyTerminal extends Component {
   }
 
 
+
+
+
+
+  grep = async (word) => {
+
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var latest;
+                  let bal = this.props.latestTokenId();
+                      bal.then((value) => {
+                         latest = Math.round(value);
+			 var i = 1;
+			 for(i = 1; i < latest + 2; i++) {
+
+                            let info = this.props.nftInfo(i)
+                            
+		   .then(data => {
+
+			let hrTLD = tlds[data['tld']];
+		        let tld = hrTLD + " (" + data['tld'] + ")";
+			var tmpStamp = parseInt(data['latestTimestamp']);
+                        var newDate = new Date(tmpStamp * 1000);
+                        var payload = "{{ idj " + data['ipfs'] + " }}";
+			var tmpStamp = parseInt(data['createdTimestamp']);
+                        var created = new Date(tmpStamp * 1000);
+                        var upcLink = "<a href='upc://"+ data['word'] +"'>[["+ data['word'] +"]]</a>";
+
+			var fileName = data['ipfs'];
+                        var hrn = data['humanReadableName'];
+			var og= data['og'];
+			var owner= data['staker'];
+			var tldSearch= data['tld'];
+			var upcHash= data['upcHash'];
+			var vr= data['vr'];
+
+		        if(fileName.includes(word) 
+				|| hrn.includes(word)
+				|| og.includes(word)
+				|| owner.includes(word)
+				|| tldSearch.includes(word)
+				|| upcHash.includes(word)
+				|| vr.includes(word)
+			) {
+				terminal.pushToStdout(`[[ai-xintel]]`);
+				terminal.pushToStdout(`=====`);
+				terminal.pushToStdout(`owner: ${data['staker']}`);
+				terminal.pushToStdout(`=====`);
+				terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+				terminal.pushToStdout(`=====`);
+				terminal.pushToStdout(`tld: ${tld}`);
+				terminal.pushToStdout(`=====`);
+				terminal.pushToStdout(`upc: ${upcLink}`);
+				terminal.pushToStdout(`=====`);
+				terminal.pushToStdout(`vr: ${data['vr']}`);
+				terminal.pushToStdout(`=====`);
+				terminal.pushToStdout(`payload: ${payload}`);
+				terminal.pushToStdout(`=====`);
+				terminal.pushToStdout(`[[/ai-xintel]]`);
+                        }
+                  });
+	
+        		 }
+        		      
+        		 // expected output: "Success!"
+        	      });
+                })
+
+                return ''
+
+  }
+
+
+
+
+
+
+  search = async (term) => {
+                  var searchForm =  <div>
+                  <form className="mb-3" onSubmit={(event) => {
+                      event.preventDefault()
+                      let upcId = this.state.account
+                      let humanReadableName = this.humanReadableName.value.toString()
+
+                      this.grep(humanReadableName)
+
+                      this.setState({showModalSearch:false});
+                    }}>
+                    <div className="input-group mb-4">
+                      <input
+                        type="text"
+                        ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
+                        className="form-control form-control-lg break"
+                        placeholder="search-term (no spaces)"
+                        required />
+
+                    </div>
+                    <button
+                   type="submit"
+                   className="btn btn-primary btn-block btn-lg"
+                  >
+                  Search!
+              </button>
+                  </form>
+
+
+             </div>
+
+                      this.setState({searchModalContent:searchForm});
+                      this.setState({showModalSearch:true});
+  }
+
+
+
+
   prodLookup= async (upc) => {
     var xhr = new XMLHttpRequest();
     var self = this;
@@ -352,9 +472,11 @@ export default class MyTerminal extends Component {
 
     var addy = this.props.address;
     addy  = addy.substr(0,10);
-    var promptlabel =  addy + '_@[[' + this.state.account + ']]>';
+    var promptlabel =  '[[ AWAITING COMMAND ]] => ';
 
     var welcomeMsg = "Welcome to the UPCVerse \n Rollin-On-UPCS Experience Loaded \n *Mission: Harness the existing UPC Grid Infastructure to provide high value quality entertainment for the vehicle (and home) \n *Each UPC code is a UNIQUE Metaverse! \n *Record a video or take a pic and upload to [["+this.state.account+"]]! \n Each UPC has a default VR zone.  Just type the `vr` command! * \n *Mirror (xvr) your centralized censroable videos to the UPCs, and upload (xpayload) them for safekeeping \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some InclusionX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your InclusionX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+
+	  welcomeMsg += "\n"  + addy + "_@[[" + this.state.account + "]]";
 
 var playButton =
 <i style='color:hotpink'>Type `pl` or click  <a onClick={() => { this.setState({qIsOpen: true})}}>[[" + this.state.account + "]] </a> to activate payload </i>
@@ -448,7 +570,7 @@ var playButton =
     return (
       <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
       <div>
-	     <TrebleCleff handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} hero={this.hero} prodLookup={this.prodLookup} account={this.state.account} />
+	     <TrebleCleff handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} hero={this.hero} search={this.search} prodLookup={this.prodLookup} account={this.state.account} />
 
 
                  {this.state.player}
@@ -460,7 +582,11 @@ var playButton =
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModal} closemodal={() => this.setState({ showModal: false })} type="pulse" >{this.state.vrLink}</Modal>
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalBuy} closemodal={() => this.setState({ showModalBuy: false })} type="pulse" > {this.state.buyModalContent}</Modal>
-      <Modal style={{ left:"1vw", height:"95vh", width:"95vw"}} visible={this.state.showBigShow2} closemodal={() => this.setState({ showBigShow2: false })} type="pulse"> [[upc://{this.state.account}]] <iframe style={{left:"1vw", height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
+
+
+      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalSearch} closemodal={() => this.setState({ showModalSearch: false })} type="pulse" > {this.state.searchModalContent}</Modal>
+
+      <Modal style={{ height:"95vh", width:"95vw"}} visible={this.state.showBigShow2} closemodal={() => this.setState({ showBigShow2: false })} type="pulse"> [[upc://{this.state.account}]] <iframe style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalTutorial} closemodal={() => this.setState({ showModalTutorial: false })} type="pulse" ><iframe style={{height:"100vh"}} src="https://gateway.pinata.cloud/ipfs/QmStW8PBZjxjSkwnxvr15rHvRajCUkPRMEJGQejQu8EE4W" /></Modal>
 
@@ -549,6 +675,17 @@ var playButton =
                 return ''
               }
             },
+
+
+            search: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** search upcs for content.  fields searched are owner, human readable name, vr, and ipfs.  No spaces in the search term, use dashes or underscores depending on how the owner named the file/human readable name**</p>',
+              fn: (humanReadableName) => {
+		      this.search()
+              }
+            },
+
+
+
             hack: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Buy an NFT using the GUI interface.  After completing this step, check the `Activity` tab below to make sure that your purchase went through.  After your transaction has been processed successfully, you can move to the last phase `step 2` Visit <a href="upc://000000000012">[[000000000012]]</a> to view a video tutorial on swap**</p>',
               fn: (humanReadableName) => {
@@ -609,6 +746,12 @@ var playButton =
                            <option value="33">.ai</option>
                            <option value="34">.wiki</option>
                            <option value="35">.upcscript</option>
+                           <option value="36">.comment</option>
+                           <option value="37">.opposing-viewpoints</option>
+                           <option value="38">.meditate</option>
+                           <option value="39">.protest</option>
+                           <option value="40">.public-discussion</option>
+                           <option value="41">.decentralized-email-list</option>
                         </select>
 
                     </div>
@@ -743,70 +886,7 @@ var playButton =
             grep: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that are on the market **</p>',
               fn: (word) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var latest;
-                  let bal = this.props.latestTokenId();
-                      bal.then((value) => {
-                         latest = Math.round(value);
-			 var i = 1;
-			 for(i = 1; i < latest + 2; i++) {
-
-                            let info = this.props.nftInfo(i)
-                            
-		   .then(data => {
-
-			let hrTLD = tlds[data['tld']];
-		        let tld = hrTLD + " (" + data['tld'] + ")";
-			var tmpStamp = parseInt(data['latestTimestamp']);
-                        var newDate = new Date(tmpStamp * 1000);
-                        var payload = "{{ idj " + data['ipfs'] + " }}";
-			var tmpStamp = parseInt(data['createdTimestamp']);
-                        var created = new Date(tmpStamp * 1000);
-                        var upcLink = "<a href='upc://"+ data['word'] +"'>[["+ data['word'] +"]]</a>";
-
-			var fileName = data['ipfs'];
-                        var hrn = data['humanReadableName'];
-			var og= data['og'];
-			var owner= data['staker'];
-			var tldSearch= data['tld'];
-			var upcHash= data['upcHash'];
-			var vr= data['vr'];
-
-		        if(fileName.includes(word) 
-				|| hrn.includes(word)
-				|| og.includes(word)
-				|| owner.includes(word)
-				|| tldSearch.includes(word)
-				|| upcHash.includes(word)
-				|| vr.includes(word)
-			) {
-				terminal.pushToStdout(`[[ai-xintel]]`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`owner: ${data['staker']}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`tld: ${tld}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`upc: ${upcLink}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`vr: ${data['vr']}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`payload: ${payload}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`[[/ai-xintel]]`);
-                        }
-                  });
-	
-        		 }
-        		      
-        		 // expected output: "Success!"
-        	      });
-                })
-
-                return ''
+		      this.grep(word);
               }
             },
 
@@ -1305,8 +1385,8 @@ var playButton =
               }
             },
 
-            srch: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display intel regarding the current UPC given the UPC. Example `srch 078742254609` will return intel for upc 078742254609</p>',
+            lsupc: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display intel about a UPC given the UPC. Example `srch 078742254609` will return intel for upc 078742254609</p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {

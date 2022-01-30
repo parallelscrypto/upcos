@@ -41,9 +41,9 @@ this.props.play()
                         style={{background: "#000000", color:"green", width: "25vw", height: "25vw"}}
                         onClick={(e) => { 
                                      this.props.handleFlip(e)
-                                     this.props.prodLookup(this.props.account);
+                                     this.props.search();
                         }}
-                  >product [[{this.props.account}]]</button>
+                  >search [[************]]</button>
          </div>
     );
   }
