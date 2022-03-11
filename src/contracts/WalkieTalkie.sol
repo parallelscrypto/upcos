@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Context.sol";
-import "./UpcBandRadio.sol";
+import "./UPCNFT.sol";
 
 //import "./stringUtils.sol";
 
@@ -14,7 +14,7 @@ import "./UpcBandRadio.sol";
  * Note they can later distribute these tokens as they wish using `transfer` and other
  * `ERC20` functions.
  */
-contract TipJar is Context, ERC20, ERC20Burnable {
+contract WalkieTalkie is Context, ERC20, ERC20Burnable {
 
     uint public balance = 0;
     uint rehash = 3;
@@ -32,22 +32,22 @@ contract TipJar is Context, ERC20, ERC20Burnable {
 
 
 
-    mapping(string => uint)     public balanceReceived;
+    mapping(string => string)     public walkieTalkie;
     uint workerCost = 20000000000000000;
     mapping(address => WorkerMeta[])    public workersForAddress;
     mapping(string  => WorkerMeta[])    public workersOnUpc;
     mapping(string  => bool)    public usedGuids;
-    UpcBandRadio upcNFT;
+    UPCNFT upcNFT;
 
 
     Reward[] public rewards;
     /**
      * @dev Constructor that gives _msgSender() all of existing tokens.
      */
-    constructor () ERC20("tip://", "<tip>") {
+    constructor () ERC20("walkieTalkie://", "<wktk>") {
         //_mint(_msgSender(), 10000 * (10 ** uint256(decimals())));
         owner =  payable(msg.sender);
-        upcNFT = UpcBandRadio(0xc3B0b50C63A3cAC1a8320a07AA25770D6dACaE87);
+        upcNFT = UPCNFT(0xc3B0b50C63A3cAC1a8320a07AA25770D6dACaE87);
     }
     
     modifier onlyOwner
@@ -61,28 +61,19 @@ contract TipJar is Context, ERC20, ERC20Burnable {
         // body when the modifier is used.
         _;
     }
-    
-
 
     function setUPCNFT(address newAddress) public  onlyOwner{
-        upcNFT = UpcBandRadio(newAddress);
+        upcNFT = UPCNFT(newAddress);
     }
 
-    function pigIn(string memory upcId) public payable {
-        balanceReceived[upcId] += msg.value;
-    }
-    
-     function upcBalance(string memory upcId) external view returns(uint) {
-        return balanceReceived[upcId];
+     function getWalkieTalkie(string memory upcId) external view returns(string memory) {
+        return walkieTalkie[upcId];
     }   
 
-    function pigOut(string memory upcId)  external  { 
+    function setWalkieTalkie(string memory upcId, string memory url) public {
         address upcOwner = upcNFT.getUpcOwner(upcId);
-        require(msg.sender == upcOwner, "Unauthorized pigOut on this upc");
-        address payable _to = payable(msg.sender);
-        uint toTransfer = balanceReceived[upcId];
-        balanceReceived[upcId] = 0;
-        _to.transfer(toTransfer);
+        require(msg.sender == upcOwner, "Unauthorized walkieTalkie set on this upc");        
+        walkieTalkie[upcId] = url;
     }
-    
+
 }

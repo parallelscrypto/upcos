@@ -51,18 +51,18 @@ export default class IntroTypewriter extends Component {
 
   render() {
 
-    var message = ["<loading>" , "TERMINAL", "[[" + this.state.code + "]]" , "</loading>"]
+    var message = ["<UPC Band Radio>" , "loading station", "[[" + this.state.code + "]]" , "</UPC Band Radio>"]
     return (
       <div 
 	 style={{background: this.state.customColor, textAlign:"center", color:"white", transform:'translateY(50vh)' , transform:'translateY(50vw)'}}
       >
          <TypeWriterEffect
             style={{transform:'translateY(150vw)', fontFamily:'system-ui'}}
-            startDelay={400}
-            multiTextDelay={400}
+            startDelay={100}
+            multiTextDelay={100}
             cursorColor="white"
             multiText={message}
-            typeSpeed={40}
+            typeSpeed={10}
          />
 	<Barcode value={this.state.code} format="EAN13" />
 	<p><b style={{color:"white", fontSize:"7px"}}>&#60;3 619</b></p>

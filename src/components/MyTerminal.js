@@ -20,9 +20,9 @@ import ReactCardFlip from 'react-card-flip';
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
-var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Keyz\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your Keyz to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Keys\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your Keys to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
-var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'self-improvement-today' ,'jokes' ,'alexi' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list']
+var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'jokes' ,'tutorial' ,'navalny' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list']
 
 
 
@@ -474,7 +474,7 @@ export default class MyTerminal extends Component {
     addy  = addy.substr(0,10);
     var promptlabel =  '[[ AWAITING COMMAND ]] => ';
 
-    var welcomeMsg = "Welcome to <i style='color:#ffd700'> UPC (Ukrainian People Communication) </i> <i style='color:#0057b7'>Band Radio</i>  \n Keyz 4 Kiev \n (Scroll down to hack) \n  *Mission: Harness the existing UPC Code Grid to provide highly available Web3 based infastructure to facilitate self custody/control of 1's own narrative.\n P2P Crypto Community standing with Ukrainian, Russian, and Freedom Loving Peers \n This is your link between the centralized and decentralized world. Always available because UPC codes are always available.\n * eli5: With a UPC NFT, you are tokenizing a number which is essentially a website presented to you as a number.  Numbers are fundamental, thus impossible to censor \n * Equally available infastructure facilitates true conversation, and hopefully equal voices for all \n Use as a TV station in case centralized solutions fail.  If data is encoded into UPC codes, it would take many tanks to destroy each instance of every single UPC code.  Think about it, each UPC is programmable infastructure on top of UPC codes, pwned by YOU, the people \n *Each UPC code is a UNIQUE Metaverse server.  {{hack}} it, {{pwn}} it, and then {{upload}} your [[intelligence]]\n *Also perfect for TRUCKERS, indie journalists, indie artists, individuals currently experiencing homelessness, organizations seeking donations,indie actors/acrtesses, and Sovereign individuals who are sick of Big Tech/Corporations snooping around in our data, running our lives and PWNING our data. \n *Get paid on YOUR terms by SELLING YOUR [[intelligence]] as a UPC NFT and accept MATIC DIRECTLY to YOUR UPC code. \n *Every day new UPCs are declared as `coinboxes`.  First x number of users with Leveled Up Scanners can grab free coins from the coinboxes. \n *Every day, the default UPC [[777777777777]] is updated. Check back Often.  This is your Self Owned Shared Crypto News and Intelligence Platform built on a fully decentralized stack (IPFS, POLYGON, UPC Codes) \n *Record a video or take a pic and upload to [["+this.state.account+"]]. \n Each UPC has a default VR zone.  Just type the `vr` command! * \n *Mirror (xvr) your centralized censroable videos to the UPCs, and upload (xpayload) them for safekeeping \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Keyz\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your Keyz to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+    var welcomeMsg = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio</i> \n <i style='color:#ffd700'> (United People C0mmunic8)</i>  \n <i style='color:hotpink'> Metaverses in UPCs</i> \n (Scroll down to hack) \n  *Mission: Harness the existing UPC Code Grid to provide highly available Web3 based infastructure to facilitate self custody/control of 1's own narrative.\n P2P Crypto Community serving Freedom Loving Peers \n This is your link between the centralized and decentralized world. And an always available link between our COLLECTIVE WORLDS because UPC codes (a number linked to decentralized IPFS) are always available.\n * eli5: With a UPC NFT, you are tokenizing a number which is essentially a website presented to you as a number.  Numbers are fundamental, thus impossible to censor \n * Equally available infastructure facilitates fully inclusive conversation, and hopefully equally respected voices for all \n Use as a TV/Radio hybrid in case centralized solutions fail.  If data is encoded into UPC codes, it would take more than firepower to destroy each instance of every single UPC code.  Each UPC is programmable infastructure on top of UPC codes, owned by YOU, the people \n * Each UPC code is a UNIQUE Metaverse server.  {{hack}} it, {{pwn}} it, and then {{upload}} your [[intelligence]]\n * Also perfect for TRUCKERS, indie journalists, indie artists, individuals currently experiencing homelessness, organizations seeking donations,indie actors/acrtesses, and Sovereign individuals who are sick of Big Tech/Corporations snooping around in our data, running our lives and PWNING our data. \n * Get paid on YOUR terms by SELLING YOUR [[intelligence]] as a UPC NFT and accept MATIC DIRECTLY to YOUR UPC code. \n * Every day new UPCs are declared as `coinboxes`.  First x number of users with Leveled Up Scanners can grab free coins from the coinboxes. \n * Every day, the default UPC [[777777777777]] is updated. Check back Often.  This is your Self Owned Shared Crypto News and Intelligence Platform built on a fully decentralized stack (IPFS, POLYGON, UPC Codes) \n * Record a video or take a pic and upload to [["+this.state.account+"]]. \n Each UPC has a default VR zone.  Just type the `vr` command! * \n * Mirror (xvr) your centralized censroable videos to the UPCs, and upload (xpayload) them for safekeeping \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Keys\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your Keys to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 	  welcomeMsg += "\n"  + addy + "_@[[" + this.state.account + "]]";
 
@@ -623,7 +623,7 @@ var playButton =
         commands={{
 
             swap: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Keyz is the token used to write [[intel]] to UPC codes.  In order to acquire Keyz, you must run the `swap` command. This will `swap` MATIC that you have purchased likely from an exchange for Keyz from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of Keyz that you would like to exchange for the MATIC in your wallet in wei.  This will trigger a transaction that will mint equiv. Keyz for MATIC 1:1.  Example: to buy 5 Keyz type `swap 5000000000000000000`. In other words, this would send 5 MATIC from your wallet for 5 Keyz from the Keyz mint.  Visit <a href="upc://000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Keys is the token used to write [[intel]] to UPC codes.  In order to acquire Keys, you must run the `swap` command. This will `swap` MATIC that you have purchased likely from an exchange for Keys from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of Keys that you would like to exchange for the MATIC in your wallet in wei.  This will trigger a transaction that will mint equiv. Keys for MATIC 1:1.  Example: to buy 5 Keys type `swap 5000000000000000000`. In other words, this would send 5 MATIC from your wallet for 5 Keys from the Keys mint.  Visit <a href="upc://000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
               fn: (amount) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -632,7 +632,7 @@ var playButton =
                   approval.then((value) => {
                      approval = value;
                          terminal.pushToStdout(`[[swap]]`);
-		     terminal.pushToStdout(`You have just swapped MATIC for Keyz.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
+		     terminal.pushToStdout(`You have just swapped MATIC for Keys.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
                          terminal.pushToStdout(`[[/swap]]`);
                      // expected output: "Success!"
                   });
@@ -655,7 +655,7 @@ var playButton =
             },
 
             recon: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Approve Parallels to spend 50 of your Keyz.  After you have spent 50, you must run recon again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on recon **</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your Keys.  After you have spent 50, you must run recon again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on recon **</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -664,7 +664,7 @@ var playButton =
                   const terminal = this.progressTerminal.current
                   let approval = this.props.approve();
                   approval.then((value) => {
-		     terminal.pushToStdout(`You have approved Parallels to transfer sufficient Keyz from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
+		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Keys from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
@@ -713,9 +713,9 @@ var playButton =
                            <option value="0">.watch-this</option>
                            <option value="1">.hear-this</option>
                            <option value="2">.will-work</option>
-                           <option value="3">.self-improvement-today</option>
-                           <option value="4">.jokes</option>
-                           <option value="5">.alexi</option>
+                           <option value="3">.jokes</option>
+                           <option value="4">.tutorial</option>
+                           <option value="5">.navalny</option>
                            <option value="6">.profile</option>
                            <option value="7">.my-show</option>
                            <option value="8">.news</option>
@@ -1069,7 +1069,7 @@ var playButton =
 
 
             bal: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display your Keyz balance **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display your Keys balance **</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1090,7 +1090,7 @@ var playButton =
                       this.setState({progressBal: bal});
                       var self = this;
                          terminal.pushToStdout(`[[inclusion-balance]]`);
-                      this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Balance: ${theBal}` + " Keyz"))
+                      this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Balance: ${theBal}` + " Keys"))
                          terminal.pushToStdout(`[[/inclusionx-balance]]`);
                     }
                   }, 1500)
@@ -1182,7 +1182,7 @@ var playButton =
                   var theBal;
                   let bal = this.props.pigin(upcId, amount);
                       bal.then((amount, value) => {
-                         terminal.pushToStdout(`Thank you for being an Parallels Angel! Type ab to see your angel balance`);
+                         terminal.pushToStdout(`Thank you for being an UPC Band Radio Angel! Type ab to see your angel balance`);
                          // expected output: "Success!"
                       });
                 })
@@ -2036,7 +2036,7 @@ var playButton =
 
 
             mine: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Mine some Keyz</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Mine some Keys</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -2056,7 +2056,7 @@ var playButton =
             },
 
             snapr: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Approve Parallels to spend 50 of your Keyz.  You MUST run this command FIRST or all of your `snbuy` and `xsnbuy` commands will fail</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your Keys.  You MUST run this command FIRST or all of your `snbuy` and `xsnbuy` commands will fail</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -2065,7 +2065,7 @@ var playButton =
                   const terminal = this.progressTerminal.current
                   let approval = this.props.approveNav();
                   approval.then((value) => {
-		     terminal.pushToStdout(`You have approved Parallels to transfer sufficient Keyz from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'buy' and 'xbuy' commands will fail`)
+		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Keys from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'buy' and 'xbuy' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
