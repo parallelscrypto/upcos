@@ -7,6 +7,7 @@ import AfroNFT from '../abis/AfroNFT.json'
 import MLS from '../abis/MalcolmsLittleSecret.json'
 import HomelessNFT from '../abis/HomelessNFT.json'
 import RollinOnUPC from '../abis/RollinOnUPC.json'
+import UpcBandRadio from '../abis/UpcBandRadio.json'
 import SuperNavalnyBros from '../abis/SuperNavalnyBros.json'
 import xUPC from '../abis/xUPC.json'
 import piggy from '../abis/TipJar.json'
@@ -14,6 +15,7 @@ import intelX from '../abis/intelX.json'
 import TubmanX from '../abis/TubmanX.json'
 import InclusionX from '../abis/InclusionX.json'
 import Keyz from '../abis/Keyz.json'
+import Key from '../abis/Key.json'
 import AQWB from '../abis/AQWB.json'
 import UpcDAO from '../abis/UpcDAO.json'
 import UPCMarket from '../abis/UPCMarket.json'
@@ -113,10 +115,10 @@ class App extends Component {
 
 
 
-    // Load RollinOnUPC
-    const upcNFTData = RollinOnUPC.networks[networkId]
+    // Load UpcBandRadio
+    const upcNFTData = UpcBandRadio.networks[networkId]
     if(upcNFTData) {
-      const upcNft = new web3.eth.Contract(RollinOnUPC.abi, upcNFTData.address)
+      const upcNft = new web3.eth.Contract(UpcBandRadio.abi, upcNFTData.address)
       this.setState({ upcNft })
       this.setState({ upcNFTData: upcNFTData })
     } else {
@@ -140,9 +142,9 @@ class App extends Component {
 
 
     // Load PAY currency
-    const intelXData = Keyz.networks[networkId]
+    const intelXData = Key.networks[networkId]
     if(intelXData) {
-      const AFROX = new web3.eth.Contract(Keyz.abi, intelXData.address)
+      const AFROX = new web3.eth.Contract(Key.abi, intelXData.address)
       this.setState({ intelX: AFROX })
     } else {
       //window.alert('UPCGoldBank contract not deployed to detected network.')

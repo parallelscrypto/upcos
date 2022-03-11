@@ -59,7 +59,7 @@ export default class IntroTypewriter extends Component {
          <TypeWriterEffect
             style={{transform:'translateY(150vw)', fontFamily:'system-ui'}}
             startDelay={100}
-            multiTextDelay={100}
+            multiTextDelay={300}
             cursorColor="white"
             multiText={message}
             typeSpeed={10}
