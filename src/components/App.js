@@ -36,7 +36,7 @@ import 'react-tabs/style/react-tabs.css';
 //const market_address = "0xAc2dC55B8114548A3b9ad1bAe72c6fE99e934D54";
 //const market_address = "0x3f13e9b043A4eA779D6c3abbE4015b1ecDAcf1f3";
 //const market_address = "0x59e09C81FF70efD0208B98E3843852aCA3962982";
-const market_address = "0xAc1b97e99E818Dd18175Efa861384bDDE2BB99D7";
+const market_address = "0x32Cdf28d9E148D373b04238864586784244C86b1";
 
 
 class App extends Component {
