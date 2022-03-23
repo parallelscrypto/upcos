@@ -20,6 +20,10 @@ import AQWB from '../abis/AQWB.json'
 import UpcDAO from '../abis/UpcDAO.json'
 import UPCMarket from '../abis/UPCMarket.json'
 import WalkieTalkie from '../abis/WalkieTalkie.json'
+
+import PokingsHauntUs from '../abis/PokingsHauntUs.json'
+import KegeExperiment from '../abis/KegeExperiment.json'
+
 import Navbar from './Navbar'
 import VideoBackground from './VideoBackground'
 import Leases from './Leases'
@@ -36,7 +40,8 @@ import 'react-tabs/style/react-tabs.css';
 //const market_address = "0xAc2dC55B8114548A3b9ad1bAe72c6fE99e934D54";
 //const market_address = "0x3f13e9b043A4eA779D6c3abbE4015b1ecDAcf1f3";
 //const market_address = "0x59e09C81FF70efD0208B98E3843852aCA3962982";
-const market_address = "0x32Cdf28d9E148D373b04238864586784244C86b1";
+//const market_address = "0x32Cdf28d9E148D373b04238864586784244C86b1";
+const market_address = "0x57069E42F349BaBAa6a865C10e8aE19d5e2c90A2";
 
 
 class App extends Component {
@@ -116,7 +121,7 @@ class App extends Component {
 
 
     // Load UpcBandRadio
-    const upcNFTData = UpcBandRadio.networks[networkId]
+    const upcNFTData = PokingsHauntUs.networks[networkId]
     if(upcNFTData) {
       const upcNft = new web3.eth.Contract(UpcBandRadio.abi, upcNFTData.address)
       this.setState({ upcNft })
@@ -142,7 +147,7 @@ class App extends Component {
 
 
     // Load PAY currency
-    const intelXData = Key.networks[networkId]
+    const intelXData = KegeExperiment.networks[networkId]
     if(intelXData) {
       const AFROX = new web3.eth.Contract(Key.abi, intelXData.address)
       this.setState({ intelX: AFROX })

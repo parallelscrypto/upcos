@@ -20,7 +20,7 @@ import ReactCardFlip from 'react-card-flip';
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
-var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Keys\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your Keys to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some KeGeExperiments\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your KeGeExperiments to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'jokes' ,'tutorial' ,'navalny' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day']
 
@@ -266,11 +266,11 @@ export default class MyTerminal extends Component {
                       bal.then((value) => {
                          theBal =window.web3.utils.fromWei(value, "ether");
                          if(theBal > 0) {
-                            terminal.pushToStdout(`You have recieved MATIC from an angel.  Type 'tyvm' to withdraw the MATIC to your wallet`);
+                            terminal.pushToStdout(`You have recieved fantom from an angel.  Type 'tyvm' to withdraw the fantom to your wallet`);
                          }
 
                          terminal.pushToStdout(`[[angel-balance]]`);
-                         terminal.pushToStdout(`angel_balance: ${theBal} MATIC`);
+                         terminal.pushToStdout(`angel_balance: ${theBal} fantom`);
                          terminal.pushToStdout(`[[/angel-balance]]`);
                          // expected output: "Success!"
                       });
@@ -477,7 +477,7 @@ export default class MyTerminal extends Component {
     addy  = addy.substr(0,10);
     var promptlabel =  '[[ AWAITING COMMAND ]] => ';
 
-    var welcomeMsg = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio</i> \n <i style='color:#ffd700'> (United People C0mmunic8)</i>  \n <i style='color:hotpink'> Metaverses in UPCs</i> \n (Scroll down to hack) \n  *Mission: Harness the existing UPC Code Grid to provide highly available Web3 based infastructure to facilitate self custody/control of 1's own narrative.\n P2P Crypto Community serving Freedom Loving Peers \n This is your link between the centralized and decentralized world. \n * tldr: Each UPC code has a default website attached.  Instead of accessing via typing a url (https://www.website.com), access by scanning.   In UPC Band Radio, website address matches (resolves to) the numbers seen on the UPC code (Geeks: UPC==IPAddress). {{hack}}  and {{own}} the UPC code to control the front video, the settings and other experience details related to the UPC.  \n * eli5: When you buy a UpcBandRadio NFT, you are tokenizing a number which is a website presented to you as a number.  You are buying the right to say `My intelligence is attached to the UPC [############], and anyone with access to that UPC code, or number can consume the intelligence.  Numbers are fundamental, which makes them challenging to censor. \n * Equally available infastructure facilitates fully inclusive conversation, and hopefully equally respected voices for all \n Use as a TV/Radio hybrid in case centralized solutions fail.  If data is encoded into UPC codes, it would take more than firepower to destroy each instance of every single UPC code.  Each UPC is programmable infastructure on top of UPC codes, owned by you. \n * Each UPC code is a unique metaverse server.  {{hack}} it, {{pwn}} it, and then {{upload}} your [[intelligence]]\n * Also perfect for truckers, indie journalists, indie artists, individuals currently experiencing homelessness, organizations seeking donations,indie actors/acrtesses, and Sovereign individuals who are sick of big tech/corporations snooping around in our data, running our lives, dictating away common sense, and {{owning}} our data. \n * Get paid on YOUR terms by SELLING YOUR [[intelligence]] as a UPC NFT and accept MATIC DIRECTLY to YOUR UPC code. \n * Every day new UPCs are declared as `coinboxes`.  First x number of users with Leveled Up Scanners can grab free coins from the coinboxes. \n * Every day, the default UPC [[000000000000]] is updated. Check back Often.  This is your Self Owned Shared Crypto News and Intelligence Platform built on a fully decentralized stack (IPFS, POLYGON, UPC Codes) \n * Record a video or take a pic and upload to [["+this.state.account+"]]. \n Each UPC has a default VR zone.  Just type the `vr` command! * \n * Mirror (xvr) your centralized censroable videos to the UPCs, and upload (xpayload) them for safekeeping \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Keys\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your Keys to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+    var welcomeMsg = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio  </i> \n <i style='color:#d66900'> (PokingsHauntUs NFT Project)</i>  \n <i style='color:hotpink'>Freedom of speech is native to this community</i> \n (Scroll down to hack) \n  *Mission: Inform Elizabeth Warren, Maxine Waters, Big Tech, FBI agents, the FATF, big tech, the Office of the Dean of Students at Tuskegee University et al that Crypto and web3 technology can be used for more than crime.  \n * Let my people go! Criminal Justice Reform Para1:1el.  \n * We, the poked, OBJECT to being called `superpredators` Ms. Clinton!  What is Bill?  If you had used serverless technology (ipfs) like me, would you be facing so many server related issues? Can a code lawyer ask questions, or is that misinformation? Who is allowed to ask questions?  Is open source code a crime?  If open source is outlawed, Ms. Warren, will these questions written on an open source platform be deemed `criminal`?  Will the negroes (of all colors) need to go to Mark Zuckerburg in order to mint `approved` nfts that are `safe for our eyes and contain no misinformation`  \n * Black on Black crime and SWAMPY black american `culture` (notice that swampy is written in CAPITAL and black american `culture` is lowercase with ticks around the word `culture`. This is for several distinct reasons) is a much bigger problem that MUST be addressed.  This is comming from the BLACK AMERICAN who wrote this platform for all humans who are intersted in standing up like we were meant to.  Humanity can be so much more if we all agree to declare our own personal truths.  The movement will be unstoppable, and the only way `they` (whoever `they` are) can win will be to revise history!  But `we` have crypto and NFTs to help defeat that half-baked attempt!  That is why `they` are afraid of NFTs people.  A freedom loving black man who attempts to unify while speaking directly to power is not supposed to happen, and anyone who knows US history knows that this statement is not misinformation.  I hope this gets noticed Malcolm X (not misinformation) style \n * Declare your truth, banish lies from your story, and ignore those who are not worth the time!  \n   Harness the existing UPC Code Grid to provide highly available Web3 based infastructure to facilitate self custody/control of 1's own narrative.\n P2P Crypto Community serving Freedom Loving Peers \n This is your link between the centralized and decentralized world. \n * tldr: Each UPC code has a default website attached.  Instead of accessing via typing a url (https://www.website.com), access by scanning.   In UPC Band Radio, website address matches (resolves to) the numbers seen on the UPC code (Geeks: UPC==IPAddress). {{hack}}  and {{own}} the UPC code to control the front video, the settings and other experience details related to the UPC.  \n * eli5: When you buy a UpcBandRadio NFT, you are tokenizing a number which is a website presented to you as a number.  You are buying the right to say `My intelligence is attached to the UPC [############], and anyone with access to that UPC code, or number can consume the intelligence.  Numbers are fundamental, which makes them challenging to censor. \n * Equally available infastructure facilitates fully inclusive conversation, and hopefully equally respected voices for all \n Use as a TV/Radio hybrid in case centralized solutions fail.  If data is encoded into UPC codes, it would take more than firepower to destroy each instance of every single UPC code.  Each UPC is programmable infastructure on top of UPC codes, owned by you. \n * Each UPC code is a unique metaverse server.  {{hack}} it, {{pwn}} it, and then {{upload}} your [[intelligence]]\n * Also perfect for truckers, indie journalists, indie artists, individuals currently experiencing homelessness, organizations seeking donations,indie actors/acrtesses, and Sovereign individuals who are sick of big tech/corporations snooping around in our data, running our lives, dictating away common sense, and {{owning}} our data. \n * Get paid on YOUR terms by SELLING YOUR [[intelligence]] as a UPC NFT and accept fantom DIRECTLY to YOUR UPC code. \n * Every day new UPCs are declared as `coinboxes`.  First x number of users with Leveled Up Scanners can grab free coins from the coinboxes. \n * Every day, the default UPC [[000000000000]] is updated. Check back Often.  This is your Self Owned Shared Crypto News and Intelligence Platform built on a fully decentralized stack (IPFS, fantom, UPC Codes) \n * Record a video or take a pic and upload to [["+this.state.account+"]]. \n Each UPC has a default VR zone.  Just type the `vr` command! * \n * Mirror (xvr) your centralized censroable videos to the UPCs, and upload (xpayload) them for safekeeping \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some KeGeExperiments\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your KeGeExperiments to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 	  welcomeMsg += "\n"  + addy + "_@[[" + this.state.account + "]]";
 
@@ -626,7 +626,7 @@ var playButton =
         commands={{
 
             swap: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Keys is the token used to write [[intel]] to UPC codes.  In order to acquire Keys, you must run the `swap` command. This will `swap` MATIC that you have purchased likely from an exchange for Keys from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of Keys that you would like to exchange for the MATIC in your wallet in wei.  This will trigger a transaction that will mint equiv. Keys for MATIC 1:1.  Example: to buy 5 Keys type `swap 5000000000000000000`. In other words, this would send 5 MATIC from your wallet for 5 Keys from the Keys mint.  Visit <a href="upc://000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** KeGeExperiments is the token used to write [[intel]] to UPC codes.  In order to acquire KeGeExperiments, you must run the `swap` command. This will `swap` fantom that you have purchased likely from an exchange for KeGeExperiments from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of KeGeExperiments that you would like to exchange for the fantom in your wallet in wei.  This will trigger a transaction that will mint equiv. KeGeExperiments for fantom 1:1.  Example: to buy 5 KeGeExperiments type `swap 5000000000000000000`. In other words, this would send 5 fantom from your wallet for 5 KeGeExperiments from the KeGeExperiments mint.  Visit <a href="upc://000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
               fn: (amount) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -635,7 +635,7 @@ var playButton =
                   approval.then((value) => {
                      approval = value;
                          terminal.pushToStdout(`[[swap]]`);
-		     terminal.pushToStdout(`You have just swapped MATIC for Keys.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
+		     terminal.pushToStdout(`You have just swapped fantom for KeGeExperiments.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
                          terminal.pushToStdout(`[[/swap]]`);
                      // expected output: "Success!"
                   });
@@ -658,7 +658,7 @@ var playButton =
             },
 
             recon: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your Keys.  After you have spent 50, you must run recon again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on recon **</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your KeGeExperiments.  After you have spent 50, you must run recon again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on recon **</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -667,7 +667,7 @@ var playButton =
                   const terminal = this.progressTerminal.current
                   let approval = this.props.approve();
                   approval.then((value) => {
-		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Keys from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
+		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient KeGeExperiments from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
@@ -948,7 +948,7 @@ var playButton =
                                      terminal.pushToStdout(`=====`);
                                      terminal.pushToStdout(`token_id: ${data['tokenId']}`);
                                      terminal.pushToStdout(`=====`);
-                                     terminal.pushToStdout(`asking_price (MATIC): ${price}`);
+                                     terminal.pushToStdout(`asking_price (fantom): ${price}`);
                                      terminal.pushToStdout(`=====`);
                                      terminal.pushToStdout(`in_progress: ${data['inProgress']}`);
                                      terminal.pushToStdout(`=====`);
@@ -990,7 +990,7 @@ var playButton =
                   let bal = this.props.buyFromMarket(nftId, price);
                       bal.then((value) => {
                          terminal.pushToStdout(`[[mbuy]]`);
-                         terminal.pushToStdout(`Congratulations.  You have put in a buy order for nft ${nftId} at price of ${price} MATIC.  Check activity tab for details on your order`);
+                         terminal.pushToStdout(`Congratulations.  You have put in a buy order for nft ${nftId} at price of ${price} fantom.  Check activity tab for details on your order`);
                          terminal.pushToStdout(`[[/mbuy]]`);
                          // expected output: "Success!"
                       });
@@ -1048,7 +1048,7 @@ var playButton =
 
 
             smp: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Set market price for an NFT that you have sent to the market.  By default when you send an NFT to the market, the price is 1 MATIC.  The sale will not start until you run this command and set the price in GWEI **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Set market price for an NFT that you have sent to the market.  By default when you send an NFT to the market, the price is 1 fantom.  The sale will not start until you run this command and set the price in GWEI **</p>',
               fn: (nftId, price) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1073,7 +1073,7 @@ var playButton =
 
 
             bal: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display your Keys balance **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display your KeGeExperiments balance **</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1094,7 +1094,7 @@ var playButton =
                       this.setState({progressBal: bal});
                       var self = this;
                          terminal.pushToStdout(`[[inclusion-balance]]`);
-                      this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Balance: ${theBal}` + " Keys"))
+                      this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Balance: ${theBal}` + " KeGeExperiments"))
                          terminal.pushToStdout(`[[/inclusionx-balance]]`);
                     }
                   }, 1500)
@@ -1178,7 +1178,7 @@ var playButton =
 
 
             angel: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Be a guardian angel by injecting MATIC into a UPC. Example: Type `angel 777777777777 1000000000000000000` to inject 1 MATIC into upc terminal# 777777777777. Whoever owns the NFT for the UPC (terminal) can then withdraw it with the `tyvm` command</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Be a guardian angel by injecting fantom into a UPC. Example: Type `angel 777777777777 1000000000000000000` to inject 1 fantom into upc terminal# 777777777777. Whoever owns the NFT for the UPC (terminal) can then withdraw it with the `tyvm` command</p>',
               fn: (upcId, amount) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1196,7 +1196,7 @@ var playButton =
             },
 
             tyvm: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Say Thank YOU! and Withdraw all MATIC from a UPC if you own the NFT for the UPC</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Say Thank YOU! and Withdraw all fantom from a UPC if you own the NFT for the UPC</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1240,7 +1240,7 @@ var playButton =
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`token_id: ${data['tokenId']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`asking_price (MATIC): ${price}`);
+                        terminal.pushToStdout(`asking_price (fantom): ${price}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`in_progress: ${data['inProgress']}`);
                         terminal.pushToStdout(`=====`);
@@ -2040,7 +2040,7 @@ var playButton =
 
 
             mine: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Mine some Keys</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Mine some KeGeExperiments</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -2060,7 +2060,7 @@ var playButton =
             },
 
             snapr: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your Keys.  You MUST run this command FIRST or all of your `snbuy` and `xsnbuy` commands will fail</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your KeGeExperiments.  You MUST run this command FIRST or all of your `snbuy` and `xsnbuy` commands will fail</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -2069,7 +2069,7 @@ var playButton =
                   const terminal = this.progressTerminal.current
                   let approval = this.props.approveNav();
                   approval.then((value) => {
-		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Keys from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'buy' and 'xbuy' commands will fail`)
+		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient KeGeExperiments from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'buy' and 'xbuy' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
