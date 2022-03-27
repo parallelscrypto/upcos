@@ -7,9 +7,9 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 
-import "./TubmanX.sol";
+import "./Keyz.sol";
 
-contract MalcolmsLittleSecretNFT is ERC721, Ownable {
+contract MalcolmsLittleSecret is ERC721, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -44,7 +44,7 @@ contract MalcolmsLittleSecretNFT is ERC721, Ownable {
         uint     tld;
         uint256  createdTimestamp;
         uint256  latestTimestamp;
-    }    
+    }
 
 
     uint256  public latestTokenId;
@@ -67,11 +67,11 @@ contract MalcolmsLittleSecretNFT is ERC721, Ownable {
     address payable private  bank;
     uint    public totalBalance;
     uint256    currentNftPrice;
-    TubmanX    private _token;
+    Key    private _token;
     string    public defaultProtocol;
 
 
-    constructor() ERC721("mls://", "MalcolmsLittleSecret") Ownable()  {
+    constructor() ERC721("MalcolmsLittleSecret", "MLX") Ownable()  {
         bank = payable(msg.sender);
         defaultIpfs = "ipfs/QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU";
         defaultVr = "https://hubs.mozilla.com/scenes/q7CnmKA";
@@ -95,7 +95,7 @@ contract MalcolmsLittleSecretNFT is ERC721, Ownable {
     }
 
     function setPayToken(address  addy) external onlyOwner {
-        _token = TubmanX(addy);
+        _token = Key(addy);
     }
 
     function hasBeenMinted(string memory upcId) external view returns(bool) {
@@ -287,13 +287,11 @@ contract MalcolmsLittleSecretNFT is ERC721, Ownable {
         NFTMeta memory nftToMint;
 
         int indexToMint = findTokenIndexByAddress(msg.sender, tokenIdToMint);
-        
 
         require(indexToMint >= 0, "Error trying to mint an NFT that is not in range");
         
         //cast the result to a uint
         nftToMint = nftsToMintByAddress[msg.sender][uint(indexToMint)];
-
 
         NFTMeta memory nftMeta;
         nftMeta.tokenId                 = nftToMint.tokenId;
@@ -321,20 +319,14 @@ contract MalcolmsLittleSecretNFT is ERC721, Ownable {
         upcIdLookup[upcId].createdTimestamp   = block.timestamp;
         upcIdLookup[upcId].og                 = msg.sender;
         //upcIdLookup[upcId].protocol           = defaultProtocol;
-        
-
 
         uint tmpTld                           = upcIdLookup[upcId].tld;
         nftIdLookup[nftToMint.tokenId].tld    = tmpTld;
-        
         
         nftIdLookup[nftToMint.tokenId].latestTimestamp  = block.timestamp;
         nftIdLookup[nftToMint.tokenId].createdTimestamp = block.timestamp;
         //nftIdLookup[nftToMint.tokenId].protocol = defaultProtocol;
 
-
-
-    
         _safeMint(staker, tokenIdToMint);
         //_setTokenURI(tokenIdToMint, defaultIpfs);
 
