@@ -121,7 +121,7 @@ class App extends Component {
 
 
     // Load UpcBandRadio
-    const upcNFTData = PokingsHauntUs.networks[networkId]
+    const upcNFTData = MLS.networks[networkId]
     if(upcNFTData) {
       const upcNft = new web3.eth.Contract(UpcBandRadio.abi, upcNFTData.address)
       this.setState({ upcNft })
@@ -147,7 +147,7 @@ class App extends Component {
 
 
     // Load PAY currency
-    const intelXData = KegeExperiment.networks[networkId]
+    const intelXData = TubmanX.networks[networkId]
     if(intelXData) {
       const AFROX = new web3.eth.Contract(Key.abi, intelXData.address)
       this.setState({ intelX: AFROX })
