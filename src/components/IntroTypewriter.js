@@ -77,12 +77,16 @@ export default class IntroTypewriter extends Component {
          break;
        case "6":
          channel = "Loading Channel 6: Black Spirituality";
+         break;
        case "7":
          channel = "Loading Channel 7: Black Life Education";
+         break;
        case "8":
          channel = "Loading Channel 8: Black Business Connect";
+         break;
        case "9":
          channel = "Loading Channel 9: Black Health";
+         break;
      }
 
      //console.log("channel is " + channel);
@@ -100,7 +104,7 @@ export default class IntroTypewriter extends Component {
          <TypeWriterEffect
             style={{transform:'translateY(150vw)', fontFamily:'system-ui'}}
             startDelay={100}
-            multiTextDelay={300}
+            multiTextDelay={1500}
             cursorColor="white"
             multiText={message}
             typeSpeed={10}
