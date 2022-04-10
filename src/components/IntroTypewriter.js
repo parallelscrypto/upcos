@@ -24,6 +24,8 @@ export default class IntroTypewriter extends Component {
       data: props.data
     }
 
+    this.calculateChannel = this.calculateChannel.bind(this);
+
   }
 
   componentDidMount() {
@@ -41,6 +43,7 @@ export default class IntroTypewriter extends Component {
        this.setState({customColor});
 
 
+    this.calculateChannel(scan.code);
 
     }
     catch(e){
@@ -49,9 +52,47 @@ export default class IntroTypewriter extends Component {
 
   }
 
-  render() {
+  calculateChannel(upc) {
+     var channelNum = upc.substr(-1);
 
-    var message = ["<UPC Band Radio>" , "loading station", "[[" + this.state.code + "]]" , "</UPC Band Radio>"]
+     var channel = "Black Power Channel";
+     switch (channelNum) {
+       case "0":
+         channel = "Loading Channel 0: Black Power";
+         break;
+       case "1":
+         channel = "Loading Channel 1: Black Travel";
+         break;
+       case "2":
+          channel = "Loading Channel 2: Homeless Support";
+         break;
+       case "3":
+         channel = "Loading Channel 3: Black Music/Comedy/Entertainment";
+         break;
+       case "4":
+         channel = "Loading Channel 4: Black Sports";
+         break;
+       case "5":
+         channel = "Loading Channel 5: Black Alt Community";
+         break;
+       case "6":
+         channel = "Loading Channel 6: Black Spirituality";
+       case "7":
+         channel = "Loading Channel 7: Black Life Education";
+       case "8":
+         channel = "Loading Channel 8: Black Business Connect";
+       case "9":
+         channel = "Loading Channel 9: Black Health";
+     }
+
+     //console.log("channel is " + channel);
+     this.setState({channel: channel});
+     return channel;
+  }
+
+
+  render() {
+    var message = ["<UPC Band Radio>" , this.state.channel , "[[" + this.state.code + "]]" , "</UPC Band Radio>"]
     return (
       <div 
 	 style={{background: this.state.customColor, textAlign:"center", color:"white", transform:'translateY(50vh)' , transform:'translateY(50vw)'}}

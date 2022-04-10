@@ -46,7 +46,6 @@ let self = this;
 
            let info = self.props.getSaleInfo(i)
             .then((data) => {
-		console.log(i);
  
                  //only put upcId in ticker if the user has manually set 
                  var upcId = "";
