@@ -70,7 +70,7 @@ export default class IntroTypewriter extends Component {
          channel = "Loading Channel 3: Black Music/Comedy/Entertainment";
          break;
        case "4":
-         channel = "Loading Channel 4: Black Sports";
+         channel = "Loading Channel 4: Fitness and Sports";
          break;
        case "5":
          channel = "Loading Channel 5: Black Alt Community";
