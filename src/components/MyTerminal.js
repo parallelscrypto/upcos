@@ -150,9 +150,12 @@ export default class MyTerminal extends Component {
           let infoOwned = this.props.upcInfo(upcId)
            .then(data => {
 
+		console.log("ownership info is");
+		console.log(data);
 
                 var vr   = data['vr'];
-                if(vr.includes('youtu')) {
+                var staker = data['staker'];
+                if(!staker.includes('0x0000000000000000000')) {
                     player = <ReactPlayer 
                                  width="100vw"
                                  url={data['vr']} 
