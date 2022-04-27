@@ -1178,7 +1178,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmUpK67CyydMb9yV27M7fpyTMYLxmGzm9Tqfb8gZRxWFQQ"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Channel 0</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Power!</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1199,7 +1199,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmWXFYqjMzdcXizN2bFuccp7NNEENKhuNPxmtrmcijkvU2"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Channel 1</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Travel</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1221,7 +1221,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmQPcnATGo1jTWq4L9VZcvmtoChR3Cfnzv3pvkz7QtRd4s"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Channel 2</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Homeless Support</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1243,7 +1243,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmVUVaQ6icAtpnBmkj1vCUxQoM6S8ZnRujM7zmeyqjLiXr"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Channel 3</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Entertainment</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1265,7 +1265,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmaCyEkPxqXdMRiUDdB7QQW7ppPJVy7ckA9tY4h78kqQoa"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Channel 4</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Fitness and Sports</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1287,7 +1287,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmShhNEGmAVB4PYwLpzuoZB71tztWsWx6ddLYnu378qgJz"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Channel 5</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Alt Community</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1308,7 +1308,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmZuLpH8yUEoriXyXMDJS8UEk5FFozB5XVmSjGseqsVLHV"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Channel6</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Afro Spirituality</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1329,7 +1329,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmRbz9GUgf5R8nNtqcA3kio4xVg5wCKHUd8aUvrytzQaxC"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Channel 7</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Life Education</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1350,7 +1350,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmT1wtfYwtxyuFzFLrysm8KCG49ThQ6UxitQpdbKRvk4ip"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Channel 8</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Business Connect</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1371,7 +1371,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/Qmcc9ee8BsMufwS59z9q86xa9xKe1ppyw42RsGHpAVaHeo"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Channel 9</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Health</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1862,7 +1862,7 @@ var playButton =
               }
             },
             xpayload: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Set your payload resource by passing the ipfs/hash value.  Example `xpayload ipfs/QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU` will set your IPFS resource to the default audiobook repository. If your NFT is linked to a frontend (theater or other app), populate intel into the frontend by specifying a comma separated list of valid NFT ids.  Example: If you run the command `xvr 1,2,3,4,5` on NFT id 55, this will load NFT ids 1,2,3,4,5 into the frontend that reads from NFT id 55.  In other words, you will be attaching NFTs #1-5 to NFT #55, and when the frontend reads #55, it will read from the payload field which will now hold the value `1,2,3,4,5` </p>' ,
+		    description: '<p style="color:hotpink;font-size:1.1em">** Set your payload resource by passing the ipfs/hash value.  Example `xpayload ipfs/QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU` will set your IPFS resource to the default audiobook repository. If your NFT is linked to a frontend (theater or other app), populate intel into the frontend by specifying a comma separated list of valid NFT ids.  Example: If you run the command `xpayload 1,2,3,4,5` on NFT id 55, this will load NFT ids 1,2,3,4,5 into the frontend that reads from NFT id 55.  In other words, you will be attaching NFTs #1-5 to NFT #55, and when the frontend reads #55, it will read from the payload field which will now hold the value `1,2,3,4,5` </p>' ,
               fn: (_ipfsLink) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
