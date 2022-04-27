@@ -1,33 +1,38 @@
 Chris Davis
 
 Overview:
+There is a large untapped and unspoken niche that desperately needs to be filled in America, and worldwide. Black African decendants need dedicated infrastructure where we can speak our truth, and abolish the lies that hostile forces have told to us, and that many of us still subscribe to.  The lies of inferiority and the idea that mediocre is good enough (In other words, the spiritualization of poverty) are quickly become ideas of the past, and I am proud to play a part.  
 
-There is a large untapped and unspoken niche that desperately needs to be filled in America, and worldwide. Black African decendants need dedicated infrastructure 
-where we can speak our truth, and abolish the lies that our colonizers and conqurers have told to us, and that many of us still subscribe to.  The lies of inferiority and
-the idea that mediocre is good enough (In other words, the spiritualization of poverty) needs to become ideas of the past.  Thanks to the great work of the 
-crypto community, this goal has been achieved, because UPC Band Radio is the most timely NFT operating system solution that the entire NFT market has ever seen in recorded history!
-My goal is to reshape my narrative, and empower specifically African/Black people and broadly all people who want a
-voice, but are strategically denied.  Blockchain technology, decentralization, NFTs (ownership) are the antidote to these historical poisons.  
-My ultimate goal is to move to Africa and create jobs by spreading knowledge of crypto, Web3, and NFTs. In other words, I aim to to directly facilitate the creation
-of new economies based on creativity, inclusion, and mutual respect instead of constantly competing in the cut throat Web2 centralized "How fast can you write this silly algorithm that you would never write in the real world... not fast enough and I now demote thou to factory worker. Amen" economy.  I refuse to take another minimum wage factory job, or rely on a centralized diety like my previous generations were indoctrinated to do.  The great resignation is real, and if the majority countrymen/women are quitting their jobs, loudly, and in record numbers, imagine the conversations that the minorities are "quietly" having.
-
-tl;dr someone "disrupted" my economy, and it is only fair that I use my creativity, my MIND and technology to "disrupt" theirs in return.
-
-
-Being Afro and having been raised in rural USA, I also believe that these ideas apply to ALL humans regardless of the labeling that society, however, these ideas
-are mercilessly weaponized with extreme tactical precision against people who look like me, and the results speak for themselves.
-I took it upon myself to create a space where all people (More specifically people who look like me and people who are treated like they look like me) can
-have their voices heard in an immutable and permanant way.  No one should be forced to live within the confines of someone elses misinformation or judgement.
-My goal in this project is to directly oppose outdated legacy narratives by verifyable actions instead of only talking about it.  Further, I want the stories, characters, plays and skits,
-exclusive interviews, and human creativity in the face of opposition to be  in as many people's faces so that society can see that there are some (such as myself) who are willing 
-to risk their lives, family, and reputation to speak up, tell their truth, and think for themselves.
-
+Thanks to the great work of the crypto community, and my brothers and sisters in the struggle, this goal is becoming a reality by the day.  In fact, UPC Band Radio is the most robust and feature packed NFT operating system on the market, and its only in its MVP phase!  My goal is to reshape my narrative and empower myself in full view of disenfranchised individuals so that they can be emboldended to speak their truth to power.  I aim to use my story to inspire people, specifically African/Black people and broadly all people who want a voice, but are strategically denied.  Blockchain technology, decentralization, NFTs (ownership) are the antidote to the historical poisons that have been literally poured into our drinking water, our communities, our "education" system, religious institutions, microeconomies, justice system, and general mindsets.  My short term goal is to move to Africa and create innovative business opportunities by spreading knowledge of crypto, Web3, and NFTs. In other words, I aim to to directly facilitate the creation of new economies based on creativity, inclusion, and mutual respect instead of constantly trying to compete (and largely losing unless the individual is well funded/connected) in the Web2 centralized  economy.  I refuse to take another minimum wage factory job, or rely on a centralized diety like my previous generations were indoctrinated to do.  I encourage others to know their worth and demand to be treated as such.  The great resignation is real, and if the majority countrymen/women are quitting their jobs, loudly, and in record numbers, imagine the conversations that the minorities are "quietly" having.
+  
+tl;dr/eli5 An unknown entity "disrupted" my economy, and in return, it is only fair (I feel it my responsibility as a natural born leader) that I should use my creativity, MIND and technology to disrupt false and hurtful narratives.
 
 Resume:
 
 UPC Band Radio
 2020 - Presennt
 
-Learned Java, Javascript (React), and Solidity to archetect, engineer, deploy, and incrementally improve my "NFT Operating System".
-I see great value in creating generational wealth, and ownership. 
- UPC Band Radio is a combination of open uses UPC codes as
+
+Technical Abilities:
+Use Java (Android), Javascript (React), Solidity, IPFS, Crypto Economics, Web3, to archetect, engineer, deploy, and incrementally improve this NFT Operating System and crypto economy.
+Forked AlphaWallet (https://alphawallet.com) and enhanced in order to create unique NFT experiences that are tied to each UPC code/number in existence.
+
+Use github to host my repositories.  I will use github to process requests to the UPC Band Radio in a public and transparent fashion.
+
+
+Leadership/Entrepreneurial Abilities:
+I realized that UPC codes essentially amount to an established infrastructure grid.  Further, being aware of the highly centralized nature of the services that the world depends on , UPC codes are a perfect way to broadcast a message in decentralized and distributed way that is difficult to disrupt.
+
+Create a white hat hacking community so that individuals who are excluded from IT can participate in a dignified and engaging manner.  I want my users to feel respected and excited for new challenges that will help them to grow and compete for number 1 spots across the board.
+
+Create a program that incentivises users to create unique content to be featured in UPC Band Radio and possibly promoted to UPC Band Theater
+
+Create an artwork program for homeless individuals.  Using discarded boxes that still have a UPC code, users can draw artwork on the blank back side of the packaging, which essentially turns any throw away box into a canvas.  A homeless individual can literally pick trash out of a dumpster, tokenize the UPC code on it, create beautiful artwork on top of it, and then sell it as NFT artwork.  No more conversations about NFT artwork on IPFS being "stolen" because this is physical artwork, and ownership can be established by scanning the backside.
+
+NFT Heros
+
+Angel Balance
+
+Marketing/Advertising:
+I gained interest and continue learning to create/market/advertise tangable products by way of painting, creating healthy recipies, designing unique clothing/accessories, writing AI assited lyrics, 
+Coin giveaways, coin boxes, Gaming Platform, 
