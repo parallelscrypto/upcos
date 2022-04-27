@@ -1168,8 +1168,8 @@ var playButton =
             },
 
 
-            th0: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Power</p>',
+            ch0: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Power Channel</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1178,7 +1178,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmUpK67CyydMb9yV27M7fpyTMYLxmGzm9Tqfb8gZRxWFQQ"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Power!</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Power! Channel</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1189,8 +1189,8 @@ var playButton =
             },
 
 
-            th1: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Travel</p>',
+            ch1: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Travel Channel</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1199,7 +1199,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmWXFYqjMzdcXizN2bFuccp7NNEENKhuNPxmtrmcijkvU2"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Travel</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Travel Channel</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1211,8 +1211,8 @@ var playButton =
 
 
 
-            th2: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Homeless Support</p>',
+            ch2: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Homeless Support Channel</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1221,7 +1221,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmQPcnATGo1jTWq4L9VZcvmtoChR3Cfnzv3pvkz7QtRd4s"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Homeless Support</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Homeless Support Channel</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1233,8 +1233,8 @@ var playButton =
 
 
 
-            th3: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Entertainment</p>',
+            ch3: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Entertainment Channel</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1243,7 +1243,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmVUVaQ6icAtpnBmkj1vCUxQoM6S8ZnRujM7zmeyqjLiXr"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Entertainment</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Entertainment Channel</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1255,8 +1255,8 @@ var playButton =
 
 
 
-            th4: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Fitness and Sports</p>',
+            ch4: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Fitness and Sports Channel</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1265,7 +1265,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmaCyEkPxqXdMRiUDdB7QQW7ppPJVy7ckA9tY4h78kqQoa"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Fitness and Sports</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Fitness and Sports Channel</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1277,8 +1277,8 @@ var playButton =
 
 
 
-            th5: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Alternative Community</p>',
+            ch5: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Alternative Community Channel</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1287,7 +1287,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmShhNEGmAVB4PYwLpzuoZB71tztWsWx6ddLYnu378qgJz"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Alt Community</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Alt Community Channel</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1298,8 +1298,8 @@ var playButton =
             },
 
 
-            th6: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Spirituality</p>',
+            ch6: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Afro Spirituality Channel</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1308,7 +1308,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmZuLpH8yUEoriXyXMDJS8UEk5FFozB5XVmSjGseqsVLHV"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Afro Spirituality</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Afro Spirituality Channel</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1319,8 +1319,8 @@ var playButton =
             },
 
 
-            th7: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Life Education</p>',
+            ch7: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Life Education Channel</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1329,7 +1329,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmRbz9GUgf5R8nNtqcA3kio4xVg5wCKHUd8aUvrytzQaxC"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Life Education</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Life Education Channel</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1340,8 +1340,8 @@ var playButton =
             },
 
 
-            th8: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Business Connect</p>',
+            ch8: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Business Connect Channel</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1350,7 +1350,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmT1wtfYwtxyuFzFLrysm8KCG49ThQ6UxitQpdbKRvk4ip"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Business Connect</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Business Connect Channel</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
@@ -1361,8 +1361,8 @@ var playButton =
             },
 
 
-            th9: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Health</p>',
+            ch9: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Health Channel</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1371,7 +1371,7 @@ var playButton =
                   let bal = this.props.getWalkieTalkie(this.state.account);
                       bal.then((value) => {
 			 value  = "https://upcunderground.mypinata.cloud/ipfs/Qmcc9ee8BsMufwS59z9q86xa9xKe1ppyw42RsGHpAVaHeo"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Health</a>";
+			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Health Channel</a>";
                          terminal.pushToStdout(link);
                          // expected output: "Success!"
                       });
