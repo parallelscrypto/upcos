@@ -10,29 +10,20 @@ There is a large untapped and unspoken niche that desperately needs to be filled
 Thanks to the great work of the crypto community, and my brothers and sisters in the struggle, this goal is becoming a reality by the day.  In fact, UPC Band Radio is the most robust and feature packed NFT operating system on the market, and its only in its MVP phase!  My goal is to reshape my narrative and empower myself in full view of disenfranchised individuals so that they can also be emboldened to speak their truth to power.  I aim to use my story to inspire people, specifically Afrikan/Black people and broadly all people who want a voice, but are strategically denied.  Blockchain technology, decentralization, NFTs (ownership) are the antidote to the historical poisons that have been literally poured into our drinking water, our communities, our "education" system, religious institutions, microeconomies, justice system, and general mindsets with minimal accountability.  My short term goal is to move to Afrika and create innovative business opportunities by spreading knowledge of crypto, Web3, and NFTs.  In other words, I aim to to directly facilitate the creation of new economies based on creativity, inclusion, and mutual respect instead of constantly trying to compete (and largely losing unless the individual is well funded/connected) in the Web2 centralized  economy.  It is important to know our worth and create our own products so that we can look eye to eye with other people and civilizations.  Central Afrikan Republic (CAR) just legalized Bitcoin as legal tender, and this will be a great way to start to my eventual journey to Afrika and economic freedom.
 
 
-UPC Band Radio is a crypto/NFT based system that uses UPC codes numbers in a creative way to provide the world with a user owned prerecorded and live TV experience.  Users can simply scan a UPC code, and there is guaranteed to be video content attached to the UPC code to watch.  Going one level deeper, each UPC code has a "channel" which is determined by looking at the 12th (last) digit.  Each channel is named:
+UPC Band Radio is a crypto/NFT based system that uses UPC codes numbers in a creative way to provide the world with a user owned prerecorded and live TV experience.  Users can simply scan a UPC code, and there is guaranteed to be video content attached to the UPC code to watch.  Going one level deeper, each UPC code has a "channel" which is determined by looking at its 12th (last) digit.  This means that each UPC code actually has several videos attached to it based on its channel (listed below) via the UPC Band Theater.  UPC Band Theater is a simple command that the user issues to access a “Netflix style” interface.  No payment ever required (unless you want to buy a UPC code) to use UPC Band Radio.  In other words, this is an attempt to drive mass adoption of crypto using something that everyone is already familiar with, and in a way that is free.  This eliminates all barriers to entry, and a user only needs to download the wallet and scan upc codes. Further, UPC Band Theater is a free user driven, constantly updating with unique user driven content  Each channel is named:
 
 Channel 0: Black Power Channel (Any UPC ending with 0)
-
 Channel 1: Black Travel Channel (Any UPC ending with 1)
-
 Channel 2: Homeless Support (Any UPC ending with 2)
-
 Channel 3: Black Comedy, Entertainment, Music (Any UPC ending with 3)
-
 Channel 4: Fitness and Sports (Any UPC ending with 4)
-
 Channel 5: Black Alt Community (Any UPC ending with 5)
-
 Channel 6: Black Spirituality (Any UPC ending with 6)
-
 Channel 7: Black Life Education (Any UPC ending with 7)
-
 Channel 8: Black Business Connect (Any UPC ending with 8)
-
 Channel 9: Black Health (Any UPC ending with 9)
 
-Each UPC code is a potential NFT, and initially, each UPC code's content defaults to UPC Band Radio content according to its channel (last digit).  However, if a user hacks and owns a UPC code, they can set the programming to whatever they want on that UPC code.  After ownig a UPC, the NFT owner can set the content by issuing the 'xvr' command (xvr http://youtu.be/myvideo will set the content to myvideo on YouTube)  Each channel also has a corresponding Netflix style interface that picks content from the many UPC NFTs and displays interesting and relevant content.  For example, the command 'ch0' will present the user with a channel 0 interface that will contain Black Power material.  The command 'ch8' will present an interface where Black Business Connect videos are displayed.  Each channel is controlled by the user who owns the appropriate NFT.  The owner of the UPC NFT can issue a Linux style 'xpayload' command and pass in a comma separated list of NFT ids.  This is how the "Netflix" style interfaces are populated.
+Each UPC code is a potential NFT, and initially, each has UPC code's content defaults to UPC Band Radio content according to its channel (last digit).  However, if a user hacks and owns a UPC code, they can set the programming to whatever they want on that UPC code.  After owning a UPC, the NFT owner can set the content by issuing the 'xvr' command (xvr http://youtu.be/myvideo will set the content to myvideo on YouTube)  Each channel also has a corresponding Netflix style interface that picks content from the many UPC NFTs and displays interesting and relevant content.  For example, the command 'ch0' will present the user with a channel 0 interface that will contain Black Power material.  The command 'ch8' will present an interface where Black Business Connect videos are displayed.  Each channel is controlled by the user who owns the appropriate NFT.  The owner of the UPC NFT can issue a Linux style 'xpayload' command and pass in a comma separated list of NFT ids.  This is how the "Netflix" style interfaces are populated.
 
 If the user wants the message to reach a large number of people, it is wise to buy a UPC that is available in many places.  Certain brands of Cola are available in 20 oz bottles in nearly every gas station, store, and food truck.  This means that if a user buys the highly available cola UPC, their message will spread farther than a UPC of a lesser circulated product. 
 
@@ -95,3 +86,5 @@ Marketing/Advertising:
 + Learning to create/market/advertise tangible products by way of painting, creating healthy recipes, designing unique clothing/accessories, and writing AI assisted lyrics. 
 
 + The platform will attract users by facilitating coin giveaways, and we will be developing and integrating a first person shooter game where users can use the scanner to scan in game codes to extract NFTs and/or tokens.
+
+
