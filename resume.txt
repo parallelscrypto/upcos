@@ -3,7 +3,7 @@ Chris Davis
 Overview:
 There is a large untapped and unspoken niche that desperately needs to be filled in America, and worldwide. Black African decendants need dedicated infrastructure where we can speak our truth, and abolish the lies that hostile forces have told to us, and that many of us still subscribe to.  The lies of inferiority and the idea that mediocre is good enough (In other words, the spiritualization of poverty) are quickly become ideas of the past, and I am proud to play a part.  
 
-Thanks to the great work of the crypto community, and my brothers and sisters in the struggle, this goal is becoming a reality by the day.  In fact, UPC Band Radio is the most robust and feature packed NFT operating system on the market, and its only in its MVP phase!  My goal is to reshape my narrative and empower myself in full view of disenfranchised individuals so that they can be emboldended to speak their truth to power.  I aim to use my story to inspire people, specifically African/Black people and broadly all people who want a voice, but are strategically denied.  Blockchain technology, decentralization, NFTs (ownership) are the antidote to the historical poisons that have been literally poured into our drinking water, our communities, our "education" system, religious institutions, microeconomies, justice system, and general mindsets with minimal accountability.  My short term goal is to move to Africa and create innovative business opportunities by spreading knowledge of crypto, Web3, and NFTs. In other words, I aim to to directly facilitate the creation of new economies based on creativity, inclusion, and mutual respect instead of constantly trying to compete (and largely losing unless the individual is well funded/connected) in the Web2 centralized  economy.  It is important to know our worth and create our own products so that we can look eye to eye with other people and civilizations.
+Thanks to the great work of the crypto community, and my brothers and sisters in the struggle, this goal is becoming a reality by the day.  In fact, UPC Band Radio is the most robust and feature packed NFT operating system on the market, and its only in its MVP phase!  My goal is to reshape my narrative and empower myself in full view of disenfranchised individuals so that they can also be emboldended to speak their truth to power.  I aim to use my story to inspire people, specifically African/Black people and broadly all people who want a voice, but are strategically denied.  Blockchain technology, decentralization, NFTs (ownership) are the antidote to the historical poisons that have been literally poured into our drinking water, our communities, our "education" system, religious institutions, microeconomies, justice system, and general mindsets with minimal accountability.  My short term goal is to move to Africa and create innovative business opportunities by spreading knowledge of crypto, Web3, and NFTs. In other words, I aim to to directly facilitate the creation of new economies based on creativity, inclusion, and mutual respect instead of constantly trying to compete (and largely losing unless the individual is well funded/connected) in the Web2 centralized  economy.  It is important to know our worth and create our own products so that we can look eye to eye with other people and civilizations.
 
 UPC Band Radio is a crypto/NFT based system that uses UPC codes numbers in a creative way to provide the world with a user owned prerecorded and live TV experience.  Users can simply scan a UPC code, and there is guranteed to be video content attached to the UPC code to watch.  Going one level deeper, each UPC code has a "channel" which is determined by looking at the 12th (last) digit.  Each channel is named:
 
@@ -22,7 +22,7 @@ Each UPC code is a potential NFT, and initially, each has UPC codes content defa
 
 If the user wants the message to reach a large number of people, it is wise to buy a UPC that is available in many places.  Certain brands of Cola are available in 20 oz bottles in nearly every gas station, store, and food truck.  This means that if a user buys the highly available cola UPC, their message will spread farther than a UPC of a lesser circulated product. 
 
-To add additional value and utility, we will integrate AI into each UPC NFT so that the owner can use the UPC NFT to perform useful automated functions.  The first ability will be for the channel UPC NFTs to automatically scan through the videos in the UPC matrix, and provide appropriate content recommendations for the NFT owner to consider when setting the programming on a channel.
+To add additional value and utility, we will integrate AI into each UPC NFT so that the owner can use it to perform useful automated functions.  The first ability will be for the channel UPC NFTs to automatically scan through the videos in the UPC matrix, and provide appropriate content recommendations for the NFT owner to consider when setting the programming on a channel.
 
 
 
@@ -37,13 +37,13 @@ Technical Abilities:
 
 + Forked AlphaWallet (https://alphawallet.com) and enhanced in order to create unique NFT experiences that are tied to each UPC code/number in existence.
 
-+ Use github to host my repositories.  I will use github to process requests to the UPC Band Radio in a public and transparent fashion.
++ Users 'hack' (buy) and 'own' (mint) UPC codes using a command line interface built in React.  In order to hack (buy) one UPC code, the user needs to have one token which is called the "Pay Token" for the Parallel.  For the UPC Band TV Parallel listed in the overview, the "Pay Token" is called TubmanX.  When a user buys (hacks) a UPC, they are able to assign a human readable name to it.  The process is similar to buying a domain in that each parallel can specify a list of TLDs that can be appended to the human readable name that they assign to it.  This encourages users to post a variety of different pieces of content to the Radio.  Example TLDs are '.watch-this' (video content), '.homeless' (good for minting NFT Art Signs for homeless to sell), and '.dapp' (this is where I post new parallels so that users can be aware of all of the different communities available on the Radio.)
 
 + Used React and Javascript to create an API and Netflix style interface that extracts NFTs from the UPC Band Radio matrix, and provides a free white-label live/prerecorded TV experience.
 
-+ Created a "Parallels" system that allows users to deploy an infinite number of TV stations, each with their own channel, currency, and NFT.
++ Created a "Parallels" system that allows users to deploy an infinite number of TV stations, each with their own channel, currency, and NFT. Essentially, a parallel is a dedicated IPFS based web app that has a distinct use case, front end, and possibly a distinct Pay Token and NFT token.  Think of a Parallel as a 'subreddit' where the 'subreddit name' is analogous to an IPFS string.
 
-+ Users 'hack' (buy) and 'own' (mint) UPC codes using a command line interface built in React.  In order to hack (buy) one UPC code, the user needs to have one token which is called the "Pay Token" for the Parallel.  For the UPC Band TV Parallel listed in the overview, the "Pay Token" is called TubmanX.  When a user buys (hacks) a UPC, they are able to assign a human readable name to it.  The process is similar to buying a domain in that each parallel can specify a list of TLDs that can be appended to the human readable name that they assign to it.
++ Use github to host my repositories.  I will use github to process requests to the UPC Band Radio in a public and transparent fashion.
 
 + The wallet is essentially a white label NFT-as-a-service framework that enables users to quickly attach data to a real world object, and then reprogram the content an infinite number of times, and this is inexpensive due to the fact that the system is deployed on Polygon.
 
@@ -53,7 +53,9 @@ Technical Abilities:
 
 + Created a marketplace with a marketplace ticker that allows users to sell their UPC NFT after they have customized it.  Putting an NFT up for sale is as easy as issuing the 'flip' command.  After this, the user must set the market price, and then the sale will start.  In order to buy an NFT, a buyer only needs to issue a command and have enough crypto to cover the asking price.
 
-+ Buying the Pay Token is done from within the wallet.  The user must issue the 'swap' command, and then this will swap their matic for the pay token 1:1.  For example, to buy 5 TubmanX tokens, the user must have 5 matic (plus gas) in their wallet and then issue the command 'swap 5000000000000000000'.  This will send 5 matic from their wallet, and then the Pay Token smart contract will mint and send 5 TubmanX to the buyer.  No need for external CEX's or DEX'x
++ Buying the Pay Token is done from within the wallet.  The user must issue the 'swap' command, and then this will swap the matic in their UPC Band Radio Wallet for the pay token 1:1.  For example, to buy 5 TubmanX tokens, the user must have 5 matic (plus gas) in their wallet and then issue the command 'swap 5000000000000000000'.  This will send 5 matic from their wallet to the smart contract, and then the Pay Token smart contract will mint and send 5 TubmanX to the buyer.  No need for external CEX's or DEX'x
+
+
 
 Leadership/Entrepreneurial Abilities:
 + I realized that UPC codes essentially amount to an established infrastructure grid.  Being aware of the centralized nature of the data services that the world depends on, UPC codes are a perfect way to broadcast a message in decentralized and distributed way that is difficult to disrupt.
@@ -70,9 +72,9 @@ Leadership/Entrepreneurial Abilities:
 
 + Collectively all of the UPCs are known as the UPC Band Radio/TV.  Each UPC code has 12 digits, and the last digit of the upc code represents the channel.  Each channel serves content of a specific type, and has a matching frontend that you can access by typing the respective command.  Think of this as a minimilist Netflix that is dynamically programmed by individual users using NFTs.  
 
+
+
 Marketing/Advertising:
 + Learning to create/market/advertise tangable products by way of painting, creating healthy recipies, designing unique clothing/accessories, and writing AI assited lyrics. 
 
 + The platform will attract users by facilitating coin giveaways, and we will be developing and integrating a first person shooter game where users can use the scanner to scan in game codes to extract NFTs and/or tokens.
-
-
