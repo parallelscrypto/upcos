@@ -3,9 +3,28 @@ Chris Davis
 Overview:
 There is a large untapped and unspoken niche that desperately needs to be filled in America, and worldwide. Black African decendants need dedicated infrastructure where we can speak our truth, and abolish the lies that hostile forces have told to us, and that many of us still subscribe to.  The lies of inferiority and the idea that mediocre is good enough (In other words, the spiritualization of poverty) are quickly become ideas of the past, and I am proud to play a part.  
 
-Thanks to the great work of the crypto community, and my brothers and sisters in the struggle, this goal is becoming a reality by the day.  In fact, UPC Band Radio is the most robust and feature packed NFT operating system on the market, and its only in its MVP phase!  My goal is to reshape my narrative and empower myself in full view of disenfranchised individuals so that they can be emboldended to speak their truth to power.  I aim to use my story to inspire people, specifically African/Black people and broadly all people who want a voice, but are strategically denied.  Blockchain technology, decentralization, NFTs (ownership) are the antidote to the historical poisons that have been literally poured into our drinking water, our communities, our "education" system, religious institutions, microeconomies, justice system, and general mindsets.  My short term goal is to move to Africa and create innovative business opportunities by spreading knowledge of crypto, Web3, and NFTs. In other words, I aim to to directly facilitate the creation of new economies based on creativity, inclusion, and mutual respect instead of constantly trying to compete (and largely losing unless the individual is well funded/connected) in the Web2 centralized  economy.  I refuse accept scoundrel-level treatment or rely on centralized entities like my previous generations were indoctrinated and forced to do.  I encourage others to know their worth and demand to be treated as such.
-  
-tl;dr/eli5 An unknown entity "disrupted" my economy, and in return, it is only fair (I feel it my responsibility as a natural born leader) that I should use my creativity, MIND and technology to disrupt false and hurtful narratives.
+Thanks to the great work of the crypto community, and my brothers and sisters in the struggle, this goal is becoming a reality by the day.  In fact, UPC Band Radio is the most robust and feature packed NFT operating system on the market, and its only in its MVP phase!  My goal is to reshape my narrative and empower myself in full view of disenfranchised individuals so that they can be emboldended to speak their truth to power.  I aim to use my story to inspire people, specifically African/Black people and broadly all people who want a voice, but are strategically denied.  Blockchain technology, decentralization, NFTs (ownership) are the antidote to the historical poisons that have been literally poured into our drinking water, our communities, our "education" system, religious institutions, microeconomies, justice system, and general mindsets with minimal accountability.  My short term goal is to move to Africa and create innovative business opportunities by spreading knowledge of crypto, Web3, and NFTs. In other words, I aim to to directly facilitate the creation of new economies based on creativity, inclusion, and mutual respect instead of constantly trying to compete (and largely losing unless the individual is well funded/connected) in the Web2 centralized  economy.  It is important to know our worth and create our own products so that we can look eye to eye with other people and civilizations.
+
+UPC Band Radio is a crypto/NFT based system that uses UPC codes numbers in a creative way to provide the world with a user owned prerecorded and live TV experience.  Users can simply scan a UPC code, and there is guranteed to be video content attached to the UPC code to watch.  Going one level deeper, each UPC code has a "channel" which is determined by looking at the 12th (last) digit.  Each channel is named:
+
+Channel 0: Black Power Channel (Any UPC ending with 0)
+Channel 1: Black Travel Channel (Any UPC ending with 1)
+Channel 2: Homeless Support (Any UPC ending with 2)
+Channel 3: Black Comedy, Entertainment, Music (Any UPC ending with 3)
+Channel 4: Fitness and Sports (Any UPC ending with 4)
+Channel 5: Black Alt Community (Any UPC ending with 5)
+Channel 6: Black Spirituality (Any UPC ending with 6)
+Channel 7: Black Life Education (Any UPC ending with 7)
+Channel 8: Black Business Connect (Any UPC ending with 8)
+Channel 9: Black Health (Any UPC ending with 9)
+
+Each UPC code is a potential NFT, and initially, each has UPC codes content defaults to UPC Band Radio determined content according to its channel.  However, if a user hacks and owns a UPC code, they can set the programming to whatever they want on that UPC code.  The NFT owner can set the content by issuing the 'xvr' command (xvr http://youtu.be/myvideo will set the content to myvideo on youtube)  Each channel also has a corresponding Netflix style interface that picks content from the many UPC NFTs and displays interesting and relevant content.  For example, the command 'ch0' will present the user with a channel 0 interface that will contain Black Power material.  The command 'ch8' will present an interface where Black Business Connect videos are displayed.  Each channel is controlled by the user who owns the appropriate NFT.  The owner of the UPC NFT can issue a linux style 'xpayload' command and pass in a comma separated list of NFT ids.  This is how the "Netflix" style interfaces are populated.
+
+If the user wants the message to reach a large number of people, it is wise to buy a UPC that is available in many places.  Certain brands of Cola are available in 20 oz bottles in nearly every gas station, store, and food truck.  This means that if a user buys the highly available cola UPC, their message will spread farther than a UPC of a lesser circulated product. 
+
+To add additional value and utility, we will integrate AI into each UPC NFT so that the owner can use the UPC NFT to perform useful automated functions.  The first ability will be for the channel UPC NFTs to automatically scan through the videos in the UPC matrix, and provide appropriate content recommendations for the NFT owner to consider when setting the programming on a channel.
+
+
 
 Resume:
 
@@ -14,25 +33,39 @@ UPC Band Radio
 
 
 Technical Abilities:
-Use Java (Android), Javascript (React), Solidity, IPFS, Crypto Economics, Web3, to archetect, engineer, deploy, and incrementally improve this NFT Operating System and crypto economy.
-Forked AlphaWallet (https://alphawallet.com) and enhanced in order to create unique NFT experiences that are tied to each UPC code/number in existence.
++ Use Java (Android), Javascript (React), Solidity, IPFS, Crypto Economics, Web3, to archetect, engineer, deploy, and incrementally improve this NFT Operating System and crypto economy.
 
-Use github to host my repositories.  I will use github to process requests to the UPC Band Radio in a public and transparent fashion.
++ Forked AlphaWallet (https://alphawallet.com) and enhanced in order to create unique NFT experiences that are tied to each UPC code/number in existence.
+
++ Use github to host my repositories.  I will use github to process requests to the UPC Band Radio in a public and transparent fashion.
+
++ Used React and Javascript to create an API and Netflix style interface that extracts NFTs from the UPC Band Radio matrix, and provides a free white-label live/prerecorded TV experience.
+
++ Created a "Parallels" system that allows users to deploy an infinite number of TV stations, each with their own channel, currency, and NFT.
+
++ Users 'hack' (buy) and 'own' (mint) UPC codes using a command line interface built in React.  In order to hack (buy) one UPC code, the user needs to have one token which is called the "Pay Token" for the Parallel.  For the UPC Band TV Parallel listed in the overview, the "Pay Token" is called TubmanX.  When a user buys (hacks) a UPC, they are able to assign a human readable name to it.  The process is similar to buying a domain in that each parallel can specify a list of TLDs that can be appended to the human readable name that they assign to it.
+
++ The wallet is essentially a white label NFT-as-a-service framework that enables users to quickly attach data to a real world object, and then reprogram the content an infinite number of times, and this is inexpensive due to the fact that it is deployed on Polygon.
 
 
 Leadership/Entrepreneurial Abilities:
-I realized that UPC codes essentially amount to an established infrastructure grid.  Further, being aware of the highly centralized nature of the services that the world depends on , UPC codes are a perfect way to broadcast a message in decentralized and distributed way that is difficult to disrupt.
++ I realized that UPC codes essentially amount to an established infrastructure grid.  Being aware of the centralized nature of the data services that the world depends on, UPC codes are a perfect way to broadcast a message in decentralized and distributed way that is difficult to disrupt.
 
-Create a white hat hacking community so that individuals who are excluded from IT can participate in a dignified and engaging manner.  I want my users to feel respected and excited for new challenges that will help them to grow and compete for number 1 spots across the board.
++ Creating and leading a white hat hacking program so that individuals who are excluded from IT can participate in a dignified and engaging manner.  I want my users to feel respected and excited for new challenges that will help them to grow and compete for number 1 spots across the board.
 
-Create a program that incentivises users to create unique content to be featured in UPC Band Radio and possibly promoted to UPC Band Theater
++ Created a program that incentivises users to create unique content to be featured in UPC Band Radio and possibly promoted to UPC Band Theater
 
-Create an artwork program for homeless individuals.  Using discarded boxes that still have a UPC code, users can draw artwork on the blank back side of the packaging, which essentially turns any throw away box into a canvas.  A homeless individual can literally pick trash out of a dumpster, tokenize the UPC code on it, create beautiful artwork on top of it, and then sell it as NFT artwork.  No more conversations about NFT artwork on IPFS being "stolen" because this is physical artwork, and ownership can be established by scanning the backside.
++ Created an artwork program for homeless individuals.  Using discarded boxes that still have a UPC code, users can draw artwork on the blank back side of the packaging, which essentially turns any throw away box into a canvas.  A homeless individual can literally pick trash out of a dumpster, tokenize the UPC code on it, create beautiful artwork on top of it, and then sell it as NFT artwork.  No more conversations about NFT artwork on IPFS being "stolen" because this is physical artwork, and ownership can be established by scanning the backside.
 
-NFT Heros
++ Each NFT comes with a unique deterministic avatar called a Hero.
 
-Angel Balance
++ Each UPC code also acts as a tip jar.  Users can issue the linux style command 'angel' to send matic directly to a UPC code.  The owner can then withdraw the matic from the smart contract to their private wallet
+
++ Collectively all of the UPCs are known as the UPC Band Radio/TV.  Each UPC code has 12 digits, and the last digit of the upc code represents the channel.  Each channel serves content of a specific type, and has a matching frontend that you can access by typing the respective command.  Think of this as a minimilist Netflix that is dynamically programmed by individual users using NFTs.  
 
 Marketing/Advertising:
-I gained interest and continue learning to create/market/advertise tangable products by way of painting, creating healthy recipies, designing unique clothing/accessories, writing AI assited lyrics, 
-Coin giveaways, coin boxes, Gaming Platform, 
++ Learning to create/market/advertise tangable products by way of painting, creating healthy recipies, designing unique clothing/accessories, and writing AI assited lyrics. 
+
++ The platform will attract users by facilitating coin giveaways, and we will be developing and integrating a first person shooter game where users can use the scanner to scan in game codes to extract NFTs and/or tokens.
+
+
