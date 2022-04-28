@@ -13,14 +13,23 @@ Thanks to the great work of the crypto community, and my brothers and sisters in
 UPC Band Radio is a crypto/NFT based system that uses UPC codes numbers in a creative way to provide the world with a user owned prerecorded and live TV experience.  Users can simply scan a UPC code, and there is guaranteed to be video content attached to the UPC code to watch.  Going one level deeper, each UPC code has a "channel" which is determined by looking at its 12th (last) digit.  This means that each UPC code actually has several videos attached to it based on its channel (listed below) via the UPC Band Theater.  UPC Band Theater is a simple command that the user issues to access a “Netflix style” interface.  No payment ever required (unless you want to buy a UPC code) to use UPC Band Radio.  In other words, this is an attempt to drive mass adoption of crypto using something that everyone is already familiar with, and in a way that is free.  This eliminates all barriers to entry, and a user only needs to download the wallet and scan upc codes. Further, UPC Band Theater is a free user driven, constantly updating with unique user driven content  Each channel is named:
 
 Channel 0: Black Power Channel (Any UPC ending with 0)
+
 Channel 1: Black Travel Channel (Any UPC ending with 1)
+
 Channel 2: Homeless Support (Any UPC ending with 2)
+
 Channel 3: Black Comedy, Entertainment, Music (Any UPC ending with 3)
+
 Channel 4: Fitness and Sports (Any UPC ending with 4)
+
 Channel 5: Black Alt Community (Any UPC ending with 5)
+
 Channel 6: Black Spirituality (Any UPC ending with 6)
+
 Channel 7: Black Life Education (Any UPC ending with 7)
+
 Channel 8: Black Business Connect (Any UPC ending with 8)
+
 Channel 9: Black Health (Any UPC ending with 9)
 
 Each UPC code is a potential NFT, and initially, each has UPC code's content defaults to UPC Band Radio content according to its channel (last digit).  However, if a user hacks and owns a UPC code, they can set the programming to whatever they want on that UPC code.  After owning a UPC, the NFT owner can set the content by issuing the 'xvr' command (xvr http://youtu.be/myvideo will set the content to myvideo on YouTube)  Each channel also has a corresponding Netflix style interface that picks content from the many UPC NFTs and displays interesting and relevant content.  For example, the command 'ch0' will present the user with a channel 0 interface that will contain Black Power material.  The command 'ch8' will present an interface where Black Business Connect videos are displayed.  Each channel is controlled by the user who owns the appropriate NFT.  The owner of the UPC NFT can issue a Linux style 'xpayload' command and pass in a comma separated list of NFT ids.  This is how the "Netflix" style interfaces are populated.
