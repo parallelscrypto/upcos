@@ -9,11 +9,15 @@ Your Android phone might notify that you are installing from "Untrusted source",
 Before you can access the UPC Verse, you must first Armor Up!  In other words, you need to configure the wallet to connect to the Polygon Blockchain (https://polygon.technology).  Here are the 5 steps with images:
 
 
+1. Click on the Settings icon
+![Alt text](XRecorder_Edited_29042022_021644.jpg?raw=true "Title")
 
 
 
 
-1. Click on Settings (Far righ
+1. Click on Settings
+
+
 
 ![Alt text](upcbr-1.png?raw=true "Title")
 ![Alt text](upcbr-2.png?raw=true "Title")
