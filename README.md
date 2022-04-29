@@ -40,9 +40,10 @@ A quick guide to getting started:
 ![Alt text](upcbr-2.png?raw=true "Title")
 ![Alt text](upcbr-3.png?raw=true "Title")
 
-Chris Davis
 
-Overview:
+# Why did I develop UPC Band Radio
+## If life gives you bars, create Bar Aid!
+
 There is a large untapped and unspoken niche that desperately needs to be filled in America, and worldwide. Black Afrikan descendants need dedicated infrastructure where we can speak our truth, and abolish the lies that hostile forces have told to us, and that many of us still subscribe to.  The lies of inferiority and the idea that mediocre is good enough (In other words, the spiritualization of poverty) are quickly become ideas of the past, and I am proud to play a part.  
 
 Thanks to the great work of the crypto community, and my brothers and sisters in the struggle, this goal is becoming a reality by the day.  In fact, UPC Band Radio is the most robust and feature packed NFT operating system on the market, and its only in its MVP phase!  My goal is to reshape my narrative and empower myself in full view of disenfranchised individuals so that they can also be emboldened to speak their truth to power.  I aim to use my story to inspire people, specifically Afrikan/Black people and broadly all people who want a voice, but are strategically denied.  Blockchain technology, decentralization, NFTs (ownership) are the antidote to the historical poisons that have been literally poured into our drinking water, our communities, our "education" system, religious institutions, microeconomies, justice system, and general mindsets with minimal accountability.  My short term goal is to move to Afrika and create innovative business opportunities by spreading knowledge of crypto, Web3, and NFTs.  In other words, I aim to to directly facilitate the creation of new economies based on creativity, inclusion, and mutual respect instead of constantly trying to compete (and largely losing unless the individual is well funded/connected) in the Web2 centralized  economy.  It is important to know our worth and create our own products so that we can look eye to eye with other people and civilizations.  Central Afrikan Republic (CAR) just legalized Bitcoin as legal tender, and this will be a great way to start to my eventual journey to Afrika and economic freedom.
@@ -76,13 +77,16 @@ If the user wants the message to reach a large number of people, it is wise to b
 
 To add additional value and utility to our NFTs, we will integrate AI into each UPC NFT so that the owner can use it to perform useful automated functions.  The first ability will be for the channel UPC NFTs to automatically scan through the videos in the UPC matrix, and provide appropriate content recommendations for the NFT owner to consider when setting the programming on a channel.
 
+# Resume
 
-
-Resume:
+2010 - 2020
++ Worked in various PHP based roles fixing bugs and learning software design patterns and archetecture.
++ Used Vim, PHPStorm to develop, debug, and test PHP based systems.
++ Used Docker to create consistent images for ease of onboarding, developing, and deployment.
++ Extended several Docker containers to create infastructure as a service frameworks.
 
 UPC Band Radio
 2020 - Present
-
 
 Technical Abilities/Accomplishments:
 + Use Java (Android), Javascript (React), Solidity, IPFS, Crypto Economics, Web3, to architect, engineer, deploy, and incrementally improve this NFT Operating System and crypto economy.
