@@ -1,3 +1,10 @@
+Prepare for the first Web3 NFT Netflix alternative! Download the "UPC Band Radio: Channel 10 Newz Edition Wallet" and scan any UPC to be taken into the UPC Verse (Free decentralized Netflix, alternative and so much more)!  
+
+The wallet is available in .apk form instead of the Android Play Store.  Download from IPFS 
+
+https://upcunderground.mypinata.cloud/ipfs/QmRf1C186wEXH3Tkj3t1mShuDeAMsC28jSpgxc3pfrAkpS
+
+
 ![Alt text](upcbr-1.png?raw=true "Title")
 ![Alt text](upcbr-2.png?raw=true "Title")
 ![Alt text](upcbr-3.png?raw=true "Title")
