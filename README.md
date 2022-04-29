@@ -80,7 +80,7 @@ To add additional value and utility to our NFTs, we will integrate AI into each 
 
 # Resume
 
-![Alt text](notorious-nft.jpg?raw=true "Title")
+![Alt text](public/notorious-nft.jpg?raw=true "Title")
 
 
 2010 - 2020
