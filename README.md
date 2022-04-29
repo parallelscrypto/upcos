@@ -34,12 +34,6 @@ A quick guide to getting started:
 2. Watch our tutorial on using UPC Band Radio.  UPC links use the upc:// protocol, so that you can browse the UPC Band Radio in the same natural way that you browse the web, only we are using a text based terminal operating system and you can click on UPC codes the same way you click on regular links.  In other words, the tutorial is located at upc://000000000012.  Our Web3 archetechure and infrasturcture combined the always available nature of Blockchain technology enable us to provide this "Netflix style" service to you completely free 24/7 365. The only "downside" (for those who are opposed to learning a few commands) is that you have to type commands instead of click buttons to get around.  Anyone who remembers DOS from back in the day knows that the terminal does the exact same thing a GUI does, only with typing.  But on the positive note, that negates the need to navigate clunky interfaces.  Everything is straight to the point with one command that you choose to issue.  Plus the content is open for all to contribute to the UPC Intelligence Matrix.  
 ![Alt text](XRecorder_Edited_29042022_031458.jpg?raw=true "Title")
 
-# UPC Band Radio Guide:
-
-![Alt text](upcbr-1.png?raw=true "Title")
-![Alt text](upcbr-2.png?raw=true "Title")
-![Alt text](upcbr-3.png?raw=true "Title")
-
 
 # Why did I develop UPC Band Radio
 ## If life gives you bars, create Bar Aid!
@@ -76,6 +70,12 @@ Each UPC code is a potential NFT, and initially, each has UPC code's content def
 If the user wants the message to reach a large number of people, it is wise to buy a UPC that is available in many places.  Certain brands of Cola are available in 20 oz bottles in nearly every gas station, store, and food truck.  This means that if a user buys the highly available cola UPC, their message will spread farther than a UPC of a lesser circulated product. 
 
 To add additional value and utility to our NFTs, we will integrate AI into each UPC NFT so that the owner can use it to perform useful automated functions.  The first ability will be for the channel UPC NFTs to automatically scan through the videos in the UPC matrix, and provide appropriate content recommendations for the NFT owner to consider when setting the programming on a channel.
+
+# UPC Band Radio Guide:
+
+![Alt text](upcbr-1.png?raw=true "Title")
+![Alt text](upcbr-2.png?raw=true "Title")
+![Alt text](upcbr-3.png?raw=true "Title")
 
 # Resume
 
