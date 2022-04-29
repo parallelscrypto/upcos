@@ -9,14 +9,18 @@ Your Android phone might notify that you are installing from "Untrusted source",
 Before you can access the UPC Verse, you must first Armor Up!  In other words, you need to configure the wallet to connect to the Polygon Blockchain (https://polygon.technology).  Here are the 5 steps with images:
 
 
-1. Click on the Settings icon
+1. Click on the 'Settings' icon.
 ![Alt text](XRecorder_Edited_29042022_021644.jpg?raw=true "Title")
+2. Click on 'Select Active Networks'.
+![Alt text](XRecorder_Edited_29042022_021849.jpg?raw=true "Title")
+3. Ethereum will already be selected.  This is expected, however, you must also select 'Polygon'.
+![Alt text](XRecorder_Edited_29042022_022101.jpg?raw=true "Title")
+4. Click on 'Protocol' (Magic wand icon bottom left), and UPC Band Radio will attempt to load. By default Ethereum network is selected, and UPC Band Radio lives on the Polygon network.  To select Polygon, please click on the button that currently says 'Ethereum'
+![Alt text](XRecorder_Edited_29042022_022308.jpg?raw=true "Title")
+5. Select 'Polygon' and push the back arrow
+![Alt text](XRecorder_Edited_29042022_022516.jpg.jpg?raw=true "Title")
 
-
-
-
-1. Click on Settings
-
+Now you're connected to UPC Band Radio Operating System!  This is your entry point to crypto.  You don't even need to know or care what crypto or NFTs are.  You don't need to own crypto to use our platform either.  Just scan UPC codes and enjoy this lovely gift built with love from the Peer 2 Peer Crypto Community!
 
 
 ![Alt text](upcbr-1.png?raw=true "Title")
