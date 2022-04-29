@@ -4,6 +4,7 @@ The wallet is available in .apk form instead of the Android Play Store.  Downloa
 
 https://upcunderground.mypinata.cloud/ipfs/QmRf1C186wEXH3Tkj3t1mShuDeAMsC28jSpgxc3pfrAkpS
 
+Your Android phone will notify that you are installing from "Untrusted source", however, as you can see, this may be "disinformation" as our source is open!
 
 ![Alt text](upcbr-1.png?raw=true "Title")
 ![Alt text](upcbr-2.png?raw=true "Title")
