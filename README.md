@@ -23,6 +23,12 @@ Before you can access the UPC Verse, you must first Armor Up!  In other words, y
 Now you're connected to UPC Band Radio Operating System!  This is your entry point to crypto.  You don't even need to know or care what crypto or NFTs are.  You don't need to own crypto to use our platform either.  Just scan UPC codes and enjoy this lovely gift built with love from the Peer 2 Peer Crypto Community!
 
 
+A quick guide to getting started:
+
+1. Hack some UPC codes using UPC Band Radio Operating System!  Also, view a tutorial on how to use the system. Click on the 'Hack' Button.
+![Alt text](XRecorder_Edited_29042022_021644.jpg?raw=true "Title")
+
+
 ![Alt text](upcbr-1.png?raw=true "Title")
 ![Alt text](upcbr-2.png?raw=true "Title")
 ![Alt text](upcbr-3.png?raw=true "Title")
