@@ -6,6 +6,15 @@ https://upcunderground.mypinata.cloud/ipfs/QmRf1C186wEXH3Tkj3t1mShuDeAMsC28jSpgx
 
 Your Android phone might notify that you are installing from "Untrusted source", however, as you can see, this may be "disinformation" as our source is open!
 
+Before you can access the UPC Verse, you must first Armor Up!  In other words, you need to configure the wallet to connect to the Polygon Blockchain (https://polygon.technology).  Here are the 5 steps with images:
+
+
+
+
+
+
+1. Click on Settings (Far righ
+
 ![Alt text](upcbr-1.png?raw=true "Title")
 ![Alt text](upcbr-2.png?raw=true "Title")
 ![Alt text](upcbr-3.png?raw=true "Title")
