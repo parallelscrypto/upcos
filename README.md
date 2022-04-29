@@ -1,3 +1,5 @@
+# Scan into the UPC Intelligence Matrix
+
 Prepare for the first Web3 NFT Netflix alternative! Download the "UPC Band Radio: Channel 10 Newz Edition Wallet" and scan any UPC to be taken into the UPC Verse (Free decentralized Netflix, alternative and so much more)!  
 
 The wallet is available in .apk form instead of the Android Play Store.  Download from IPFS 
@@ -22,6 +24,7 @@ Before you can access the UPC Verse, you must first Armor Up!  In other words, y
 
 Now you're connected to UPC Band Radio Operating System!  This is your entry point to crypto.  You don't even need to know or care what crypto or NFTs are.  You don't need to own crypto to use our platform either.  Just scan UPC codes and enjoy this lovely gift built with love from the Peer 2 Peer Crypto Community!
 
+# Brace yourself 4 takeoff!
 
 A quick guide to getting started:
 
@@ -31,7 +34,7 @@ A quick guide to getting started:
 2. Watch our tutorial on using UPC Band Radio.  UPC links use the upc:// protocol, so that you can browse the UPC Band Radio in the same natural way that you browse the web, only we are using a text based terminal operating system and you can click on UPC codes the same way you click on regular links.  In other words, the tutorial is located at upc://000000000012.  Our Web3 archetechure and infrasturcture combined the always available nature of Blockchain technology enable us to provide this "Netflix style" service to you completely free 24/7 365. The only "downside" (for those who are opposed to learning a few commands) is that you have to type commands instead of click buttons to get around.  Anyone who remembers DOS from back in the day knows that the terminal does the exact same thing a GUI does, only with typing.  But on the positive note, the content is open for all to contribute to the UPC Intelligence Matrix.  
 ![Alt text](XRecorder_Edited_29042022_031458.jpg?raw=true "Title")
 
-
+# UPC Band Radio Guide:
 
 ![Alt text](upcbr-1.png?raw=true "Title")
 ![Alt text](upcbr-2.png?raw=true "Title")
