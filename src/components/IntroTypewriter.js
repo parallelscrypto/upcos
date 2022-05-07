@@ -55,10 +55,10 @@ export default class IntroTypewriter extends Component {
   calculateChannel(upc) {
      var channelNum = upc.substr(-1);
 
-     var channel = "Black Power Channel";
+     var channel = "Black Is Beautiful Channel";
      switch (channelNum) {
        case "0":
-         channel = "Loading Channel 0: Black Power";
+         channel = "Loading Channel 0: Black Is Beautiful";
          break;
        case "1":
          channel = "Loading Channel 1: Black Travel";
