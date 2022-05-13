@@ -62,6 +62,7 @@ export default class MyTerminal extends Component {
        showUploadModal: false,
        showProductModal: false,
        showProductContent: '',
+       showTutorialContent: '',
        showModalTutorial: false,
        showQrModal: false,
        showBigShow: false,
@@ -81,6 +82,7 @@ export default class MyTerminal extends Component {
     this.firstLookup= this.firstLookup.bind(this);
     this.prodLookup= this.prodLookup.bind(this);
     this.search= this.search.bind(this);
+    this.tutorial= this.tutorial.bind(this);
     this.grep= this.grep.bind(this);
     this.heroFront= this.heroFront.bind(this);
     this.handleFlip= this.handleFlip.bind(this);
@@ -114,6 +116,8 @@ export default class MyTerminal extends Component {
   componentDidMount = async () => {
     var self = this;
     this.firstLookup();
+
+
     this.heroFront(this.state.account);
     setInterval(function() {
         return self.DisplayTime(-300);
@@ -363,6 +367,13 @@ export default class MyTerminal extends Component {
 
 
 
+  tutorial = async (term) => {
+                      this.setState({showModalTutorial:true});
+  }
+
+
+
+
 
 
   search = async (term) => {
@@ -481,14 +492,11 @@ export default class MyTerminal extends Component {
   render () {
 
     var addy = this.props.address;
-    addy  = addy.substr(0,10);
+    addy  = addy.substr(0,15);
     var promptlabel =  '[[ AWAITING COMMAND ]] => ';
 
-    var welcomeMsg = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV  </i> \n <i style='color:#d66900'>Malcolm's Little Secret \n <b style='color:red'> [Black Is Beautiful! TV Network]</b>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Black Is Beautiful! Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is hacked and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key).  The titles and links for UPC Band TV Channels 0-9 are listed below. </u> \n <i style='color:white'>  Channel Definitions: </i> \n <i style='color:orange'> Channel 0: Black Is Beautiful!;\n <a href='upc://000000000000'>Watch Channel 0[[000000000000]]</a>.\n Or type command `ch0` to tune into UPC Band Theater Channel 0 \n <i style='color:orange'>  Channel 1: Black Travel; </i> \n <a href='upc://000000000001'>Watch Channel 1 [[000000000001]]</a>   \n Or type command `ch1` to tune into UPC Band Theater Channel 1 \n <i style='color:orange'>  Channel 2: Homeless Support; </i> \n <a href='upc://000000000002'>Watch Channel 2 [[000000000002]]</a>   \n Or type command `ch2` to tune into UPC Band Theater Channel 2 \n <i style='color:orange'>  Channel 3: Black Comedy/Entertainment/Music; </i> \n <a href='upc://000000000003'>Watch Channel 3 [[000000000003]]</a>  \n Or type command `ch3` to tune into UPC Band Theater Channel 3 \n <i style='color:orange'>  Channel 4: Fitness and Sports; </i>  \n <a href='upc://000000000004'>Watch Channel 4 [[000000000004]]</a>  \n Or type command `ch4` to tune into UPC Band Theater Channel 4 \n <i style='color:orange'>  Channel 5: Black Alt Community; </i>  \n <a href='upc://000000000005'>Watch Channel 5 [[000000000005]]</a>  \n Or type command `ch5` to tune into UPC Band Theater Channel 5 \n <i style='color:orange'>  Channel 6: Black Spirituality; <i>  \n <a href='upc://000000000006'>Watch Channel 6 [[000000000006]]</a>  \n Or type command `ch6` to tune into UPC Band Theater Channel 6 \n <i style='color:orange'>  Channel 7: Black Life Education; </i>  \n <a href='upc://000000000007'>Watch Channel 7 [[000000000007]]</a>  \n Or type command `ch7` to tune into UPC Band Theater Channel 7 \n <i style='color:orange'>  Channel 8: Black Business Connect; </i>  \n <a href='upc://000000000008'>Watch Channel 8 [[000000000008]]</a>  \n Or type command `ch8` to tune into UPC Band Theater Channel 8 \n <i style='color:orange'>  Channel 9: Black Health; </i>  \n <a href='upc://000000000009'>Watch Channel 9 [[000000000009]]</a>  \n Or type command `ch9` to tune into UPC Band Theater Channel 9 \n <i style='color:hotpink'> Respecting our own intelligence and artificial intelligence :)</i> \n (Scroll down to hack) \n  *Mission: Guerilla campaign to invade your house, office, car, flying saucer, etc with the truth using UPC codes! Oops, already there :). The users in this community have already started shifting to ownership mindset instead of trying to win the centralized Web2 clown show.  Afrikans across the entire Diaspora are tired of being forced to assume the position of either `house negro`, `field negro`, `cage negro`, `clown(ed) negro` or `tombstone negro`. Please help spread the word \n * Declare your truth, banish lies from your story, and ignore those who are not worth the time!  \n  * UPC Band Radio harnesses the existing UPC Code Grid to provide highly available Web3 based infastructure to facilitate self custody/control of 1's own narrative. Talk about eco-friendly infrastructure at an astounding and historically unrealized scale!  WOW!!! :D \n * tldr: Each UPC code has a default website attached.  Instead of accessing via typing a url (https://www.website.com), access by scanning.   In UPC Band Radio, website address matches (resolves to) the numbers seen on the UPC code (Geeks: UPC==IPAddress). {{hack}}  and {{own}} the UPC code to control the front video, the settings and other experience details related to the UPC.  \n * eli5: When you buy a UpcBandRadio NFT, you are tokenizing a number which is a website presented to you as a number.  You are buying the right to say `My intelligence is attached to the UPC [############], and anyone with access to that UPC code, or number can consume the intelligence.  Numbers are fundamental, which makes them challenging to censor. \n * Equally available infastructure facilitates fully inclusive conversation, and hopefully equally respected voices for all \n * Use as a TV/Radio hybrid in case centralized solutions fail.  It will take more than firepower to destroy each instance of every single UPC code while preventing all Peer-2-Peer interactions. \n * Each UPC is programmable infastructure on top of UPC codes, owned by you. \n * Each UPC code is a unique metaverse server.  {{hack}} it, {{pwn}} it, and then {{upload}} your [[intelligence]]\n * Also perfect for truckers, farmers, off-grid warriors, indie journalists and artists, individuals currently experiencing homelessness, organizations seeking donations, indie actors/acrtesses, and Sovereign individuals who are sick of big tech/corporations snooping around in our data, running our lives, dictating away common sense, and {{owning}} our data. \n * Get paid on YOUR terms by SELLING YOUR [[intelligence]] as a UPC NFT and accept Polygon DIRECTLY to YOUR UPC code. \n * We are developing a Black Panther style first person shooter game for Linux and Android!! This wallet will be a part.  Each level will have UPCs hidden hidden in various changing locations and will be declared as `coinboxes`.  First x number of users with Leveled Up Scanners can grab free coins from the coinboxes. \n * Every day, the TV Station channels [[000000000000]] - [[000000000009]] are updated.  Sometimes multiple times. Check back Often.  This is your Self Owned Shared Crypto News, Intelligence, Gaming, Black Is Beautiful, 2nd Amendment (If you are not American and do not know, the 2nd amendment gives Americans the right to own guns.  We are encouraging Black Americans to FULLY exercise these rights the exact same as any other American.) Platform built on a fully decentralized stack (IPFS, Polygon, UPC Codes) \n * Record a video or take a pic and upload to [["+this.state.account+"]]. \n Each UPC has a default VR zone.  Just type the `vr` command! * \n * Mirror (xvr) your centralized censroable videos to the UPCs, and upload (xpayload) them for safekeeping \n  TERMINAL [[" + this.state.account  +"]]\n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some TubmanX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your TubmanX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
-
-
-
-	  welcomeMsg += "\n"  + addy + "_@[[" + this.state.account + "]]";
+          
+	  var welcomeMsg =  addy + "_@[[" + this.state.account + "]]";
 
 var playButton =
 <i style='color:hotpink'>Type `pl` or click  <a onClick={() => { this.setState({qIsOpen: true})}}>[[" + this.state.account + "]] </a> to activate payload </i>
@@ -562,7 +570,8 @@ var playButton =
     console.log(srcImg);
     var cardValue = {
        value:  upcHash,
-       intent: "upcHero"
+       intent: "hero",
+       hv: this.props.address
     }
     var cardValueStr = JSON.stringify(cardValue);
     var myCard = 
@@ -578,11 +587,13 @@ var playButton =
 
     var player;				
 
+    //var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV  </i> \n <i style='color:#d66900'>Malcolm's Little Secret \n <b style='color:red'> [Black Is Beautiful! TV Network]</b>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Black Is Beautiful! Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is hacked and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key).  The titles and links for UPC Band TV Channels 0-9 are listed below. </u> \n <i style='color:white'>  Channel Definitions: </i> \n <i style='color:orange'> Channel 0: Black Is Beautiful!;\n <a href='upc://000000000000'>Watch Channel 0[[000000000000]]</a>.\n Or type command `ch0` to tune into UPC Band Theater Channel 0 \n <i style='color:orange'>  Channel 1: Black Travel; </i> \n <a href='upc://000000000001'>Watch Channel 1 [[000000000001]]</a>   \n Or type command `ch1` to tune into UPC Band Theater Channel 1 \n <i style='color:orange'>  Channel 2: Homeless Support; </i> \n <a href='upc://000000000002'>Watch Channel 2 [[000000000002]]</a>   \n Or type command `ch2` to tune into UPC Band Theater Channel 2 \n <i style='color:orange'>  Channel 3: Black Comedy/Entertainment/Music; </i> \n <a href='upc://000000000003'>Watch Channel 3 [[000000000003]]</a>  \n Or type command `ch3` to tune into UPC Band Theater Channel 3 \n <i style='color:orange'>  Channel 4: Fitness and Sports; </i>  \n <a href='upc://000000000004'>Watch Channel 4 [[000000000004]]</a>  \n Or type command `ch4` to tune into UPC Band Theater Channel 4 \n <i style='color:orange'>  Channel 5: Black Alt Community; </i>  \n <a href='upc://000000000005'>Watch Channel 5 [[000000000005]]</a>  \n Or type command `ch5` to tune into UPC Band Theater Channel 5 \n <i style='color:orange'>  Channel 6: Black Spirituality; <i>  \n <a href='upc://000000000006'>Watch Channel 6 [[000000000006]]</a>  \n Or type command `ch6` to tune into UPC Band Theater Channel 6 \n <i style='color:orange'>  Channel 7: Black Life Education; </i>  \n <a href='upc://000000000007'>Watch Channel 7 [[000000000007]]</a>  \n Or type command `ch7` to tune into UPC Band Theater Channel 7 \n <i style='color:orange'>  Channel 8: Black Business Connect; </i>  \n <a href='upc://000000000008'>Watch Channel 8 [[000000000008]]</a>  \n Or type command `ch8` to tune into UPC Band Theater Channel 8 \n <i style='color:orange'>  Channel 9: Black Health; </i>  \n <a href='upc://000000000009'>Watch Channel 9 [[000000000009]]</a>  \n Or type command `ch9` to tune into UPC Band Theater Channel 9 \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some TubmanX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`recon`</i> to approve 50 of your TubmanX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`hack`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with hack [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+    var tutorial = "<html><body><h1>hello</h1></body></html>"
 
     return (
       <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
       <div>
-	     <TrebleCleff handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} hero={this.hero} search={this.search} prodLookup={this.prodLookup} account={this.state.account} />
+	     <TrebleCleff handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} hero={this.hero} search={this.search} prodLookup={this.prodLookup} account={this.state.account} tutorial={this.tutorial} />
 
 
                  {this.state.player}
@@ -595,12 +606,13 @@ var playButton =
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalBuy} closemodal={() => this.setState({ showModalBuy: false })} type="pulse" > {this.state.buyModalContent}</Modal>
 
+      <Modal style={{"color":"white","height":"90vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showModalTutorial} closemodal={(e) => {this.setState({ showModalTutorial: false }); }} type="pulse" > [[upc://{this.state.account}]] <iframe title={this.state.upcRadioString} style={{height:"95vh", width:"95vw","background":"white","color":"green"}} srcdoc={tutorial} />{tutorial}</Modal>
+
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalSearch} closemodal={() => this.setState({ showModalSearch: false })} type="pulse" > {this.state.searchModalContent}</Modal>
 
       <Modal style={{ height:"95vh", width:"95vw"}} visible={this.state.showBigShow2} closemodal={() => this.setState({ showBigShow2: false })} type="pulse"> [[upc://{this.state.account}]] <iframe style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
 
-      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalTutorial} closemodal={() => this.setState({ showModalTutorial: false })} type="pulse" ><iframe style={{height:"100vh"}} src="https://gateway.pinata.cloud/ipfs/QmStW8PBZjxjSkwnxvr15rHvRajCUkPRMEJGQejQu8EE4W" /></Modal>
 
       <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type="pulse" > [[upc://{this.state.account}]] <iframe title={this.state.upcRadioString} style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
 

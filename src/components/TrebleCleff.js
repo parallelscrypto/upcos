@@ -8,7 +8,7 @@ class TrebleCleff extends Component {
     return (
 	    <div>
                     <button
-                        style={{background: "#000000", color:"green", width: "25vw", height: "25vw"}}
+                        style={{background: "#000000", color:"green", width: "20vw", height: "20vw"}}
                         onClick={(e) => { 
 this.props.handleFlip(e)
 this.props.play()
@@ -16,7 +16,7 @@ this.props.play()
                   >play [[{this.props.account}]]</button>
 
                     <button
-                        style={{background: "#000000", color:"green", width: "25vw", height: "25vw"}}
+                        style={{background: "#000000", color:"green", width: "20vw", height: "20vw"}}
                         onClick={(e) => { 
                                 this.props.handleFlip(e) 
                                 this.props.printWelcomeMsg();
@@ -27,7 +27,7 @@ this.props.play()
 
 
                     <button
-                        style={{background: "#000000", color:"green", width: "25vw", height: "25vw"}}
+                        style={{background: "#000000", color:"green", width: "20vw", height: "20vw"}}
                         onClick={(e) => { 
                                      this.props.handleFlip(e)
                                      this.props.hero();
@@ -38,12 +38,22 @@ this.props.play()
 
 
                     <button
-                        style={{background: "#000000", color:"green", width: "25vw", height: "25vw"}}
+                        style={{background: "#000000", color:"green", width: "20vw", height: "20vw"}}
                         onClick={(e) => { 
                                      this.props.handleFlip(e)
                                      this.props.search();
                         }}
-                  >search [[************]]</button>
+                  >search [[*****]]</button>
+
+
+                    <button
+                        style={{background: "#FFFF00", fontSize:".9em", fontWeight:"bold", color:"red", width: "20vw", height: "20vw"}}
+                        onClick={(e) => { 
+                                     this.props.handleFlip(e)
+                                     this.props.tutorial();
+                        }}
+                  >tutorial [[*****]]</button>
+
          </div>
     );
   }
