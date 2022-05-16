@@ -5,6 +5,7 @@ import Web3 from 'web3'
 import UPCNFT from '../abis/UPCNFT.json'
 import AfroNFT from '../abis/AfroNFT.json'
 import MLS from '../abis/MalcolmsLittleSecret.json'
+import AfrikaIsBeautiful from '../abis/AfrikaIsBeautiful.json'
 import HomelessNFT from '../abis/HomelessNFT.json'
 import RollinOnUPC from '../abis/RollinOnUPC.json'
 import UpcBandRadio from '../abis/UpcBandRadio.json'
@@ -41,7 +42,7 @@ import 'react-tabs/style/react-tabs.css';
 //const market_address = "0x3f13e9b043A4eA779D6c3abbE4015b1ecDAcf1f3";
 //const market_address = "0x59e09C81FF70efD0208B98E3843852aCA3962982";
 //const market_address = "0x32Cdf28d9E148D373b04238864586784244C86b1";
-const market_address = "0xBC6629E4C3C7B76b88ba9c632D5c4d9D3422c22F";
+const market_address = "0x7c9224102352f114720b452292A0C085295F6186";
 
 
 class App extends Component {
@@ -121,7 +122,7 @@ class App extends Component {
 
 
     // Load UpcBandRadio
-    const upcNFTData = MLS.networks[networkId]
+    const upcNFTData = AfrikaIsBeautiful.networks[networkId]
     if(upcNFTData) {
       const upcNft = new web3.eth.Contract(UpcBandRadio.abi, upcNFTData.address)
       this.setState({ upcNft })
