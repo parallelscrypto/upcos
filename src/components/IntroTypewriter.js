@@ -58,7 +58,7 @@ export default class IntroTypewriter extends Component {
      var channel = "Black Is Beautiful Channel";
      switch (channelNum) {
        case "0":
-         channel = "Loading Channel 0: Black Is Beautiful";
+         channel = "Loading Channel 0: Black Is Beautiful!";
          break;
        case "1":
          channel = "Loading Channel 1: Black Travel";

@@ -767,7 +767,7 @@ class App extends Component {
       deposit = "";
                 
       deposit = 
-        <div>
+        <div  style={{ background:"white"}} >
         <Intel
 	address={this.state.account}
         handleChange={this.handleChange}
