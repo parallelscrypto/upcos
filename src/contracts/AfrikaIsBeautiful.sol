@@ -108,7 +108,7 @@ contract AfrikaIsBeautiful is ERC721, Ownable {
 
 
         uint i = 1;
-        uint localNftCount = 0;
+        uint localNftCount = 1;
 
         for(i = 1; i <= latestTokenId; i++) {
 
