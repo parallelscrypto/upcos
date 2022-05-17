@@ -1175,6 +1175,8 @@ var playButton =
 
 			for(var i = 0; i< data.length; i++) {
 		            if(data[i]['minted'] == true) {
+
+                               var upcLink = "<a href='upc://"+ data[i]['word'] +"'>[["+ data[i]['word'] +"]]</a>";
                                terminal.pushToStdout(`[[my_nft]]`);
                                terminal.pushToStdout(`=====`);
                                terminal.pushToStdout(`og_owner: ${data[i]['og']}`);
@@ -1187,7 +1189,7 @@ var playButton =
                                terminal.pushToStdout(`=====`);
                                terminal.pushToStdout(`upc_hash: ${data[i]['upcHash']}`);
                                terminal.pushToStdout(`=====`);
-                               terminal.pushToStdout(`upc: ${data[i]['word']}`);
+                               terminal.pushToStdout(`upc: ${upcLink}`);
                                terminal.pushToStdout(`=====`);
                                terminal.pushToStdout(`minted: ${data[i]['minted']}`);
                                terminal.pushToStdout(`=====`);
