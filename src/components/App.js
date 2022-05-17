@@ -42,7 +42,7 @@ import 'react-tabs/style/react-tabs.css';
 //const market_address = "0x3f13e9b043A4eA779D6c3abbE4015b1ecDAcf1f3";
 //const market_address = "0x59e09C81FF70efD0208B98E3843852aCA3962982";
 //const market_address = "0x32Cdf28d9E148D373b04238864586784244C86b1";
-const market_address = "0x7c9224102352f114720b452292A0C085295F6186";
+const market_address = "0x28B3D93c4e25769F4aD52b7679D5186E077e0856";
 
 
 class App extends Component {
@@ -287,15 +287,6 @@ class App extends Component {
     //console.log(this.state.sendCryptoValue);
     // Stores a given value, 5 by default.
     var vrLink = await this.state.upcNft.methods.getVrByUpcId(upcId).call({ from: this.state.account})
-    return vrLink.toString();
-  };
-
-  listNfts = async () => {
-    const { accounts, contract } = this.state;
-
-    //console.log(this.state.sendCryptoValue);
-    // Stores a given value, 5 by default.
-    var vrLink = await this.state.upcNft.methods.getMyNfts().call({ from: this.state.account})
     return vrLink.toString();
   };
 
@@ -694,7 +685,6 @@ class App extends Component {
       this.state.intel = currentPath;
     }
     this.handleChange = this.handleChange.bind(this);
-    this.listNfts= this.listNfts.bind(this);
     this.refreshFeed= this.refreshFeed.bind(this);
 
     this.buyNftNav= this.buyNftNav.bind(this);

@@ -1163,6 +1163,57 @@ var playButton =
 
 
 
+
+            nfts: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display intel from context of the current UPC terminal</p>',
+              fn: () => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let info = this.props.getMyNfts()
+		   .then( (data) => {
+
+			for(var i = 0; i< data.length; i++) {
+		            if(data[i]['minted'] == true) {
+                               terminal.pushToStdout(`[[my_nft]]`);
+                               terminal.pushToStdout(`=====`);
+                               terminal.pushToStdout(`og_owner: ${data[i]['og']}`);
+                               terminal.pushToStdout(`=====`);
+                               terminal.pushToStdout(`owner: ${data[i]['staker']}`);
+                               terminal.pushToStdout(`=====`);
+                               terminal.pushToStdout(`human_readable_name: ${data[i]['humanReadableName']}`);
+                               terminal.pushToStdout(`=====`);
+                               terminal.pushToStdout(`token_id: ${data[i]['tokenId']}`);
+                               terminal.pushToStdout(`=====`);
+                               terminal.pushToStdout(`upc_hash: ${data[i]['upcHash']}`);
+                               terminal.pushToStdout(`=====`);
+                               terminal.pushToStdout(`upc: ${data[i]['word']}`);
+                               terminal.pushToStdout(`=====`);
+                               terminal.pushToStdout(`minted: ${data[i]['minted']}`);
+                               terminal.pushToStdout(`=====`);
+                               terminal.pushToStdout(`[[/my_nft]]`);
+		            }
+			}
+                  });
+		  
+
+                  const interval = setInterval(() => {
+                    if (this.state.progressBal != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({progressBal: info});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
+
+
             last : {
               description: '<p style="color:hotpink;font-size:1.1em">** Display the highest NFT ID in the UPC collection **</p>',
               fn: () => {
@@ -1646,8 +1697,8 @@ var playButton =
               }
             },
 
-            lsupc: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display intel about a UPC given the UPC. Example `srch 078742254609` will return intel for upc 078742254609</p>',
+            xupc: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display intel about a UPC given the UPC. Example `xupc 078742254609` will return intel for upc 078742254609</p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
