@@ -45,7 +45,7 @@ export default class MyTicker extends Component {
           {({ index }) => index === 0
             ? <p style={{ width: '25vw' }}></p>
             : 
-         <div style={{"marginRight":"10px",borderRight:"dashed", borderLeft:"dashed", borderWidth:"7px",borderColor:"white"}}>
+         <div style={{"paddingBottom":"7px","paddingTop":"7px","paddingLeft":"3px","paddingRight":"3px","marginRight":"10px",borderRight:"dashed", borderLeft:"dashed", borderWidth:"7px",borderColor:"white"}}>
 	    <NftPopupQr code={this.state.code} hash={uuid()}  />
          </div>
           }
