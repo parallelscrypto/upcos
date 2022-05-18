@@ -22,7 +22,8 @@ contract UPCMarket is IERC721Receiver {
     mapping (uint256 => AuctionDetails) public auctionDetails;
 
     address payable private  bank;
-    
+    address private  nftMarketplace;
+
     
     constructor() {
         bank = payable(msg.sender);
@@ -30,6 +31,8 @@ contract UPCMarket is IERC721Receiver {
 
 
     function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes memory _data) public override returns(bytes4) {
+        
+        require(msg.sender >= nftMarketplace, "Only AIB can be sold in this marketplace");
         
         
         auctionDetails[_tokenId] = AuctionDetails({
@@ -49,6 +52,9 @@ contract UPCMarket is IERC721Receiver {
         return 0x150b7a02;
      }
 
+    function setNftMarketplace(address nftMkt) external {   
+        nftMarketplace = nftMkt;
+    }
 
 
     function calculateFee(uint amount) external pure returns (uint) {
