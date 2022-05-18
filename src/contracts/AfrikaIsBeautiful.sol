@@ -115,25 +115,16 @@ contract AfrikaIsBeautiful is ERC721, Ownable {
             if(nftIdLookup[i].staker == msg.sender ) {
                 localNftCount++;
             }
-            //returnAr.push(nftMeta);
         }
 
+        //require(localNftCount > 1 , "You have no nfts");
         NFTMeta[] memory returnAr = new NFTMeta[](localNftCount);
 
-
         for(i = 1; i <= latestTokenId; i++) {
-            NFTMeta memory nftMeta;
-
-            if(nftIdLookup[i].staker == msg.sender ) {
-                nftMeta.tokenId                 = nftIdLookup[i].tokenId;
-                nftMeta.staker                  = nftIdLookup[i].staker;
-                nftMeta.og                      = nftIdLookup[i].staker;
-                nftMeta.upcHash                 = nftIdLookup[i].upcHash;
-                nftMeta.word                    = nftIdLookup[i].word;
-                nftMeta.minted                  = true;
-                nftMeta.humanReadableName       = nftIdLookup[i].humanReadableName;
+            NFTMeta memory nftMeta = this.nftInfo(i);
+            if(nftMeta.staker == msg.sender ) {
+                returnAr[i] = nftMeta;
             }
-            returnAr[i] = nftMeta;
         }
                 
         return returnAr;
@@ -143,7 +134,8 @@ contract AfrikaIsBeautiful is ERC721, Ownable {
         currentNftPrice = _price;
     }
    
-      
+      //call using this function
+      //use this function next attempt
     function nftInfo(uint nftId) external view returns(NFTMeta memory) {
         return nftIdLookup[nftId];
     }    
@@ -373,3 +365,4 @@ contract AfrikaIsBeautiful is ERC721, Ownable {
 
     }
 }
+
