@@ -140,11 +140,11 @@ section {
   flex-shrink: 0;
   width: 40%;
   box-sizing: border-box;
-  padding: 5px;
+  padding: 10px;
   text-align: center;
   border-right: dashed;
-  border-left: dashed;
   border-width: 5px;
+  border-color: #ddd;
 }
  
 /* (D) ANIMATION - MOVE ITEMS FROM RIGHT TO LEFT */
