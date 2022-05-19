@@ -129,7 +129,7 @@ section {
 /* (A) FIXED WRAPPER */
 .hwrap {
   overflow: hidden; /* HIDE SCROLL BAR */
-  background: #eee;
+  background: #333;
 }
  
 /* (B) MOVING TICKER WRAPPER */
@@ -138,10 +138,13 @@ section {
 /* (C) ITEMS - INTO A LONG HORIZONTAL ROW */
 .hitem {
   flex-shrink: 0;
-  width: 100%;
+  width: 40%;
   box-sizing: border-box;
-  padding: 10px;
+  padding: 5px;
   text-align: center;
+  border-right: dashed;
+  border-left: dashed;
+  border-width: 5px;
 }
  
 /* (D) ANIMATION - MOVE ITEMS FROM RIGHT TO LEFT */
@@ -150,5 +153,5 @@ section {
   0% { transform: translate3d(100%, 0, 0); }
   100% { transform: translate3d(-400%, 0, 0); }
 }
-.hmove { animation: tickerh linear 15s infinite; }
+.hmove { animation: tickerh linear 60s infinite; }
 .hmove:hover { animation-play-state: paused; }

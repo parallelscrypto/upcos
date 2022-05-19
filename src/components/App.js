@@ -37,6 +37,10 @@ import UpcStatsTicker from './UpcStatsTicker'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './App.css'
 import 'react-tabs/style/react-tabs.css';
+import { TickerTape } from "react-ts-tradingview-widgets";
+
+
+
 //const market_address = "0x7e42A6D0c419E6525aeBF5085e602F465Fa0Fab3";
 //const market_address = "0xAc2dC55B8114548A3b9ad1bAe72c6fE99e934D54";
 //const market_address = "0x3f13e9b043A4eA779D6c3abbE4015b1ecDAcf1f3";
@@ -808,6 +812,7 @@ class App extends Component {
 	latestTokenId={this.latestTokenId}
       />
       <UpcStatsTicker latestTokenId={this.latestTokenId} getSaleInfo={this.getSaleInfo} marketInfo={this.state.marketInfo} style={{"position":"absolute","bottom":"0", background:"black"}} />
+      <TickerTape colorTheme="dark"></TickerTape>
       </div>
     } else {
       leases= <Leases

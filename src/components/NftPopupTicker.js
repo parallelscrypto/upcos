@@ -11,7 +11,6 @@ import QRCode from "react-qr-code";
 import NftPopupQr from './NftPopupQr';
 import { ethers } from "ethers";
 import MLS from '../abis/MalcolmsLittleSecret.json'
-import { TickerTape } from "react-ts-tradingview-widgets";
 
 
 export default class MyTicker extends Component {
@@ -104,16 +103,21 @@ console.log(myVids);
 
     return (
 <>
-    <TickerTape colorTheme="dark"></TickerTape>
 
 
 
 
 <div class="hwrap"><div class="hmove">
-  <div class="hitem">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
-  <div class="hitem">Aliquam consequat varius consequat.</div>
-  <div class="hitem">Fusce dapibus turpis vel nisi malesuada sollicitudin.</div>
-  <div class="hitem">Pellentesque auctor molestie orci ut blandit.</div>
+  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
+  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
+  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
+  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
+  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
+  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
+  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
+  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
+  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
+  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
 </div></div>
 
 
