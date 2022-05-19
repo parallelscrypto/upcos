@@ -285,88 +285,6 @@ export default class MyTerminal extends Component {
                 return ''
   }
 
-
-
-  nfts = async (word) => {
-
-	        word = this.state.account;
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var latest;
-                  let bal = this.props.latestTokenId();
-                      bal.then((value) => {
-                         latest = Math.round(value);
-			 var i = 1;
-			 for(i = 1; i < latest + 2; i++) {
-
-                            let info = this.props.nftInfo(i)
-                            
-		   .then(data => {
-
-			let hrTLD = tlds[data['tld']];
-		        let tld = hrTLD + " (" + data['tld'] + ")";
-			var tmpStamp = parseInt(data['latestTimestamp']);
-                        var newDate = new Date(tmpStamp * 1000);
-                        var payload = "{{ idj " + data['ipfs'] + " }}";
-			var tmpStamp = parseInt(data['createdTimestamp']);
-                        var created = new Date(tmpStamp * 1000);
-                        var upcLink = "<a href='upc://"+ data['word'] +"'>[["+ data['word'] +"]]</a>";
-
-			var fileName = data['ipfs'];
-                        var hrn = data['humanReadableName'];
-			var og= data['og'];
-			var upc = data['word'];
-			var owner= data['staker'];
-			var tldSearch= data['tld'];
-			var upcHash= data['upcHash'];
-			var vr= data['vr'];
-			var tokenId = data['tokenId'];
-
-		        if(fileName.includes(word) 
-				|| hrn.includes(word)
-				|| og.includes(word)
-				|| owner.includes(word)
-				|| tldSearch.includes(word)
-				|| upcHash.includes(word)
-				|| vr.includes(word)
-				|| upc.includes(word)
-			) {
-				terminal.pushToStdout(`[[my-nft]]`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`owner: ${data['staker']}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`token_id: ${tokenId}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`tld: ${tld}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`upc: ${upcLink}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`vr: ${data['vr']}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`payload: ${payload}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`[[/my-nft]]`);
-                        }
-                  });
-	
-        		 }
-        		      
-        		 // expected output: "Success!"
-        	      });
-                })
-
-                return ''
-
-  }
-
-
-
-
-
-
   grep = async (word) => {
 
                 this.setState({progressBal: ''});
@@ -411,23 +329,25 @@ export default class MyTerminal extends Component {
 				|| vr.includes(word)
 				|| upc.includes(word)
 			) {
-				terminal.pushToStdout(`[[ai-xintel]]`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`owner: ${data['staker']}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`token_id: ${tokenId}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`tld: ${tld}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`upc: ${upcLink}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`vr: ${data['vr']}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`payload: ${payload}`);
-				terminal.pushToStdout(`=====`);
-				terminal.pushToStdout(`[[/ai-xintel]]`);
+				if(upc) {
+				   terminal.pushToStdout(`[[ai-xintel]]`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`owner: ${data['staker']}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`token_id: ${tokenId}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`tld: ${tld}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`upc: ${upcLink}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`vr: ${data['vr']}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`payload: ${payload}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`[[/ai-xintel]]`);
+				}
                         }
                   });
 	
@@ -1241,8 +1161,10 @@ var playButton =
 
             nfts: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that are on the market **</p>',
-              fn: (word) => {
-		      this.nfts(this.state.account);
+              fn: () => {
+		      var addy = this.props.address;
+                      addy  = addy.substr(0,15);
+		      this.grep(addy);
               }
             },
 
