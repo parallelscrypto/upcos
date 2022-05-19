@@ -17012,6 +17012,11 @@ react-trianglify@^3.0.3:
   resolved "https://registry.yarnpkg.com/react-trianglify/-/react-trianglify-3.0.3.tgz#f3c7ebd9876b0f9a590fc9d5b2ceaf51f6b1f8ef"
   integrity sha512-AniYQGGszOod/Tgk73EfPti10C7SMnE+MI0n1WxeKFn9g/Uca5aBse7PVF9U9KCmwVyfw/R83rKPW5Kf5QUKIA==
 
+react-ts-tradingview-widgets@^1.0.10:
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/react-ts-tradingview-widgets/-/react-ts-tradingview-widgets-1.0.10.tgz#100ffcf30e47bc536efc9a18bd4726f7a49ac7ac"
+  integrity sha512-RTqV/fHsXPSeQ4Rq101/Je3BbNmPFJA6uVBN25D9mZtROBF9Y02K7xmnrwxKQJzt+Ej76edKYNC568nAToVYZw==
+
 react-uuid@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/react-uuid/-/react-uuid-1.0.2.tgz#c77cea91cf38eafb1aaa7910f92621b2ed91b969"

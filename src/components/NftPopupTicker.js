@@ -11,6 +11,7 @@ import QRCode from "react-qr-code";
 import NftPopupQr from './NftPopupQr';
 import { ethers } from "ethers";
 import MLS from '../abis/MalcolmsLittleSecret.json'
+import { TickerTape } from "react-ts-tradingview-widgets";
 
 
 export default class MyTicker extends Component {
@@ -86,7 +87,8 @@ export default class MyTicker extends Component {
          var mediaLinks = new Array();
          for(let i = 0; i < channelArray.length; i++) {
             let mediaInfo = await contract.nftInfo(channelArray[i]);
-            mediaLinks.push(mediaInfo.ipfs)
+            let popupQr = <NftPopupQr video={mediaInfo.vr} value={mediaInfo.upcHash} />
+            mediaLinks.push(popupQr)
          }
 
          self.setState({videos:mediaLinks});          
@@ -95,21 +97,28 @@ export default class MyTicker extends Component {
   };
 
   render() {
+
+
+    var myVids = this.state.videos;
+console.log(myVids);
+
     return (
-      <div>
-        <Ticker
-          speed={1}
-          move={this.state.move}
-        >
-          {({ index }) => index === 0
-            ? <p style={{ width: '25vw' }}></p>
-            : 
-         <div style={{"paddingBottom":"7px","paddingTop":"7px","paddingLeft":"3px","paddingRight":"3px","marginRight":"10px",borderRight:"dashed", borderLeft:"dashed", borderWidth:"7px",borderColor:"white"}}>
-	    <NftPopupQr code={this.state.code} hash={uuid()}  />
-         </div>
-          }
-        </Ticker>
-      </div >
+<>
+    <TickerTape colorTheme="dark"></TickerTape>
+
+
+
+
+<div class="hwrap"><div class="hmove">
+  <div class="hitem">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+  <div class="hitem">Aliquam consequat varius consequat.</div>
+  <div class="hitem">Fusce dapibus turpis vel nisi malesuada sollicitudin.</div>
+  <div class="hitem">Pellentesque auctor molestie orci ut blandit.</div>
+</div></div>
+
+
+</>
+
     )
   }
 }
