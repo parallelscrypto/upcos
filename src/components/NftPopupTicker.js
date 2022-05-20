@@ -79,14 +79,15 @@ export default class MyTicker extends Component {
 	 console.log("SECOND ATTEMPT");
 	 console.log(currentChannel);
 	 }
-
 	 console.log(currentChannel.ipfs);
          var channelVidsCommas =  currentChannel.ipfs;
          var channelArray      =  channelVidsCommas.split(',');
          var mediaLinks = new Array();
          for(let i = 0; i < channelArray.length; i++) {
             let mediaInfo = await contract.nftInfo(channelArray[i]);
-            let popupQr = <NftPopupQr video={mediaInfo.vr} value={mediaInfo.upcHash} />
+
+	    console.log("############################media links " + mediaInfo.vr);
+            let popupQr = <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  video={mediaInfo.vr} value={mediaInfo.upcHash} /></div>
             mediaLinks.push(popupQr)
          }
 
@@ -108,16 +109,7 @@ console.log(myVids);
 
 
 <div class="hwrap"><div class="hmove">
-  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
-  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
-  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
-  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
-  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
-  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
-  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
-  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
-  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
-  <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  /></div>
+	    {this.state.videos}
 </div></div>
 
 

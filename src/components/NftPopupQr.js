@@ -18,6 +18,7 @@ export default class NftPopupQr extends Component {
       isFlipped:   false,
       hash:        props.hash,
       code:        props.code,
+      video:       props.video,
       modalIsOpen: false
     }
     this.onClick = this.onClick.bind(this);
@@ -32,7 +33,7 @@ export default class NftPopupQr extends Component {
   render() {
     return (
 	    <div>
-	       <NftPopupModal style={{"backgroundColor":"black"}} code={this.state.code} hash={this.state.hash} qIsOpen={this.state.modalIsOpen}/>
+	       <NftPopupModal video={this.state.video} style={{"backgroundColor":"black"}} code={this.state.code} hash={this.state.hash} qIsOpen={this.state.modalIsOpen}/>
 	    </div>
     )
   }

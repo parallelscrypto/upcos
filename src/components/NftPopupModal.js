@@ -10,6 +10,8 @@ import Image4 from './extra/img-4.jpg'
 import Modal from 'react-modal';
 import QRCode from "react-qr-code"
 import NftPopupQr from "./NftPopupQr";
+import ReactPlayer from 'react-player'
+
 
 export default class NftPopupModal extends Component {
   constructor(props) {
@@ -17,6 +19,7 @@ export default class NftPopupModal extends Component {
     this.state = {
       hash:       props.hash,
       code:       props.code,
+      video:      props.video,
       qIsOpen:    props.qIsOpen
     }
   }
@@ -35,10 +38,16 @@ export default class NftPopupModal extends Component {
       <div>
           <QRCode size={128} value={prizeBase64} onClick={() => { this.setState({qIsOpen: true})}}/>
           <Modal
+	    style={{inset:"0px"}}
             isOpen={this.state.qIsOpen}
             contentLabel={this.state.hash}
           >    
-	     <div>Buy a DAO token to help govern this UPC.  It is up to the UPC owner to elect a governance council from the pool of available avatars!  Available positions for governance are <ul><li>President</li><li>VP</li><li>Minister of Peace</li><li>Minister of Justice</li></ul>  This QR may be the next president of UPC # {this.state.code}! Play with a friend to find the next leaders of this UPC!</div>
+	     <ReactPlayer
+	         width="100vw"
+	         url={this.state.video}
+
+	    />
+	    <b>vid is {this.state.video} </b>
 	     <NftPopupQr code={this.state.code} hash={uuid()}  />
              <button onClick={() => {this.setState({qIsOpen: false}) }}>close</button>
           </Modal>
