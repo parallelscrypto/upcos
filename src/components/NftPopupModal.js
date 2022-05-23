@@ -38,16 +38,18 @@ export default class NftPopupModal extends Component {
       <div>
           <QRCode size={128} value={prizeBase64} onClick={() => { this.setState({qIsOpen: true})}}/>
           <Modal
-	    style={{inset:"0px"}}
+            id="POPUP"
+	    style={{fontColor:"red"}}
             isOpen={this.state.qIsOpen}
             contentLabel={this.state.hash}
           >    
 	     <ReactPlayer
+                 id="POPUP_PLAYER"
 	         width="100vw"
 	         url={this.state.video}
 
 	    />
-	    <b>vid is {this.state.video} </b>
+	     <b>vid is {this.state.video} </b>
 	     <NftPopupQr code={this.state.code} hash={uuid()}  />
              <button onClick={() => {this.setState({qIsOpen: false}) }}>close</button>
           </Modal>

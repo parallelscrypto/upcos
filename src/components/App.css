@@ -151,7 +151,20 @@ section {
 /* 4 ITEMS -400%, CHANGE THIS IF YOU ADD/REMOVE ITEMS */
 @keyframes tickerh {
   0% { transform: translate3d(100%, 0, 0); }
-  100% { transform: translate3d(-100%, 0, 0); }
+  100% { transform: translate3d(-500%, 0, 0); }
 }
-.hmove { animation: tickerh linear 20s infinite; }
+.hmove { animation: tickerh linear 40s infinite; }
 .hmove:hover { animation-play-state: paused; }
+
+#POPUP {
+  text-align: center;
+  color: black;
+  transform: translate3d(-10%, -10%, 0);
+  width:100vw;
+  height:100vh;
+}
+
+
+#POPUP_PLAYER {
+  transform: translate3d(-5%, 0, 0);
+}
