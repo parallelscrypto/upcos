@@ -25,7 +25,7 @@ import WalkieTalkie from '../abis/WalkieTalkie.json'
 import PokingsHauntUs from '../abis/PokingsHauntUs.json'
 import KegeExperiment from '../abis/KegeExperiment.json'
 
-import Navbar from './Navbar'
+//import Navbar from './Navbar'
 import VideoBackground from './VideoBackground'
 import Leases from './Leases'
 import Evictions from './Evictions'
@@ -33,6 +33,8 @@ import Withdraw from './Withdraw'
 import Deposit from './Deposit'
 import IntroTypewriter from './IntroTypewriter'
 import Intel from './Intel'
+import UPCBR_Channel from './App2';
+
 import UpcStatsTicker from './UpcStatsTicker'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './App.css'
@@ -759,7 +761,16 @@ class App extends Component {
     }
     else if(this.state.intel) {
       deposit = "";
-                
+      
+      var tmpCode = this.state.intel;
+      tmpCode = tmpCode.substring(7);
+      var scan = JSON.parse(atob(tmpCode));
+      this.state.code = scan.code;
+      var tmpCode = scan.code;
+      var lastChar = tmpCode.slice(-1);
+      var upcChannel = "00000000000" + lastChar;
+
+
       deposit = 
         <div  style={{ background:"white"}} >
         <Intel
@@ -813,7 +824,11 @@ class App extends Component {
       />
       <UpcStatsTicker latestTokenId={this.latestTokenId} getSaleInfo={this.getSaleInfo} marketInfo={this.state.marketInfo} style={{"position":"absolute","bottom":"0", background:"black"}} />
       <TickerTape colorTheme="dark"></TickerTape>
+
+      <b style={{color:"black"}}> Latest News from Channel [[{upcChannel}]] </b>
+      <UPCBR_Channel channel={upcChannel} />
       </div>
+		    console.log(this.state);
     } else {
       leases= <Leases
         daiTokenBalance={this.state.daiTokenBalance}

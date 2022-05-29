@@ -1,27 +1,55 @@
-import React, { Component } from 'react'
-import farmer from '../farmer.png'
+import React from 'react';
+import './Navbar.css';
 
-class Navbar extends Component {
-
-  render() {
+function Navbar({ setSelectedOption }) {
     return (
-      <nav style={{marginTop:'0px'}} className="navbar navbar-dark bg-dark flex-md-nowrap p-0 shadow">
-        <a
-        >
-          <img src={farmer} width="30" height="30" className="d-inline-block align-top" alt="" />
-          &nbsp; UPC Gold
-        </a>
+        <div className="nav">
+            <h2 onClick={() => {
+                setSelectedOption(endpoints.fetchTrending)
+            }}>Trending</h2>
 
-        <ul className="navbar-nav px-3">
-          <li className="nav-item text-nowrap d-none d-sm-none d-sm-block">
-            <small className="text-secondary">
-              <small id="account">{this.props.account}</small>
-            </small>
-          </li>
-        </ul>
-      </nav>
-    );
-  }
+            <h2 onClick={() => {
+                setSelectedOption(endpoints.fetchTopRated)
+            }}>Top Rated</h2>
+
+            <h2 onClick={() => {
+                setSelectedOption(endpoints.fetchActionMovies)
+            }}>Action</h2>
+
+            <h2 onClick={() => {
+                setSelectedOption(endpoints.fetchComedyMovies)
+            }}>Comedy</h2>
+
+            <h2 onClick={() => {
+                setSelectedOption(endpoints.fetchHorrorMovies)
+            }}>Horror</h2>
+
+            <h2 onClick={() => {
+                setSelectedOption(endpoints.fetchRomanticMovies)
+            }}>Romance</h2>
+
+            <h2 onClick={() => {
+                setSelectedOption(endpoints.fetchMystery)
+            }}>Mystery</h2>
+
+            <h2 onClick={() => {
+                setSelectedOption(endpoints.fetchSciFi)
+            }}>Sci-fi</h2>
+
+            <h2 onClick={() => {
+                setSelectedOption(endpoints.fetchWestern)
+            }}>Western</h2>
+
+            <h2 onClick={() => {
+                setSelectedOption(endpoints.fetchAnimation)
+            }}>Animation</h2>
+
+            <h2 onClick={() => {
+                setSelectedOption(endpoints.fetchNetflixOriginals)
+            }}>Movie</h2>
+
+        </div>
+    )
 }
 
 export default Navbar;

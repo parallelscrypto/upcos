@@ -13,6 +13,7 @@ import Card from 'react-playing-card';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import ReactPlayer from 'react-player'
 import ReactCardFlip from 'react-card-flip';
+import { TikTok } from 'react-tiktok';
 
 
 var Barcode = require('react-barcode');
@@ -166,20 +167,35 @@ export default class MyTerminal extends Component {
 
                     let info = this.props.upcInfo(fullNft)
                       .then(data => {
-                           var vr   = data['vr'];
-                               player = <ReactPlayer 
-                                            width="100vw"
-                                            url={data['vr']} 
-                                        />
+                    if(vr.includes('tiktok')) {
+                       player = <TikTok url={vr} />
+                    }
+		    else {
+                       player = <ReactPlayer 
+                                    width="100vw"
+                                    url={data['vr']} 
+                                />
+
+		    }
+
                                self.setState({player: player});
 	            })
 		}
 		else {
 	            
-                    player = <ReactPlayer 
-                                 width="100vw"
-                                 url={data['vr']} 
-                             />
+                    var vr   = data['vr'];
+                    var player;
+                    if(vr.includes('tiktok')) {
+                       player = <TikTok url={vr} />
+                    }
+		    else {
+                       player = <ReactPlayer 
+                                    width="100vw"
+                                    url={data['vr']} 
+                                />
+
+		    }
+
                     self.setState({player: player});
 		}
 	   })

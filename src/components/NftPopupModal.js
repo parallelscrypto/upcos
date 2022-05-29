@@ -49,7 +49,7 @@ export default class NftPopupModal extends Component {
 	         url={this.state.video}
 
 	    />
-	     <b>vid is {this.state.video} </b>
+	     <b>Watching: {this.state.video} </b>
 	     <NftPopupQr code={this.state.code} hash={uuid()}  />
              <button onClick={() => {this.setState({qIsOpen: false}) }}>close</button>
           </Modal>

@@ -5,6 +5,7 @@ import NftPopupTicker from './NftPopupTicker'
 import UpcStatsTicker from './UpcStatsTicker'
 import ReactCardFlip from 'react-card-flip';
 import Modal from 'react-modal';
+import UPCBR_Channel from './App2';
 
 
 
@@ -102,6 +103,7 @@ class Intel extends Component {
             <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
              <div style={{background:"#000000",borderTop:"dashed",borderBottom:"dashed",borderWidth:"12px",borderColor:"white"}}>
 	        <NftPopupTicker code={this.state.code} style={{"position":"absolute","bottom":"0",background:"white"}} />
+
              </div>
 
              <div>
