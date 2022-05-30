@@ -11,6 +11,8 @@ import Modal from 'react-modal';
 import QRCode from "react-qr-code"
 import NftPopupQr from "./NftPopupQr";
 import ReactPlayer from 'react-player'
+import { TikTok } from 'react-tiktok';
+
 
 
 export default class NftPopupModal extends Component {
@@ -33,6 +35,19 @@ export default class NftPopupModal extends Component {
     };
     var prizeBase64 ="https://ipfs.io/ipfs/QmRX4SzbGLpFtejZd9aW2MQc3rKTTwu9nM12beBkNSyqHv/#/intel/" + btoa(JSON.stringify(prizeJson));
 //    var prizeBase64 = "https://gateway.pinata.cloud/ipfs/Qmeet7SJ2mvrp6PTJMzbVCP6y2WFWWXY2iKA1UUGg8ptrA/#/intel/eyJjb2RlIjoiMDEyNTg3NzA0NDAwIn0=" + btoa(JSON.stringify(prizeJson));
+    var player;
+    var vr = this.state.video;
+    if(vr && vr.includes('tiktok')) {
+       player = <TikTok url={vr} />
+    }
+    else {
+       player = <ReactPlayer 
+                    width="100vw"
+                    url={vr} 
+                />
+
+    }
+
 
     return (
       <div>
@@ -43,12 +58,7 @@ export default class NftPopupModal extends Component {
             isOpen={this.state.qIsOpen}
             contentLabel={this.state.hash}
           >    
-	     <ReactPlayer
-                 id="POPUP_PLAYER"
-	         width="100vw"
-	         url={this.state.video}
-
-	    />
+             {player}
 	     <b>Watching: {this.state.video} </b>
 	     <NftPopupQr code={this.state.code} hash={uuid()}  />
              <button onClick={() => {this.setState({qIsOpen: false}) }}>close</button>
