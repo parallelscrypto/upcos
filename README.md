@@ -1,5 +1,9 @@
 # Scan into the UPC Intelligence Matrix
 
+## update to latest LTS node.js by running `nvm install 14.17.2`
+## use latest LTS node.js by running `nvm use 14.17.2`
+
+
 Prepare for the first Web3 NFT Netflix alternative! Download the "UPC Band Radio: Channel 10 Newz Edition Wallet" and scan any UPC to be taken into the UPC Verse (Free decentralized Netflix, alternative and so much more)!  
 
 The wallet is available in .apk form instead of the Android Play Store.  Download from IPFS 
