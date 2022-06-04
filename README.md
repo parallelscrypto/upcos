@@ -78,6 +78,12 @@ To add additional value and utility to our NFTs, we will integrate AI into each 
 ![Alt text](upcbr-2.png?raw=true "Title")
 ![Alt text](upcbr-3.png?raw=true "Title")
 
+
+# Latest App Update (Para1:1el Endpoint):
+
+![Alt text](upcbr-latest.png?raw=true "Title")
+
+
 # Resume
 
 ![Alt text](public/notorious-nft.jpg?raw=true "Title")
