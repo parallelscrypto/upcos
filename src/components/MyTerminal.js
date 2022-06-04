@@ -166,13 +166,15 @@ export default class MyTerminal extends Component {
 
                     let info = this.props.upcInfo(fullNft)
                       .then(data => {
-                    if(vr.includes('tiktok')) {
-                       player = <TikTok url={vr} />
+
+                    var unownedVr = data.vr;
+                    if(unownedVr.includes('tiktok')) {
+                       player = <TikTok url={unownedVr} />
                     }
                     //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
                     //pasting does not get the player with controls (this iframe player below)
-		    else if(vr.length == 11) {
-                       const youtubeID = data['vr']
+		    else if(unownedVr.length == 11) {
+                       const youtubeID = unownedVr
                        player =
                        <iframe className='video'
                                style={{minHeight:"100vh",width:"100vw"}}
