@@ -169,6 +169,18 @@ export default class MyTerminal extends Component {
                     if(vr.includes('tiktok')) {
                        player = <TikTok url={vr} />
                     }
+                    //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
+                    //pasting does not get the player with controls (this iframe player below)
+		    else if(vr.length == 11) {
+                       const youtubeID = data['vr']
+                       player =
+                       <iframe className='video'
+                               style={{minHeight:"100vh",width:"100vw"}}
+                               title='Youtube player'
+                               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                               src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
+                       </iframe>
+                    }
 		    else {
                        player = <ReactPlayer 
                                     width="100vw"
@@ -187,6 +199,19 @@ export default class MyTerminal extends Component {
                     if(vr.includes('tiktok')) {
                        player = <TikTok url={vr} />
                     }
+                    //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
+                    //pasting does not get the player with controls (this iframe player below)
+		    else if(vr.length == 11) {
+                       const youtubeID = data['vr']
+                       player =
+                       <iframe className='video'
+                               style={{minHeight:"100vh",width:"100vw"}}
+                               title='Youtube player'
+                               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                               src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
+                       </iframe>
+                    }
+
 		    else {
                        player = <ReactPlayer 
                                     width="100vw"
