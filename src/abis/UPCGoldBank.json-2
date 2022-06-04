@@ -1,0 +1,540 @@
+[
+	{
+		"inputs": [
+			{
+				"internalType": "address payable",
+				"name": "addy",
+				"type": "address"
+			}
+		],
+		"name": "addPayee",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "upcId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "gameId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "humanReadableName",
+				"type": "string"
+			}
+		],
+		"name": "depositMoney",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "internalTransfer",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "staker",
+				"type": "address"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "upcHash",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "string",
+				"name": "upcRaw",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "ipfs",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "humanReadableName",
+				"type": "string"
+			}
+		],
+		"name": "mintNft",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "coins",
+				"type": "uint256"
+			}
+		],
+		"name": "payBills",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_ipfs",
+				"type": "string"
+			}
+		],
+		"name": "setDefaultIPFSSite",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "word",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_humanReadableName",
+				"type": "string"
+			}
+		],
+		"name": "setHumanReadableName",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "upcHash",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "string",
+				"name": "ipfsHash",
+				"type": "string"
+			}
+		],
+		"name": "setIpfsForScannable",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "nftContract",
+				"type": "address"
+			}
+		],
+		"name": "setNftContract",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "upcId",
+				"type": "string"
+			}
+		],
+		"name": "withdraw",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "actionPot",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "addressToUpc",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "staker",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amountStaked",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "isOwned",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "interestGained",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "stakingStartTimestamp",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "lastRewardTimestamp",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "upcHash",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "string",
+				"name": "word",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "gameId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "ipfs",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "humanReadableName",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "balanceReceived",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "totalBalance",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "numPayments",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "calculateFee",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "defaultIpfs",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getAddressBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getMyScannables",
+		"outputs": [
+			{
+				"internalType": "bytes32[]",
+				"name": "",
+				"type": "bytes32[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "upcId",
+				"type": "string"
+			}
+		],
+		"name": "getScannableByUpc",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "staker",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amountStaked",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isOwned",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "interestGained",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "stakingStartTimestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "lastRewardTimestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "upcHash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "string",
+						"name": "word",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "gameId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "ipfs",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "humanReadableName",
+						"type": "string"
+					}
+				],
+				"internalType": "struct UPCGoldBank.UpcMeta",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "harvestRewardForScannable",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"name": "scannables",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "staker",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amountStaked",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "isOwned",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "interestGained",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "stakingStartTimestamp",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "lastRewardTimestamp",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "upcHash",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "string",
+				"name": "word",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "gameId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "ipfs",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "humanReadableName",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]

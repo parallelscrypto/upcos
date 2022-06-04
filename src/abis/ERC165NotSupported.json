@@ -1,0 +1,115 @@
+{
+  "contractName": "ERC165NotSupported",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.7+commit.e28d00a7\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/mocks/ERC165/ERC165NotSupported.sol\":\"ERC165NotSupported\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/mocks/ERC165/ERC165NotSupported.sol\":{\"keccak256\":\"0x10590faccb835675869e65f55b97085319c0412d872c6abc2903f65b86c6d950\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d6f523caffac4feeb45dcdf054a1fb56f0d557b53b640a95caf3d7987438a55a\",\"dweb:/ipfs/QmePz11sAJewMK1She9NTvZo6vydj4bb5x6iTRwjPhdKpo\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212207370063ff2af10b7257351aacd34ed59ee3cf17fb67b00bc6ed1ed9d63acecb764736f6c63430008070033",
+  "deployedBytecode": "0x6080604052600080fdfea26469706673582212207370063ff2af10b7257351aacd34ed59ee3cf17fb67b00bc6ed1ed9d63acecb764736f6c63430008070033",
+  "immutableReferences": {},
+  "sourceMap": "58:30:45:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "58:30:45:-:0;;;;;",
+  "source": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.8.0;\n\ncontract ERC165NotSupported {}\n",
+  "sourcePath": "/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/mocks/ERC165/ERC165NotSupported.sol",
+  "ast": {
+    "absolutePath": "/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/mocks/ERC165/ERC165NotSupported.sol",
+    "exportedSymbols": {
+      "ERC165NotSupported": [
+        7679
+      ]
+    },
+    "id": 7680,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 7678,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:23:45"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 7679,
+        "linearizedBaseContracts": [
+          7679
+        ],
+        "name": "ERC165NotSupported",
+        "nameLocation": "67:18:45",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 7680,
+        "src": "58:30:45",
+        "usedErrors": []
+      }
+    ],
+    "src": "33:56:45"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/mocks/ERC165/ERC165NotSupported.sol",
+    "exportedSymbols": {
+      "ERC165NotSupported": [
+        7679
+      ]
+    },
+    "id": 7680,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 7678,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:23:45"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 7679,
+        "linearizedBaseContracts": [
+          7679
+        ],
+        "name": "ERC165NotSupported",
+        "nameLocation": "67:18:45",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 7680,
+        "src": "58:30:45",
+        "usedErrors": []
+      }
+    ],
+    "src": "33:56:45"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.7+commit.e28d00a7.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.2.3",
+  "updatedAt": "2021-08-12T03:39:31.229Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}
