@@ -199,11 +199,14 @@ export default class MyTerminal extends Component {
                     var vr   = data['vr'];
                     var player;
                     if(vr.includes('tiktok')) {
+
+			    console.log("1");
                        player = <TikTok url={vr} />
                     }
                     //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
                     //pasting does not get the player with controls (this iframe player below)
 		    else if(vr.length == 11) {
+			    console.log("2");
                        const youtubeID = data['vr']
                        player =
                        <iframe className='video'
@@ -213,8 +216,26 @@ export default class MyTerminal extends Component {
                                src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
                        </iframe>
                     }
+		    //arbitrary url video
+		    else if(!vr.includes('yout') && !vr.includes('facebook') 
+			    && !vr.includes('soundcloud') && !vr.includes('vimeo') 
+			    && !vr.includes('whistia') && !vr.includes('mixcloud') 
+			    && !vr.includes('dailymotion') && !vr.includes('twitch')) {
+			    console.log("3");
+			    console.log(vr);
+                       const fullUrl = data['vr']
+                       player =
+                       <iframe className='video'
+                               style={{minHeight:"100vh",width:"100vw"}}
+                               title='upc dj player'
+                               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                               src={fullUrl}>
+                       </iframe>
+                    }
+
 
 		    else {
+			    console.log("4");
                        player = <ReactPlayer 
                                     width="100vw"
                                     url={data['vr']} 
