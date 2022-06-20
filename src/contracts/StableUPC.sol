@@ -62,16 +62,16 @@ contract UPCStable is Context, ERC20, ERC20Burnable {
 
 
     function buyUPCSWithTubmanX(uint256 numTubmanX) public payable {
-        _tubmanx.transferFrom(msg.sender, owner, numTubmanX);
+        _tubmanx.transferFrom(msg.sender, address(this), numTubmanX);
         uint256 equivTubmanX = numTubmanX/ 5;
-        this.transferFrom(owner,msg.sender, equivTubmanX);
+        this.transfer(msg.sender, equivTubmanX);
     }
 
 
     function redeemUPCSForTubmanX(uint256 numUPCS) public payable {
         this.transferFrom(msg.sender, address(this), numUPCS);
-        //uint256 equivTubmanX = numUPCS * 5;
-        _tubmanx.transfer(msg.sender , numUPCS);
+        uint256 equivTubmanX = numUPCS * 5;
+        _tubmanx.transfer(msg.sender , equivTubmanX);
     }
 
     function setTubmanxToken(address  addy) external onlyOwner {
