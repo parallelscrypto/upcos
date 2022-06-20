@@ -49,7 +49,8 @@ import { TickerTape } from "react-ts-tradingview-widgets";
 //const market_address = "0x59e09C81FF70efD0208B98E3843852aCA3962982";
 //const market_address = "0x32Cdf28d9E148D373b04238864586784244C86b1";
 const market_address = "0x28B3D93c4e25769F4aD52b7679D5186E077e0856";
-
+const usdc_address   = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
+var abi = require('human-standard-token-abi');
 
 class App extends Component {
 
@@ -148,6 +149,20 @@ class App extends Component {
       this.setState({ snbNFTData: snbNFTData })
     } else {
       //window.alert('UPCNFT contract not deployed to detected network.')
+    }
+
+
+	
+    // Load STABLE PAY currency
+    if(usdc_address)  {
+      const USDC = new web3.eth.Contract(abi, usdc_address)
+//      console.log("!!!!!!!!!! USDC IS !!!!!!!!!!!!!!!!")
+//      let coinName = await USDC.methods.balanceOf('0x533084893cE0AFEd5C29e1F3a413b1A65b6383F4').call();
+//      console.log(coinName);
+//      console.log(USDC);
+      this.setState({ USDC: USDC})
+    } else {
+      //window.alert('UPCGoldBank contract not deployed to detected network.')
     }
 
 
@@ -316,6 +331,21 @@ class App extends Component {
     var upcNFTData = this.state.upcNFTData;
     var approval = await this.state.intelX.methods.approve(upcNFTData.address, "50000000000000000000").send({ from: this.state.account });
     this.setState({daiTokenBalance: approval.toString() });
+    return approval.toString();
+  };
+
+
+  approveUSDC = async () => {
+    const web3 = window.web3
+    const intelXData = this.state.intelX;
+
+    const { accounts, contract } = this.state;
+
+    var upcNFTData = this.state.upcNFTData;
+
+
+    var approval = await this.state.USDC.methods.approve(upcNFTData.address, "500000000").send({ from: this.state.account });
+    this.setState({usdcApprove: approval.toString() });
     return approval.toString();
   };
 
@@ -697,6 +727,8 @@ class App extends Component {
     this.mintNftNav= this.mintNftNav.bind(this);
     this.approveNav= this.approveNav.bind(this);
 
+    this.approveUSDC= this.approveUSDC.bind(this);
+
     this.buyNft= this.buyNft.bind(this);
     this.mintNft= this.mintNft.bind(this);
     this.approve= this.approve.bind(this);
@@ -783,6 +815,7 @@ class App extends Component {
 	approveNav={this.approveNav}
 	buyNftNav={this.buyNftNav}
 	mintNftNav={this.mintNftNav}
+	approveUSDC={this.approveUSDC}
 
 	approve={this.approve}
 	buyNft={this.buyNft}
