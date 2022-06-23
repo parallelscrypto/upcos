@@ -4,6 +4,7 @@ import ScratchCard from './ScratchCard'
 import IpfsUpload from './IpfsUpload'
 import TrebleCleff from './TrebleCleff'
 import BassCleff from './BassCleff'
+import Dex from './Dex'
 import Modal from "react-animated-modal";
 import Iframe from 'react-iframe';
 import axios from "axios";
@@ -60,6 +61,7 @@ export default class MyTerminal extends Component {
        showModalBuy: false,
        showModalSearch: false,
        showCardModal: false,
+       showDexModal: false,
        showUploadModal: false,
        showProductModal: false,
        showProductContent: '',
@@ -92,9 +94,9 @@ export default class MyTerminal extends Component {
   }
 
   printWelcomeMsg() {
-     const terminal = this.progressTerminal.current
-     terminal.clearStdout();
-     terminal.pushToStdout(welcomeMsgDefault);
+//     const terminal = this.progressTerminal.current
+//     terminal.clearStdout();
+//     terminal.pushToStdout(welcomeMsgDefault);
   }
 
 
@@ -501,6 +503,9 @@ export default class MyTerminal extends Component {
       this.setState({showCardModal:true});
   }
 
+  dex = async () => {
+      this.setState({showDexModal:true});
+  }
 
   upload = async () => {
       this.setState({showUploadModal:true});
@@ -698,6 +703,9 @@ var playButton =
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle","width":"95vw","height":"95vh"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showUploadModal} closemodal={() => this.setState({ showUploadModal: false })} type="pulse" > {myUpload}</Modal>
+
+      <Modal className={"dex"} style={{"width":"90vw", "height":"90vh"}} visible={this.state.showDexModal} closemodal={() => this.setState({ showDexModal: false })} type="pulse" > {this.state.dex}</Modal>
+
                     <button onClick={(e) => { this.handleFlip(e)}} >Overview this UPC!</button>
       <Terminal
         style={{"minHeight":"75vh",backgroundColor: "#000"}}
@@ -905,6 +913,16 @@ var playButton =
             },
 
 
+            dex: {
+		    description: '<p style="color:hotpink;font-size:1.1em">Open the internal DEX window to swap tokens</p>',
+              fn: (upcId) => {
+
+	    var myDex = <Dex />
+                      this.setState({dex:myDex});
+                      this.setState({showDexModal:true});
+                return ''
+              }
+            },
 
 
             xhack: {
