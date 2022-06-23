@@ -504,6 +504,40 @@ export default class MyTerminal extends Component {
   }
 
   dex = async () => {
+
+	    var myDex = <Dex 
+
+            address={this.props.address}
+            mine={this.props.mine}
+
+            buyNftNav={this.props.buyNftNav}
+            mintNftNav={this.props.mintNftNav}
+            approveNav={this.props.approveNav}
+            upcInfoNav={this.props.upcInfoNav}
+            nftInfoNav={this.props.nftInfoNav}
+            latestTokenIdNav={this.props.latestTokenIdNav}
+            approve={this.props.approve}
+            approveUSDC={this.props.approveUSDC}
+            swap={this.props.swap}
+            wm={this.props.wm}
+            wn={this.props.wn}
+            wa={this.props.wa}
+            pbal={this.props.pbal}
+            getMyBalance={this.props.getMyBalance}
+            getMyNfts={this.props.getMyNfts}
+            getWalkieTalkie={this.props.getWalkieTalkie}
+            setVr={this.props.setVr}
+            setWt={this.props.setWt}
+            setIpfs={this.props.setIpfs}
+            upcInfo={this.props.upcInfo}
+            nftInfo={this.props.nftInfo}
+
+
+			      />
+                      this.setState({dex:myDex});
+                      this.setState({showDexModal:true});
+
+
       this.setState({showDexModal:true});
   }
 
@@ -657,7 +691,7 @@ var playButton =
     return (
       <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
       <div>
-	     <TrebleCleff handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} hero={this.hero} search={this.search} prodLookup={this.prodLookup} account={this.state.account} tutorial={this.tutorial} />
+	     <TrebleCleff handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} dex={this.dex} hero={this.hero} search={this.search} prodLookup={this.prodLookup} account={this.state.account} tutorial={this.tutorial} />
 
 
                  {this.state.player}
@@ -916,38 +950,7 @@ var playButton =
             dex: {
 		    description: '<p style="color:hotpink;font-size:1.1em">Open the internal DEX window to swap tokens</p>',
               fn: (upcId) => {
-
-	    var myDex = <Dex 
-
-            address={this.props.address}
-            mine={this.props.mine}
-
-            buyNftNav={this.props.buyNftNav}
-            mintNftNav={this.props.mintNftNav}
-            approveNav={this.props.approveNav}
-            upcInfoNav={this.props.upcInfoNav}
-            nftInfoNav={this.props.nftInfoNav}
-            latestTokenIdNav={this.props.latestTokenIdNav}
-            approve={this.props.approve}
-            approveUSDC={this.props.approveUSDC}
-            swap={this.props.swap}
-            wm={this.props.wm}
-            wn={this.props.wn}
-            wa={this.props.wa}
-            pbal={this.props.pbal}
-            getMyBalance={this.props.getMyBalance}
-            getMyNfts={this.props.getMyNfts}
-            getWalkieTalkie={this.props.getWalkieTalkie}
-            setVr={this.props.setVr}
-            setWt={this.props.setWt}
-            setIpfs={this.props.setIpfs}
-            upcInfo={this.props.upcInfo}
-            nftInfo={this.props.nftInfo}
-
-
-			      />
-                      this.setState({dex:myDex});
-                      this.setState({showDexModal:true});
+                this.dex();
                 return ''
               }
             },

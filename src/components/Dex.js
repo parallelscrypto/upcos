@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Terminal from 'react-console-emulator'
 
-export default class MyTerminal extends Component {
+export default class Dex extends Component {
   constructor (props) {
     super(props)
     this.terminal = React.createRef()
@@ -59,6 +59,7 @@ export default class MyTerminal extends Component {
 
     return (
       <Terminal
+        style={{"textAlign":"left","backgroundColor":"#826a43","minHeight":"100vh","color":"black"}}
         ref={this.terminal} // Assign ref to the terminal here
         commands={commands}
       />

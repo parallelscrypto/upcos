@@ -12,12 +12,10 @@
 
 .dex {
 position: relative;
-background-color: orange;
-z-index: 103;
+color: #826a43;
 width: 90vw;
 top: 0px;
-min-height: 100vh;
-text-align: center;
+text-align: left;
 vertical-align: top;
 }
 
