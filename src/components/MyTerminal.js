@@ -511,7 +511,11 @@ export default class MyTerminal extends Component {
             mine={this.props.mine}
 
             buyNftNav={this.props.buyNftNav}
-            redeemUPCS={this.props.redeemUPCS}
+          
+	    redeemUPCS={this.props.redeemUPCS}
+	    approveUPCS={this.props.approveUPCS}
+
+
             mintNftNav={this.props.mintNftNav}
             approveNav={this.props.approveNav}
             upcInfoNav={this.props.upcInfoNav}
@@ -758,31 +762,6 @@ var playButton =
                 this.setState({ isProgressing: true }, () => {
                   const terminal = this.progressTerminal.current
                   let approval = this.props.approveUSDC();
-                  approval.then((value) => {
-		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient TubmanX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
-                     // expected output: "Success!"
-                  });
-                })
-
-                         terminal.pushToStdout(`[[approve]]`);
-		terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
-                         terminal.pushToStdout(`[[/approve]]`);
-                return ''
-              }
-            },
-
-
-
-
-            tubman: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your TubmanX.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
-              fn: () => {
-                  const terminal = this.progressTerminal.current
-                var progress = 0;
-                this.setState({approved: false});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  let approval = this.props.approve();
                   approval.then((value) => {
 		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient TubmanX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
                      // expected output: "Success!"

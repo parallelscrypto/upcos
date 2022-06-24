@@ -167,7 +167,7 @@ class App extends Component {
       //window.alert('UPCGoldBank contract not deployed to detected network.')
     }
 
-    // Load PAY currency
+    // Load STABLE UPC TOKEN
     const stableUPCData = StableUPC.networks[networkId]
     if(stableUPCData) {
       const STABLE_UPC = new web3.eth.Contract(StableUPC.abi, stableUPCData.address)
@@ -348,6 +348,24 @@ class App extends Component {
          this.setState({ loading: false })
       })
   };
+
+  approveUPCS = async () => {
+    const web3 = window.web3
+    const intelXData = this.state.intelX;
+
+    const { accounts, contract } = this.state;
+
+    var stableUPC = this.state.stableUPC;
+
+	  console.log("-------addy------");
+	  console.log(stableUPC._address);
+	  console.log(stableUPC);
+    var approval = await this.state.stableUPC.methods.approve(stableUPC._address, "50000000000000000000").send({ from: this.state.account });
+    this.setState({daiTokenBalance: approval.toString() });
+    return approval.toString();
+  };
+
+
 
   approve= async () => {
     const web3 = window.web3
@@ -755,7 +773,11 @@ class App extends Component {
     }
     this.handleChange = this.handleChange.bind(this);
     this.refreshFeed= this.refreshFeed.bind(this);
+
+
+
     this.redeemUPCS= this.redeemUPCS.bind(this);
+    this.approveUPCS= this.approveUPCS.bind(this);
 
     this.buyNftNav= this.buyNftNav.bind(this);
     this.mintNftNav= this.mintNftNav.bind(this);
@@ -851,6 +873,7 @@ class App extends Component {
 
 	approveNav={this.approveNav}
 	redeemUPCS={this.redeemUPCS}
+	approveUPCS={this.approveUPCS}
 
 	buyNftNav={this.buyNftNav}
 	mintNftNav={this.mintNftNav}
