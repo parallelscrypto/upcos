@@ -531,6 +531,7 @@ export default class MyTerminal extends Component {
             setIpfs={this.props.setIpfs}
             upcInfo={this.props.upcInfo}
             nftInfo={this.props.nftInfo}
+            getStableBalance={this.props.getStableBalance}
 
 
 			      />
@@ -746,38 +747,6 @@ var playButton =
         dangerMode={false}
         ref={this.progressTerminal}
         commands={{
-
-            swap: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** TubmanX is the token used to write [[intel]] to UPC codes.  In order to acquire TubmanX, you must run the `swap` command. This will `swap` Polygon that you have purchased likely from an exchange for TubmanX from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of TubmanX that you would like to exchange for the Polygon in your wallet in wei.  This will trigger a transaction that will mint equiv. TubmanX for Polygon 1:1.  Example: to buy 5 TubmanX type `swap 5000000000000000000`. In other words, this would send 5 Polygon from your wallet for 5 TubmanX from the TubmanX mint.  Visit <a href="upc://000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
-              fn: (amount) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  let approval = this.props.swap(amount);
-                  approval.then((value) => {
-                     approval = value;
-                         terminal.pushToStdout(`[[swap]]`);
-		     terminal.pushToStdout(`You have just swapped Polygon for TubmanX.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
-                         terminal.pushToStdout(`[[/swap]]`);
-                     // expected output: "Success!"
-                  });
-
-
-                  const interval = setInterval(() => {
-                    if (this.state.approved != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({approved: approval});
-                      var self = this;
-                      this.setState({ progress: this.state.progress + 10 } )
-                    }
-                  }, 1500)
-                })
-
-                return ''
-              }
-            },
 
             usdc: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your TubmanX.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
@@ -1232,43 +1201,6 @@ var playButton =
                          terminal.pushToStdout(`[[/smp]]`);
                          // expected output: "Success!"
                       });
-                })
-
-                return ''
-              }
-            },
-
-
-
-
-
-
-            bal: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display your TubmanX balance **</p>',
-              fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.getMyBalance();
-                      bal.then((value) => {
-                         theBal =window.web3.utils.fromWei(value, "ether");
-                         // expected output: "Success!"
-                      });
-
-
-                  const interval = setInterval(() => {
-                    if (this.state.progressBal != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({progressBal: bal});
-                      var self = this;
-                         terminal.pushToStdout(`[[inclusion-balance]]`);
-                      this.setState({ progress: this.state.progress + 10 }, () => terminal.pushToStdout(`Balance: ${theBal}` + " TubmanX"))
-                         terminal.pushToStdout(`[[/inclusionx-balance]]`);
-                    }
-                  }, 1500)
                 })
 
                 return ''

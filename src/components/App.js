@@ -22,6 +22,8 @@ import UpcDAO from '../abis/UpcDAO.json'
 import UPCMarket from '../abis/UPCMarket.json'
 import WalkieTalkie from '../abis/WalkieTalkie.json'
 
+import StableUPC from '../abis/StableUPC.json'
+
 import PokingsHauntUs from '../abis/PokingsHauntUs.json'
 import KegeExperiment from '../abis/KegeExperiment.json'
 
@@ -210,6 +212,22 @@ class App extends Component {
       //window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
     }
   }
+
+
+
+
+  getStableBalance = async () => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.	  
+    //let coinName = await USDC.methods.balanceOf('0x533084893cE0AFEd5C29e1F3a413b1A65b6383F4').call();
+    return this.state.USDC.methods.balanceOf(this.state.account).call({ from: this.state.account });
+  };
+
+
+
 
   stakeTokens= async (upc) => {
     const { accounts, contract } = this.state;
@@ -753,6 +771,9 @@ class App extends Component {
     this.nftInfoNav= this.nftInfoNav.bind(this);
     this.latestTokenIdNav= this.latestTokenIdNav.bind(this);
 
+    this.getStableBalance= this.getStableBalance.bind(this);
+
+
     this.pbal= this.pbal.bind(this);
     this.pigin = this.pigin.bind(this);
     this.pigout = this.pigout.bind(this);
@@ -816,6 +837,7 @@ class App extends Component {
 	buyNftNav={this.buyNftNav}
 	mintNftNav={this.mintNftNav}
 	approveUSDC={this.approveUSDC}
+	getStableBalance={this.getStableBalance}
 
 	approve={this.approve}
 	buyNft={this.buyNft}
