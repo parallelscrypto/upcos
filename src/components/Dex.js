@@ -44,6 +44,7 @@ export default class Dex extends Component {
                   var leadingNums = balLen - 6;  //there are 6 decimals for USDC
                   var firstX = bal.substr(0, leadingNums);
                   var last6 =  bal.substr(-6,6);
+                  last6 = last6.padStart(6,'0');
                   
                   var balReconstructed = firstX + '.' + last6
                   terminal.pushToStdout(`[[balance-usdc]]`);

@@ -1,0 +1,15 @@
+In order to buyUPCSWithTubmanX, call approve on tubmanx
+spender: UPCStable address
+amount: amount in wei
+
+
+in order to redeemUPCSForTubmanX, call approve on UPCSTable
+spender: this wallet
+amount: amount in wei
+
+
+There was a case when i couldnt redeem 99 tubmans so solution was:
+
+call approve on UPCStable with params:
+spender: 0x455784bdea2A7B759F9e42314F6c93C39b5868f2
+amount: 9999999999999999999999999999999999
