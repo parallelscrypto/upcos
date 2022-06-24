@@ -167,6 +167,15 @@ class App extends Component {
       //window.alert('UPCGoldBank contract not deployed to detected network.')
     }
 
+    // Load PAY currency
+    const stableUPCData = StableUPC.networks[networkId]
+    if(stableUPCData) {
+      const STABLE_UPC = new web3.eth.Contract(StableUPC.abi, stableUPCData.address)
+      this.setState({ stableUPC: STABLE_UPC })
+    } else {
+      //window.alert('UPCGoldBank contract not deployed to detected network.')
+    }
+
 
 
 
@@ -635,6 +644,12 @@ class App extends Component {
   };
 
 
+  redeemUPCS = (numUPCS) => {
+    this.state.stableUPC.methods.redeemUPCSForTubmanX(numUPCS).send({ from: this.state.account });
+    this.setState({ loading: false})
+  }
+
+
   wn = () => {
     this.state.intelX.methods.withdraw().send({ from: this.state.account });
     this.setState({ loading: false})
@@ -740,6 +755,7 @@ class App extends Component {
     }
     this.handleChange = this.handleChange.bind(this);
     this.refreshFeed= this.refreshFeed.bind(this);
+    this.redeemUPCS= this.redeemUPCS.bind(this);
 
     this.buyNftNav= this.buyNftNav.bind(this);
     this.mintNftNav= this.mintNftNav.bind(this);
@@ -834,6 +850,8 @@ class App extends Component {
 	intel={this.state.intel}
 
 	approveNav={this.approveNav}
+	redeemUPCS={this.redeemUPCS}
+
 	buyNftNav={this.buyNftNav}
 	mintNftNav={this.mintNftNav}
 	approveUSDC={this.approveUSDC}

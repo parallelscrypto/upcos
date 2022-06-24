@@ -63,6 +63,29 @@ export default class Dex extends Component {
      },
 
 
+
+    tubman: {
+       description: '<p style="color:hotpink;font-size:1.1em">** Swap your UPCS stable coins for TubmanX utility token.  Each UPCS will redeem to 5 TubmanX.  For example: `tubman 5000000000000000000` will send 5 UPCS from your wallet to our bank, and our bank will send you 25 TubmanX tokens.  Put 18 zeroes after the whole number that you want to send **</p>',
+       fn: (numUPCS) => {
+         this.setState({progressBal: ''});
+         this.setState({ isProgressing: true }, () => {
+           const terminal = this.terminal.current
+           var theBal;
+           let bal = this.props.redeemUPCS(numUPCS);
+           terminal.pushToStdout(`[[redeem-UPCS]]`);
+	   terminal.pushToStdout(`Your UPCS has been redeemed.  Check your balance with the 'bal' command`)
+           terminal.pushToStdout(`[[/redeem-UPCS]]`);
+
+         })
+
+         return ''
+       }
+     },
+
+
+
+
+
     baltx: {
        description: '<p style="color:hotpink;font-size:1.1em">** Display your TubmanX balance **</p>',
        fn: () => {

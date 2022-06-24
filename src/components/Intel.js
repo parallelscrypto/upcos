@@ -72,6 +72,7 @@ class Intel extends Component {
 	    setUpcMarket={this.props.setUpcMarket}
 
 	    buyNft={this.props.buyNft} 
+	    redeemUPCS={this.props.redeemUPCS} 
 	    mintNft={this.props.mintNft} 
 	    approve={this.props.approve} 
 	    approveUSDC={this.props.approveUSDC} 

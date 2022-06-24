@@ -511,6 +511,7 @@ export default class MyTerminal extends Component {
             mine={this.props.mine}
 
             buyNftNav={this.props.buyNftNav}
+            redeemUPCS={this.props.redeemUPCS}
             mintNftNav={this.props.mintNftNav}
             approveNav={this.props.approveNav}
             upcInfoNav={this.props.upcInfoNav}
