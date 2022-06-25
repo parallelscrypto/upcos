@@ -21,47 +21,6 @@ export default class Dex extends Component {
       }
     },
 
-    bal: {
-       description: '<p style="color:hotpink;font-size:1.1em">** Display your TubmanX balance **</p>',
-       fn: () => {
-         this.setState({progressBal: ''});
-         this.setState({ isProgressing: true }, () => {
-           const terminal = this.terminal.current
-           var theBal;
-           let bal = this.props.getMyBalance();
-               bal.then((value) => {
-                  theBal =window.web3.utils.fromWei(value, "ether");
-                  terminal.pushToStdout(`[[balance-tubmanx]]`);
-		  terminal.pushToStdout(`${theBal} TubmanX`)
-                  terminal.pushToStdout(`[[/balance-tubmanx]]`);
-                  // expected output: "Success!"
-               });
-
-           let balU = this.props.getStableBalance();
-           balU.then((value) => {
-              bal = value;
-                  var balLen = bal.length;
-                  var leadingNums = balLen - 6;  //there are 6 decimals for USDC
-                  var firstX = bal.substr(0, leadingNums);
-                  var last6 =  bal.substr(-6,6);
-                  last6 = last6.padStart(6,'0');
-                  
-                  var balReconstructed = firstX + '.' + last6
-                  terminal.pushToStdout(`[[balance-usdc]]`);
-		  terminal.pushToStdout(`${balReconstructed} USDC`)
-                  terminal.pushToStdout(`[[/balance-usdc]]`);
-              // expected output: "Success!"
-           });
-
-
-
-
-         })
-
-         return ''
-       }
-     },
-
 
     step0t: {
             description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your TubmanX.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
@@ -71,6 +30,27 @@ export default class Dex extends Component {
         this.setState({approved: false});
         this.setState({ isProgressing: true }, () => {
           let approval = this.props.approveUPCS();
+          approval.then((value) => {
+             terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient TubmanX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
+             // expected output: "Success!"
+          });
+        })
+
+                 terminal.pushToStdout(`[[approve]]`);
+        terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
+                 terminal.pushToStdout(`[[/approve]]`);
+        return ''
+      }
+    },
+
+    step0u: {
+            description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 99999 of your TubmanX.  After you have spent 99999, you must run approve again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
+      fn: () => {
+          const terminal = this.terminal.current
+        var progress = 0;
+        this.setState({approved: false});
+        this.setState({ isProgressing: true }, () => {
+          let approval = this.props.approveTubman4UPCS();
           approval.then((value) => {
              terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient TubmanX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
              // expected output: "Success!"
@@ -127,6 +107,108 @@ export default class Dex extends Component {
        }
      },
 
+    upcs: {
+       description: '<p style="color:hotpink;font-size:1.1em">** Swap your TubmanX utility tokens for UPCS stable coin.  Send 5 TubmanX to receive 1 UPCS.  For example: `upcs 5000000000000000000` will send 5 TubmanX from your wallet to our bank, and our bank will send you 1 UPCS token.  Put 18 zeroes after the whole number that you want to send **</p>',
+       fn: (numUPCS) => {
+         this.setState({progressBal: ''});
+         this.setState({ isProgressing: true }, () => {
+           const terminal = this.terminal.current
+           var theBal;
+           let bal = this.props.buyUPCSWithTubmanX(numUPCS);
+           terminal.pushToStdout(`[[buy-UPCS]]`);
+	   terminal.pushToStdout(`Your TubmanX has been converted into UPCS Stable.  Check your balance with the 'bal' command`)
+           terminal.pushToStdout(`[[/buy-UPCS]]`);
+
+         })
+
+         return ''
+       }
+     },
+
+    bal: {
+       description: '<p style="color:hotpink;font-size:1.1em">** Display your TubmanX balance **</p>',
+       fn: () => {
+         this.setState({progressBal: ''});
+         this.setState({ isProgressing: true }, () => {
+           const terminal = this.terminal.current
+           var theBal;
+           let bal = this.props.getMyBalance();
+               bal.then((value) => {
+                  theBal =window.web3.utils.fromWei(value, "ether");
+                  terminal.pushToStdout(`[[balance-tubmanx]]`);
+		  terminal.pushToStdout(`${theBal} TubmanX`)
+                  terminal.pushToStdout(`[[/balance-tubmanx]]`);
+                  terminal.pushToStdout(`================`);
+                  terminal.pushToStdout(`================`);
+                  // expected output: "Success!"
+               });
+
+
+           let balUPCS = this.props.getUPCSBalance();
+               balUPCS.then((value) => {
+                  theBal =window.web3.utils.fromWei(value, "ether");
+                  terminal.pushToStdout(`[[balance-upcs]]`);
+		  terminal.pushToStdout(`${theBal} UPCS`)
+                  terminal.pushToStdout(`[[/balance-upcs]]`);
+                  terminal.pushToStdout(`================`);
+                  terminal.pushToStdout(`================`);
+                  // expected output: "Success!"
+               });
+
+
+
+
+           let balU = this.props.getStableBalance();
+           balU.then((value) => {
+              bal = value;
+                  var balLen = bal.length;
+                  var leadingNums = balLen - 6;  //there are 6 decimals for USDC
+                  var firstX = bal.substr(0, leadingNums);
+                  var last6 =  bal.substr(-6,6);
+                  last6 = last6.padStart(6,'0');
+                  
+                  var balReconstructed = firstX + '.' + last6
+                  terminal.pushToStdout(`[[balance-usdc]]`);
+		  terminal.pushToStdout(`${balReconstructed} USDC`)
+                  terminal.pushToStdout(`[[/balance-usdc]] \n\n`);
+                  terminal.pushToStdout(`================`);
+                  terminal.pushToStdout(`================`);
+              // expected output: "Success!"
+           });
+
+
+
+
+         })
+
+         return ''
+       }
+     },
+
+
+
+
+    balupcs: {
+       description: '<p style="color:hotpink;font-size:1.1em">** Display your TubmanX balance **</p>',
+       fn: () => {
+         this.setState({progressBal: ''});
+         this.setState({ isProgressing: true }, () => {
+           const terminal = this.terminal.current
+           var theBal;
+           let bal = this.props.getUPCSBalance();
+               bal.then((value) => {
+                  theBal =window.web3.utils.fromWei(value, "ether");
+                  terminal.pushToStdout(`[[balance-upcs]]`);
+		  terminal.pushToStdout(`${theBal}`)
+                  terminal.pushToStdout(`[[/balance-upcs]]`);
+                  // expected output: "Success!"
+               });
+
+         })
+
+         return ''
+       }
+     },
 
 
 

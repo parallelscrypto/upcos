@@ -360,7 +360,21 @@ class App extends Component {
 	  console.log("-------addy------");
 	  console.log(stableUPC._address);
 	  console.log(stableUPC);
-    var approval = await this.state.stableUPC.methods.approve(stableUPC._address, "50000000000000000000").send({ from: this.state.account });
+    var approval = await this.state.stableUPC.methods.approve(stableUPC._address, "99999000000000000000000").send({ from: this.state.account });
+    this.setState({daiTokenBalance: approval.toString() });
+    return approval.toString();
+  };
+
+
+  approveTubman4UPCS = async () => {
+    const web3 = window.web3
+    const intelXData = this.state.intelX;
+
+    const { accounts, contract } = this.state;
+
+    var upcNFTData = this.state.upcNFTData;
+    var approval = await this.state.intelX.methods.approve(upcNFTData.address, "99999000000000000000000").send({ from: this.state.account });
+
     this.setState({daiTokenBalance: approval.toString() });
     return approval.toString();
   };
@@ -662,6 +676,12 @@ class App extends Component {
   };
 
 
+  buyUPCSWithTubmanX= (numUPCS) => {
+    this.state.stableUPC.methods.buyUPCSWithTubmanX(numUPCS).send({ from: this.state.account });
+    this.setState({ loading: false})
+  }
+
+
   redeemUPCS = (numUPCS) => {
     this.state.stableUPC.methods.redeemUPCSForTubmanX(numUPCS).send({ from: this.state.account });
     this.setState({ loading: false})
@@ -704,6 +724,16 @@ class App extends Component {
     this.setState({daiTokenBalance: stakingBalance.toString() });
     return stakingBalance.toString();
   };
+
+  getUPCSBalance = async () => {
+    const { accounts, contract } = this.state;
+
+    var stakingBalance = await this.state.stableUPC.methods.balanceOf(this.state.account).call({ from: this.state.account });
+    this.setState({daiTokenBalance: stakingBalance.toString() });
+    return stakingBalance.toString();
+  };
+
+
 
 
   pbal = async (upcId) => {
@@ -777,6 +807,7 @@ class App extends Component {
 
 
     this.redeemUPCS= this.redeemUPCS.bind(this);
+    this.buyUPCSWithTubmanX= this.buyUPCSWithTubmanX.bind(this);
     this.approveUPCS= this.approveUPCS.bind(this);
 
     this.buyNftNav= this.buyNftNav.bind(this);
@@ -788,10 +819,12 @@ class App extends Component {
     this.buyNft= this.buyNft.bind(this);
     this.mintNft= this.mintNft.bind(this);
     this.approve= this.approve.bind(this);
+    this.approveTubman4UPCS= this.approveTubman4UPCS.bind(this);
     this.getVrByUpcId= this.getVrByUpcId.bind(this);
     this.mine= this.mine.bind(this);
     this.updateUpc= this.updateUpc.bind(this);
     this.getMyBalance = this.getMyBalance.bind(this);
+    this.getUPCSBalance= this.getUPCSBalance.bind(this);
     this.getTVL = this.getTVL.bind(this);
     this.handleFlip = this.handleFlip.bind(this);
     this.swap= this.swap.bind(this);
@@ -868,11 +901,13 @@ class App extends Component {
 	address={this.state.account}
         handleChange={this.handleChange}
         updateUpc={this.updateUpc}
+	getUPCSBalance={this.getUPCSBalance}
 	getMyBalance={this.getMyBalance}
 	intel={this.state.intel}
 
 	approveNav={this.approveNav}
 	redeemUPCS={this.redeemUPCS}
+	buyUPCSWithTubmanX={this.buyUPCSWithTubmanX}
 	approveUPCS={this.approveUPCS}
 
 	buyNftNav={this.buyNftNav}
@@ -881,6 +916,7 @@ class App extends Component {
 	getStableBalance={this.getStableBalance}
 
 	approve={this.approve}
+	approveTubman4UPCS={this.approveTubman4UPCS}
 	buyNft={this.buyNft}
 	mintNft={this.mintNft}
 	getVrByUpcId={this.getVrByUpcId}

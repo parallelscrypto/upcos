@@ -74,7 +74,9 @@ class Intel extends Component {
 	    buyNft={this.props.buyNft} 
 	    
 	    redeemUPCS={this.props.redeemUPCS} 
+	    buyUPCSWithTubmanX={this.props.buyUPCSWithTubmanX} 
 	    approveUPCS={this.props.approveUPCS} 
+	    approveTubman4UPCS={this.props.approveTubman4UPCS} 
 
 
 	    mintNft={this.props.mintNft} 
@@ -94,6 +96,7 @@ class Intel extends Component {
 	    collectFromMarket={this.props.collectFromMarket}
 	    getSaleInfo={this.props.getSaleInfo}
 	    getMyBalance={this.props.getMyBalance} 
+	    getUPCSBalance={this.props.getUPCSBalance} 
 	    getVrByUpcId={this.props.getVrByUpcId} 
 	    getMyNfts={this.props.getMyNfts} 
 	    getWalkieTalkie={this.props.getWalkieTalkie} 

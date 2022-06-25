@@ -513,7 +513,9 @@ export default class MyTerminal extends Component {
             buyNftNav={this.props.buyNftNav}
           
 	    redeemUPCS={this.props.redeemUPCS}
+	    buyUPCSWithTubmanX={this.props.buyUPCSWithTubmanX}
 	    approveUPCS={this.props.approveUPCS}
+	    approveTubman4UPCS={this.props.approveTubman4UPCS}
 
 
             mintNftNav={this.props.mintNftNav}
@@ -529,6 +531,7 @@ export default class MyTerminal extends Component {
             wa={this.props.wa}
             pbal={this.props.pbal}
             getMyBalance={this.props.getMyBalance}
+            getUPCSBalance={this.props.getUPCSBalance}
             getMyNfts={this.props.getMyNfts}
             getWalkieTalkie={this.props.getWalkieTalkie}
             setVr={this.props.setVr}
