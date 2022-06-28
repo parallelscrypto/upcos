@@ -52,7 +52,7 @@ export default class Dex extends Component {
         this.setState({ isProgressing: true }, () => {
           let approval = this.props.approveTubman4UPCS();
           approval.then((value) => {
-             terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient TubmanX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
+             terminal.pushToStdout(`You can now swap your TubmanX tokens for UPCStable using the 'upcs' command.  If you want 5 upcs, you need 25 TubmanX as there is a 5:1 exchange ratio.  The command to swap 25 TubmanX for 5 UPCS would be 'upcs 5000000000000000000'`)
              // expected output: "Success!"
           });
         })

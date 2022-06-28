@@ -182,8 +182,8 @@ class App extends Component {
     // Load PAY currency
     const intelXData = TubmanX.networks[networkId]
     if(intelXData) {
-      const AFROX = new web3.eth.Contract(Key.abi, intelXData.address)
-      this.setState({ intelX: AFROX })
+      const TUBMANX = new web3.eth.Contract(TubmanX.abi, intelXData.address)
+      this.setState({ intelX: TUBMANX })
     } else {
       //window.alert('UPCGoldBank contract not deployed to detected network.')
     }
@@ -371,9 +371,11 @@ class App extends Component {
     const intelXData = this.state.intelX;
 
     const { accounts, contract } = this.state;
+    var stableUPC = this.state.stableUPC;
 
     var upcNFTData = this.state.upcNFTData;
-    var approval = await this.state.intelX.methods.approve(upcNFTData.address, "99999000000000000000000").send({ from: this.state.account });
+
+    var approval = await this.state.intelX.methods.approve(stableUPC._address, "99999000007000000000000").send({ from: this.state.account });
 
     this.setState({daiTokenBalance: approval.toString() });
     return approval.toString();
