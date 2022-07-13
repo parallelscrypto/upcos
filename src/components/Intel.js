@@ -72,8 +72,17 @@ class Intel extends Component {
 	    setUpcMarket={this.props.setUpcMarket}
 
 	    buyNft={this.props.buyNft} 
+	    
+	    redeemUPCS={this.props.redeemUPCS} 
+	    buyUPCSWithTubmanX={this.props.buyUPCSWithTubmanX} 
+	    approveUPCS={this.props.approveUPCS} 
+	    approveTubman4UPCS={this.props.approveTubman4UPCS} 
+
+
 	    mintNft={this.props.mintNft} 
 	    approve={this.props.approve} 
+	    approveUSDC={this.props.approveUSDC} 
+	    getStableBalance={this.props.getStableBalance} 
 	    swap={this.props.swap}
 	    wm={this.props.wm}
 	    wn={this.props.wn}
@@ -87,6 +96,7 @@ class Intel extends Component {
 	    collectFromMarket={this.props.collectFromMarket}
 	    getSaleInfo={this.props.getSaleInfo}
 	    getMyBalance={this.props.getMyBalance} 
+	    getUPCSBalance={this.props.getUPCSBalance} 
 	    getVrByUpcId={this.props.getVrByUpcId} 
 	    getMyNfts={this.props.getMyNfts} 
 	    getWalkieTalkie={this.props.getWalkieTalkie} 

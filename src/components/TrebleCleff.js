@@ -30,9 +30,9 @@ this.props.play()
                         style={{background: "#000000", color:"green", width: "20vw", height: "20vw"}}
                         onClick={(e) => { 
                                      this.props.handleFlip(e)
-                                     this.props.hero();
+                                     this.props.dex();
                         }}
-                  >hero [[{this.props.account}]]</button>
+                  >dex [[*****]]</button>
 
 
 

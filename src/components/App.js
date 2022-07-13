@@ -22,6 +22,8 @@ import UpcDAO from '../abis/UpcDAO.json'
 import UPCMarket from '../abis/UPCMarket.json'
 import WalkieTalkie from '../abis/WalkieTalkie.json'
 
+import StableUPC from '../abis/StableUPC.json'
+
 import PokingsHauntUs from '../abis/PokingsHauntUs.json'
 import KegeExperiment from '../abis/KegeExperiment.json'
 
@@ -49,7 +51,8 @@ import { TickerTape } from "react-ts-tradingview-widgets";
 //const market_address = "0x59e09C81FF70efD0208B98E3843852aCA3962982";
 //const market_address = "0x32Cdf28d9E148D373b04238864586784244C86b1";
 const market_address = "0x28B3D93c4e25769F4aD52b7679D5186E077e0856";
-
+const usdc_address   = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
+var abi = require('human-standard-token-abi');
 
 class App extends Component {
 
@@ -151,13 +154,36 @@ class App extends Component {
     }
 
 
+	
+    // Load STABLE PAY currency
+    if(usdc_address)  {
+      const USDC = new web3.eth.Contract(abi, usdc_address)
+//      console.log("!!!!!!!!!! USDC IS !!!!!!!!!!!!!!!!")
+//      let coinName = await USDC.methods.balanceOf('0x533084893cE0AFEd5C29e1F3a413b1A65b6383F4').call();
+//      console.log(coinName);
+//      console.log(USDC);
+      this.setState({ USDC: USDC})
+    } else {
+      //window.alert('UPCGoldBank contract not deployed to detected network.')
+    }
+
+    // Load STABLE UPC TOKEN
+    const stableUPCData = StableUPC.networks[networkId]
+    if(stableUPCData) {
+      const STABLE_UPC = new web3.eth.Contract(StableUPC.abi, stableUPCData.address)
+      this.setState({ stableUPC: STABLE_UPC })
+    } else {
+      //window.alert('UPCGoldBank contract not deployed to detected network.')
+    }
+
+
 
 
     // Load PAY currency
     const intelXData = TubmanX.networks[networkId]
     if(intelXData) {
-      const AFROX = new web3.eth.Contract(Key.abi, intelXData.address)
-      this.setState({ intelX: AFROX })
+      const TUBMANX = new web3.eth.Contract(TubmanX.abi, intelXData.address)
+      this.setState({ intelX: TUBMANX })
     } else {
       //window.alert('UPCGoldBank contract not deployed to detected network.')
     }
@@ -195,6 +221,22 @@ class App extends Component {
       //window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
     }
   }
+
+
+
+
+  getStableBalance = async () => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.	  
+    //let coinName = await USDC.methods.balanceOf('0x533084893cE0AFEd5C29e1F3a413b1A65b6383F4').call();
+    return this.state.USDC.methods.balanceOf(this.state.account).call({ from: this.state.account });
+  };
+
+
+
 
   stakeTokens= async (upc) => {
     const { accounts, contract } = this.state;
@@ -307,6 +349,40 @@ class App extends Component {
       })
   };
 
+  approveUPCS = async () => {
+    const web3 = window.web3
+    const intelXData = this.state.intelX;
+
+    const { accounts, contract } = this.state;
+
+    var stableUPC = this.state.stableUPC;
+
+	  console.log("-------addy------");
+	  console.log(stableUPC._address);
+	  console.log(stableUPC);
+    var approval = await this.state.stableUPC.methods.approve(stableUPC._address, "99999000000000000000000").send({ from: this.state.account });
+    this.setState({daiTokenBalance: approval.toString() });
+    return approval.toString();
+  };
+
+
+  approveTubman4UPCS = async () => {
+    const web3 = window.web3
+    const intelXData = this.state.intelX;
+
+    const { accounts, contract } = this.state;
+    var stableUPC = this.state.stableUPC;
+
+    var upcNFTData = this.state.upcNFTData;
+
+    var approval = await this.state.intelX.methods.approve(stableUPC._address, "99999000007000000000000").send({ from: this.state.account });
+
+    this.setState({daiTokenBalance: approval.toString() });
+    return approval.toString();
+  };
+
+
+
   approve= async () => {
     const web3 = window.web3
     const intelXData = this.state.intelX;
@@ -316,6 +392,21 @@ class App extends Component {
     var upcNFTData = this.state.upcNFTData;
     var approval = await this.state.intelX.methods.approve(upcNFTData.address, "50000000000000000000").send({ from: this.state.account });
     this.setState({daiTokenBalance: approval.toString() });
+    return approval.toString();
+  };
+
+
+  approveUSDC = async () => {
+    const web3 = window.web3
+    const intelXData = this.state.intelX;
+
+    const { accounts, contract } = this.state;
+
+    var upcNFTData = this.state.upcNFTData;
+
+
+    var approval = await this.state.USDC.methods.approve(upcNFTData.address, "500000000").send({ from: this.state.account });
+    this.setState({usdcApprove: approval.toString() });
     return approval.toString();
   };
 
@@ -587,6 +678,18 @@ class App extends Component {
   };
 
 
+  buyUPCSWithTubmanX= (numUPCS) => {
+    this.state.stableUPC.methods.buyUPCSWithTubmanX(numUPCS).send({ from: this.state.account });
+    this.setState({ loading: false})
+  }
+
+
+  redeemUPCS = (numUPCS) => {
+    this.state.stableUPC.methods.redeemUPCSForTubmanX(numUPCS).send({ from: this.state.account });
+    this.setState({ loading: false})
+  }
+
+
   wn = () => {
     this.state.intelX.methods.withdraw().send({ from: this.state.account });
     this.setState({ loading: false})
@@ -623,6 +726,16 @@ class App extends Component {
     this.setState({daiTokenBalance: stakingBalance.toString() });
     return stakingBalance.toString();
   };
+
+  getUPCSBalance = async () => {
+    const { accounts, contract } = this.state;
+
+    var stakingBalance = await this.state.stableUPC.methods.balanceOf(this.state.account).call({ from: this.state.account });
+    this.setState({daiTokenBalance: stakingBalance.toString() });
+    return stakingBalance.toString();
+  };
+
+
 
 
   pbal = async (upcId) => {
@@ -693,17 +806,27 @@ class App extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.refreshFeed= this.refreshFeed.bind(this);
 
+
+
+    this.redeemUPCS= this.redeemUPCS.bind(this);
+    this.buyUPCSWithTubmanX= this.buyUPCSWithTubmanX.bind(this);
+    this.approveUPCS= this.approveUPCS.bind(this);
+
     this.buyNftNav= this.buyNftNav.bind(this);
     this.mintNftNav= this.mintNftNav.bind(this);
     this.approveNav= this.approveNav.bind(this);
 
+    this.approveUSDC= this.approveUSDC.bind(this);
+
     this.buyNft= this.buyNft.bind(this);
     this.mintNft= this.mintNft.bind(this);
     this.approve= this.approve.bind(this);
+    this.approveTubman4UPCS= this.approveTubman4UPCS.bind(this);
     this.getVrByUpcId= this.getVrByUpcId.bind(this);
     this.mine= this.mine.bind(this);
     this.updateUpc= this.updateUpc.bind(this);
     this.getMyBalance = this.getMyBalance.bind(this);
+    this.getUPCSBalance= this.getUPCSBalance.bind(this);
     this.getTVL = this.getTVL.bind(this);
     this.handleFlip = this.handleFlip.bind(this);
     this.swap= this.swap.bind(this);
@@ -720,6 +843,9 @@ class App extends Component {
     this.upcInfoNav= this.upcInfoNav.bind(this);
     this.nftInfoNav= this.nftInfoNav.bind(this);
     this.latestTokenIdNav= this.latestTokenIdNav.bind(this);
+
+    this.getStableBalance= this.getStableBalance.bind(this);
+
 
     this.pbal= this.pbal.bind(this);
     this.pigin = this.pigin.bind(this);
@@ -777,14 +903,22 @@ class App extends Component {
 	address={this.state.account}
         handleChange={this.handleChange}
         updateUpc={this.updateUpc}
+	getUPCSBalance={this.getUPCSBalance}
 	getMyBalance={this.getMyBalance}
 	intel={this.state.intel}
 
 	approveNav={this.approveNav}
+	redeemUPCS={this.redeemUPCS}
+	buyUPCSWithTubmanX={this.buyUPCSWithTubmanX}
+	approveUPCS={this.approveUPCS}
+
 	buyNftNav={this.buyNftNav}
 	mintNftNav={this.mintNftNav}
+	approveUSDC={this.approveUSDC}
+	getStableBalance={this.getStableBalance}
 
 	approve={this.approve}
+	approveTubman4UPCS={this.approveTubman4UPCS}
 	buyNft={this.buyNft}
 	mintNft={this.mintNft}
 	getVrByUpcId={this.getVrByUpcId}
