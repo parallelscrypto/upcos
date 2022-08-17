@@ -36,17 +36,32 @@ export default class NftPopupModal extends Component {
     var prizeBase64 ="https://ipfs.io/ipfs/QmRX4SzbGLpFtejZd9aW2MQc3rKTTwu9nM12beBkNSyqHv/#/intel/" + btoa(JSON.stringify(prizeJson));
 //    var prizeBase64 = "https://gateway.pinata.cloud/ipfs/Qmeet7SJ2mvrp6PTJMzbVCP6y2WFWWXY2iKA1UUGg8ptrA/#/intel/eyJjb2RlIjoiMDEyNTg3NzA0NDAwIn0=" + btoa(JSON.stringify(prizeJson));
     var player;
-    var vr = this.state.video;
-    if(vr && vr.includes('tiktok')) {
-       player = <TikTok url={vr} />
+    var unownedVr = this.state.video;
+
+    if(unownedVr && unownedVr.includes('tiktok')) {
+       player = <TikTok url={unownedVr} />
+    }
+    //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
+    //pasting does not get the player with controls (this iframe player below)
+    else if(unownedVr && unownedVr.length == 11) {
+       const youtubeID = unownedVr
+       player =
+       <iframe className='video'
+               style={{minHeight:"100vh",width:"100vw"}}
+               title='Youtube player'
+               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+               src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
+       </iframe>
     }
     else {
-       player = <ReactPlayer 
+       player = <ReactPlayer
                     width="100vw"
-                    url={vr} 
+                    url={unownedVr}
                 />
 
     }
+
+
 
 
     return (
