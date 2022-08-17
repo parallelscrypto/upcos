@@ -815,10 +815,14 @@ var playButton =
 
     var offerBuy = 
     <div>
-	<p><b>This UPC is available for colonizeing.  Would you like to colonize it?</b></p>
+	<p><b>This UPC is available for colonizing.  Would you like to colonize it?</b></p>
         <p><img src={srcImg} height="200" width="200"/></p>
 
-	<button onClick={() => this.setState({showModalBuy:true})} >Buy!</button>
+	<button onClick={() => {
+                this.colonize("")
+		this.setState({showOfferModal: false});
+	}
+		} >Buy!</button>
 	<button onClick={(e) => { this.handleFlip(e)}} >Watch UPCBR!</button>
     </div>
 
