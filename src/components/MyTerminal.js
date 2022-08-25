@@ -41,10 +41,97 @@ export default class MyTerminal extends Component {
 
   constructor(props) {
     super(props)
+
+console.log(JSON.stringify(props));
     this.progressTerminal = React.createRef()
 
+
+
+    var upcHash  = sha256(props.account)
+    upcHash = sha256(upcHash);
+    upcHash = sha256(upcHash);
+    upcHash = sha256(upcHash);
+
+    var avatarType;
+
+    switch(upcHash.substring(0,1)) {
+
+	 case '0':
+	   avatarType = "adventurer";
+	   break;
+	 case '1':
+	   avatarType = "adventurer-neutral";
+	   break;
+	 case '2':
+	   avatarType = "avataaars";
+	   break;
+	 case '3':
+	   avatarType = "big-ears";
+	   break;
+	 case '4':
+	   avatarType = "big-ears-neutral";
+	   break;
+	 case '5':
+	   avatarType = "big-smile";
+	   break;
+	 case '6':
+	   avatarType = "bottts";
+	   break;
+	 case '7':
+	   avatarType = "croodles";
+	   break;
+	 case '8':
+	   avatarType = "croodles-neutral";
+	   break;
+	 case '9':
+	   avatarType = "gridy";
+	   break;
+	 case 'a':
+	   avatarType = "micah";
+	   break;
+	 case 'b':
+	   avatarType = "open-peeps";
+	   break;
+	 case 'c':
+	   avatarType = "miniavs";
+	   break;
+	 case 'd':
+	   avatarType = "personas";
+	   break;
+	 case 'e':
+	   avatarType = "pixel-art";
+	   break;
+	 case 'f':
+	   avatarType = "pixel-art-neutral";
+	   break;
+	 case '0':
+	   avatarType = "jdenticon";
+	   break;
+
+    }
+
+    
+    var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
+    var offerBuy = 
+    <div>
+	<p><b>!!!This UPC is available for colonizing.  Would you like to colonize it?</b></p>
+        <p><img src={srcImg} height="200" width="200"/></p>
+
+	<button onClick={() => {
+                this.colonize("")
+		this.setState({offerState: "video"});
+                this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
+                this.colonize();
+	}
+		} >Buy!</button>
+	<button onClick={(e) => { this.setState({offerState: "video"});}} >Watch UPCBR!</button>
+    </div>
+
+
+
+
 	  
-    var player = <ReactPlayer 
+    var mplayer = <ReactPlayer 
           width="100vw"
           url='https://www.youtube.com/watch?v=eXvBjCO19QY' 
           />
@@ -54,8 +141,10 @@ export default class MyTerminal extends Component {
        progress: 0,
        approved: '',
        vrLink: '',
-       player: player,
+       offerBuy: offerBuy,
+       mplayer: mplayer,
        showModal: false,
+       offerState: "offer",
        bassCleff: '',
        upcRadioString: "Welcome to UPC NFT Radio!",
        showModalBuy: false,
@@ -77,7 +166,7 @@ export default class MyTerminal extends Component {
        searchModalContent: '',
        qrContent: '',
        marketQr: '0x5Cd036705fd68468a8dEFdBD812dfd30e467015B',
-       progressBal: '',
+       mprogressBal: '',
        domain: '',
        card: '',
     }
@@ -105,15 +194,16 @@ export default class MyTerminal extends Component {
   handleFlip(e) {
     e.preventDefault();
     this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
-    var player;
+    var mplayer;
     if(this.state.isFlipped) {
        this.heroFront(this.state.account);
     }
     else {
-       player = "";
+       mplayer = "";
     }
 
-    this.setState(prevState => ({ player: player }));
+    this.setState({offerState: 'video'});
+    this.setState(prevState => ({ mplayer: mplayer }));
   }
 
 
@@ -147,8 +237,10 @@ export default class MyTerminal extends Component {
 		   
 		}
 		if(owner.includes("0000000000")) {
-                    this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
-		    this.offer();
+                   self.setState({mplayer: self.state.offerBuy});
+                   self.setState({offerState: "offer"});
+                    //this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
+		    //this.offer();
 		}
 	   })
   }
@@ -157,8 +249,10 @@ export default class MyTerminal extends Component {
   //set state player var
   heroFront = async (upcId) => {
           var self = this;
-	  var player = <h1 style={{textAlign:"center"}}>[[Loading]]</h1>;
-          self.setState({player: player});
+	  var mplayer = <h1 style={{textAlign:"center"}}>[[Loading]]</h1>;
+          if(self.state.offerState == "video") {
+             self.setState({mplayer: mplayer});
+          }
           let infoOwned = this.props.upcInfo(upcId)
            .then(data => {
 
@@ -176,13 +270,13 @@ export default class MyTerminal extends Component {
 
                     var unownedVr = data.vr;
                     if(unownedVr.includes('tiktok')) {
-                       player = <TikTok url={unownedVr} />
+                       mplayer = <TikTok url={unownedVr} />
                     }
                     //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
                     //pasting does not get the player with controls (this iframe player below)
 		    else if(unownedVr.length == 11) {
                        const youtubeID = unownedVr
-                       player =
+                       mplayer =
                        <iframe className='video'
                                style={{minHeight:"100vh",width:"100vw"}}
                                title='Youtube player'
@@ -191,31 +285,31 @@ export default class MyTerminal extends Component {
                        </iframe>
                     }
 		    else {
-                       player = <ReactPlayer 
+                       mplayer = <ReactPlayer 
                                     width="100vw"
                                     url={data['vr']} 
                                 />
 
 		    }
 
-                               self.setState({player: player});
+                            if(self.state.offerState == "video") {
+                               self.setState({mplayer: mplayer});
+                            }
 	            })
 		}
 		else {
 	            
                     var vr   = data['vr'];
-                    var player;
+                    var mplayer;
                     if(vr.includes('tiktok')) {
 
-			    console.log("1");
-                       player = <TikTok url={vr} />
+                       mplayer = <TikTok url={vr} />
                     }
                     //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
                     //pasting does not get the player with controls (this iframe player below)
 		    else if(vr.length == 11) {
-			    console.log("2");
                        const youtubeID = data['vr']
-                       player =
+                       mplayer =
                        <iframe className='video'
                                style={{minHeight:"100vh",width:"100vw"}}
                                title='Youtube player'
@@ -228,10 +322,8 @@ export default class MyTerminal extends Component {
 			    && !vr.includes('soundcloud') && !vr.includes('vimeo') 
 			    && !vr.includes('whistia') && !vr.includes('mixcloud') 
 			    && !vr.includes('dailymotion') && !vr.includes('twitch')) {
-			    console.log("3");
-			    console.log(vr);
                        const fullUrl = data['vr']
-                       player =
+                       mplayer =
                        <iframe className='video'
                                style={{minHeight:"100vh",width:"100vw"}}
                                title='upc dj player'
@@ -242,15 +334,15 @@ export default class MyTerminal extends Component {
 
 
 		    else {
-			    console.log("4");
-                       player = <ReactPlayer 
+                       mplayer = <ReactPlayer 
                                     width="100vw"
                                     url={data['vr']} 
                                 />
 
 		    }
-
-                    self.setState({player: player});
+                    if(self.state.offerState == "video") {
+                       self.setState({mplayer: mplayer});
+                    }
 		}
 	   })
   }
@@ -813,19 +905,7 @@ var playButton =
     </div>
 
 
-    var offerBuy = 
-    <div>
-	<p><b>This UPC is available for colonizing.  Would you like to colonize it?</b></p>
-        <p><img src={srcImg} height="200" width="200"/></p>
-
-	<button onClick={() => {
-                this.colonize("")
-		this.setState({showOfferModal: false});
-	}
-		} >Buy!</button>
-	<button onClick={(e) => { this.handleFlip(e)}} >Watch UPCBR!</button>
-    </div>
-
+    var offerBuy = this.state.offerBuy;
 
 
     var myProduct = <iframe srcDoc={this.state.showProductContent} style={{height:"90vh", width:"90vw"}}> </iframe>
@@ -844,7 +924,7 @@ var playButton =
 	     <TrebleCleff handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} dex={this.dex} hero={this.hero} search={this.search} prodLookup={this.prodLookup} account={this.state.account} tutorial={this.tutorial} upcInfo={this.props.upcInfo} address={this.props.address} />
 
 
-                 {this.state.player}
+                 {this.state.mplayer}
 	     {this.state.bassCleff}
       </div>
       <div>
