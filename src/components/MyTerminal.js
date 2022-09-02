@@ -144,7 +144,7 @@ console.log(JSON.stringify(props));
        offerBuy: offerBuy,
        mplayer: mplayer,
        showModal: false,
-       offerState: "offer",
+       offerState: "video",
        bassCleff: '',
        upcRadioString: "Welcome to UPC NFT Radio!",
        showModalBuy: false,
@@ -323,13 +323,51 @@ console.log(JSON.stringify(props));
 			    && !vr.includes('whistia') && !vr.includes('mixcloud') 
 			    && !vr.includes('dailymotion') && !vr.includes('twitch')) {
                        const fullUrl = data['vr']
-                       mplayer =
-                       <iframe className='video'
-                               style={{minHeight:"100vh",width:"100vw"}}
-                               title='upc dj player'
-                               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
-                               src={fullUrl}>
-                       </iframe>
+
+
+
+                       axios({
+                           url: data['vr'], //your url
+                           method: 'GET',
+                           responseType: 'blob', // important
+                       }).then((response) => {
+                           console.log("0000000000000qrRqwrwqerwqerwq");
+                           console.log(response);
+                           var vid = response.data;
+                           response.headers.contntType = "video/mp4";
+                           vid = vid.slice(0,vid.size,"video/mp4");
+
+
+                           var file = new File([vid],"test.mp4",{type: "video/mp4"});
+                           response.data = vid;
+                           console.log(file);
+
+
+                       var mplayer = <ReactPlayer 
+                                    width="100vw"
+                                    url={file} 
+                                />
+
+
+
+
+                           // create file link in browser's memory
+                           const href = URL.createObjectURL(file);
+                       
+                           // create "a" HTLM element with href to file & click
+                           const link = document.createElement('a');
+                           link.href = href;
+                           link.setAttribute('download', 'file.pdf'); //or any other extension
+                           document.body.appendChild(link);
+                           link.click();
+                       
+                           self.setState({mplayer: mplayer});
+                           // clean up "a" element & remove ObjectURL
+                           //document.body.removeChild(link);
+                           //URL.revokeObjectURL(url);
+                       });
+
+
                     }
 
 
@@ -405,22 +443,11 @@ console.log(JSON.stringify(props));
   }
 
   upload= async (upc) => {
-    var xhr = new XMLHttpRequest();
-    var self = this;
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-           var resp = xhr.responseXML.body.outerHTML;
 
-           var fullResp = '<html>' + resp + '</html>';
-           self.setState({showProductContent:fullResp});
-           self.setState({showProductModal:true});
-        }
-    }
+      var uploadLink = "https://upcunderground.mypinata.cloud/ipfs/QmPYD2Pv7yH1BZ2XU2WjBxrvoSkkCTdn5mMkRNMwwe6qTU";
+      var uploadIframe = <iframe title={this.state.upcRadioString} style={{height:"100vh", width:"100vw","background":"white","color":"green"}} src={uploadLink} />
+      this.setState({mplayer: uploadIframe});
 
-
-    xhr.open('GET', 'https://cors-container.herokuapp.com/https://www.upcitemdb.com/upc/' + upc );
-    xhr.responseType = 'document';
-    xhr.send();
   }
 
 
@@ -763,10 +790,6 @@ console.log(JSON.stringify(props));
 
 
       this.setState({showDexModal:true});
-  }
-
-  upload = async () => {
-      this.setState({showUploadModal:true});
   }
 
   play= async () => {

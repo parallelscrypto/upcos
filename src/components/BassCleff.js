@@ -11,7 +11,7 @@ class BassCleff extends Component {
                     <button
                         style={{background: "#000000", color:"orange", width: "25vw", height: "25vw"}}
                         onClick={(e) => { 
-                                this.props.handleFlip(e) 
+                                //this.props.handleFlip(e) 
                                 this.props.upload();
                         }}
                   >upload [[{this.props.account}]]</button>
