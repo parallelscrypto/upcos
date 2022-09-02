@@ -42,7 +42,7 @@ export default class MyTerminal extends Component {
   constructor(props) {
     super(props)
 
-console.log(JSON.stringify(props));
+    this.firstLookup();
     this.progressTerminal = React.createRef()
 
 
@@ -144,7 +144,7 @@ console.log(JSON.stringify(props));
        offerBuy: offerBuy,
        mplayer: mplayer,
        showModal: false,
-       offerState: "video",
+       offerState: "offer",
        bassCleff: '',
        upcRadioString: "Welcome to UPC NFT Radio!",
        showModalBuy: false,
@@ -203,13 +203,12 @@ console.log(JSON.stringify(props));
     }
 
     this.setState({offerState: 'video'});
-    this.setState(prevState => ({ mplayer: mplayer }));
+    this.setState(prevState => ({ player: mplayer }));
   }
 
 
   componentDidMount = async () => {
     var self = this;
-    this.firstLookup();
 
 
     this.heroFront(this.state.account);
@@ -237,11 +236,16 @@ console.log(JSON.stringify(props));
 		   
 		}
 		if(owner.includes("0000000000")) {
-                   self.setState({mplayer: self.state.offerBuy});
+                   self.setState({player: self.state.offerBuy});
                    self.setState({offerState: "offer"});
                     //this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
 		    //this.offer();
 		}
+                else {
+
+		   this.heroFront(this.state.account);
+                   self.setState({offerState: "video"});
+                }
 	   })
   }
 
@@ -250,8 +254,10 @@ console.log(JSON.stringify(props));
   heroFront = async (upcId) => {
           var self = this;
 	  var mplayer = <h1 style={{textAlign:"center"}}>[[Loading]]</h1>;
+
+          self.setState({mplayer: mplayer});
           if(self.state.offerState == "video") {
-             self.setState({mplayer: mplayer});
+             self.setState({player: mplayer});
           }
           let infoOwned = this.props.upcInfo(upcId)
            .then(data => {
@@ -292,8 +298,9 @@ console.log(JSON.stringify(props));
 
 		    }
 
+                            self.setState({mplayer: mplayer});
                             if(self.state.offerState == "video") {
-                               self.setState({mplayer: mplayer});
+                               self.setState({player: mplayer});
                             }
 	            })
 		}
@@ -323,51 +330,13 @@ console.log(JSON.stringify(props));
 			    && !vr.includes('whistia') && !vr.includes('mixcloud') 
 			    && !vr.includes('dailymotion') && !vr.includes('twitch')) {
                        const fullUrl = data['vr']
-
-
-
-                       axios({
-                           url: data['vr'], //your url
-                           method: 'GET',
-                           responseType: 'blob', // important
-                       }).then((response) => {
-                           console.log("0000000000000qrRqwrwqerwqerwq");
-                           console.log(response);
-                           var vid = response.data;
-                           response.headers.contntType = "video/mp4";
-                           vid = vid.slice(0,vid.size,"video/mp4");
-
-
-                           var file = new File([vid],"test.mp4",{type: "video/mp4"});
-                           response.data = vid;
-                           console.log(file);
-
-
-                       var mplayer = <ReactPlayer 
-                                    width="100vw"
-                                    url={file} 
-                                />
-
-
-
-
-                           // create file link in browser's memory
-                           const href = URL.createObjectURL(file);
-                       
-                           // create "a" HTLM element with href to file & click
-                           const link = document.createElement('a');
-                           link.href = href;
-                           link.setAttribute('download', 'file.pdf'); //or any other extension
-                           document.body.appendChild(link);
-                           link.click();
-                       
-                           self.setState({mplayer: mplayer});
-                           // clean up "a" element & remove ObjectURL
-                           //document.body.removeChild(link);
-                           //URL.revokeObjectURL(url);
-                       });
-
-
+                       mplayer =
+                       <iframe className='video'
+                               style={{minHeight:"100vh",width:"100vw"}}
+                               title='upc dj player'
+                               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                               src={fullUrl}>
+                       </iframe>
                     }
 
 
@@ -378,8 +347,9 @@ console.log(JSON.stringify(props));
                                 />
 
 		    }
+                    self.setState({mplayer: mplayer});
                     if(self.state.offerState == "video") {
-                       self.setState({mplayer: mplayer});
+                       self.setState({player: mplayer});
                     }
 		}
 	   })
@@ -443,11 +413,22 @@ console.log(JSON.stringify(props));
   }
 
   upload= async (upc) => {
+    var xhr = new XMLHttpRequest();
+    var self = this;
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+           var resp = xhr.responseXML.body.outerHTML;
 
-      var uploadLink = "https://upcunderground.mypinata.cloud/ipfs/QmPYD2Pv7yH1BZ2XU2WjBxrvoSkkCTdn5mMkRNMwwe6qTU";
-      var uploadIframe = <iframe title={this.state.upcRadioString} style={{height:"100vh", width:"100vw","background":"white","color":"green"}} src={uploadLink} />
-      this.setState({mplayer: uploadIframe});
+           var fullResp = '<html>' + resp + '</html>';
+           self.setState({showProductContent:fullResp});
+           self.setState({showProductModal:true});
+        }
+    }
 
+
+    xhr.open('GET', 'https://cors-container.herokuapp.com/https://www.upcitemdb.com/upc/' + upc );
+    xhr.responseType = 'document';
+    xhr.send();
   }
 
 
@@ -497,7 +478,19 @@ console.log(JSON.stringify(props));
                         var payload = "{{ idj " + data['ipfs'] + " }}";
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
-                        var upcLink = "<a href='upc://"+ data['word'] +"'>[["+ data['word'] +"]]</a>";
+
+
+                        var currentUrl = window.location.href;
+                        var upcJson = '{"code":"' + data['word'] + '"}';
+                        var upcEncoded = btoa(upcJson);
+                        currentUrl = currentUrl.substring(0,currentUrl.lastIndexOf('/') + 1) + upcEncoded;
+
+console.log("location is " + currentUrl);
+
+                        var upcLink = "<a href='"+ currentUrl +"'>[["+ data['word'] +"]]</a>";
+
+
+
 
 			var fileName = data['ipfs'];
                         var hrn = data['humanReadableName'];
@@ -792,6 +785,10 @@ console.log(JSON.stringify(props));
       this.setState({showDexModal:true});
   }
 
+  upload = async () => {
+      this.setState({showUploadModal:true});
+  }
+
   play= async () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -947,7 +944,7 @@ var playButton =
 	     <TrebleCleff handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} dex={this.dex} hero={this.hero} search={this.search} prodLookup={this.prodLookup} account={this.state.account} tutorial={this.tutorial} upcInfo={this.props.upcInfo} address={this.props.address} />
 
 
-                 {this.state.mplayer}
+                 {this.state.player}
 	     {this.state.bassCleff}
       </div>
       <div>
@@ -1720,70 +1717,6 @@ var playButton =
               }
             },
 
-            snxi: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display intel about a Super Navalny Brothers NFT by passing the NFT ID.  Example `snxi 35` will return intel about SNB #35.</p>',
-              fn: (nftId) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  let info = this.props.nftInfoNav(nftId)
-		   .then(data => {
-
-			let hrTLD = tlds[data['tld']];
-		        let tld = hrTLD + " (" + data['tld'] + ")";
-			var tmpStamp = parseInt(data['latestTimestamp']);
-                        var newDate = new Date(tmpStamp * 1000);
-
-			var tmpStamp = parseInt(data['createdTimestamp']);
-                        var created = new Date(tmpStamp * 1000);
-
-                        terminal.pushToStdout(`[[snxi]]`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`og_owner: ${data['og']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`owner: ${data['staker']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`tld: ${tld}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`token_id: ${data['tokenId']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`upc: ${data['word']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`minted: ${data['minted']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`vr: ${data['vr']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`payload: ${data['ipfs']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`created_date: ${created.toString()}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`[[/snxi]]`);
-                  });
-		  
-
-                  const interval = setInterval(() => {
-                    if (this.state.progressBal != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({progressBal: info});
-                      var self = this;
-                      this.setState({ progress: this.state.progress + 10 })
-                    }
-                  }, 1500)
-                })
-
-                return ''
-              }
-            },
-
-
 
             xi: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display intel about a NFT by passing the NFT ID.  Example `xi 35` will return intel about NFT #35.</p>',
@@ -1801,7 +1734,14 @@ var playButton =
                         var payload = "{{ idj " + data['ipfs'] + " }}";
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
-                        var upcLink = "<a href='upc://"+ data['word'] +"'>[["+ data['word'] +"]]</a>";
+                        var currentUrl = window.location.href;
+                        var upcJson = '{"code":"' + data['word'] + '"}';
+                        var upcEncoded = btoa(upcJson);
+                        currentUrl = currentUrl.substring(0,currentUrl.lastIndexOf('/') + 1) + upcEncoded;
+
+console.log("location is " + currentUrl);
+
+                        var upcLink = "<a href='"+ currentUrl +"'>[["+ data['word'] +"]]</a>";
                         terminal.pushToStdout(`[[xintel]]`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`og_owner: ${data['og']}`);
@@ -1864,69 +1804,6 @@ var playButton =
 
 			let hrTLD = tlds[data['tld']];
 		        let tld = hrTLD + " (" + data['tld'] + ")";
-                        terminal.pushToStdout(`[[intel]]`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`og_owner: ${data['og']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`owner: ${data['staker']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`tld: ${tld}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`token_id: ${data['tokenId']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`upc: ${data['word']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`minted: ${data['minted']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`vr: ${data['vr']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`payload: ${data['ipfs']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`created_date: ${created.toString()}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`[[/intel]]`);
-                  });
-		  
-
-                  const interval = setInterval(() => {
-                    if (this.state.progressBal != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({progressBal: info});
-                      var self = this;
-                      this.setState({ progress: this.state.progress + 10 })
-                    }
-                  }, 1500)
-                })
-
-                return ''
-              }
-            },
-
-
-            sni: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display intel from context of the current UPC terminal</p>',
-              fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  let info = this.props.upcInfoNav(this.state.account)
-		   .then(data => {
-			var tmpStamp = parseInt(data['latestTimestamp']);
-                        var newDate = new Date(tmpStamp * 1000);
-
-			var tmpStamp = parseInt(data['createdTimestamp']);
-                        var created = new Date(tmpStamp * 1000);
-			let hrTLD = tlds[data['tld']];
-		        let tld = hrTLD + " (" + data['tld'] + ")";
-
                         terminal.pushToStdout(`[[intel]]`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`og_owner: ${data['og']}`);
@@ -2509,140 +2386,6 @@ var playButton =
                 return ''
               }
             },
-
-            snapr: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your TubmanX.  You MUST run this command FIRST or all of your `snbuy` and `xsnbuy` commands will fail</p>',
-              fn: () => {
-                  const terminal = this.progressTerminal.current
-                var progress = 0;
-                this.setState({approved: false});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  let approval = this.props.approveNav();
-                  approval.then((value) => {
-		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient TubmanX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'buy' and 'xbuy' commands will fail`)
-                     // expected output: "Success!"
-                  });
-                })
-
-		terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
-                return ''
-              }
-            },
-
-
-            xsnbuy: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Buy a SNB NFT without the GUI popup.  Usage: `xsnbuy <domain_name> <tld_integer={0,1,2}>` </p>',
-              fn: (humanReadableName,domain) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  let approval = this.props.buyNftNav(this.state.account, humanReadableName,domain);
-                      approval.then((value) => {
-                         approval = value;
-			 var congrats = "Thank you for your purchase! You now own SNB NFT for " + this.state.account;
-                         terminal.pushToStdout(congrats)
-			      
-                         // expected output: "Success!"
-                      });
-
-
-                  const interval = setInterval(() => {
-                    if (this.state.approved != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({approved: approval});
-                      var self = this;
-                      this.setState({ progress: this.state.progress + 10 })
-                    }
-                  }, 1500)
-                })
-
-                return ''
-              }
-            },
-            snbuy: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Buy an SNB NFT using the GUI interface</p>',
-              fn: (humanReadableName) => {
-                  var buyForm =  <div>
-		  <Barcode value={this.state.account} format="EAN13" />
-                  <form className="mb-3" onSubmit={(event) => {
-                      event.preventDefault()
-                      let upcId = this.state.account
-                      let humanReadableName = this.humanReadableName.value.toString()
-
-                      this.props.buyNftNav(upcId,humanReadableName, this.state.domain)
-                    }}>
-                    <div className="input-group mb-4">
-                      <input
-                        type="text"
-                        ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
-                        className="form-control form-control-lg break"
-                        placeholder=".upc Domain Name"
-                        required />
-
-                        <select id="lang" 
-		      onChange={(e) => { this.setState({domain: e.target.value}) } }
-			      >
-                           <option selected>Select a domain</option>
-                           <option value="0">.upc</option>
-                           <option value="1">.afro</option>
-                           <option value="2">.fire</option>
-                        </select>
-
-                    </div>
-                    <button
-                   type="submit"
-                   className="btn btn-primary btn-block btn-lg"
-                  >
-                  BUY NFT!
-              </button>
-                  </form>
-
-
-             </div>
-
-                      this.setState({buyModalContent:buyForm});
-                      this.setState({showModalBuy:true});
-
-
-              }
-            },
-
-
-
-
-            snmint: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Mint an SNB NFT for which you have successfully executed the `snbuy` or `xsnbuy` command</p>',
-              fn: (upcId) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  let approval = this.props.mintNftNav(this.state.account);
-                      approval.then((value) => {
-                         approval = value;
-		         terminal.pushToStdout(`Congrats! You own UPCNFT for ${upcId}`)
-                         // expected output: "Success!"
-                      });
-
-
-                  const interval = setInterval(() => {
-                    if (this.state.approved != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({approved: approval});
-                      var self = this;
-                      this.setState({ progress: this.state.progress + 10 } )
-                    }
-                  }, 1500)
-                })
-
-                return ''
-              }
-            },
-
           }}
         welcomeMessage={welcomeMsg}
         promptLabel={promptlabel}
