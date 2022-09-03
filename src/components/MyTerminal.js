@@ -494,10 +494,8 @@ export default class MyTerminal extends Component {
                         var upcEncoded = btoa(upcJson);
                         currentUrl = currentUrl.substring(0,currentUrl.lastIndexOf('/') + 1) + upcEncoded;
 
-console.log("location is " + currentUrl);
 
                         var upcLink = <a href={currentUrl}>{data['word']}</a>;
-  console.log(upcLink);
 
 
 
@@ -1737,6 +1735,8 @@ var playButton =
                   let info = this.props.nftInfo(nftId)
 		   .then(data => {
 
+
+			var upc = data['word'];
 			let hrTLD = tlds[data['tld']];
 		        let tld = hrTLD + " (" + data['tld'] + ")";
 			var tmpStamp = parseInt(data['latestTimestamp']);
@@ -1766,7 +1766,7 @@ console.log("location is " + currentUrl);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`upc: ${upcLink}`);
+	                terminal.pushToStdout(`upc: <a onclick="window.location.assign('${currentUrl}');window.location.reload()" href="${currentUrl}">${upc}</a>`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`minted: ${data['minted']}`);
                         terminal.pushToStdout(`=====`);
@@ -1812,8 +1812,18 @@ console.log("location is " + currentUrl);
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
 
+                        var upc = data['word'];
 			let hrTLD = tlds[data['tld']];
 		        let tld = hrTLD + " (" + data['tld'] + ")";
+
+                        var currentUrl = window.location.href;
+                        var upcJson = '{"code":"' + data['word'] + '"}';
+                        var upcEncoded = btoa(upcJson);
+                        currentUrl = currentUrl.substring(0,currentUrl.lastIndexOf('/') + 1) + upcEncoded;
+
+
+
+
                         terminal.pushToStdout(`[[intel]]`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`og_owner: ${data['og']}`);
@@ -1828,7 +1838,7 @@ console.log("location is " + currentUrl);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`upc: ${data['word']}`);
+	                terminal.pushToStdout(`upc: <a onclick="window.location.assign('${currentUrl}');window.location.reload()" href="${currentUrl}">${upc}</a>`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`minted: ${data['minted']}`);
                         terminal.pushToStdout(`=====`);
