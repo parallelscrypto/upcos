@@ -177,6 +177,7 @@ export default class MyTerminal extends Component {
     this.search= this.search.bind(this);
     this.tutorial= this.tutorial.bind(this);
     this.grep= this.grep.bind(this);
+    this.forward= this.forward.bind(this);
     this.heroFront= this.heroFront.bind(this);
     this.handleFlip= this.handleFlip.bind(this);
     this.DisplayTime = this.DisplayTime.bind(this);
@@ -455,6 +456,14 @@ export default class MyTerminal extends Component {
                 return ''
   }
 
+
+  forward = (e) => {
+
+    e.preventDefault();
+    window.location.assign("https://google.com")
+  }
+
+
   grep = async (word) => {
 
                 this.setState({progressBal: ''});
@@ -487,7 +496,8 @@ export default class MyTerminal extends Component {
 
 console.log("location is " + currentUrl);
 
-                        var upcLink = "<a href='"+ currentUrl +"'>[["+ data['word'] +"]]</a>";
+                        var upcLink = <a href={currentUrl}>{data['word']}</a>;
+  console.log(upcLink);
 
 
 
@@ -522,7 +532,7 @@ console.log("location is " + currentUrl);
 				   terminal.pushToStdout(`=====`);
 				   terminal.pushToStdout(`tld: ${tld}`);
 				   terminal.pushToStdout(`=====`);
-				   terminal.pushToStdout(`upc: ${upcLink}`);
+				   terminal.pushToStdout(`upc: <a onclick="window.location.assign('${currentUrl}');window.location.reload()" href="${currentUrl}">${upc}</a>`);
 				   terminal.pushToStdout(`=====`);
 				   terminal.pushToStdout(`vr: ${data['vr']}`);
 				   terminal.pushToStdout(`=====`);
