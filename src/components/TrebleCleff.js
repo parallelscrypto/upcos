@@ -41,7 +41,7 @@ class TrebleCleff extends Component {
         }
         //visitor
         else if( (myAddress != staker) && ( !staker.includes('000000') && !og.includes('000000') ) ) {
-           upcStatus = "visit";
+           upcStatus = "console";
         }
         //owner
         else if( (myAddress == staker) && ( !staker.includes('000000') && !og.includes('000000') ) ) {
@@ -88,10 +88,9 @@ this.props.play()
                     <button
                         style={{background: "#000000", color:"green", width: "20vw", height: "20vw"}}
                         onClick={(e) => { 
-                                     this.props.handleFlip(e)
-                                     this.props.dex();
+                                     this.props.meeting();
                         }}
-                  >dex [[*****]]</button>
+                  >meeting [[*****]]</button>
 
 
 

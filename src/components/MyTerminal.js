@@ -176,6 +176,7 @@ export default class MyTerminal extends Component {
     this.prodLookup= this.prodLookup.bind(this);
     this.search= this.search.bind(this);
     this.tutorial= this.tutorial.bind(this);
+    this.meeting= this.meeting.bind(this);
     this.grep= this.grep.bind(this);
     this.forward= this.forward.bind(this);
     this.heroFront= this.heroFront.bind(this);
@@ -412,26 +413,6 @@ export default class MyTerminal extends Component {
 
                 return ''
   }
-
-  upload= async (upc) => {
-    var xhr = new XMLHttpRequest();
-    var self = this;
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-           var resp = xhr.responseXML.body.outerHTML;
-
-           var fullResp = '<html>' + resp + '</html>';
-           self.setState({showProductContent:fullResp});
-           self.setState({showProductModal:true});
-        }
-    }
-
-
-    xhr.open('GET', 'https://cors-container.herokuapp.com/https://www.upcitemdb.com/upc/' + upc );
-    xhr.responseType = 'document';
-    xhr.send();
-  }
-
 
   angel = async (upc) => {
                 this.setState({progressBal: ''});
@@ -793,9 +774,41 @@ export default class MyTerminal extends Component {
       this.setState({showDexModal:true});
   }
 
-  upload = async () => {
-      this.setState({showUploadModal:true});
+  upload = async (comp) => {
+      //this.setState({showUploadModal:true});
+      var link = 'https://upcunderground.mypinata.cloud/ipfs/QmPjvxXgsUXhPFNaosu9V2hHBBwQb1Y6YrJk4ojPZk1WYc/#/upload/'  + this.state.account;
+      var myUpload = <h1><a href={link}>Proceed to Perma-Uploader App</a></h1>
+      this.setState({player:myUpload});
   }
+
+
+  meeting = async (comp) => {
+      //this.setState({showUploadModal:true});
+       var self = this;
+       var fullMeeting;
+       let info = this.props.upcInfo(this.state.account)
+       .then(data => {
+	    var vrData = data['vr'];
+            if(!vrData.includes('hubs.mozilla.com') ) {
+               fullMeeting = "https://hubs.mozilla.com/scenes/q7PG7Tn"
+            }
+            else {
+               fullMeeting = data['vr'];
+            }
+            var radioString = "UPC DJ now playing [[" + data['word'] + "]] a.k.a {{" + data['ipfs'] + "}}"; 
+            var link = <h1><a href={fullMeeting} >Enter VR zone @[[{this.state.account}]]</a>
+</h1>
+               self.setState({player: link});
+               self.setState({upcRadioString: radioString});
+      });
+		  
+
+
+      var link = 'https://upcunderground.mypinata.cloud/ipfs/QmPjvxXgsUXhPFNaosu9V2hHBBwQb1Y6YrJk4ojPZk1WYc/#/upload/'  + this.state.account;
+      var myUpload = <h1><a href={link}>Proceed to Perma-Uploader App</a></h1>
+      this.setState({player:myUpload});
+  }
+
 
   play= async () => {
                 this.setState({progressBal: ''});
@@ -939,7 +952,9 @@ var playButton =
     var myProduct = <iframe srcDoc={this.state.showProductContent} style={{height:"90vh", width:"90vw"}}> </iframe>
 
 
-    var myUpload = <IpfsUpload upc={this.state.account} xpayload={this.props.setIpfs} /> 
+    //var myUpload = <IpfsUpload upc={this.state.account} xpayload={this.props.setIpfs} /> 
+    var myUpload = <iframe src={'https://upcunderground.mypinata.cloud/ipfs/QmWtLgy1fktyTutQFQ86zkJAYjGfzPgR4ezBXRszUgKaHn'} style={{height:"100vh", width:"100vw"}}> </iframe>
+    //var myUpload = <IpfsUpload upc={this.state.account} xpayload={this.props.setIpfs} /> 
 
     var player;				
 
@@ -949,7 +964,10 @@ var playButton =
     return (
       <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
       <div>
-	     <TrebleCleff handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} dex={this.dex} hero={this.hero} search={this.search} prodLookup={this.prodLookup} account={this.state.account} tutorial={this.tutorial} upcInfo={this.props.upcInfo} address={this.props.address} />
+
+	     <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type="pulse" > [[upc://{this.state.account}]] <iframe title={this.state.upcRadioString} style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
+             <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showUploadModal} closemodal={() => this.setState({ showUploadModal: false })} type="pulse" > {myUpload}</Modal>
+	     <TrebleCleff handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} dex={this.dex} search={this.search} meeting={this.meeting}  account={this.state.account} tutorial={this.tutorial} upcInfo={this.props.upcInfo} address={this.props.address} />
 
 
                  {this.state.player}
@@ -970,7 +988,6 @@ var playButton =
       <Modal style={{ height:"95vh", width:"95vw"}} visible={this.state.showBigShow2} closemodal={() => this.setState({ showBigShow2: false })} type="pulse"> [[upc://{this.state.account}]] <iframe style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
 
 
-      <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type="pulse" > [[upc://{this.state.account}]] <iframe title={this.state.upcRadioString} style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
 
       <Modal style={{ "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showBplayer} closemodal={() => this.setState({ showBplayer: false })} type="pulse" ><ReactPlayer playing={'true'} controls={'true'} width={'90vw'} height={'90vh'} pip={'true'} stopOnUnmount={'false'} url={this.state.fullIpfs} /></Modal>
 
@@ -996,14 +1013,12 @@ var playButton =
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle","width":"95vw","height":"95vh"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
 
-      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showUploadModal} closemodal={() => this.setState({ showUploadModal: false })} type="pulse" > {myUpload}</Modal>
 
       <Modal className={"dex"} style={{"width":"90vw", "height":"90vh"}} visible={this.state.showDexModal} closemodal={() => this.setState({ showDexModal: false })} type="pulse" > {this.state.dex}</Modal>
 
                     <button onClick={(e) => { this.handleFlip(e)}} >Overview this UPC!</button>
       <Terminal
         style={{"minHeight":"75vh",backgroundColor: "#000"}}
-        dangerMode={false}
         ref={this.progressTerminal}
         commands={{
 
@@ -2409,8 +2424,8 @@ console.log("location is " + currentUrl);
           }}
         welcomeMessage={welcomeMsg}
         promptLabel={promptlabel}
-        autoFocus={true}
         dangerMode={true}
+        autoFocus={true}
 	promptLabelStyle={{"color":"green", "fontWeight":"bold", "fontSize":"1.1em"}}
       />
 
