@@ -66,14 +66,19 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
 
     function claimTubmanxToken(string memory upcId) public {
 
-        uint256 deduce = 100000000000000000;
+        uint256 deduce = 0;
         require(tubmanBalanceReceived[upcId] >= deduce , "Sorry, this coinbox is empty");
 
         address upcOwner = upcNFT.getUpcOwner(upcId);
         if(msg.sender == upcOwner) {
             deduce = tubmanBalanceReceived[upcId];
         }
+        else if(upcOwner == address(0x0)) {
+                deduce = 100000000000000000;
+        }
 
+        require(deduce > 0 , "Will not send zero tokens");
+        
         tubmanBalanceReceived[upcId]-= deduce; //each claim call will send the claimant .25 tubmanx
         _tubmanx.transfer(msg.sender, deduce);
     }
