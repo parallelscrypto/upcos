@@ -21,6 +21,7 @@ import AQWB from '../abis/AQWB.json'
 import UpcDAO from '../abis/UpcDAO.json'
 import UPCMarket from '../abis/UPCMarket.json'
 import WalkieTalkie from '../abis/WalkieTalkie.json'
+import CoinBox from '../abis/CoinBox.json'
 
 import StableUPC from '../abis/StableUPC.json'
 
@@ -110,6 +111,17 @@ class App extends Component {
       const walkieNft = new web3.eth.Contract(WalkieTalkie.abi, walkieData.address)
       this.setState({ walkieNft })
       this.setState({ walkieData: walkieData })
+    } else {
+      //window.alert('UPCNFT contract not deployed to detected network.')
+    }
+
+
+    // Load CoinBox
+    const coinboxData = CoinBox.networks[networkId]
+    if(coinboxData) {
+      const coinboxNft = new web3.eth.Contract(CoinBox.abi, coinboxData.address)
+      this.setState({ coinboxNft })
+      this.setState({ coinboxData: coinboxData })
     } else {
       //window.alert('UPCNFT contract not deployed to detected network.')
     }
@@ -550,6 +562,29 @@ class App extends Component {
     // Stores a given value, 5 by default.
     return this.state.walkieNft.methods.getWalkieTalkie(upcId).call({ from: this.state.account });
   };
+
+
+
+  injectTubmanX = async (upcId,numTubmanX) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.coinboxNft.methods.injectTubmanX(upcId,numTubmanX).send({ from: this.state.account });
+  };
+
+
+
+  claimTubmanxToken = async (upcId) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.coinboxNft.methods.injectTubmanX(upcId,numTubmanX).send({ from: this.state.account });
+  };
+
 
 
 
