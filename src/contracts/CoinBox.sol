@@ -6,7 +6,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Context.sol";
 //import "./stringUtils.sol";
 import "./TubmanX.sol";
-import "./AfrikaisBeautiful.sol";
+import "./AfrikaIsBeautiful.sol";
 
 interface USDC {
     function transfer(address dst, uint wad) external returns (bool);
@@ -40,7 +40,7 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
 
     TubmanX       private _tubmanx;
     USDC          private _usdc;
-    AfrikaisBeautiful        upcNFT;
+    AfrikaIsBeautiful        upcNFT;
 
     Reward[] public rewards;
 
@@ -51,28 +51,29 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
         owner     =   payable(msg.sender);
         _usdc     =   USDC(0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174);
         _tubmanx  =   TubmanX(0x455784bdea2A7B759F9e42314F6c93C39b5868f2);
-        upcNFT    =   AfrikaisBeautiful(0x2DA2c8eD74cd16F0c24CFFFA257455EAa5Bd93b7);
+        upcNFT    =   AfrikaIsBeautiful(0x2DA2c8eD74cd16F0c24CFFFA257455EAa5Bd93b7);
     }
 
     function injectTubmanX(string memory upcId, uint256 numTubmanX) public payable {
+        tubmanBalanceReceived[upcId] += numTubmanX;
         _tubmanx.transferFrom(msg.sender, address(this), numTubmanX);
-        tubmanBalanceReceived[upcId] += numTubmanX
     }
 
     function injectUSDC(string memory upcId, uint256 numUSDC) public payable {
-        _usdc.transferFrom(msg.sender, address(this), numUSDC);
         usdcBalanceReceived[upcId] += numUSDC;
+        _usdc.transferFrom(msg.sender, address(this), numUSDC);
     }
 
-    function claimTubmanxToken(string memory upcId) {
+    function claimTubmanxToken(string memory upcId) public {
 
         uint256 deduce = 250000000000000000;
         tubmanBalanceReceived[upcId]-= deduce; //each claim call will send the claimant .25 tubmanx
-        this.transferFrom(address(this), msg.sender, deduce);
+        _tubmanx.transfer(msg.sender, deduce);
     }
 
     function setAfrikaisBeautiful(address newAddress) public  onlyOwner{
-        upcNFT = AfrikaisBeautiful(newAddress);
+        upcNFT = AfrikaIsBeautiful(newAddress);
     }
 
 }
+
