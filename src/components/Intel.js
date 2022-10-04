@@ -68,6 +68,20 @@ class Intel extends Component {
 	    latestTokenIdNav={this.props.latestTokenIdNav} 
 
 
+
+            injectNarativ= {this.props.injectNarativ}
+            claimNarativToken= {this.props.claimNarativToken}
+            checkNarativBalance= {this.props.checkNarativBalance}
+
+
+
+
+
+
+
+
+
+
 	    setHRNMarket={this.props.setHRNMarket}
 	    setUpcMarket={this.props.setUpcMarket}
 

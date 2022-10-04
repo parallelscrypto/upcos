@@ -20,7 +20,7 @@ import { TikTok } from 'react-tiktok';
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
-var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some TubmanX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your TubmanX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`colonize`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with colonize " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Narativ\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your Narativ to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`colonize`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with colonize " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'jokes' ,'tutorial' ,'mumia' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.pac', '.afrika-power', '.lyoya', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.lie','.coverup','.misconduct']
 
@@ -737,7 +737,7 @@ export default class MyTerminal extends Component {
             buyNftNav={this.props.buyNftNav}
           
 	    redeemUPCS={this.props.redeemUPCS}
-	    buyUPCSWithTubmanX={this.props.buyUPCSWithTubmanX}
+	    buyUPCSWithNarativ={this.props.buyUPCSWithNarativ}
 	    approveUPCS={this.props.approveUPCS}
 	    approveTubman4UPCS={this.props.approveTubman4UPCS}
 
@@ -779,6 +779,42 @@ export default class MyTerminal extends Component {
       var link = 'https://upcunderground.mypinata.cloud/ipfs/QmPjvxXgsUXhPFNaosu9V2hHBBwQb1Y6YrJk4ojPZk1WYc/#/upload/'  + this.state.account;
       var myUpload = <h1><a href={link}>Proceed to Perma-Uploader App</a></h1>
       this.setState({player:myUpload});
+  }
+
+
+  inj = async (upcId,numNarativ) => {
+      //this.setState({showUploadModal:true});
+       var self = this;
+       var fullMeeting;
+       let inject = this.props.injectNarativ(upcId,numNarativ)
+       .then(data => {
+      });
+
+  }
+
+  claim = async (upcId) => {
+      //this.setState({showUploadModal:true});
+       var self = this;
+       var fullMeeting;
+       let inject = this.props.claimNarativToken(upcId)
+       .then(data => {
+      });
+
+  }
+
+
+  peek = async (upcId) => {
+      //this.setState({showUploadModal:true});
+       var self = this;
+       var fullMeeting;
+       const terminal = this.progressTerminal.current
+       let inject = this.props.checkNarativBalance(upcId)
+       .then(data => {
+          var price  = window.web3.utils.fromWei(data, "ether");
+          price += " Narativ";
+          terminal.pushToStdout(price)
+      });
+
   }
 
 
@@ -857,7 +893,7 @@ export default class MyTerminal extends Component {
     var addy = this.props.address;
     addy  = addy.substr(0,15);
 
-    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV  </i> \n <b style='color:red'> [Black Is Beautiful! TV Network]</b> \n <i style='color:#d66900'>Powered by TubmanX Crypto</i>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Black Is Beautiful! Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is colonized and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key).  The titles and links for UPC Band TV Channels 0-9 are listed below. </u> \n <i style='color:white'>  Channel Definitions: </i> \n <i style='color:orange'> Channel 0: Black Is Beautiful!;\n <a href='upc://000000000000'>Visit Channel 0[[000000000000]]</a>.\n <i style='color:red;font-size:.8em'><b><u>(Channel 0 is any unowned UPC ending in `0`)</u></b></i> \n Or type command `ch0` to tune into UPC Band Theater Channel 0 \n <i style='color:orange'>  Channel 1: Black Travel; </i> \n <a href='upc://000000000001'>Visit Channel 1 [[000000000001]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 1 is any unowned UPC ending in `1`)</u></b></i> \n Or type command `ch1` to tune into UPC Band Theater Channel 1 \n <i style='color:orange'>  Channel 2: Off*Grid Max; </i> \n <a href='upc://000000000002'>Visit Channel 2 [[000000000002]]</a>  \n <i style='color:red;font-size:.8em'><b><u>(Channel 2 is any unowned UPC ending in `2`)</u></b></i>  \n Or type command `ch2` to tune into UPC Band Theater Channel 2 \n <i style='color:orange'>  Channel 3: Black Comedy/Entertainment/Music; </i> \n <a href='upc://000000000003'>Visit Channel 3 [[000000000003]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 3 is any unowned UPC ending in `3`)</u></b></i>  \n Or type command `ch3` to tune into UPC Band Theater Channel 3 \n <i style='color:orange'>  Channel 4: Fitness and Sports; </i>  \n <a href='upc://000000000004'>Visit Channel 4 [[000000000004]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 4 is any unowned UPC ending in `4`)</u></b></i>  \n Or type command `ch4` to tune into UPC Band Theater Channel 4 \n <i style='color:orange'>  Channel 5: Black Alt Community; </i>  \n <a href='upc://000000000005'>Visit Channel 5 [[000000000005]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 5 is any unowned UPC ending in `5`)</u></b></i>  \n Or type command `ch5` to tune into UPC Band Theater Channel 5 \n <i style='color:orange'>  Channel 6: Black Spirituality; <i>  \n <a href='upc://000000000006'>Visit Channel 6 [[000000000006]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 6 is any unowned UPC ending in `6`)</u></b></i>  \n Or type command `ch6` to tune into UPC Band Theater Channel 6 \n <i style='color:orange'>  Channel 7: Black Life Education; </i>  \n <a href='upc://000000000007'>Visit Channel 7 [[000000000007]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 7 is any unowned UPC ending in `7`)</u></b></i>  \n Or type command `ch7` to tune into UPC Band Theater Channel 7 \n <i style='color:orange'>  Channel 8: Black Business Connect; </i>  \n <a href='upc://000000000008'>Visit Channel 8 [[000000000008]]</a>  \n <i style='color:red;font-size:.8em'><b><u>(Channel 8 is any unowned UPC ending in `8`)</u></b></i> \n Or type command `ch8` to tune into UPC Band Theater Channel 8 \n <i style='color:orange'>  Channel 9: Black Health; </i>  \n <a href='upc://000000000009'>Visit Channel 9 [[000000000009]]</a>  \n <i style='color:red;font-size:.8em'><b><u>(Channel 9 is any unowned UPC ending in `9`)</u></b></i> \n Or type command `ch9` to tune into UPC Band Theater Channel 9 \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some TubmanX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your TubmanX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`colonize`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with colonize [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV  </i> \n <b style='color:red'> [decolonize.africa]</b> \n <i style='color:#d66900'>Powered by Narativ Crypto</i>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Black Is Beautiful! Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is colonized and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key).  The titles and links for UPC Band TV Channels 0-9 are listed below. </u> \n <i style='color:white'>  Channel Definitions: </i> \n <i style='color:orange'> Channel 0: Black Is Beautiful!;\n <a href='upc://000000000000'>Visit Channel 0[[000000000000]]</a>.\n <i style='color:red;font-size:.8em'><b><u>(Channel 0 is any unowned UPC ending in `0`)</u></b></i> \n Or type command `ch0` to tune into UPC Band Theater Channel 0 \n <i style='color:orange'>  Channel 1: Black Travel; </i> \n <a href='upc://000000000001'>Visit Channel 1 [[000000000001]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 1 is any unowned UPC ending in `1`)</u></b></i> \n Or type command `ch1` to tune into UPC Band Theater Channel 1 \n <i style='color:orange'>  Channel 2: Off*Grid Max; </i> \n <a href='upc://000000000002'>Visit Channel 2 [[000000000002]]</a>  \n <i style='color:red;font-size:.8em'><b><u>(Channel 2 is any unowned UPC ending in `2`)</u></b></i>  \n Or type command `ch2` to tune into UPC Band Theater Channel 2 \n <i style='color:orange'>  Channel 3: Black Comedy/Entertainment/Music; </i> \n <a href='upc://000000000003'>Visit Channel 3 [[000000000003]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 3 is any unowned UPC ending in `3`)</u></b></i>  \n Or type command `ch3` to tune into UPC Band Theater Channel 3 \n <i style='color:orange'>  Channel 4: Fitness and Sports; </i>  \n <a href='upc://000000000004'>Visit Channel 4 [[000000000004]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 4 is any unowned UPC ending in `4`)</u></b></i>  \n Or type command `ch4` to tune into UPC Band Theater Channel 4 \n <i style='color:orange'>  Channel 5: Black Alt Community; </i>  \n <a href='upc://000000000005'>Visit Channel 5 [[000000000005]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 5 is any unowned UPC ending in `5`)</u></b></i>  \n Or type command `ch5` to tune into UPC Band Theater Channel 5 \n <i style='color:orange'>  Channel 6: Black Spirituality; <i>  \n <a href='upc://000000000006'>Visit Channel 6 [[000000000006]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 6 is any unowned UPC ending in `6`)</u></b></i>  \n Or type command `ch6` to tune into UPC Band Theater Channel 6 \n <i style='color:orange'>  Channel 7: Black Life Education; </i>  \n <a href='upc://000000000007'>Visit Channel 7 [[000000000007]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 7 is any unowned UPC ending in `7`)</u></b></i>  \n Or type command `ch7` to tune into UPC Band Theater Channel 7 \n <i style='color:orange'>  Channel 8: Black Business Connect; </i>  \n <a href='upc://000000000008'>Visit Channel 8 [[000000000008]]</a>  \n <i style='color:red;font-size:.8em'><b><u>(Channel 8 is any unowned UPC ending in `8`)</u></b></i> \n Or type command `ch8` to tune into UPC Band Theater Channel 8 \n <i style='color:orange'>  Channel 9: Black Health; </i>  \n <a href='upc://000000000009'>Visit Channel 9 [[000000000009]]</a>  \n <i style='color:red;font-size:.8em'><b><u>(Channel 9 is any unowned UPC ending in `9`)</u></b></i> \n Or type command `ch9` to tune into UPC Band Theater Channel 9 \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Narativ\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your Narativ to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`colonize`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with colonize [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
     var promptlabel =  '[[ AWAITING COMMAND ]] => ';
 
           
@@ -958,7 +994,7 @@ var playButton =
 
     var player;				
 
-    //var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV  </i> \n <i style='color:#d66900'>Malcolm's Little Secret \n <b style='color:red'> [Black Is Beautiful! TV Network]</b>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Black Is Beautiful! Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is colonized and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key).  The titles and links for UPC Band TV Channels 0-9 are listed below. </u> \n <i style='color:white'>  Channel Definitions: </i> \n <i style='color:orange'> Channel 0: Black Is Beautiful!;\n <a href='upc://000000000000'>Watch Channel 0[[000000000000]]</a>.\n Or type command `ch0` to tune into UPC Band Theater Channel 0 \n <i style='color:orange'>  Channel 1: Black Travel; </i> \n <a href='upc://000000000001'>Watch Channel 1 [[000000000001]]</a>   \n Or type command `ch1` to tune into UPC Band Theater Channel 1 \n <i style='color:orange'>  Channel 2: Off*Grid Max; </i> \n <a href='upc://000000000002'>Watch Channel 2 [[000000000002]]</a>   \n Or type command `ch2` to tune into UPC Band Theater Channel 2 \n <i style='color:orange'>  Channel 3: Black Comedy/Entertainment/Music; </i> \n <a href='upc://000000000003'>Watch Channel 3 [[000000000003]]</a>  \n Or type command `ch3` to tune into UPC Band Theater Channel 3 \n <i style='color:orange'>  Channel 4: Fitness and Sports; </i>  \n <a href='upc://000000000004'>Watch Channel 4 [[000000000004]]</a>  \n Or type command `ch4` to tune into UPC Band Theater Channel 4 \n <i style='color:orange'>  Channel 5: Black Alt Community; </i>  \n <a href='upc://000000000005'>Watch Channel 5 [[000000000005]]</a>  \n Or type command `ch5` to tune into UPC Band Theater Channel 5 \n <i style='color:orange'>  Channel 6: Black Spirituality; <i>  \n <a href='upc://000000000006'>Watch Channel 6 [[000000000006]]</a>  \n Or type command `ch6` to tune into UPC Band Theater Channel 6 \n <i style='color:orange'>  Channel 7: Black Life Education; </i>  \n <a href='upc://000000000007'>Watch Channel 7 [[000000000007]]</a>  \n Or type command `ch7` to tune into UPC Band Theater Channel 7 \n <i style='color:orange'>  Channel 8: Black Business Connect; </i>  \n <a href='upc://000000000008'>Watch Channel 8 [[000000000008]]</a>  \n Or type command `ch8` to tune into UPC Band Theater Channel 8 \n <i style='color:orange'>  Channel 9: Black Health; </i>  \n <a href='upc://000000000009'>Watch Channel 9 [[000000000009]]</a>  \n Or type command `ch9` to tune into UPC Band Theater Channel 9 \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some TubmanX\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your TubmanX to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`colonize`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with colonize [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+    //var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV  </i> \n <i style='color:#d66900'>Malcolm's Little Secret \n <b style='color:red'> [Black Is Beautiful! TV Network]</b>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Black Is Beautiful! Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is colonized and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key).  The titles and links for UPC Band TV Channels 0-9 are listed below. </u> \n <i style='color:white'>  Channel Definitions: </i> \n <i style='color:orange'> Channel 0: Black Is Beautiful!;\n <a href='upc://000000000000'>Watch Channel 0[[000000000000]]</a>.\n Or type command `ch0` to tune into UPC Band Theater Channel 0 \n <i style='color:orange'>  Channel 1: Black Travel; </i> \n <a href='upc://000000000001'>Watch Channel 1 [[000000000001]]</a>   \n Or type command `ch1` to tune into UPC Band Theater Channel 1 \n <i style='color:orange'>  Channel 2: Off*Grid Max; </i> \n <a href='upc://000000000002'>Watch Channel 2 [[000000000002]]</a>   \n Or type command `ch2` to tune into UPC Band Theater Channel 2 \n <i style='color:orange'>  Channel 3: Black Comedy/Entertainment/Music; </i> \n <a href='upc://000000000003'>Watch Channel 3 [[000000000003]]</a>  \n Or type command `ch3` to tune into UPC Band Theater Channel 3 \n <i style='color:orange'>  Channel 4: Fitness and Sports; </i>  \n <a href='upc://000000000004'>Watch Channel 4 [[000000000004]]</a>  \n Or type command `ch4` to tune into UPC Band Theater Channel 4 \n <i style='color:orange'>  Channel 5: Black Alt Community; </i>  \n <a href='upc://000000000005'>Watch Channel 5 [[000000000005]]</a>  \n Or type command `ch5` to tune into UPC Band Theater Channel 5 \n <i style='color:orange'>  Channel 6: Black Spirituality; <i>  \n <a href='upc://000000000006'>Watch Channel 6 [[000000000006]]</a>  \n Or type command `ch6` to tune into UPC Band Theater Channel 6 \n <i style='color:orange'>  Channel 7: Black Life Education; </i>  \n <a href='upc://000000000007'>Watch Channel 7 [[000000000007]]</a>  \n Or type command `ch7` to tune into UPC Band Theater Channel 7 \n <i style='color:orange'>  Channel 8: Black Business Connect; </i>  \n <a href='upc://000000000008'>Watch Channel 8 [[000000000008]]</a>  \n Or type command `ch8` to tune into UPC Band Theater Channel 8 \n <i style='color:orange'>  Channel 9: Black Health; </i>  \n <a href='upc://000000000009'>Watch Channel 9 [[000000000009]]</a>  \n Or type command `ch9` to tune into UPC Band Theater Channel 9 \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Narativ\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your Narativ to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`colonize`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with colonize [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
     //var tutorial = "<html><body><h1>hello</h1></body></html>"
 
     return (
@@ -1023,7 +1059,7 @@ var playButton =
         commands={{
 
             usdc: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your TubmanX.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `colonize` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your Narativ.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `colonize` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -1032,7 +1068,7 @@ var playButton =
                   const terminal = this.progressTerminal.current
                   let approval = this.props.approveUSDC();
                   approval.then((value) => {
-		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient TubmanX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'colonize' and 'colonizeb' commands will fail`)
+		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Narativ from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'colonize' and 'colonizeb' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
@@ -1182,6 +1218,36 @@ var playButton =
               description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that are on the market **</p>',
               fn: (word) => {
 		      this.grep(word);
+              }
+            },
+
+
+            peek: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that are on the market **</p>',
+              fn: (upcId) => {
+                      if(!upcId) {
+                          upcId = this.state.account
+                      }
+
+		      this.peek(upcId);
+              }
+            },
+
+
+            inj: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that are on the market **</p>',
+              fn: (upcId,numNarativ) => {
+		      this.inj(upcId,numNarativ);
+              }
+            },
+
+            claim: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that are on the market **</p>',
+              fn: (upcId) => {
+                      if(!upcId) {
+                          upcId = this.state.account
+                      }
+		      this.claim(upcId);
               }
             },
 
@@ -2405,7 +2471,7 @@ console.log("location is " + currentUrl);
 
 
             mine: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Mine some TubmanX</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Mine some Narativ</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {

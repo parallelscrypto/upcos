@@ -5,7 +5,7 @@ import Web3 from 'web3'
 import UPCNFT from '../abis/UPCNFT.json'
 import AfroNFT from '../abis/AfroNFT.json'
 import MLS from '../abis/MalcolmsLittleSecret.json'
-import AfrikaIsBeautiful from '../abis/AfrikaIsBeautiful.json'
+import DecolonizeAfrica from '../abis/DecolonizeAfrica.json'
 import HomelessNFT from '../abis/HomelessNFT.json'
 import RollinOnUPC from '../abis/RollinOnUPC.json'
 import UpcBandRadio from '../abis/UpcBandRadio.json'
@@ -14,6 +14,7 @@ import xUPC from '../abis/xUPC.json'
 import piggy from '../abis/TipJar.json'
 import intelX from '../abis/intelX.json'
 import TubmanX from '../abis/TubmanX.json'
+import Narativ from '../abis/Narativ.json'
 import InclusionX from '../abis/InclusionX.json'
 import Keyz from '../abis/Keyz.json'
 import Key from '../abis/Key.json'
@@ -72,28 +73,6 @@ class App extends Component {
     const networkId = await web3.eth.net.getId()
 
 
-
-
-    // Load AQWB
-    const aqwbNFTData = AQWB.networks[networkId]
-    if(aqwbNFTData) {
-      const aqwbNft = new web3.eth.Contract(AQWB.abi, aqwbNFTData.address)
-      this.setState({ aqwbNft })
-      this.setState({ aqwbNFTData: aqwbNFTData })
-    } else {
-      //window.alert('UPCNFT contract not deployed to detected network.')
-    }
-
-    // Load UpcDAO
-    const afroMineNFTData = UpcDAO.networks[networkId]
-    if(afroMineNFTData) {
-      const afroMineNft = new web3.eth.Contract(UpcDAO.abi, afroMineNFTData.address)
-      this.setState({ afroMineNft })
-      this.setState({ afroMineNFTData: afroMineNFTData })
-    } else {
-      //window.alert('UPCNFT contract not deployed to detected network.')
-    }
-
     // Load UPCMarket
     const upcMarketData = UPCMarket.networks[networkId]
     if(upcMarketData) {
@@ -127,8 +106,6 @@ class App extends Component {
     }
 
 
-
-
     // Load PiggyBank 
     const piggyData = piggy.networks[networkId]
     if(piggyData) {
@@ -143,27 +120,15 @@ class App extends Component {
 
 
     // Load UpcBandRadio
-    const upcNFTData = AfrikaIsBeautiful.networks[networkId]
+    const upcNFTData = DecolonizeAfrica.networks[networkId]
     if(upcNFTData) {
-      const upcNft = new web3.eth.Contract(UpcBandRadio.abi, upcNFTData.address)
+      const upcNft = new web3.eth.Contract(DecolonizeAfrica.abi, upcNFTData.address)
       this.setState({ upcNft })
       this.setState({ upcNFTData: upcNFTData })
     } else {
       //window.alert('UPCNFT contract not deployed to detected network.')
     }
 
-
-
-
-    // Load UPCNFT
-    const snbNFTData = SuperNavalnyBros.networks[networkId]
-    if(snbNFTData) {
-      const snbNft = new web3.eth.Contract(SuperNavalnyBros.abi, snbNFTData.address)
-      this.setState({ snbNft })
-      this.setState({ snbNFTData: snbNFTData })
-    } else {
-      //window.alert('UPCNFT contract not deployed to detected network.')
-    }
 
 
 	
@@ -192,9 +157,9 @@ class App extends Component {
 
 
     // Load PAY currency
-    const intelXData = TubmanX.networks[networkId]
+    const intelXData = Narativ.networks[networkId]
     if(intelXData) {
-      const TUBMANX = new web3.eth.Contract(TubmanX.abi, intelXData.address)
+      const TUBMANX = new web3.eth.Contract(Narativ.abi, intelXData.address)
       this.setState({ intelX: TUBMANX })
     } else {
       //window.alert('UPCGoldBank contract not deployed to detected network.')
@@ -565,26 +530,35 @@ class App extends Component {
 
 
 
-  injectTubmanX = async (upcId,numTubmanX) => {
+  injectNarativ = async (upcId,numNarativ) => {
     const { accounts, contract } = this.state;
 
     const gameID = "testGame";
     //console.log(this.state.sendCryptoValue);
     // Stores a given value, 5 by default.
-    return this.state.coinboxNft.methods.injectTubmanX(upcId,numTubmanX).send({ from: this.state.account });
+    return this.state.coinboxNft.methods.injectNarativ(upcId,numNarativ).send({ from: this.state.account });
   };
 
 
 
-  claimTubmanxToken = async (upcId) => {
+  claimNarativToken = async (upcId) => {
     const { accounts, contract } = this.state;
 
     const gameID = "testGame";
     //console.log(this.state.sendCryptoValue);
     // Stores a given value, 5 by default.
-    return this.state.coinboxNft.methods.injectTubmanX(upcId,numTubmanX).send({ from: this.state.account });
+    return this.state.coinboxNft.methods.claimNarativToken(upcId).send({ from: this.state.account });
   };
 
+
+  checkNarativBalance = async (upcId) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.coinboxNft.methods.narativBalanceReceived(upcId).call({ from: this.state.account });
+  };
 
 
 
@@ -713,14 +687,14 @@ class App extends Component {
   };
 
 
-  buyUPCSWithTubmanX= (numUPCS) => {
-    this.state.stableUPC.methods.buyUPCSWithTubmanX(numUPCS).send({ from: this.state.account });
+  buyUPCSWithNarativ= (numUPCS) => {
+    this.state.stableUPC.methods.buyUPCSWithNarativ(numUPCS).send({ from: this.state.account });
     this.setState({ loading: false})
   }
 
 
   redeemUPCS = (numUPCS) => {
-    this.state.stableUPC.methods.redeemUPCSForTubmanX(numUPCS).send({ from: this.state.account });
+    this.state.stableUPC.methods.redeemUPCSForNarativ(numUPCS).send({ from: this.state.account });
     this.setState({ loading: false})
   }
 
@@ -840,11 +814,14 @@ class App extends Component {
     }
     this.handleChange = this.handleChange.bind(this);
     this.refreshFeed= this.refreshFeed.bind(this);
+    this.injectNarativ= this.injectNarativ.bind(this);
+    this.claimNarativToken= this.claimNarativToken.bind(this);
+    this.checkNarativBalance= this.checkNarativBalance.bind(this);
 
 
 
     this.redeemUPCS= this.redeemUPCS.bind(this);
-    this.buyUPCSWithTubmanX= this.buyUPCSWithTubmanX.bind(this);
+    this.buyUPCSWithNarativ= this.buyUPCSWithNarativ.bind(this);
     this.approveUPCS= this.approveUPCS.bind(this);
 
     this.buyNftNav= this.buyNftNav.bind(this);
@@ -943,8 +920,11 @@ class App extends Component {
 	intel={this.state.intel}
 
 	approveNav={this.approveNav}
+	checkNarativBalance={this.checkNarativBalance}
+	claimNarativToken={this.claimNarativToken}
+	injectNarativ={this.injectNarativ}
 	redeemUPCS={this.redeemUPCS}
-	buyUPCSWithTubmanX={this.buyUPCSWithTubmanX}
+	buyUPCSWithNarativ={this.buyUPCSWithNarativ}
 	approveUPCS={this.approveUPCS}
 
 	buyNftNav={this.buyNftNav}
