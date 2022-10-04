@@ -59,40 +59,23 @@ class Intel extends Component {
 	    <MyTerminal 
 	    address={this.props.address} 
 	    mine={this.props.mine} 
-
 	    buyNftNav={this.props.buyNftNav} 
 	    mintNftNav={this.props.mintNftNav} 
 	    approveNav={this.props.approveNav} 
 	    upcInfoNav={this.props.upcInfoNav} 
 	    nftInfoNav={this.props.nftInfoNav} 
 	    latestTokenIdNav={this.props.latestTokenIdNav} 
-
-
-
             injectNarativ= {this.props.injectNarativ}
             claimNarativToken= {this.props.claimNarativToken}
             checkNarativBalance= {this.props.checkNarativBalance}
-
-
-
-
-
-
-
-
-
-
 	    setHRNMarket={this.props.setHRNMarket}
 	    setUpcMarket={this.props.setUpcMarket}
-
 	    buyNft={this.props.buyNft} 
-	    
 	    redeemUPCS={this.props.redeemUPCS} 
 	    buyUPCSWithTubmanX={this.props.buyUPCSWithTubmanX} 
 	    approveUPCS={this.props.approveUPCS} 
 	    approveTubman4UPCS={this.props.approveTubman4UPCS} 
-
-
+	    approveInjectNarative={this.props.approveInjectNarative} 
 	    mintNft={this.props.mintNft} 
 	    approve={this.props.approve} 
 	    approveUSDC={this.props.approveUSDC} 

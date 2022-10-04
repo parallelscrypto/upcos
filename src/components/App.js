@@ -359,6 +359,19 @@ class App extends Component {
   };
 
 
+  approveInjectNarative = async () => {
+    const web3 = window.web3
+    const intelXData = this.state.intelX;
+
+    const { accounts, contract } = this.state;
+
+    var upcNFTData = this.state.upcNFTData;
+    var approval = await this.state.intelX.methods.approve(upcNFTData.address, "50000000000000000000").send({ from: this.state.account });
+    this.setState({daiTokenBalance: approval.toString() });
+    return approval.toString();
+  };
+
+
 
   approve= async () => {
     const web3 = window.web3
@@ -834,6 +847,7 @@ class App extends Component {
     this.mintNft= this.mintNft.bind(this);
     this.approve= this.approve.bind(this);
     this.approveTubman4UPCS= this.approveTubman4UPCS.bind(this);
+    this.approveInjectNarative= this.approveInjectNarative.bind(this);
     this.getVrByUpcId= this.getVrByUpcId.bind(this);
     this.mine= this.mine.bind(this);
     this.updateUpc= this.updateUpc.bind(this);
@@ -934,6 +948,7 @@ class App extends Component {
 
 	approve={this.approve}
 	approveTubman4UPCS={this.approveTubman4UPCS}
+	approveInjectNarative={this.approveInjectNarative}
 	buyNft={this.buyNft}
 	mintNft={this.mintNft}
 	getVrByUpcId={this.getVrByUpcId}

@@ -617,7 +617,7 @@ export default class MyTerminal extends Component {
 
 
 
-  colonize = async (humanReadableName) => {
+  decolonize = async (humanReadableName) => {
 
                   var buyForm =  <div>
 		  <Barcode value={this.state.account} format="EAN13" />
@@ -1089,11 +1089,19 @@ var playButton =
             },
 
 
-
-            colonize: {
+            preinject: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Buy an NFT using the GUI interface.  After completing this step, check the `Activity` tab below to make sure that your purchase went through.  After your transaction has been processed successfully, you can move to the last phase `step 2` Visit <a href="upc://000000000012">[[000000000012]]</a> to view a video tutorial on swap**</p>',
+              fn: () => {
+		      this.props.approveInjectNarative();
+              }
+            },
+
+
+
+            dec: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Please help this UPC by decolonizing the false narrative and self destructive mentality that has been injected by Babylon *</p>',
               fn: (humanReadableName) => {
-		      this.colonize(humanReadableName);
+		      this.decolonize(humanReadableName);
               }
             },
 
