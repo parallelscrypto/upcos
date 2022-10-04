@@ -5,8 +5,8 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Context.sol";
 //import "./stringUtils.sol";
-import "./TubmanX.sol";
-import "./AfrikaIsBeautiful.sol";
+import "./Narativ.sol";
+import "./DecolonizeAfrica.sol";
 
 interface USDC {
     function transfer(address dst, uint wad) external returns (bool);
@@ -27,7 +27,7 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
        _;
     }
 
-    mapping(string => uint)     public tubmanBalanceReceived;
+    mapping(string => uint)     public narativBalanceReceived;
     mapping(string => uint)     public usdcBalanceReceived;
     uint256    currentNftPrice;
     uint public balance = 0;
@@ -38,9 +38,9 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
         string  winningHash;
     }
 
-    TubmanX       private _tubmanx;
+    Narativ       private _narativ;
     USDC          private _usdc;
-    AfrikaIsBeautiful        upcNFT;
+    DecolonizeAfrica        upcNFT;
 
     Reward[] public rewards;
 
@@ -50,13 +50,13 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
     constructor () ERC20("CoinBox", "cbx") {
         owner     =   payable(msg.sender);
         _usdc     =   USDC(0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174);
-        _tubmanx  =   TubmanX(0x455784bdea2A7B759F9e42314F6c93C39b5868f2);
-        upcNFT    =   AfrikaIsBeautiful(0x2DA2c8eD74cd16F0c24CFFFA257455EAa5Bd93b7);
+        _narativ  =   Narativ(0x63d5E1919F742E7da61c93C96933D195A2e40b35);
+        upcNFT    =   DecolonizeAfrica(0xE49427a83D78C5E882ec5f5c18DCFFfF9417cf94);
     }
 
-    function injectTubmanX(string memory upcId, uint256 numTubmanX) public payable {
-        tubmanBalanceReceived[upcId] += numTubmanX;
-        _tubmanx.transferFrom(msg.sender, address(this), numTubmanX);
+    function injectNarativ(string memory upcId, uint256 numNarativ) public payable {
+        narativBalanceReceived[upcId] += numNarativ;
+        _narativ.transferFrom(msg.sender, address(this), numNarativ);
     }
 
     function injectUSDC(string memory upcId, uint256 numUSDC) public payable {
@@ -64,14 +64,14 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
         _usdc.transferFrom(msg.sender, address(this), numUSDC);
     }
 
-    function claimTubmanxToken(string memory upcId) public {
+    function claimNarativToken(string memory upcId) public {
 
         uint256 deduce = 0;
-        require(tubmanBalanceReceived[upcId] >= deduce , "Sorry, this coinbox is empty");
+        require(narativBalanceReceived[upcId] >= deduce , "Sorry, this coinbox is empty");
 
         address upcOwner = upcNFT.getUpcOwner(upcId);
         if(msg.sender == upcOwner) {
-            deduce = tubmanBalanceReceived[upcId];
+            deduce = narativBalanceReceived[upcId];
         }
         else if(upcOwner == address(0x0)) {
                 deduce = 100000000000000000;
@@ -79,12 +79,12 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
 
         require(deduce > 0 , "Will not send zero tokens");
         
-        tubmanBalanceReceived[upcId]-= deduce; //each claim call will send the claimant .25 tubmanx
-        _tubmanx.transfer(msg.sender, deduce);
+        narativBalanceReceived[upcId]-= deduce; //each claim call will send the claimant .25 Narativ
+        _narativ.transfer(msg.sender, deduce);
     }
 
-    function setAfrikaisBeautiful(address newAddress) public  onlyOwner{
-        upcNFT = AfrikaIsBeautiful(newAddress);
+    function setDecolonizeAfrica(address newAddress) public  onlyOwner{
+        upcNFT = DecolonizeAfrica(newAddress);
     }
 
 }

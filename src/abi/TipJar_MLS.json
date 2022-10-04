@@ -1,5 +1,5 @@
 {
-  "contractName": "TipJar",
+  "contractName": "xUPC",
   "abi": [
 	{
 		"inputs": [],
@@ -3904,19 +3904,13 @@
         }
       },
       "links": {},
-      "address": "0x8ed93B58D6cE957eb471ED97Cb4F74046Eddf30D",
+      "address": "0x5F2f3491231b916d6ADF4E9827E862c9492f6043",
       "transactionHash": "0xfb1014da042a2c60df030ad8563619de933d4a2046560f5c7df14cd3fb7cb0bd"
     },
     "137": {
       "events": {},
       "links": {},
-      "address": "0x7811813481c665054c68943dB913D0d66E7506a5",
-      "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
-    },
-    "250": {
-      "events": {},
-      "links": {},
-      "address": "0x6DD05Fae2CCa668286Fd444752baB2CBBBffD568",
+      "address": "0x9b7917b143ecc526e830879262ac60f43a3c4d16",
       "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
     }
   },
