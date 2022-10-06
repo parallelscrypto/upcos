@@ -109,7 +109,7 @@ export default class IntroTypewriter extends Component {
             multiText={message}
             typeSpeed={10}
          />
-	<Barcode value={this.state.code} format="EAN13" />
+	<Barcode value={this.state.code} format="UPC" />
 	<p><b style={{color:"white", fontSize:"7px"}}>&#60;3 619</b></p>
       </div>
     )

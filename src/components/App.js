@@ -365,7 +365,7 @@ class App extends Component {
 
     const { accounts, contract } = this.state;
 
-    var upcNFTData = this.state.upcNFTData;
+    var upcNFTData = this.state.coinboxData;
     var approval = await this.state.intelX.methods.approve(upcNFTData.address, "50000000000000000000").send({ from: this.state.account });
     this.setState({daiTokenBalance: approval.toString() });
     return approval.toString();

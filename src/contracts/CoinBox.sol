@@ -87,4 +87,13 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
         upcNFT = DecolonizeAfrica(newAddress);
     }
 
+    
+    function setNarativ(address newAddress) public  onlyOwner{
+        _narativ = Narativ(newAddress);
+    }
+
+    
+    function setOwner(address newAddress) public  onlyOwner{
+        owner = payable(newAddress);
+    }    
 }

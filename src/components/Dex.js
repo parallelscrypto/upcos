@@ -23,7 +23,7 @@ export default class Dex extends Component {
 
 
     step0t: {
-            description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your TubmanX.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
+            description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your Narativ.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
       fn: () => {
           const terminal = this.terminal.current
         var progress = 0;
@@ -31,7 +31,7 @@ export default class Dex extends Component {
         this.setState({ isProgressing: true }, () => {
           let approval = this.props.approveUPCS();
           approval.then((value) => {
-             terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient TubmanX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
+             terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Narativ from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
              // expected output: "Success!"
           });
         })
@@ -44,7 +44,7 @@ export default class Dex extends Component {
     },
 
     step0u: {
-            description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 99999 of your TubmanX.  After you have spent 99999, you must run approve again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
+            description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 99999 of your Narativ.  After you have spent 99999, you must run approve again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
       fn: () => {
           const terminal = this.terminal.current
         var progress = 0;
@@ -52,7 +52,7 @@ export default class Dex extends Component {
         this.setState({ isProgressing: true }, () => {
           let approval = this.props.approveTubman4UPCS();
           approval.then((value) => {
-             terminal.pushToStdout(`You can now swap your TubmanX tokens for UPCStable using the 'upcs' command.  If you want 5 upcs, you need 25 TubmanX as there is a 5:1 exchange ratio.  The command to swap 25 TubmanX for 5 UPCS would be 'upcs 5000000000000000000'`)
+             terminal.pushToStdout(`You can now swap your Narativ tokens for UPCStable using the 'upcs' command.  If you want 5 upcs, you need 25 Narativ as there is a 5:1 exchange ratio.  The command to swap 25 Narativ for 5 UPCS would be 'upcs 5000000000000000000'`)
              // expected output: "Success!"
           });
         })
@@ -68,7 +68,7 @@ export default class Dex extends Component {
 
 
     recon: {
-            description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your TubmanX.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
+            description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your Narativ.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
       fn: () => {
           const terminal = this.terminal.current
         var progress = 0;
@@ -76,7 +76,7 @@ export default class Dex extends Component {
         this.setState({ isProgressing: true }, () => {
           let approval = this.props.approve();
           approval.then((value) => {
-             terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient TubmanX from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
+             terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Narativ from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
              // expected output: "Success!"
           });
         })
@@ -90,7 +90,7 @@ export default class Dex extends Component {
 
 
     tubman: {
-       description: '<p style="color:hotpink;font-size:1.1em">** Swap your UPCS stable coins for TubmanX utility token.  Each UPCS will redeem to 5 TubmanX.  For example: `tubman 5000000000000000000` will send 5 UPCS from your wallet to our bank, and our bank will send you 25 TubmanX tokens.  Put 18 zeroes after the whole number that you want to send **</p>',
+       description: '<p style="color:hotpink;font-size:1.1em">** Swap your UPCS stable coins for Narativ utility token.  Each UPCS will redeem to 5 Narativ.  For example: `tubman 5000000000000000000` will send 5 UPCS from your wallet to our bank, and our bank will send you 25 Narativ tokens.  Put 18 zeroes after the whole number that you want to send **</p>',
        fn: (numUPCS) => {
          this.setState({progressBal: ''});
          this.setState({ isProgressing: true }, () => {
@@ -108,7 +108,7 @@ export default class Dex extends Component {
      },
 
     upcs: {
-       description: '<p style="color:hotpink;font-size:1.1em">** Swap your TubmanX utility tokens for UPCS stable coin.  Send 5 TubmanX to receive 1 UPCS.  For example: `upcs 5000000000000000000` will send 5 TubmanX from your wallet to our bank, and our bank will send you 1 UPCS token.  Put 18 zeroes after the whole number that you want to send **</p>',
+       description: '<p style="color:hotpink;font-size:1.1em">** Swap your Narativ utility tokens for UPCS stable coin.  Send 5 Narativ to receive 1 UPCS.  For example: `upcs 5000000000000000000` will send 5 Narativ from your wallet to our bank, and our bank will send you 1 UPCS token.  Put 18 zeroes after the whole number that you want to send **</p>',
        fn: (numUPCS) => {
          this.setState({progressBal: ''});
          this.setState({ isProgressing: true }, () => {
@@ -116,7 +116,7 @@ export default class Dex extends Component {
            var theBal;
            let bal = this.props.buyUPCSWithTubmanX(numUPCS);
            terminal.pushToStdout(`[[buy-UPCS]]`);
-	   terminal.pushToStdout(`Your TubmanX has been converted into UPCS Stable.  Check your balance with the 'bal' command`)
+	   terminal.pushToStdout(`Your Narativ has been converted into UPCS Stable.  Check your balance with the 'bal' command`)
            terminal.pushToStdout(`[[/buy-UPCS]]`);
 
          })
@@ -126,7 +126,7 @@ export default class Dex extends Component {
      },
 
     bal: {
-       description: '<p style="color:hotpink;font-size:1.1em">** Display your TubmanX balance **</p>',
+       description: '<p style="color:hotpink;font-size:1.1em">** Display your Narativ balance **</p>',
        fn: () => {
          this.setState({progressBal: ''});
          this.setState({ isProgressing: true }, () => {
@@ -135,9 +135,9 @@ export default class Dex extends Component {
            let bal = this.props.getMyBalance();
                bal.then((value) => {
                   theBal =window.web3.utils.fromWei(value, "ether");
-                  terminal.pushToStdout(`[[balance-tubmanx]]`);
-		  terminal.pushToStdout(`${theBal} TubmanX`)
-                  terminal.pushToStdout(`[[/balance-tubmanx]]`);
+                  terminal.pushToStdout(`[[balance-narativ]]`);
+		  terminal.pushToStdout(`${theBal} Narativ`)
+                  terminal.pushToStdout(`[[/balance-narativ]]`);
                   terminal.pushToStdout(`================`);
                   terminal.pushToStdout(`================`);
                   // expected output: "Success!"
@@ -189,7 +189,7 @@ export default class Dex extends Component {
 
 
     balupcs: {
-       description: '<p style="color:hotpink;font-size:1.1em">** Display your TubmanX balance **</p>',
+       description: '<p style="color:hotpink;font-size:1.1em">** Display your Narativ balance **</p>',
        fn: () => {
          this.setState({progressBal: ''});
          this.setState({ isProgressing: true }, () => {
@@ -214,7 +214,7 @@ export default class Dex extends Component {
 
 
     baltx: {
-       description: '<p style="color:hotpink;font-size:1.1em">** Display your TubmanX balance **</p>',
+       description: '<p style="color:hotpink;font-size:1.1em">** Display your Narativ balance **</p>',
        fn: () => {
          this.setState({progressBal: ''});
          this.setState({ isProgressing: true }, () => {
@@ -223,9 +223,9 @@ export default class Dex extends Component {
            let bal = this.props.getMyBalance();
                bal.then((value) => {
                   theBal =window.web3.utils.fromWei(value, "ether");
-                  terminal.pushToStdout(`[[balance-tubmanx]]`);
+                  terminal.pushToStdout(`[[balance-narativ]]`);
 		  terminal.pushToStdout(`${theBal}`)
-                  terminal.pushToStdout(`[[/balance-tubmanx]]`);
+                  terminal.pushToStdout(`[[/balance-narativ]]`);
                   // expected output: "Success!"
                });
 
@@ -238,7 +238,7 @@ export default class Dex extends Component {
 
 
      balusdc: {
-             description: '<p style="color:hotpink;font-size:1.1em">** TubmanX is the token used to write [[intel]] to UPC codes.  In order to acquire TubmanX, you must run the `swap` command. This will `swap` Polygon that you have purchased likely from an exchange for TubmanX from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of TubmanX that you would like to exchange for the Polygon in your wallet in wei.  This will trigger a transaction that will mint equiv. TubmanX for Polygon 1:1.  Example: to buy 5 TubmanX type `swap 5000000000000000000`. In other words, this would send 5 Polygon from your wallet for 5 TubmanX from the TubmanX mint.  Visit <a href="upc://000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
+             description: '<p style="color:hotpink;font-size:1.1em">** Narativ is the token used to write [[intel]] to UPC codes.  In order to acquire Narativ, you must run the `swap` command. This will `swap` Polygon that you have purchased likely from an exchange for Narativ from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of Narativ that you would like to exchange for the Polygon in your wallet in wei.  This will trigger a transaction that will mint equiv. Narativ for Polygon 1:1.  Example: to buy 5 Narativ type `swap 5000000000000000000`. In other words, this would send 5 Polygon from your wallet for 5 Narativ from the Narativ mint.  Visit <a href="upc://000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
        fn: (amount) => {
          this.setState({progressBal: ''});
          this.setState({ isProgressing: true }, () => {
@@ -259,7 +259,7 @@ export default class Dex extends Component {
      },
 
      swap: {
-             description: '<p style="color:hotpink;font-size:1.1em">** TubmanX is the token used to write [[intel]] to UPC codes.  In order to acquire TubmanX, you must run the `swap` command. This will `swap` Polygon that you have purchased likely from an exchange for TubmanX from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of TubmanX that you would like to exchange for the Polygon in your wallet in wei.  This will trigger a transaction that will mint equiv. TubmanX for Polygon 1:1.  Example: to buy 5 TubmanX type `swap 5000000000000000000`. In other words, this would send 5 Polygon from your wallet for 5 TubmanX from the TubmanX mint.  Visit <a href="upc://000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
+             description: '<p style="color:hotpink;font-size:1.1em">** Narativ is the token used to write [[intel]] to UPC codes.  In order to acquire Narativ, you must run the `swap` command. This will `swap` Polygon that you have purchased likely from an exchange for Narativ from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of Narativ that you would like to exchange for the Polygon in your wallet in wei.  This will trigger a transaction that will mint equiv. Narativ for Polygon 1:1.  Example: to buy 5 Narativ type `swap 5000000000000000000`. In other words, this would send 5 Polygon from your wallet for 5 Narativ from the Narativ mint.  Visit <a href="upc://000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
        fn: (amount) => {
          this.setState({progressBal: ''});
          this.setState({ isProgressing: true }, () => {
@@ -268,7 +268,7 @@ export default class Dex extends Component {
            approval.then((value) => {
               approval = value;
                   terminal.pushToStdout(`[[swap]]`);
-              terminal.pushToStdout(`You have just swapped Polygon for TubmanX.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
+              terminal.pushToStdout(`You have just swapped Polygon for Narativ.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
                   terminal.pushToStdout(`[[/swap]]`);
               // expected output: "Success!"
            });
