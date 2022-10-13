@@ -1,8 +1,8 @@
     // SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
 
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol";
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/IERC721Receiver.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.4.1/contracts/token/ERC721/ERC721.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.4.1/contracts/token/ERC721/IERC721Receiver.sol";
 
 contract UPCMarket is IERC721Receiver {
     
@@ -27,6 +27,7 @@ contract UPCMarket is IERC721Receiver {
     
     constructor() {
         bank = payable(msg.sender);
+        nftMarketplace = address(0xE49427a83D78C5E882ec5f5c18DCFFfF9417cf94);
     }
 
 

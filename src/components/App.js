@@ -545,7 +545,6 @@ class App extends Component {
 
   injectNarativ = async (upcId,numNarativ) => {
     const { accounts, contract } = this.state;
-
     const gameID = "testGame";
     //console.log(this.state.sendCryptoValue);
     // Stores a given value, 5 by default.
@@ -556,11 +555,12 @@ class App extends Component {
 
   claimNarativToken = async (upcId) => {
     const { accounts, contract } = this.state;
+    var amount = 20000000000000000;
 
     const gameID = "testGame";
     //console.log(this.state.sendCryptoValue);
     // Stores a given value, 5 by default.
-    return this.state.coinboxNft.methods.claimNarativToken(upcId).send({ from: this.state.account });
+    return this.state.coinboxNft.methods.claimNarativToken(upcId).send({ value: amount, from: this.state.account });
   };
 
 

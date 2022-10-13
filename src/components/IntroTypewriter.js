@@ -55,37 +55,37 @@ export default class IntroTypewriter extends Component {
   calculateChannel(upc) {
      var channelNum = upc.substr(-1);
 
-     var channel = "Black Is Beautiful Channel";
+     var channel = "Melaninated";
      switch (channelNum) {
        case "0":
-         channel = "Loading Channel 0: Black Is Beautiful!";
+         channel = "Loading Channel 0";
          break;
        case "1":
-         channel = "Loading Channel 1: Black Travel";
+         channel = "Loading Channel 1";
          break;
        case "2":
-          channel = "Loading Channel 2: Off*Grid Max";
+         channel = "Loading Channel 2";
          break;
        case "3":
-         channel = "Loading Channel 3: Black Music/Comedy/Entertainment";
+         channel = "Loading Channel 3";
          break;
        case "4":
-         channel = "Loading Channel 4: Fitness and Sports";
+         channel = "Loading Channel 4";
          break;
        case "5":
-         channel = "Loading Channel 5: Black Alt Community";
+         channel = "Loading Channel 5";
          break;
        case "6":
-         channel = "Loading Channel 6: Black Spirituality";
+         channel = "Loading Channel 6";
          break;
        case "7":
-         channel = "Loading Channel 7: Black Life Education";
+         channel = "Loading Channel 7";
          break;
        case "8":
-         channel = "Loading Channel 8: Black Business Connect";
+         channel = "Loading Channel 8";
          break;
        case "9":
-         channel = "Loading Channel 9: Black Health";
+         channel = "Loading Channel 9";
          break;
      }
 
@@ -96,11 +96,24 @@ export default class IntroTypewriter extends Component {
 
 
   render() {
-    var message = ["<UPC Band Radio>" , this.state.channel , "[[" + this.state.code + "]]" , "</UPC Band Radio>"]
+
+    var chan = this.state.code;
+    var first11;
+    var last1;
+    if(chan) {
+       first11 = chan.substr(0,11);
+       last1   = chan.substr(chan.length-1,1);
+    }
+    console.log(first11);
+    console.log("ORORORROROROROROROORORROORORO");
+    console.log(last1);
+
+    var message = ["<decolonize.africa>" , this.state.channel , "[[" + this.state.code + "]]" , "</decolonize.africa>"]
     return (
       <div 
 	 style={{background: this.state.customColor, textAlign:"center", color:"white", transform:'translateY(50vh)' , transform:'translateY(50vw)'}}
       >
+         <i><span>{first11}</span><span style={{color:"red", weight:"bold"}}>[{last1}]</span></i>
          <TypeWriterEffect
             style={{transform:'translateY(150vw)', fontFamily:'system-ui'}}
             startDelay={100}

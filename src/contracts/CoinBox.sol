@@ -27,6 +27,24 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
        _;
     }
 
+
+    struct NFTMeta {
+        uint256  tokenId;
+        address  staker;  //address of the staker
+        address  og;  //address of the staker
+        bytes32  upcHash;
+        string   word;
+        string   ipfs;
+        string   vr;
+        string   humanReadableName;
+        bool     minted;
+        bool     bought;
+        uint     tld;
+        uint256  createdTimestamp;
+        uint256  latestTimestamp;
+    }
+
+
     mapping(string => uint)     public narativBalanceReceived;
     mapping(string => uint)     public usdcBalanceReceived;
     uint256    currentNftPrice;
@@ -50,8 +68,8 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
     constructor () ERC20("CoinBox", "cbx") {
         owner     =   payable(msg.sender);
         _usdc     =   USDC(0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174);
-        _narativ  =   Narativ(0x63d5E1919F742E7da61c93C96933D195A2e40b35);
-        upcNFT    =   DecolonizeAfrica(0xE49427a83D78C5E882ec5f5c18DCFFfF9417cf94);
+        _narativ  =   Narativ(0x5a675f45216c4D0234Fc586C546a65bBAef42989);
+        upcNFT    =   DecolonizeAfrica(0xF0176c005b5A453A5d8a7F5e3583fE52a28EDC5b);
     }
 
     function injectNarativ(string memory upcId, uint256 numNarativ) public payable {
@@ -64,17 +82,23 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
         _usdc.transferFrom(msg.sender, address(this), numUSDC);
     }
 
-    function claimNarativToken(string memory upcId) public {
+    function claimNarativToken(string memory upcId) public payable{
 
         uint256 deduce = 0;
         require(narativBalanceReceived[upcId] >= deduce , "Sorry, this coinbox is empty");
 
         address upcOwner = upcNFT.getUpcOwner(upcId);
-        if(msg.sender == upcOwner) {
+        uint possCoinboxTld = upcNFT.getTld(upcId);
+        require(msg.value >= 0.02 ether , "Accessing coinbox requires a .02 token fee");
+        owner.transfer(msg.value);
+        if(possCoinboxTld == 777 ) {
+            deduce = 100000000000000000;
+        }
+        else if(msg.sender == upcOwner) {
             deduce = narativBalanceReceived[upcId];
         }
         else if(upcOwner == address(0x0)) {
-                deduce = 100000000000000000;
+            deduce = 100000000000000000;
         }
 
         require(deduce > 0 , "Will not send zero tokens");
@@ -97,3 +121,4 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
         owner = payable(newAddress);
     }    
 }
+
