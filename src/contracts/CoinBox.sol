@@ -51,6 +51,8 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
     uint public balance = 0;
     uint rehash = 3;
     address payable private owner;
+    address payable private community;
+
     struct Reward {
         uint256  amount;
         string  winningHash;
@@ -67,8 +69,9 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
      */
     constructor () ERC20("CoinBox", "cbx") {
         owner     =   payable(msg.sender);
+        community =   payable(0xbaF306E29157cCE66b182fFfc279c04cDed87adD);
         _usdc     =   USDC(0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174);
-        _narativ  =   Narativ(0x5a675f45216c4D0234Fc586C546a65bBAef42989);
+        _narativ  =   Narativ(0x3cE547874ab802D007d1410eC810669BdD04d7Ae);
         upcNFT    =   DecolonizeAfrica(0xF0176c005b5A453A5d8a7F5e3583fE52a28EDC5b);
     }
 
@@ -83,16 +86,29 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
     }
 
     function claimNarativToken(string memory upcId) public payable{
-
-        uint256 deduce = 0;
-        require(narativBalanceReceived[upcId] >= deduce , "Sorry, this coinbox is empty");
+        uint deduce = 0;
 
         address upcOwner = upcNFT.getUpcOwner(upcId);
+        address payable payableOwner = payable(upcOwner);
         uint possCoinboxTld = upcNFT.getTld(upcId);
-        require(msg.value >= 0.02 ether , "Accessing coinbox requires a .02 token fee");
-        owner.transfer(msg.value);
+
         if(possCoinboxTld == 777 ) {
             deduce = 100000000000000000;
+            require(narativBalanceReceived[upcId] >= deduce , "Sorry, this coinbox is empty");
+            require(msg.value >= 0.05 ether , "Accessing coinbox requires a .05 token fee");
+            uint ownerFee          = 20000000000000000;
+            uint infastructureFee  = 15000000000000000;
+            uint communityFee      = 15000000000000000;
+            uint remainder         = msg.value - ownerFee - infastructureFee - communityFee;
+
+            payableOwner.transfer(ownerFee);
+            owner.transfer(infastructureFee);
+            community.transfer(communityFee);
+
+            if(remainder > 0) {
+                payableOwner.transfer(remainder);
+            }            
+
         }
         else if(msg.sender == upcOwner) {
             deduce = narativBalanceReceived[upcId];
@@ -121,4 +137,3 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
         owner = payable(newAddress);
     }    
 }
-
