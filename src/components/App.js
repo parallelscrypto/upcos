@@ -366,7 +366,7 @@ class App extends Component {
     const { accounts, contract } = this.state;
 
     var upcNFTData = this.state.coinboxData;
-    var approval = await this.state.intelX.methods.approve(upcNFTData.address, "50000000000000000000").send({ from: this.state.account });
+    var approval = await this.state.intelX.methods.approve(upcNFTData.address, "500000000000000000000").send({ from: this.state.account });
     this.setState({daiTokenBalance: approval.toString() });
     return approval.toString();
   };
@@ -555,7 +555,7 @@ class App extends Component {
 
   claimNarativToken = async (upcId) => {
     const { accounts, contract } = this.state;
-    var amount = 20000000000000000;
+    var amount = 50000000000000000;
 
     const gameID = "testGame";
     //console.log(this.state.sendCryptoValue);

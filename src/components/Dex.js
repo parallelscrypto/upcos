@@ -87,44 +87,6 @@ export default class Dex extends Component {
         return ''
       }
     },
-
-
-    tubman: {
-       description: '<p style="color:hotpink;font-size:1.1em">** Swap your UPCS stable coins for Narativ utility token.  Each UPCS will redeem to 5 Narativ.  For example: `tubman 5000000000000000000` will send 5 UPCS from your wallet to our bank, and our bank will send you 25 Narativ tokens.  Put 18 zeroes after the whole number that you want to send **</p>',
-       fn: (numUPCS) => {
-         this.setState({progressBal: ''});
-         this.setState({ isProgressing: true }, () => {
-           const terminal = this.terminal.current
-           var theBal;
-           let bal = this.props.redeemUPCS(numUPCS);
-           terminal.pushToStdout(`[[redeem-UPCS]]`);
-	   terminal.pushToStdout(`Your UPCS has been redeemed.  Check your balance with the 'bal' command`)
-           terminal.pushToStdout(`[[/redeem-UPCS]]`);
-
-         })
-
-         return ''
-       }
-     },
-
-    upcs: {
-       description: '<p style="color:hotpink;font-size:1.1em">** Swap your Narativ utility tokens for UPCS stable coin.  Send 5 Narativ to receive 1 UPCS.  For example: `upcs 5000000000000000000` will send 5 Narativ from your wallet to our bank, and our bank will send you 1 UPCS token.  Put 18 zeroes after the whole number that you want to send **</p>',
-       fn: (numUPCS) => {
-         this.setState({progressBal: ''});
-         this.setState({ isProgressing: true }, () => {
-           const terminal = this.terminal.current
-           var theBal;
-           let bal = this.props.buyUPCSWithTubmanX(numUPCS);
-           terminal.pushToStdout(`[[buy-UPCS]]`);
-	   terminal.pushToStdout(`Your Narativ has been converted into UPCS Stable.  Check your balance with the 'bal' command`)
-           terminal.pushToStdout(`[[/buy-UPCS]]`);
-
-         })
-
-         return ''
-       }
-     },
-
     bal: {
        description: '<p style="color:hotpink;font-size:1.1em">** Display your Narativ balance **</p>',
        fn: () => {
@@ -184,32 +146,6 @@ export default class Dex extends Component {
          return ''
        }
      },
-
-
-
-
-    balupcs: {
-       description: '<p style="color:hotpink;font-size:1.1em">** Display your Narativ balance **</p>',
-       fn: () => {
-         this.setState({progressBal: ''});
-         this.setState({ isProgressing: true }, () => {
-           const terminal = this.terminal.current
-           var theBal;
-           let bal = this.props.getUPCSBalance();
-               bal.then((value) => {
-                  theBal =window.web3.utils.fromWei(value, "ether");
-                  terminal.pushToStdout(`[[balance-upcs]]`);
-		  terminal.pushToStdout(`${theBal}`)
-                  terminal.pushToStdout(`[[/balance-upcs]]`);
-                  // expected output: "Success!"
-               });
-
-         })
-
-         return ''
-       }
-     },
-
 
 
 

@@ -23,7 +23,7 @@ var sha256 = require('js-sha256');
 
 var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Narativ\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your Narativ to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`decolonize`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with decolonize " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
-var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'jokes' ,'tutorial' ,'mumia' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.narativ', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.coinbox']
+var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'jokes' ,'tutorial' ,'mumia' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.narativ', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.coinbox']
 
 
 
@@ -464,6 +464,9 @@ export default class MyTerminal extends Component {
 		   .then(data => {
 
 			let hrTLD = tlds[data['tld']];
+                        if(data['tld'] == 777) {
+                           hrTLD = "coinbox";
+                        }
 		        let tld = hrTLD + " (" + data['tld'] + ")";
 			var tmpStamp = parseInt(data['latestTimestamp']);
                         var newDate = new Date(tmpStamp * 1000);
@@ -707,6 +710,7 @@ export default class MyTerminal extends Component {
                            <option value="63">.dog-walk</option>
                            <option value="64">.dog-lost</option>
                            <option value="65">.promo-code</option>
+                           <option value="66">.dream-log</option>
                            <option value="777">.coinbox</option>
                         </select>
 
@@ -776,7 +780,7 @@ export default class MyTerminal extends Component {
 
   upload = async (comp) => {
       //this.setState({showUploadModal:true});
-      var link = 'https://upcunderground.mypinata.cloud/ipfs/QmPjvxXgsUXhPFNaosu9V2hHBBwQb1Y6YrJk4ojPZk1WYc/#/upload/'  + this.state.account;
+      var link = 'https://upcunderground.mypinata.cloud/ipfs/QmbbJuVZiJNZemDHMKzU7AJfA7JKSLCVrkCPE2CwFcFQWB/#/upload/'  + this.state.account;
       var myUpload = <h1><a href={link}>Proceed to Perma-Uploader App</a></h1>
       this.setState({player:myUpload});
   }
@@ -993,6 +997,7 @@ var playButton =
     //var myUpload = <IpfsUpload upc={this.state.account} xpayload={this.props.setIpfs} /> 
 
     var player;				
+    const terminal = this.progressTerminal.current
 
     //var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV  </i> \n <i style='color:#d66900'>Malcolm's Little Secret \n <b style='color:red'> [Black Is Beautiful! TV Network]</b>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Black Is Beautiful! Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is colonized and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key).  The titles and links for UPC Band TV Channels 0-9 are listed below. </u> \n <i style='color:white'>  Channel Definitions: </i> \n <i style='color:orange'> Channel 0: Black Is Beautiful!;\n <a href='upc://000000000000'>Watch Channel 0[[000000000000]]</a>.\n Or type command `ch0` to tune into UPC Band Theater Channel 0 \n <i style='color:orange'>  Channel 1: Black Travel; </i> \n <a href='upc://000000000001'>Watch Channel 1 [[000000000001]]</a>   \n Or type command `ch1` to tune into UPC Band Theater Channel 1 \n <i style='color:orange'>  Channel 2: Off*Grid Max; </i> \n <a href='upc://000000000002'>Watch Channel 2 [[000000000002]]</a>   \n Or type command `ch2` to tune into UPC Band Theater Channel 2 \n <i style='color:orange'>  Channel 3: Black Comedy/Entertainment/Music; </i> \n <a href='upc://000000000003'>Watch Channel 3 [[000000000003]]</a>  \n Or type command `ch3` to tune into UPC Band Theater Channel 3 \n <i style='color:orange'>  Channel 4: Fitness and Sports; </i>  \n <a href='upc://000000000004'>Watch Channel 4 [[000000000004]]</a>  \n Or type command `ch4` to tune into UPC Band Theater Channel 4 \n <i style='color:orange'>  Channel 5: Black Alt Community; </i>  \n <a href='upc://000000000005'>Watch Channel 5 [[000000000005]]</a>  \n Or type command `ch5` to tune into UPC Band Theater Channel 5 \n <i style='color:orange'>  Channel 6: Black Spirituality; <i>  \n <a href='upc://000000000006'>Watch Channel 6 [[000000000006]]</a>  \n Or type command `ch6` to tune into UPC Band Theater Channel 6 \n <i style='color:orange'>  Channel 7: Black Life Education; </i>  \n <a href='upc://000000000007'>Watch Channel 7 [[000000000007]]</a>  \n Or type command `ch7` to tune into UPC Band Theater Channel 7 \n <i style='color:orange'>  Channel 8: Black Business Connect; </i>  \n <a href='upc://000000000008'>Watch Channel 8 [[000000000008]]</a>  \n Or type command `ch8` to tune into UPC Band Theater Channel 8 \n <i style='color:orange'>  Channel 9: Black Health; </i>  \n <a href='upc://000000000009'>Watch Channel 9 [[000000000009]]</a>  \n Or type command `ch9` to tune into UPC Band Theater Channel 9 \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Narativ\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your Narativ to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`colonize`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with colonize [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
     //var tutorial = "<html><body><h1>hello</h1></body></html>"
@@ -1065,7 +1070,6 @@ var playButton =
                 var progress = 0;
                 this.setState({approved: false});
                 this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
                   let approval = this.props.approveUSDC();
                   approval.then((value) => {
 		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Narativ from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'colonize' and 'colonizeb' commands will fail`)
@@ -1120,7 +1124,6 @@ var playButton =
               fn: (humanReadableName,domain) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
                   let approval = this.props.buyNft(this.state.account, humanReadableName,domain);
                       approval.then((value) => {
                          approval = value;
@@ -1155,7 +1158,6 @@ var playButton =
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
                   let approval = this.props.mintNft(this.state.account);
                       approval.then((value) => {
                          approval = value;
@@ -1188,7 +1190,6 @@ var playButton =
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
                   let approval = this.props.mintNft(this.state.account);
                       approval.then((value) => {
                          approval = value;
@@ -1228,6 +1229,159 @@ var playButton =
 		      this.grep(word);
               }
             },
+
+
+             ///dex
+
+
+
+            step0t: {
+                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your Narativ.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
+              fn: () => {
+                  
+                var progress = 0;
+                this.setState({approved: false});
+                this.setState({ isProgressing: true }, () => {
+                  let approval = this.props.approveUPCS();
+                  approval.then((value) => {
+                     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Narativ from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
+                     // expected output: "Success!"
+                  });
+                })
+        
+                         terminal.pushToStdout(`[[approve]]`);
+                terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
+                         terminal.pushToStdout(`[[/approve]]`);
+                return ''
+              }
+            },
+        
+            step0u: {
+                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 99999 of your Narativ.  After you have spent 99999, you must run approve again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
+              fn: () => {
+                  
+                var progress = 0;
+                this.setState({approved: false});
+                this.setState({ isProgressing: true }, () => {
+                  let approval = this.props.approveTubman4UPCS();
+                  approval.then((value) => {
+                     terminal.pushToStdout(`You can now swap your Narativ tokens for UPCStable using the 'upcs' command.  If you want 5 upcs, you need 25 Narativ as there is a 5:1 exchange ratio.  The command to swap 25 Narativ for 5 UPCS would be 'upcs 5000000000000000000'`)
+                     // expected output: "Success!"
+                  });
+                })
+        
+                         terminal.pushToStdout(`[[approve]]`);
+                terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
+                         terminal.pushToStdout(`[[/approve]]`);
+                return ''
+              }
+            },
+        
+        
+        
+        
+            recon: {
+                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your Narativ.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
+              fn: () => {
+                  
+                var progress = 0;
+                this.setState({approved: false});
+                this.setState({ isProgressing: true }, () => {
+                  let approval = this.props.approve();
+                  approval.then((value) => {
+                     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Narativ from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
+                     // expected output: "Success!"
+                  });
+                })
+        
+                         terminal.pushToStdout(`[[approve]]`);
+                terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
+                         terminal.pushToStdout(`[[/approve]]`);
+                return ''
+              }
+            },
+            bal: {
+               description: '<p style="color:hotpink;font-size:1.1em">** Display your Narativ balance **</p>',
+               fn: () => {
+                 this.setState({progressBal: ''});
+                 this.setState({ isProgressing: true }, () => {
+
+                  const terminal = this.progressTerminal.current
+                   var theBal;
+                   let bal = this.props.getMyBalance();
+                       bal.then((value) => {
+                          theBal =window.web3.utils.fromWei(value, "ether");
+                          terminal.pushToStdout(`[[balance-narativ]]`);
+        		  terminal.pushToStdout(`${theBal} Narativ`)
+                          terminal.pushToStdout(`[[/balance-narativ]]`);
+                          terminal.pushToStdout(`================`);
+                          terminal.pushToStdout(`================`);
+                          // expected output: "Success!"
+                       });
+        
+        
+                   let balUPCS = this.props.getUPCSBalance();
+                       balUPCS.then((value) => {
+                          theBal =window.web3.utils.fromWei(value, "ether");
+                          terminal.pushToStdout(`[[balance-upcs]]`);
+        		  terminal.pushToStdout(`${theBal} UPCS`)
+                          terminal.pushToStdout(`[[/balance-upcs]]`);
+                          terminal.pushToStdout(`================`);
+                          terminal.pushToStdout(`================`);
+                          // expected output: "Success!"
+                       });
+        
+        
+        
+        
+                   let balU = this.props.getStableBalance();
+                   balU.then((value) => {
+                      bal = value;
+                          var balLen = bal.length;
+                          var leadingNums = balLen - 6;  //there are 6 decimals for USDC
+                          var firstX = bal.substr(0, leadingNums);
+                          var last6 =  bal.substr(-6,6);
+                          last6 = last6.padStart(6,'0');
+                          
+                          var balReconstructed = firstX + '.' + last6
+                          terminal.pushToStdout(`[[balance-usdc]]`);
+        		  terminal.pushToStdout(`${balReconstructed} USDC`)
+                          terminal.pushToStdout(`[[/balance-usdc]] \n\n`);
+                          terminal.pushToStdout(`================`);
+                          terminal.pushToStdout(`================`);
+                      // expected output: "Success!"
+                   });
+        
+        
+        
+        
+                 })
+        
+                 return ''
+               }
+             },
+        
+               
+             swap: {
+                     description: '<p style="color:hotpink;font-size:1.1em">** Narativ is the token used to write [[intel]] to UPC codes.  In order to acquire Narativ, you must run the `swap` command. This will `swap` Polygon that you have purchased likely from an exchange for Narativ from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of Narativ that you would like to exchange for the Polygon in your wallet in wei.  This will trigger a transaction that will mint equiv. Narativ for Polygon 1:1.  Example: to buy 5 Narativ type `swap 5000000000000000000`. In other words, this would send 5 Polygon from your wallet for 5 Narativ from the Narativ mint.  Visit <a href="upc://000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
+               fn: (amount) => {
+                 this.setState({progressBal: ''});
+                 this.setState({ isProgressing: true }, () => {
+                   
+                   let approval = this.props.swap(amount);
+                   approval.then((value) => {
+                      approval = value;
+                          terminal.pushToStdout(`[[swap]]`);
+                      terminal.pushToStdout(`You have just swapped Polygon for Narativ.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
+                          terminal.pushToStdout(`[[/swap]]`);
+                      // expected output: "Success!"
+                   });
+        
+                 })
+        
+                 return ''
+               }
+             },
 
 
             peek: {
@@ -1828,6 +1982,11 @@ var playButton =
 
 			var upc = data['word'];
 			let hrTLD = tlds[data['tld']];
+
+                        if(data['tld'] == 777) {
+                           hrTLD = "coinbox";
+                        }
+
 		        let tld = hrTLD + " (" + data['tld'] + ")";
 			var tmpStamp = parseInt(data['latestTimestamp']);
                         var newDate = new Date(tmpStamp * 1000);
@@ -1904,6 +2063,10 @@ console.log("location is " + currentUrl);
 
                         var upc = data['word'];
 			let hrTLD = tlds[data['tld']];
+                        if(data['tld'] == 777) {
+                           hrTLD = "coinbox";
+                        }
+
 		        let tld = hrTLD + " (" + data['tld'] + ")";
 
                         var currentUrl = window.location.href;
@@ -1974,6 +2137,10 @@ console.log("location is " + currentUrl);
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
 			let hrTLD = tlds[data['tld']];
+                        if(data['tld'] == 777) {
+                           hrTLD = "coinbox";
+                        }
+
 		        let tld = hrTLD + " (" + data['tld'] + ")";
 
                         terminal.pushToStdout(`[[intel]]`);
