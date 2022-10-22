@@ -592,8 +592,8 @@ export default class MyTerminal extends Component {
                     <button 
                          style={{background:"yellow",color:"red", height:"3em"}}
                          onClick={(event) => {
-                            var ifram = <iframe style={{height:"95vh", width:"95vw"}} allow="camera;microphone" src={'https://zfo3esiobabdv3jc47qeluzzrlu4wcy7uaj6vxo5i6pqodl6be3q.arweave.net/yV2ySQ4IAjrtIufgRdM5iunLCx-gE-rd3UefBw1-CTc/index.html'} />;
-                            self.setState({player: ifram});
+                            var scantool = <ScanWizard />;
+                            self.setState({player: scantool });
                          }}
                     >
                        scan
