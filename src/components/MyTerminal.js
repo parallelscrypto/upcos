@@ -4,6 +4,7 @@ import ScratchCard from './ScratchCard'
 import IpfsUpload from './IpfsUpload'
 import TrebleCleff from './TrebleCleff'
 import BassCleff from './BassCleff'
+import ScanWizard from './ScanWizard'
 import Dex from './Dex'
 import Modal from "react-animated-modal";
 import Iframe from 'react-iframe';
@@ -23,7 +24,7 @@ var sha256 = require('js-sha256');
 
 var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Narativ\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your Narativ to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`decolonize`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with decolonize " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
-var tlds = ['watch-this' ,'hear-this' ,'will-work' ,'jokes' ,'tutorial' ,'mumia' ,'profile' ,'my-show' ,'news' ,'gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.narativ', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.coinbox']
+var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.narativ', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.coinbox']
 
 
 
@@ -138,8 +139,10 @@ export default class MyTerminal extends Component {
           url='https://www.youtube.com/watch?v=eXvBjCO19QY' 
           />
 
+    var scantool = <ScanWizard />
     this.state = {
        account: props.account,
+       scanning: true,
        progress: 0,
        approved: '',
        vrLink: '',
@@ -156,6 +159,8 @@ export default class MyTerminal extends Component {
        showDexModal: false,
        showUploadModal: false,
        showProductModal: false,
+       showScanModal: false,
+       scanner: scantool,
        showProductContent: '',
        showTutorialContent: '',
        showModalTutorial: false,
@@ -550,8 +555,10 @@ export default class MyTerminal extends Component {
 
 
   search = async (term) => {
+                  var result;
+                  var self = this;
                   var searchForm =  <div>
-                  <form className="mb-3" onSubmit={(event) => {
+                  <form onSubmit={(event) => {
                       event.preventDefault()
                       let upcId = this.state.account
                       let humanReadableName = this.humanReadableName.value.toString()
@@ -559,29 +566,44 @@ export default class MyTerminal extends Component {
                       this.grep(humanReadableName)
 
                       this.setState({showModalSearch:false});
-                    }}>
+                      this.handleFlip(event)
+                    }}
+
+                     style={{background:"black", padding:"20px"}}
+                    >
                     <div className="input-group mb-4">
                       <input
                         type="text"
                         ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
-                        className="form-control form-control-lg break"
+                        className="form-control form-control-lg"
                         placeholder="search-term (no spaces)"
+                        style={{width:"80%", background:"black"}}
                         required />
+
+
 
                     </div>
                     <button
-                   type="submit"
                    className="btn btn-primary btn-block btn-lg"
                   >
                   Search!
               </button>
                   </form>
-
-
+                    <button 
+                         style={{background:"yellow",color:"red", height:"3em"}}
+                         onClick={(event) => {
+                            var ifram = <iframe style={{height:"95vh", width:"95vw"}} allow="camera;microphone" src={'https://zfo3esiobabdv3jc47qeluzzrlu4wcy7uaj6vxo5i6pqodl6be3q.arweave.net/yV2ySQ4IAjrtIufgRdM5iunLCx-gE-rd3UefBw1-CTc/index.html'} />;
+                            self.setState({player: ifram});
+                         }}
+                    >
+                       scan
+                    </button>
              </div>
 
-                      this.setState({searchModalContent:searchForm});
-                      this.setState({showModalSearch:true});
+                      {this.setState({player: searchForm}) }
+                      //this.setState({player:searchForm});
+                      //this.setState({searchModalContent:searchForm});
+                      //this.setState({showModalSearch:true});
   }
 
 
@@ -1056,6 +1078,9 @@ var playButton =
 
 
       <Modal className={"dex"} style={{"width":"90vw", "height":"90vh"}} visible={this.state.showDexModal} closemodal={() => this.setState({ showDexModal: false })} type="pulse" > {this.state.dex}</Modal>
+
+      <Modal style={{"width":"90vw", "height":"90vh"}} visible={this.state.showScanModal} closemodal={() => this.setState({ showScanModal: false })} type="pulse" > {this.state.scanner}</Modal>
+      <Modal style={{ height:"95vh", width:"95vw"}} visible={this.state.showScanModal} closemodal={() => this.setState({ showScanModal: false })} type="pulse"> [[upc://{this.state.account}]] <iframe style={{height:"95vh", width:"95vw"}} allow="camera;microphone" src={'https://zfo3esiobabdv3jc47qeluzzrlu4wcy7uaj6vxo5i6pqodl6be3q.arweave.net/yV2ySQ4IAjrtIufgRdM5iunLCx-gE-rd3UefBw1-CTc/index.html'} /></Modal>
 
                     <button onClick={(e) => { this.handleFlip(e)}} >Overview this UPC!</button>
       <Terminal
