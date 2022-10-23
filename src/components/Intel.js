@@ -19,6 +19,7 @@ class Intel extends Component {
       isFlipped: false,
       modalIsOpen: false
     }
+
   }
 
   componentWillMount(){
@@ -48,6 +49,7 @@ class Intel extends Component {
   closeModal = () => {
     this.setState({modalIsOpen: false});
   }
+
 
 
 

@@ -2,14 +2,42 @@ import React, { useState, useRef } from 'react';
 import Scanner from './Scanner';
 import Result from './Result';
 
-const App = () => {
+
+
+
+
+
+const ScanWizard = (props) => {
     const [scanning, setScanning] = useState(false);
     const [results, setResults] = useState([]);
     const scannerRef = useRef(null);
+    const upc        = useRef(null);
+
+
+
+    const update = (result) => {
+       console.log(props);
+       console.log("in here scannnnnn!!!!!zzzzz");
+       console.log(result);
+       props.setAccount(result);
+       setScanning(false);
+    };
 
     return (
         <div>
             <button onClick={() => setScanning(!scanning) }>{scanning ? 'Stop' : 'Start'}</button>
+            <button onClick={() => { update(upc.current.value) }}>goto upc</button>
+
+            <input
+              type="text"
+              ref={upc}
+              className="form-control form-control-lg"
+              placeholder="12-digit-upc-code"
+              style={{width:"80%", background:"black"}}
+               />
+
+
+
             <ul className="results">
                 {results.map((result) => (result.codeResult && <Result key={result.codeResult.code} result={result} />))}
             </ul>
@@ -25,10 +53,10 @@ const App = () => {
                     opacity: '0.1',
                     border: '3px solid green',
                 }} width="100vw" height="100vh" />
-                {scanning ? <Scanner scannerRef={scannerRef} onDetected={(result) => setResults([...results, result])} /> : null}
+                {scanning ? <Scanner scannerRef={scannerRef} onDetected={(result) => update(result) } /> : null}
             </div>
         </div>
     );
 };
 
-export default App;
+export default ScanWizard;

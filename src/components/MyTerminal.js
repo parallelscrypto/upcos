@@ -139,7 +139,6 @@ export default class MyTerminal extends Component {
           url='https://www.youtube.com/watch?v=eXvBjCO19QY' 
           />
 
-    var scantool = <ScanWizard />
     this.state = {
        account: props.account,
        scanning: true,
@@ -160,7 +159,6 @@ export default class MyTerminal extends Component {
        showUploadModal: false,
        showProductModal: false,
        showScanModal: false,
-       scanner: scantool,
        showProductContent: '',
        showTutorialContent: '',
        showModalTutorial: false,
@@ -178,7 +176,9 @@ export default class MyTerminal extends Component {
        card: '',
     }
 
+
     this.selectDomain = this.selectDomain.bind(this);
+    this.setAccount = this.setAccount.bind(this);
     this.firstLookup= this.firstLookup.bind(this);
     this.prodLookup= this.prodLookup.bind(this);
     this.search= this.search.bind(this);
@@ -592,7 +592,8 @@ export default class MyTerminal extends Component {
                     <button 
                          style={{background:"yellow",color:"red", height:"3em"}}
                          onClick={(event) => {
-                            var scantool = <ScanWizard />;
+
+                            var scantool = <ScanWizard setAccount={this.setAccount} />;
                             self.setState({player: scantool });
                          }}
                     >
@@ -817,6 +818,14 @@ export default class MyTerminal extends Component {
       });
 
   }
+
+
+  setAccount = async (code) => {
+      this.setState({account: code});
+  }
+
+
+
 
   claim = async (upcId) => {
       //this.setState({showUploadModal:true});
