@@ -23,6 +23,13 @@ const ScanWizard = (props) => {
        setScanning(false);
     };
 
+    const updateScan = (result) => {
+       var res = result.toString();
+       props.setAccount(res);
+       setScanning(false);
+    };
+
+
     return (
         <div>
             <button onClick={() => setScanning(!scanning) }>{scanning ? 'Stop' : 'Start'}</button>
@@ -53,7 +60,7 @@ const ScanWizard = (props) => {
                     opacity: '0.1',
                     border: '3px solid green',
                 }} width="100vw" height="100vh" />
-                {scanning ? <Scanner scannerRef={scannerRef} onDetected={(result) => update(result) } /> : null}
+                {scanning ? <Scanner scannerRef={scannerRef} onDetected={(result) => updateScan(result) } /> : null}
             </div>
         </div>
     );
