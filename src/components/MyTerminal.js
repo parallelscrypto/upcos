@@ -188,7 +188,7 @@ export default class MyTerminal extends Component {
     this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
     var mplayer;
     if(this.state.isFlipped) {
-       this.heroFront(this.state.account);
+       this.firstLookup(this.state.account);
     }
     else {
        mplayer = "";
