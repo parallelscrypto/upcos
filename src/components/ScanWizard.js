@@ -16,17 +16,16 @@ const ScanWizard = (props) => {
 
 
     const update = (result) => {
-       console.log(props);
-       console.log("in here scannnnnn!!!!!zzzzz");
-       console.log(result);
        props.setAccount(result);
        setScanning(false);
+       props.firstLookup();
     };
 
     const updateScan = (result) => {
        var res = result.toString();
        props.setAccount(res);
        setScanning(false);
+       props.firstLookup();
     };
 
 

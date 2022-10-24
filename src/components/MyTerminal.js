@@ -116,7 +116,7 @@ export default class MyTerminal extends Component {
     var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
     var offerBuy = 
     <div style={{textAlign:"center", background:"#422a0b", border:"5px solid white"}}>
-	<p style={{color:"white"}}><b>Hello, my name is [[{props.account}]] and I finally realize that I'm trapped in the matrix!  Will you decolonize this UPC property and reprogram my narrative?</b></p>
+	<p style={{color:"white"}}><b>Hello, my name is [[{props.account}]] and I've awakened to find that I am responsible for creating my own reality.  After watching non-Melanated people tell their stories their way, we will now do the exact same using our own words, AI, algorithms, systems and currencies.  Please decolonize UPC parcel #[[{props.account}]] and publicly declare your human dignity and teach the colonizer that the Melanated diaspora are uniting and *REPLACING* you to become our own leaders.</b></p>
         <p><img src={srcImg} height="200" width="200"/></p>
         <p><Barcode value={props.account} format="UPC" /></p>
 
@@ -593,7 +593,7 @@ export default class MyTerminal extends Component {
                          style={{background:"yellow",color:"red", height:"3em"}}
                          onClick={(event) => {
 
-                            var scantool = <ScanWizard setAccount={this.setAccount} />;
+                            var scantool = <ScanWizard firstLookup={this.firstLookup} setAccount={this.setAccount} />;
                             self.setState({player: scantool });
                          }}
                     >
