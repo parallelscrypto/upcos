@@ -295,11 +295,11 @@ console.log("outputting on " + upc );
                      }
 
  
-
+                   var channelNum = upc.substr(upc.length - 1,1)
                    var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
                    var offerBuy = 
                    <div style={{textAlign:"center", background:"#422a0b", border:"5px solid white"}}>
-                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I realize that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and knowledge.  Please decolonize UPC parcel #[[{upc}]] and publicly assert your human dignity and teach the colonizer that the Melanated diaspora are uniting and replacing their lies with our truth</b></p>
+                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I realize that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and knowledge.  Please decolonize UPC parcel #[[{upc}]] and use it to publicly assert your human dignity and teach colonizers and aspiring lapdogs that the Melanated diaspora are uniting and replacing their lies with our truth</b></p>
                        <p><img src={srcImg} height="200" width="200"/></p>
                        <p><Barcode value={upc} format="UPC" /></p>
 
@@ -309,8 +309,8 @@ console.log("outputting on " + upc );
                                this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
                                this.decolonize();
                        }
-                       	} >Decolonize Mindset</button>
-                       <button onClick={(e) => { this.setState({offerState: "video"});}} >Analyze Mindset</button>
+                       	} >decolonize [[{upc}]]</button>
+                       <button onClick={(e) => { this.setState({offerState: "video"});}} >watch channel {channelNum} </button>
                    </div>
 
 
@@ -797,7 +797,7 @@ console.log("outputting on " + upc );
                            <option value="57">.dunk</option>
                            <option value="58">.nice-try-CIA</option>
                            <option value="59">.ad</option>
-                           <option value="60">.channel</option>
+                           <option value="60">.Channel channel</option>
                            <option value="61">.barefoot</option>
                            <option value="62">.backup</option>
                            <option value="63">.dog-walk</option>
