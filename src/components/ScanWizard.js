@@ -18,7 +18,7 @@ const ScanWizard = (props) => {
     const update = (result) => {
        props.setAccount(result);
        setScanning(false);
-       props.firstLookup();
+       props.firstLookup(result);
     };
 
     const updateScan = (result) => {

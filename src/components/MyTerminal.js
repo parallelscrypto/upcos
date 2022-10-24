@@ -44,7 +44,6 @@ export default class MyTerminal extends Component {
   constructor(props) {
     super(props)
 
-    this.firstLookup();
     this.progressTerminal = React.createRef()
 
 
@@ -114,22 +113,6 @@ export default class MyTerminal extends Component {
 
     
     var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
-    var offerBuy = 
-    <div style={{textAlign:"center", background:"#422a0b", border:"5px solid white"}}>
-	<p style={{color:"white"}}><b>Hello, my name is [[{props.account}]] and I've awakened to find that I am responsible for creating my own reality.  After watching non-Melanated people tell their stories their way, we will now do the exact same using our own words, AI, algorithms, systems and currencies.  Please decolonize UPC parcel #[[{props.account}]] and publicly declare your human dignity and teach the colonizer that the Melanated diaspora are uniting and *REPLACING* you to become our own leaders.</b></p>
-        <p><img src={srcImg} height="200" width="200"/></p>
-        <p><Barcode value={props.account} format="UPC" /></p>
-
-	<button onClick={() => {
-                this.decolonize("")
-		this.setState({offerState: "video"});
-                this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
-                this.decolonize();
-	}
-		} >Decolonize Mindset</button>
-	<button onClick={(e) => { this.setState({offerState: "video"});}} >Analyze Mindset</button>
-    </div>
-
 
 
 
@@ -145,7 +128,6 @@ export default class MyTerminal extends Component {
        progress: 0,
        approved: '',
        vrLink: '',
-       offerBuy: offerBuy,
        mplayer: mplayer,
        showModal: false,
        offerState: "offer",
@@ -176,6 +158,7 @@ export default class MyTerminal extends Component {
        card: '',
     }
 
+    this.firstLookup();
 
     this.selectDomain = this.selectDomain.bind(this);
     this.setAccount = this.setAccount.bind(this);
@@ -230,9 +213,14 @@ export default class MyTerminal extends Component {
   }
 
 
-  firstLookup= async () => {
+  firstLookup= async (upc) => {
           var self = this;
-          let info = this.props.upcInfo(this.props.account)
+
+          if(!upc) {
+             upc = this.state.account
+          }
+console.log("outputting on " + upc );
+          let info = this.props.upcInfo(upc)
            .then(data => {
                 var owner= data['staker'];
                 var nftId= data['tokenId'];
@@ -245,7 +233,89 @@ export default class MyTerminal extends Component {
 		   
 		}
 		if(owner.includes("0000000000")) {
-                   self.setState({player: self.state.offerBuy});
+                     var upcHash  = sha256(upc)
+                     upcHash = sha256(upcHash);
+                     upcHash = sha256(upcHash);
+                     upcHash = sha256(upcHash);
+                     var avatarType;
+                     switch(upcHash.substring(0,1)) {
+
+                          case '0':
+                            avatarType = "adventurer";
+                            break;
+                          case '1':
+                            avatarType = "adventurer-neutral";
+                            break;
+                          case '2':
+                            avatarType = "avataaars";
+                            break;
+                          case '3':
+                            avatarType = "big-ears";
+                            break;
+                          case '4':
+                            avatarType = "big-ears-neutral";
+                            break;
+                          case '5':
+                            avatarType = "big-smile";
+                            break;
+                          case '6':
+                            avatarType = "bottts";
+                            break;
+                          case '7':
+                            avatarType = "croodles";
+                            break;
+                          case '8':
+                            avatarType = "croodles-neutral";
+                            break;
+                          case '9':
+                            avatarType = "gridy";
+                            break;
+                          case 'a':
+                            avatarType = "micah";
+                            break;
+                          case 'b':
+                            avatarType = "open-peeps";
+                            break;
+                          case 'c':
+                            avatarType = "miniavs";
+                            break;
+                          case 'd':
+                            avatarType = "personas";
+                            break;
+                          case 'e':
+                            avatarType = "pixel-art";
+                            break;
+                          case 'f':
+                            avatarType = "pixel-art-neutral";
+                            break;
+                          case '0':
+                            avatarType = "jdenticon";
+                            break;
+
+                     }
+
+ 
+
+                   var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
+                   var offerBuy = 
+                   <div style={{textAlign:"center", background:"#422a0b", border:"5px solid white"}}>
+                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I realize that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and knowledge.  Please decolonize UPC parcel #[[{upc}]] and publicly assert your human dignity and teach the colonizer that the Melanated diaspora are uniting and replacing their lies with our truth</b></p>
+                       <p><img src={srcImg} height="200" width="200"/></p>
+                       <p><Barcode value={upc} format="UPC" /></p>
+
+                       <button onClick={() => {
+                               this.decolonize("")
+                       	this.setState({offerState: "video"});
+                               this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
+                               this.decolonize();
+                       }
+                       	} >Decolonize Mindset</button>
+                       <button onClick={(e) => { this.setState({offerState: "video"});}} >Analyze Mindset</button>
+                   </div>
+
+
+
+                   self.setState({player: offerBuy});
                    self.setState({offerState: "offer"});
                     //this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
 		    //this.offer();
