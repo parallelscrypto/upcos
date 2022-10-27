@@ -299,9 +299,9 @@ console.log("outputting on " + upc );
                    var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
                    var offerBuy = 
                    <div style={{textAlign:"center", background:"#422a0b", border:"5px solid white"}}>
-                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I declare that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and intelligence.  Please decolonize UPC parcel #[[{upc}]] and use it to publicly assert your human dignity and teach colonizers and aspiring lapdogs that the Melanated diaspora are uniting and replacing their lies with our truth</b></p>
+                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I declare that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and intelligence.  Please decolonize UPC parcel #[[{upc}]] and use it to publicly assert your dignity and create a shared positive social environment where we encourage each other.  Together with hard work and solid values, we can replaces historical lies with truth and build an economy that is specifically designed to uplift the Melanated Afrikan Diaspora.  We are students of history, and using blockchain technology, we take our history, thus, our future into our own hands.  With these NFTs, we build a worldwide unbreakable community based in love, while the colonizer admires our beautiful gardens from afar wishing that they'd respected our minds and been nicer!</b></p>
                        <p><img src={srcImg} height="200" width="200"/></p>
-                       <p><Barcode value={upc} format="UPC" /></p>
+                       <p onClick={()=> { this.prodLookup(this.state.account) } }><Barcode value={upc} format="UPC" /></p>
 
                        <button 
                                style={{background: "#000000", color:"blue", width: "45vw", height: "20vw"}}
@@ -657,7 +657,7 @@ console.log("outputting on " + upc );
 
 		         }}
                   >
-                  Search!
+                  search
               </button>
                     <button 
                          style={{background: "yellow", color:"blue", width: "45vw", height: "10vh", marginBottom:"20px"}}
@@ -1107,6 +1107,7 @@ var playButton =
       <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
       <div>
 
+             <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle","width":"95vw","height":"95vh"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
 	     <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type="pulse" > [[upc://{this.state.account}]] <iframe title={this.state.upcRadioString} style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
              <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showUploadModal} closemodal={() => this.setState({ showUploadModal: false })} type="pulse" > {myUpload}</Modal>
 	     <TrebleCleff handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} dex={this.dex} search={this.search} meeting={this.meeting}  account={this.state.account} tutorial={this.tutorial} upcInfo={this.props.upcInfo} address={this.props.address} />
@@ -1153,7 +1154,6 @@ var playButton =
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showOfferModal} closemodal={() => this.setState({ showOfferModal: false })} type="pulse" > {offerBuy}</Modal>
 
-      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle","width":"95vw","height":"95vh"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
 
 
       <Modal className={"dex"} style={{"width":"90vw", "height":"90vh"}} visible={this.state.showDexModal} closemodal={() => this.setState({ showDexModal: false })} type="pulse" > {this.state.dex}</Modal>

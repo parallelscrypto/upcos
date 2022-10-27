@@ -44,7 +44,7 @@ const ScanWizard = (props) => {
               onClick={() => { update(upc.current.value) }}>go</button>
 
             <button 
-              style={{background: "#000000", color:"blue", width: "45vw", height: "10vh", marginBottom:"20px"}}
+              style={{background: "yellow", color:"blue", width: "45vw", height: "10vh", marginBottom:"20px"}}
               onClick={() => setScanning(!scanning) }>{scanning ? 'stop' : 'scan'}</button>
 
 
