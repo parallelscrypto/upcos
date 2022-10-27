@@ -299,18 +299,22 @@ console.log("outputting on " + upc );
                    var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
                    var offerBuy = 
                    <div style={{textAlign:"center", background:"#422a0b", border:"5px solid white"}}>
-                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I realize that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and knowledge.  Please decolonize UPC parcel #[[{upc}]] and use it to publicly assert your human dignity and teach colonizers and aspiring lapdogs that the Melanated diaspora are uniting and replacing their lies with our truth</b></p>
+                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I declare that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and intelligence.  Please decolonize UPC parcel #[[{upc}]] and use it to publicly assert your human dignity and teach colonizers and aspiring lapdogs that the Melanated diaspora are uniting and replacing their lies with our truth</b></p>
                        <p><img src={srcImg} height="200" width="200"/></p>
                        <p><Barcode value={upc} format="UPC" /></p>
 
-                       <button onClick={() => {
+                       <button 
+                               style={{background: "#000000", color:"blue", width: "45vw", height: "20vw"}}
+                               onClick={() => {
                                this.decolonize("")
                        	this.setState({offerState: "video"});
                                this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
                                this.decolonize();
                        }
                        	} >decolonize [[{upc}]]</button>
-                       <button onClick={(e) => { this.setState({offerState: "video"});}} >watch channel {channelNum} </button>
+                       <button 
+                              style={{background: "#000000", color:"blue", width: "45vw", height: "20vw"}}
+                              onClick={(e) => { this.setState({offerState: "video"});}} >watch channel {channelNum} on {upc.substr(0,upc.length-1)}[[{channelNum}]] </button>
                    </div>
 
 
@@ -627,40 +631,36 @@ console.log("outputting on " + upc );
   search = async (term) => {
                   var result;
                   var self = this;
-                  var searchForm =  <div>
-                  <form onSubmit={(event) => {
-                      event.preventDefault()
-                      let upcId = this.state.account
-                      let humanReadableName = this.humanReadableName.value.toString()
-
-                      this.grep(humanReadableName)
-
-                      this.setState({showModalSearch:false});
-                      this.handleFlip(event)
-                    }}
-
-                     style={{background:"black", padding:"20px"}}
-                    >
-                    <div className="input-group mb-4">
+                  var searchForm =  <div style={{background:"black", textAlign:"center"}}>
+                    <div>
                       <input
                         type="text"
                         ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
-                        className="form-control form-control-lg"
                         placeholder="search-term (no spaces)"
-                        style={{width:"80%", background:"black"}}
+			style={{border: "1px solid blue",marginTop:"20px",height:"10vh",width:"90vw",background:"black", color:"white"}}
                         required />
 
 
 
                     </div>
                     <button
-                   className="btn btn-primary btn-block btn-lg"
+                         style={{background: "#000000", color:"blue", width: "45vw", height: "10vh", marginBottom:"20px"}}
+		         onClick={(event) => {
+                              event.preventDefault()
+                              let upcId = this.state.account
+                              let humanReadableName = this.humanReadableName.value.toString()
+
+                              this.grep(humanReadableName)
+
+                              this.setState({showModalSearch:false});
+                              this.handleFlip(event)
+
+		         }}
                   >
                   Search!
               </button>
-                  </form>
                     <button 
-                         style={{background:"yellow",color:"red", height:"3em"}}
+                         style={{background: "yellow", color:"blue", width: "45vw", height: "10vh", marginBottom:"20px"}}
                          onClick={(event) => {
 
                             var scantool = <ScanWizard firstLookup={this.firstLookup} setAccount={this.setAccount} />;

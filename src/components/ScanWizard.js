@@ -30,18 +30,22 @@ const ScanWizard = (props) => {
 
 
     return (
-        <div>
-            <button onClick={() => setScanning(!scanning) }>{scanning ? 'Stop' : 'Start'}</button>
-            <button onClick={() => { update(upc.current.value) }}>goto upc</button>
+        <div style={{background:"black", textAlign:"center"}}>
 
             <input
               type="text"
               ref={upc}
-              className="form-control form-control-lg"
               placeholder="12-digit-upc-code"
-              style={{width:"80%", background:"black"}}
+              style={{border: "1px solid blue",marginTop:"20px",height:"10vh",width:"90vw",background:"black", color:"white"}}
                />
+            <br />
+            <button 
+              style={{background: "#000000", color:"blue", width: "45vw", height: "10vh"}}
+              onClick={() => { update(upc.current.value) }}>go</button>
 
+            <button 
+              style={{background: "#000000", color:"blue", width: "45vw", height: "10vh", marginBottom:"20px"}}
+              onClick={() => setScanning(!scanning) }>{scanning ? 'stop' : 'scan'}</button>
 
 
             <ul className="results">
