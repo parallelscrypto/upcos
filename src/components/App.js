@@ -52,7 +52,7 @@ import { TickerTape } from "react-ts-tradingview-widgets";
 //const market_address = "0x3f13e9b043A4eA779D6c3abbE4015b1ecDAcf1f3";
 //const market_address = "0x59e09C81FF70efD0208B98E3843852aCA3962982";
 //const market_address = "0x32Cdf28d9E148D373b04238864586784244C86b1";
-const market_address = "0x28B3D93c4e25769F4aD52b7679D5186E077e0856";
+const market_address = "0x87268c47c73471C6577533D780Fee7906E67c342";
 const usdc_address   = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
 var abi = require('human-standard-token-abi');
 
