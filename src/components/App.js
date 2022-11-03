@@ -359,14 +359,14 @@ class App extends Component {
   };
 
 
-  approveInjectNarative = async () => {
+  approveInjectNarative = async (numNarativ) => {
     const web3 = window.web3
     const intelXData = this.state.intelX;
 
     const { accounts, contract } = this.state;
 
     var upcNFTData = this.state.coinboxData;
-    var approval = await this.state.intelX.methods.approve(upcNFTData.address, "500000000000000000000").send({ from: this.state.account });
+    var approval = await this.state.intelX.methods.approve(upcNFTData.address, numNarativ).send({ from: this.state.account });
     this.setState({daiTokenBalance: approval.toString() });
     return approval.toString();
   };

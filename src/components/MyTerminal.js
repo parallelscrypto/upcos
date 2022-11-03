@@ -4,6 +4,7 @@ import ScratchCard from './ScratchCard'
 import IpfsUpload from './IpfsUpload'
 import TrebleCleff from './TrebleCleff'
 import BassCleff from './BassCleff'
+import go from './Mission'
 import ScanWizard from './ScanWizard'
 import Dex from './Dex'
 import Modal from "react-animated-modal";
@@ -122,7 +123,10 @@ export default class MyTerminal extends Component {
           url='https://www.youtube.com/watch?v=eXvBjCO19QY' 
           />
 
+
+    var tutorial = go()
     this.state = {
+       tutorial: tutorial,
        account: props.account,
        scanning: true,
        progress: 0,
@@ -299,7 +303,7 @@ console.log("outputting on " + upc );
                    var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
                    var offerBuy = 
                    <div style={{textAlign:"center", background:"#422a0b", border:"5px solid white"}}>
-                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I declare that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and intelligence.  Please decolonize UPC parcel #[[{upc}]] and use it to publicly assert your dignity and create a shared positive social environment where we encourage each other.  Together with hard work and solid values, we can replaces historical lies with truth and build an economy that is specifically designed to uplift the Melanated Afrikan Diaspora.  We are students of history, and using blockchain technology, we take our history, thus, our future into our own hands.  With these NFTs, we build a worldwide unbreakable community based in love, while the colonizer admires our beautiful gardens from afar wishing that they'd respected our minds and been nicer!</b></p>
+                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I declare that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and intelligence.  Please decolonize UPC parcel #[[{upc}]] and use it to publicly assert your dignity and create a shared positive social environment where creators encourage each other.  Together, with our hard work and our solid values, we can replace historical lies with truth and build an economy with a mission to uplift the Melanated Afrikan Diaspora.  We are students of history, and using blockchain technology, we take our history, therefore, our future into our own hands.  With these NFTs, we build a worldwide unbreakable community based in mutually beneficial partnership and honor, while the colonizer admires our beautiful gardens from afar wishing that they'd respected our minds and been nicer!</b></p>
                        <p><img src={srcImg} height="200" width="200"/></p>
                        <p onClick={()=> { this.prodLookup(this.state.account) } }><Barcode value={upc} format="UPC" /></p>
 
@@ -1107,6 +1111,7 @@ var playButton =
       <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
       <div>
 
+	     <Modal style={{"color":"white","height":"90vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showModalTutorial} closemodal={(e) => {this.setState({ showModalTutorial: false }); }} type="lightSpeedIn" > {this.state.tutorial} </Modal>
              <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle","width":"95vw","height":"95vh"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
 	     <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type="pulse" > [[upc://{this.state.account}]] <iframe title={this.state.upcRadioString} style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
              <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showUploadModal} closemodal={() => this.setState({ showUploadModal: false })} type="pulse" > {myUpload}</Modal>
@@ -1123,7 +1128,6 @@ var playButton =
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalBuy} closemodal={() => this.setState({ showModalBuy: false })} type="pulse" > {this.state.buyModalContent}</Modal>
 
-      <Modal style={{"color":"white","height":"90vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showModalTutorial} closemodal={(e) => {this.setState({ showModalTutorial: false }); }} type="pulse" > [[upc://{this.state.account}]] <iframe title={this.state.upcRadioString} style={{height:"95vh", width:"95vw","background":"white","color":"green"}} srcdoc={tutorial} /></Modal>
 
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalSearch} closemodal={() => this.setState({ showModalSearch: false })} type="pulse" > {this.state.searchModalContent}</Modal>
@@ -1199,8 +1203,8 @@ var playButton =
 
             preinject: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Buy an NFT using the GUI interface.  After completing this step, check the `Activity` tab below to make sure that your purchase went through.  After your transaction has been processed successfully, you can move to the last phase `step 2` Visit <a href="upc://000000000012">[[000000000012]]</a> to view a video tutorial on swap**</p>',
-              fn: () => {
-		      this.props.approveInjectNarative();
+              fn: (numNarativ) => {
+		      this.props.approveInjectNarative(numNarativ);
               }
             },
 

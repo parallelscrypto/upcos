@@ -69,7 +69,6 @@ class TrebleCleff extends Component {
                     <button
                         style={{background: "#000000", color:"green", width: "20vw", height: "20vw"}}
                         onClick={(e) => { 
-this.props.handleFlip(e)
 this.props.play()
 }}
                   >play [[{this.props.account}]]</button>
@@ -107,10 +106,9 @@ this.props.play()
                     <button
                         style={{background: "#FFFF00", fontSize:".9em", fontWeight:"bold", color:"red", width: "20vw", height: "20vw"}}
                         onClick={(e) => { 
-                                     this.props.handleFlip(e)
                                      this.props.tutorial();
                         }}
-                  >tutorial [[*****]]</button>
+                  >mission [[*****]]</button>
 
          </div>
     );
