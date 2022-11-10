@@ -24,7 +24,6 @@ import UPCMarket from '../abis/UPCMarket.json'
 import WalkieTalkie from '../abis/WalkieTalkie.json'
 import CoinBox from '../abis/CoinBox.json'
 
-import StableUPC from '../abis/StableUPC.json'
 
 import PokingsHauntUs from '../abis/PokingsHauntUs.json'
 import KegeExperiment from '../abis/KegeExperiment.json'
@@ -143,17 +142,6 @@ class App extends Component {
     } else {
       //window.alert('UPCGoldBank contract not deployed to detected network.')
     }
-
-    // Load STABLE UPC TOKEN
-    const stableUPCData = StableUPC.networks[networkId]
-    if(stableUPCData) {
-      const STABLE_UPC = new web3.eth.Contract(StableUPC.abi, stableUPCData.address)
-      this.setState({ stableUPC: STABLE_UPC })
-    } else {
-      //window.alert('UPCGoldBank contract not deployed to detected network.')
-    }
-
-
 
 
     // Load PAY currency
@@ -555,7 +543,7 @@ class App extends Component {
 
   claimNarativToken = async (upcId) => {
     const { accounts, contract } = this.state;
-    var amount = 50000000000000000;
+    var amount = 150000000000000000;
 
     const gameID = "testGame";
     //console.log(this.state.sendCryptoValue);
