@@ -5,7 +5,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Context.sol";
 //import "./stringUtils.sol";
-import "./Narativ.sol";
+import "./OneAfrika.sol";
 import "./DecolonizeAfrica.sol";
 
 interface USDC {
@@ -44,7 +44,7 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
         uint256  latestTimestamp;
     }
 
-
+    mapping(string => uint)     public totalClaims;
     mapping(string => uint)     public narativBalanceReceived;
     mapping(string => uint)     public usdcBalanceReceived;
     uint256    currentNftPrice;
@@ -58,7 +58,7 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
         string  winningHash;
     }
 
-    Narativ       private _narativ;
+    OneAfrika       private _narativ;
     USDC          private _usdc;
     DecolonizeAfrica        upcNFT;
 
@@ -71,7 +71,7 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
         owner     =   payable(msg.sender);
         community =   payable(0xbaF306E29157cCE66b182fFfc279c04cDed87adD);
         _usdc     =   USDC(0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174);
-        _narativ  =   Narativ(0x3cE547874ab802D007d1410eC810669BdD04d7Ae);
+        _narativ  =   OneAfrika(0x7E88a42D5CAc4902F33AEfe1a09036783d773F82);
         upcNFT    =   DecolonizeAfrica(0xF0176c005b5A453A5d8a7F5e3583fE52a28EDC5b);
     }
 
@@ -87,18 +87,18 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
 
     function claimNarativToken(string memory upcId) public payable{
         uint deduce = 0;
-
+        totalClaims[upcId]++;
         address upcOwner = upcNFT.getUpcOwner(upcId);
         address payable payableOwner = payable(upcOwner);
         uint possCoinboxTld = upcNFT.getTld(upcId);
 
         if(possCoinboxTld == 777 ) {
-            deduce = 100000000000000000;
+            deduce = 250000000000000000;
             require(narativBalanceReceived[upcId] >= deduce , "Sorry, this coinbox is empty");
-            require(msg.value >= 0.05 ether , "Accessing coinbox requires a .05 token fee");
-            uint ownerFee          = 20000000000000000;
-            uint infastructureFee  = 15000000000000000;
-            uint communityFee      = 15000000000000000;
+            require(msg.value >= 0.15 ether , "Accessing coinbox requires a .15 token fee");
+            uint ownerFee          = 50000000000000000;
+            uint infastructureFee  = 50000000000000000;
+            uint communityFee      = 50000000000000000;
             uint remainder         = msg.value - ownerFee - infastructureFee - communityFee;
 
             payableOwner.transfer(ownerFee);
@@ -129,7 +129,7 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
 
     
     function setNarativ(address newAddress) public  onlyOwner{
-        _narativ = Narativ(newAddress);
+        _narativ = OneAfrika(newAddress);
     }
 
     

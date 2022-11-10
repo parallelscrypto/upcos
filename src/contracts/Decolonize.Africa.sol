@@ -7,7 +7,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 
-import "./New_Narrative.sol";
+import "./OneAfrika.sol";
 
 contract DecolonizeAfrica is ERC721, Ownable {
     using Counters for Counters.Counter;
@@ -67,7 +67,7 @@ contract DecolonizeAfrica is ERC721, Ownable {
     address payable private  bank;
     uint    public totalBalance;
     uint256    currentNftPrice;
-    New_Narrative    private _token;
+    OneAfrika    private _token;
     string    public defaultProtocol;
 
 
@@ -95,7 +95,7 @@ contract DecolonizeAfrica is ERC721, Ownable {
     }
 
     function setPayToken(address  addy) external onlyOwner {
-        _token = New_Narrative(addy);
+        _token = OneAfrika(addy);
     }
 
     function hasBeenMinted(string memory upcId) external view returns(bool) {
@@ -145,7 +145,9 @@ contract DecolonizeAfrica is ERC721, Ownable {
         return upcIdLookup[upcId];
     }
     
-    
+     function getTld(string memory upcId) external view returns(uint) {
+        return upcIdLookup[upcId].tld;
+    }      
    
     function getUpcOwner(string memory upcId) external view returns(address) {
         return upcIdLookup[upcId].staker;

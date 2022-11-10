@@ -1,5 +1,5 @@
 {
-  "contractName": "DecolonizeAfrica",
+  "contractName": "MalcolmsLittleSecretNFT",
   "abi": [
 	{
 		"inputs": [],
@@ -18359,7 +18359,7 @@
     "137": {
       "events": {},
       "links": {},
-      "address": "0xF0176c005b5A453A5d8a7F5e3583fE52a28EDC5b",
+      "address": "0xf0176c005b5a453a5d8a7f5e3583fe52a28edc5b",
       "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
     }
   },
