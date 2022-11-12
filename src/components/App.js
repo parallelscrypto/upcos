@@ -14,7 +14,7 @@ import xUPC from '../abis/xUPC.json'
 import piggy from '../abis/TipJar.json'
 import intelX from '../abis/intelX.json'
 import TubmanX from '../abis/TubmanX.json'
-import Narativ from '../abis/Narativ.json'
+import OneAfrika from '../abis/OneAfrika.json'
 import InclusionX from '../abis/InclusionX.json'
 import Keyz from '../abis/Keyz.json'
 import Key from '../abis/Key.json'
@@ -145,10 +145,10 @@ class App extends Component {
 
 
     // Load PAY currency
-    const intelXData = Narativ.networks[networkId]
+    const intelXData = OneAfrika.networks[networkId]
     if(intelXData) {
-      const TUBMANX = new web3.eth.Contract(Narativ.abi, intelXData.address)
-      this.setState({ intelX: TUBMANX })
+      const ONEAFRIKA = new web3.eth.Contract(OneAfrika.abi, intelXData.address)
+      this.setState({ intelX: ONEAFRIKA })
     } else {
       //window.alert('UPCGoldBank contract not deployed to detected network.')
     }
