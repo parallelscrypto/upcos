@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import * as Tone from "tone";
 import Terminal from 'react-console-emulator'
 import ScratchCard from './ScratchCard'
 import IpfsUpload from './IpfsUpload'
@@ -8,6 +9,7 @@ import go from './Mission'
 import ScanWizard from './ScanWizard'
 import Dex from './Dex'
 import Modal from "react-animated-modal";
+import ModalUrl from "./ModalUrl";
 import Iframe from 'react-iframe';
 import axios from "axios";
 import 'react-dropdown/style.css';
@@ -23,11 +25,11 @@ var Barcode = require('react-barcode');
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
-var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some OneAfrika\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your OneAfrika to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`decolonize`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with decolonize " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some OneAfrika\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your OneAfrika to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`ask`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with ask " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 //var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.oneafrika', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.coinbox']
 
-var tlds = ['.watch-this','.tutorial','.will-work','.my-story','.11:11','.skit','.character','.character-development','.dance','.artwork','.upc-freestyle','.comic','.coinbox'];
+var tlds = ['.watch-this','.tutorial','.will-work','.my-story','.asking-while-homeless','.skit','.character','.character-development','.dance','.artwork','.upc-freestyle','.comic','.coinbox'];
 
 
 
@@ -141,6 +143,7 @@ export default class MyTerminal extends Component {
        upcRadioString: "Welcome to UPC NFT Radio!",
        showModalBuy: false,
        showModalSearch: false,
+       showModalUrl: false,
        showCardModal: false,
        showOfferModal: false,
        showDexModal: false,
@@ -167,6 +170,7 @@ export default class MyTerminal extends Component {
     this.firstLookup();
 
     this.selectDomain = this.selectDomain.bind(this);
+    this.sing= this.sing.bind(this);
     this.setAccount = this.setAccount.bind(this);
     this.firstLookup= this.firstLookup.bind(this);
     this.prodLookup= this.prodLookup.bind(this);
@@ -305,19 +309,30 @@ console.log("outputting on " + upc );
                    var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
                    var offerBuy = 
                    <div style={{textAlign:"center", background:"#422a0b", border:"5px solid white"}}>
-                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I declare that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and intelligence.  Please decolonize UPC parcel #[[{upc}]] and use it to publicly assert your dignity and create a shared positive social environment where creators encourage each other.  Together, with our hard work and our solid values, we can replace historical lies with truth and build an economy with a mission to uplift the Melanated Afrikan Diaspora.  We are students of history, and using blockchain technology, we take our history, therefore, our future into our own hands.  With these NFTs, we build a worldwide unbreakable community based in mutually beneficial partnership and honor, while the colonizer admires our beautiful gardens from afar wishing that they'd respected our minds and been nicer!</b></p>
-                       <p><img src={srcImg} height="200" width="200"/></p>
+                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I reject the status quo. It can be argued that my leaders have consistently failed to provide me with a way to earn a <u>dignified</u> living, therefore, this is how I will <u>responsibly</u> include myself in the economy using crypto.</b></p>
+
+
+                       <p><img 
+                               onClick={() => {
+                                  this.sing();
+                                 }
+                               }
+
+src={srcImg} height="200" width="200"/></p>
+
+
+
                        <p onClick={()=> { this.prodLookup(this.state.account) } }><Barcode value={upc} format="UPC" /></p>
 
                        <button 
                                style={{background: "#000000", color:"blue", width: "45vw", height: "20vw"}}
                                onClick={() => {
-                               this.decolonize("")
+                               this.ask("")
                        	this.setState({offerState: "video"});
                                this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
-                               this.decolonize();
+                               this.ask();
                        }
-                       	} >decolonize [[{upc}]]</button>
+                       	} >ask [[{upc}]]</button>
                        <button 
                               style={{background: "#000000", color:"blue", width: "45vw", height: "20vw"}}
                               onClick={(e) => { this.setState({offerState: "video"});}} >watch channel {channelNum} on {upc.substr(0,upc.length-1)}[[{channelNum}]] </button>
@@ -481,6 +496,53 @@ console.log("outputting on " + upc );
   }
 
 
+  sing = async () => {
+
+       var notes = ["A4","B4","C4","D4","E4","F4","G4","A3","B3","C3","D3","E3","F3","G3","A2","B2"]
+       var noteMappings = []; // Creating a new array object
+       noteMappings['0'] = 0; // Setting the attribute a to 200
+       noteMappings['1'] = 1; // Setting the attribute a to 200
+       noteMappings['2'] = 2; // Setting the attribute a to 200
+       noteMappings['3'] = 3; // Setting the attribute a to 200
+       noteMappings['4'] = 4; // Setting the attribute a to 200
+       noteMappings['5'] = 5; // Setting the attribute a to 200
+       noteMappings['6'] = 6; // Setting the attribute a to 200
+       noteMappings['7'] = 7; // Setting the attribute a to 200
+       noteMappings['8'] = 8; // Setting the attribute a to 200
+       noteMappings['9'] = 9; // Setting the attribute a to 200
+       noteMappings['a'] = 10; // Setting the attribute a to 200
+       noteMappings['b'] = 11; // Setting the attribute a to 200
+       noteMappings['c'] = 12; // Setting the attribute a to 200
+       noteMappings['d'] = 13; // Setting the attribute a to 200
+       noteMappings['e'] = 14; // Setting the attribute a to 200
+       noteMappings['f'] = 15; // Setting the attribute a to 200
+
+
+
+       var upcHash  = sha256(this.state.account)
+       upcHash = sha256(upcHash);
+       upcHash = sha256(upcHash);
+       upcHash = sha256(upcHash);
+
+
+       const synth = new Tone.Synth().toDestination();
+       const now = Tone.now();
+       synth.triggerAttackRelease("C4", "8n", now);
+       var count = 0.5
+       for(var i=1; i< upcHash.length; i++) {
+          count += 0.5;
+          var currentChar = upcHash.substring(i,i+1); 
+          var noteIndex   = noteMappings[currentChar];
+          var currentNote = notes[noteIndex];
+          console.log("------@@@@@  current hash is " + upcHash)
+          console.log("------@@@@@  current char is " + currentChar)
+          console.log("------@@@@@  current note INDex is " + noteIndex)
+          console.log("------@@@@@  current note is " + currentNote)
+          synth.triggerAttackRelease(currentNote, "8n", now + count)
+       }
+  }
+
+
 
 
   flip= async (nftId) => {
@@ -547,8 +609,10 @@ console.log("outputting on " + upc );
                             let info = this.props.nftInfo(i)
                             
 		   .then(data => {
-
-			let hrTLD = tlds[data['tld']];
+                        //subtract 100 since we are naming the tlds with hundred in front for repeatability
+                        console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+                        console.log(tlds[data['tld'] - 100]);
+			let hrTLD = tlds[data['tld'] - 100];
                         if(!hrTLD) {
                            hrTLD = "[[alternate-parallel]]";
                         }
@@ -725,7 +789,7 @@ console.log("outputting on " + upc );
 
 
 
-  decolonize = async (humanReadableName) => {
+  ask = async (humanReadableName) => {
 
                   var buyForm =  <div>
 		  <Barcode value={this.state.account} format="EAN13" />
@@ -752,7 +816,7 @@ console.log("outputting on " + upc );
                            <option value="101">.tutorial</option>
                            <option value="102">.will-work</option>
                            <option value="103">.my-story</option>
-                           <option value="104">.11:11</option>
+                           <option value="104">.asking-while-homeless</option>
                            <option value="105">.skit</option>
                            <option value="106">.character</option>
                            <option value="107">.character-development</option>
@@ -886,23 +950,25 @@ console.log("outputting on " + upc );
        let info = this.props.upcInfo(this.state.account)
        .then(data => {
 	    var vrData = data['vr'];
-            if(!vrData.includes('hubs.mozilla.com') ) {
-               fullMeeting = "https://hubs.mozilla.com/scenes/q7PG7Tn"
+            if(vrData.includes('hubs.mozilla.com') ) {
+               fullMeeting = "https://talk.brave.com"
             }
             else {
                fullMeeting = data['vr'];
             }
             var radioString = "UPC DJ now playing [[" + data['word'] + "]] a.k.a {{" + data['ipfs'] + "}}"; 
-            var link = <h1><a href={fullMeeting} >Enter VR zone @[[{this.state.account}]]</a>
-</h1>
-               self.setState({player: link});
-               self.setState({upcRadioString: radioString});
+            //var link = <h1><a href={fullMeeting} >Enter VR zone @[[{this.state.account}]]</a></h1>
+	       self.setState({modalURL: fullMeeting});
+	       self.setState({showModalUrl: true});
+
+               //self.setState({player: link});
+               //self.setState({upcRadioString: radioString});
       });
 		  
 
 
       var link = 'https://upcunderground.mypinata.cloud/ipfs/QmPjvxXgsUXhPFNaosu9V2hHBBwQb1Y6YrJk4ojPZk1WYc/#/upload/'  + this.state.account;
-      var myUpload = <h1><a href={link}>Proceed to Perma-Uploader App</a></h1>
+      var myUpload = <h1>Loading...</h1>
       this.setState({player:myUpload});
   }
 
@@ -944,7 +1010,7 @@ console.log("outputting on " + upc );
     var addy = this.props.address;
     addy  = addy.substr(0,15);
 
-    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV  </i> \n <b style='color:red'> [decolonize.africa]</b> \n <i style='color:#d66900'>Powered by OneAfrika Crypto</i>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Black Is Beautiful! Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is colonized and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key).  The titles and links for UPC Band TV Channels 0-9 are listed below. </u> \n <i style='color:white'>  Channel Definitions: </i> \n <i style='color:orange'> Channel 0: Black Is Beautiful!;\n <a href='upc://000000000000'>Visit Channel 0[[000000000000]]</a>.\n <i style='color:red;font-size:.8em'><b><u>(Channel 0 is any unowned UPC ending in `0`)</u></b></i> \n Or type command `ch0` to tune into UPC Band Theater Channel 0 \n <i style='color:orange'>  Channel 1</i> \n <a href='upc://000000000001'>Visit Channel 1 [[000000000001]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 1 is any unowned UPC ending in `1`)</u></b></i> \n Or type command `ch1` to tune into UPC Band Theater Channel 1 \n <i style='color:orange'>  Channel 2</i> \n <a href='upc://000000000002'>Visit Channel 2 [[000000000002]]</a>  \n <i style='color:red;font-size:.8em'><b><u>(Channel 2 is any unowned UPC ending in `2`)</u></b></i>  \n Or type command `ch2` to tune into UPC Band Theater Channel 2 \n <i style='color:orange'>  Channel 3 </i> \n <a href='upc://000000000003'>Visit Channel 3 [[000000000003]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 3 is any unowned UPC ending in `3`)</u></b></i>  \n Or type command `ch3` to tune into UPC Band Theater Channel 3 \n <i style='color:orange'>  Channel 4</i>  \n <a href='upc://000000000004'>Visit Channel 4 [[000000000004]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 4 is any unowned UPC ending in `4`)</u></b></i>  \n Or type command `ch4` to tune into UPC Band Theater Channel 4 \n <i style='color:orange'>  Channel 5 </i>  \n <a href='upc://000000000005'>Visit Channel 5 [[000000000005]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 5 is any unowned UPC ending in `5`)</u></b></i>  \n Or type command `ch5` to tune into UPC Band Theater Channel 5 \n <i style='color:orange'>  Channel 6 <i>  \n <a href='upc://000000000006'>Visit Channel 6 [[000000000006]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 6 is any unowned UPC ending in `6`)</u></b></i>  \n Or type command `ch6` to tune into UPC Band Theater Channel 6 \n <i style='color:orange'>  Channel 7</i>  \n <a href='upc://000000000007'>Visit Channel 7 [[000000000007]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 7 is any unowned UPC ending in `7`)</u></b></i>  \n Or type command `ch7` to tune into UPC Band Theater Channel 7 \n <i style='color:orange'>  Channel 8</i>  \n <a href='upc://000000000008'>Visit Channel 8 [[000000000008]]</a>  \n <i style='color:red;font-size:.8em'><b><u>(Channel 8 is any unowned UPC ending in `8`)</u></b></i> \n Or type command `ch8` to tune into UPC Band Theater Channel 8 \n <i style='color:orange'>  Channel 9 </i>  \n <a href='upc://000000000009'>Visit Channel 9 [[000000000009]]</a>  \n <i style='color:red;font-size:.8em'><b><u>(Channel 9 is any unowned UPC ending in `9`)</u></b></i> \n Or type command `ch9` to tune into UPC Band Theater Channel 9 \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some OneAfrika\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your OneAfrika to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`colonize`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with colonize [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV  </i> \n <b style='color:red'> [ask.africa]</b> \n <i style='color:#d66900'>Powered by OneAfrika Crypto</i>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Black Is Beautiful! Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is colonized and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key).  The titles and links for UPC Band TV Channels 0-9 are listed below. </u> \n <i style='color:white'>  Channel Definitions: </i> \n <i style='color:orange'> Channel 0: Black Is Beautiful!;\n <a href='upc://000000000000'>Visit Channel 0[[000000000000]]</a>.\n <i style='color:red;font-size:.8em'><b><u>(Channel 0 is any unowned UPC ending in `0`)</u></b></i> \n Or type command `ch0` to tune into UPC Band Theater Channel 0 \n <i style='color:orange'>  Channel 1</i> \n <a href='upc://000000000001'>Visit Channel 1 [[000000000001]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 1 is any unowned UPC ending in `1`)</u></b></i> \n Or type command `ch1` to tune into UPC Band Theater Channel 1 \n <i style='color:orange'>  Channel 2</i> \n <a href='upc://000000000002'>Visit Channel 2 [[000000000002]]</a>  \n <i style='color:red;font-size:.8em'><b><u>(Channel 2 is any unowned UPC ending in `2`)</u></b></i>  \n Or type command `ch2` to tune into UPC Band Theater Channel 2 \n <i style='color:orange'>  Channel 3 </i> \n <a href='upc://000000000003'>Visit Channel 3 [[000000000003]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 3 is any unowned UPC ending in `3`)</u></b></i>  \n Or type command `ch3` to tune into UPC Band Theater Channel 3 \n <i style='color:orange'>  Channel 4</i>  \n <a href='upc://000000000004'>Visit Channel 4 [[000000000004]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 4 is any unowned UPC ending in `4`)</u></b></i>  \n Or type command `ch4` to tune into UPC Band Theater Channel 4 \n <i style='color:orange'>  Channel 5 </i>  \n <a href='upc://000000000005'>Visit Channel 5 [[000000000005]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 5 is any unowned UPC ending in `5`)</u></b></i>  \n Or type command `ch5` to tune into UPC Band Theater Channel 5 \n <i style='color:orange'>  Channel 6 <i>  \n <a href='upc://000000000006'>Visit Channel 6 [[000000000006]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 6 is any unowned UPC ending in `6`)</u></b></i>  \n Or type command `ch6` to tune into UPC Band Theater Channel 6 \n <i style='color:orange'>  Channel 7</i>  \n <a href='upc://000000000007'>Visit Channel 7 [[000000000007]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 7 is any unowned UPC ending in `7`)</u></b></i>  \n Or type command `ch7` to tune into UPC Band Theater Channel 7 \n <i style='color:orange'>  Channel 8</i>  \n <a href='upc://000000000008'>Visit Channel 8 [[000000000008]]</a>  \n <i style='color:red;font-size:.8em'><b><u>(Channel 8 is any unowned UPC ending in `8`)</u></b></i> \n Or type command `ch8` to tune into UPC Band Theater Channel 8 \n <i style='color:orange'>  Channel 9 </i>  \n <a href='upc://000000000009'>Visit Channel 9 [[000000000009]]</a>  \n <i style='color:red;font-size:.8em'><b><u>(Channel 9 is any unowned UPC ending in `9`)</u></b></i> \n Or type command `ch9` to tune into UPC Band Theater Channel 9 \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some OneAfrika\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your OneAfrika to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`colonize`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with colonize [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
     var promptlabel =  '[[ AWAITING COMMAND ]] => ';
 
           
@@ -1052,7 +1118,7 @@ var playButton =
     return (
       <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
       <div>
-
+	     <Modal style={{"color":"white","height":"90vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showModalUrl} closemodal={(e) => {this.setState({ showModalUrl: false }); }} type="lightSpeedIn" ></Modal>
 	     <Modal style={{"color":"white","height":"90vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showModalTutorial} closemodal={(e) => {this.setState({ showModalTutorial: false }); }} type="lightSpeedIn" > {this.state.tutorial} </Modal>
              <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle","width":"95vw","height":"95vh"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
 	     <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type="pulse" > [[upc://{this.state.account}]] <iframe title={this.state.upcRadioString} style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
@@ -1155,7 +1221,7 @@ var playButton =
             dec: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Please help this UPC by decolonizing the false narrative and self destructive mentality that has been injected by Babylon *</p>',
               fn: (humanReadableName) => {
-		      this.decolonize(humanReadableName);
+		      this.ask(humanReadableName);
               }
             },
 
@@ -1204,7 +1270,7 @@ var playButton =
 
 
             own: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `decolonize` or `xcolonize` command</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `ask` or `xcolonize` command</p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -2018,12 +2084,13 @@ var playButton =
 
 
 			var upc = data['word'];
-			let hrTLD = tlds[data['tld']];
-
+			let hrTLD = tlds[data['tld'] - 100];
                         if(data['tld'] == 777) {
                            hrTLD = "coinbox";
                         }
-
+                        if(!hrTLD) {
+                           hrTLD = "[[alternate-parallel]]";
+                        }
 		        let tld = hrTLD + " (" + data['tld'] + ")";
 			var tmpStamp = parseInt(data['latestTimestamp']);
                         var newDate = new Date(tmpStamp * 1000);
@@ -2173,11 +2240,14 @@ console.log("location is " + currentUrl);
 
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
-			let hrTLD = tlds[data['tld']];
+			let hrTLD = tlds[data['tld'] - 100];
                         if(data['tld'] == 777) {
                            hrTLD = "coinbox";
                         }
-
+                        if(!hrTLD) {
+                           hrTLD = "[[alternate-parallel]]";
+                        }
+ 
 		        let tld = hrTLD + " (" + data['tld'] + ")";
 
                         terminal.pushToStdout(`[[intel]]`);
@@ -2239,8 +2309,13 @@ console.log("location is " + currentUrl);
               description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC</p>',
               fn: () => {
                       const terminal = this.progressTerminal.current
-		      var currentSite = window.location.href;
-                      terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser ` + currentSite);
+                      var currentUrl = window.location.href;
+                      var upcJson = '{"code":"' + this.state.account + '"}';
+                      var upcEncoded = btoa(upcJson);
+                      currentUrl = currentUrl.substring(0,currentUrl.lastIndexOf('/') + 1) + upcEncoded;
+
+
+                      terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser ` + currentUrl);
                       //this.setState({showProductModal:true});
               }
             },

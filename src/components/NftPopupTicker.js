@@ -10,7 +10,7 @@ import Image4 from './extra/img-4.jpg'
 import QRCode from "react-qr-code";
 import NftPopupQr from './NftPopupQr';
 import { ethers } from "ethers";
-import MLS from '../abis/MalcolmsLittleSecret.json'
+import MLS from '../abis/DecolonizeAfrica.json'
 
 
 export default class MyTicker extends Component {
@@ -50,7 +50,7 @@ export default class MyTicker extends Component {
   fetchChannel = async (channel) => {
 
     var self = this;
-    let contractAddress = "0x2DA2c8eD74cd16F0c24CFFFA257455EAa5Bd93b7";
+    let contractAddress = "0xf0176c005b5a453a5d8a7f5e3583fe52a28edc5b";
     const { ethereum } = window;
 
 

@@ -22,7 +22,7 @@ class BassCleff extends Component {
                         onClick={(e) => { 
 this.props.flip()
 }}
-                  >flip [[{this.props.account}]]</button>
+                  >sell [[{this.props.account}]]</button>
 
 
 

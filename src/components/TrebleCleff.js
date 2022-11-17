@@ -31,7 +31,7 @@ class TrebleCleff extends Component {
         var staker  = value['staker'];
         //not colonized, not minted
         if( staker.includes('000000') && og.includes('000000') ) {
-           upcStatus = "decolonize";
+           upcStatus = "ask";
         }
         //colonized, not minted
         else if( !staker.includes('000000') && og.includes('000000') ) {

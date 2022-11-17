@@ -8,9 +8,9 @@ import Slide from 'react-reveal/Slide';
 import styled, { css } from 'styled-components';
 
 
-const width = '300px', height='150px';
+const width = '100%', height='75vh';
 const Container = styled.div`
-  border: 1px solid red;
+  border: 1px dashed red;
   position: relative;
   overflow: hidden;
   width: ${width};

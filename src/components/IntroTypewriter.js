@@ -108,7 +108,7 @@ export default class IntroTypewriter extends Component {
     console.log("ORORORROROROROROROORORROORORO");
     console.log(last1);
 
-    var message = ["<decolonize.africa>" , this.state.channel , "[[" + this.state.code + "]]" , "</decolonize.africa>"]
+    var message = ["<asking-questions-while-homeless>" , this.state.channel , "[[" + this.state.code + "]]" , "</asking-questions-while-homeless>"]
     return (
       <div 
 	 style={{background: this.state.customColor, textAlign:"center", color:"white", transform:'translateY(50vh)' , transform:'translateY(50vw)'}}
