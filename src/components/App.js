@@ -15,6 +15,7 @@ import piggy from '../abis/TipJar.json'
 import intelX from '../abis/intelX.json'
 import TubmanX from '../abis/TubmanX.json'
 import OneAfrika from '../abis/OneAfrika.json'
+import MyData from '../abis/MyData.json'
 import InclusionX from '../abis/InclusionX.json'
 import Keyz from '../abis/Keyz.json'
 import Key from '../abis/Key.json'
@@ -145,10 +146,10 @@ class App extends Component {
 
 
     // Load PAY currency
-    const intelXData = OneAfrika.networks[networkId]
+    const intelXData = MyData.networks[networkId]
     if(intelXData) {
-      const ONEAFRIKA = new web3.eth.Contract(OneAfrika.abi, intelXData.address)
-      this.setState({ intelX: ONEAFRIKA })
+      const MYDATA = new web3.eth.Contract(MyData.abi, intelXData.address)
+      this.setState({ intelX: MYDATA })
     } else {
       //window.alert('UPCGoldBank contract not deployed to detected network.')
     }
@@ -214,6 +215,33 @@ class App extends Component {
          this.setState({ loading: false })
       })
   };
+
+  addCrown = async (kingNft, upcId, numTokens) => {
+    const { accounts, contract } = this.state;
+    var stakingBalance = await this.state.intelX.methods.addCrown(kingNft, upcId, numTokens).send({ from: this.state.account });
+    return stakingBalance.toString();
+  };
+
+  getCrown = async (upcId) => {
+    const { accounts, contract } = this.state;
+
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.intelX.methods.getCrown(upcId).call({ from: this.state.account });
+  };
+
+
+  mine= async (upcId, numTokens) => {
+    const web3 = window.web3
+    const intelXData = this.state.intelX;
+
+    const { accounts, contract } = this.state;
+
+    var approval = await this.state.intelX.methods.mine(upcId, numTokens).send({ from: this.state.account });
+    this.setState({daiTokenBalance: approval.toString() });
+    return approval.toString();
+  };
+
 
 
   getSaleInfo = async (nftId) => {
@@ -775,17 +803,6 @@ class App extends Component {
 
 
 
-  mine= async () => {
-    const web3 = window.web3
-    const intelXData = this.state.intelX;
-
-    const { accounts, contract } = this.state;
-
-    var approval = await this.state.intelX.methods.mine().send({ from: this.state.account });
-    this.setState({daiTokenBalance: approval.toString() });
-    return approval.toString();
-  };
-
   constructor(props) {
     super(props)
     //var marketInfo = this.refreshFeed()
@@ -819,6 +836,10 @@ class App extends Component {
     this.claimNarativToken= this.claimNarativToken.bind(this);
     this.checkNarativBalance= this.checkNarativBalance.bind(this);
 
+
+    this.addCrown= this.addCrown.bind(this);
+    this.getCrown= this.getCrown.bind(this);
+    this.mine= this.mine.bind(this);
 
 
     this.redeemUPCS= this.redeemUPCS.bind(this);
@@ -941,6 +962,11 @@ class App extends Component {
 	mintNft={this.mintNft}
 	getVrByUpcId={this.getVrByUpcId}
 	mine={this.mine}
+	addCrown={this.addCrown}
+	getCrown={this.getCrown}
+        
+
+
 	swap={this.swap}
 	wn={this.wn}
 	wm={this.wm}
