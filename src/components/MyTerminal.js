@@ -6,6 +6,8 @@ import IpfsUpload from './IpfsUpload'
 import TrebleCleff from './TrebleCleff'
 import BassCleff from './BassCleff'
 import go from './Mission'
+//import ChannelCarousel from './ChannelCarousel'
+import ChannelCarousel2 from './ChannelCarousel2'
 import ScanWizard from './ScanWizard'
 import Dex from './Dex'
 import Modal from "react-animated-modal";
@@ -155,6 +157,8 @@ export default class MyTerminal extends Component {
        showModalTutorial: false,
        showQrModal: false,
        showBigShow: false,
+       channelSlider: '',
+       showChannelShow: false,
        showBigShow2: false,
        showBplayer: false,
        showMarketQrModal: false,
@@ -164,12 +168,13 @@ export default class MyTerminal extends Component {
        marketQr: '0x5Cd036705fd68468a8dEFdBD812dfd30e467015B',
        mprogressBal: '',
        domain: '',
-       card: '',
+       card: ''
     }
 
     this.firstLookup();
 
     this.selectDomain = this.selectDomain.bind(this);
+    this.channelFront= this.channelFront.bind(this);
     this.sing= this.sing.bind(this);
     this.setAccount = this.setAccount.bind(this);
     this.firstLookup= this.firstLookup.bind(this);
@@ -198,7 +203,7 @@ export default class MyTerminal extends Component {
     this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
     var mplayer;
     if(this.state.isFlipped) {
-       this.firstLookup(this.state.account);
+       //this.firstLookup(this.state.account);
     }
     else {
        mplayer = "";
@@ -458,6 +463,19 @@ src={srcImg} height="200" width="200"/></p>
 		}
 	   })
   }
+
+
+  //set state player var
+  channelFront = async (channel) => {
+	  var mplayer = <ChannelCarousel2 />
+          this.setState({channelSlider: mplayer});
+          this.setState({showChannelShow: true});
+  }
+
+
+
+
+
 
 
 
@@ -1122,6 +1140,10 @@ var playButton =
 	     <Modal style={{"color":"white","height":"90vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showModalTutorial} closemodal={(e) => {this.setState({ showModalTutorial: false }); }} type="lightSpeedIn" > {this.state.tutorial} </Modal>
              <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle","width":"95vw","height":"95vh"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
 	     <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type="pulse" > [[upc://{this.state.account}]] <iframe title={this.state.upcRadioString} style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
+
+
+
+
              <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showUploadModal} closemodal={() => this.setState({ showUploadModal: false })} type="pulse" > {myUpload}</Modal>
 	     <TrebleCleff handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} dex={this.dex} search={this.search} meeting={this.meeting}  account={this.state.account} tutorial={this.tutorial} upcInfo={this.props.upcInfo} address={this.props.address} />
 
@@ -1149,6 +1171,7 @@ var playButton =
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showQrModal} closemodal={() => this.setState({ showQrModal: false })} type="pulse" ><QRCode size={128} value={this.state.account} onClick={() => { this.setState({qIsOpen: true})}}/><br/>{this.state.account}</Modal>
 
 
+	     <Modal style={{"height":"90vh", "width":"100vw" , "alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showChannelShow} closemodal={(e) => {this.setState({ showChannelShow: false }); }} type="pulse" >{this.state.channelSlider}</Modal>
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showMarketQrModal} closemodal={() => this.setState({ showMarketQrModal: false })} type="pulse" ><QRCode size={128} value={this.state.marketQr}/>
                        <br/>
@@ -2779,6 +2802,15 @@ console.log("location is " + currentUrl);
                           terminal.pushToStdout(`================`);
                           // expected output: "Success!"
                        });
+              }
+            },
+
+
+            ch : {
+              description: '<p style="color:hotpink;font-size:1.1em">Play channel 1</p>',
+              fn: ( channel ) => {
+                   var theBal;
+                   let front = this.channelFront(channel);
               }
             },
 
