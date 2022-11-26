@@ -467,7 +467,7 @@ src={srcImg} height="200" width="200"/></p>
 
   //set state player var
   channelFront = async (channel) => {
-	  var mplayer = <ChannelCarousel2 />
+	  var mplayer = <ChannelCarousel2 nftInfo={this.props.nftInfo} upcInfo={this.props.upcInfo} channel={channel} />
           this.setState({channelSlider: mplayer});
           this.setState({showChannelShow: true});
   }
