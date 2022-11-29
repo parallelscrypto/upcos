@@ -1241,7 +1241,7 @@ var playButton =
 
 
 
-            dec: {
+            ask: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Please help this UPC by decolonizing the false narrative and self destructive mentality that has been injected by Babylon *</p>',
               fn: (humanReadableName) => {
 		      this.ask(humanReadableName);
