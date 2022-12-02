@@ -3,6 +3,7 @@ import makeCarousel from 'react-reveal/makeCarousel';
 // we'll need the Slide component for sliding animations
 // but you can use any other effect
 import Slide from 'react-reveal/Slide';
+import Zoom from 'react-reveal/Zoom';
 // we'll use styled components for this tutorial
 // but you can use any other styling options ( like plain old css )
 import styled, { css } from 'styled-components';
@@ -170,7 +171,7 @@ export default class ChannelCarousel2 extends Component {
                 </div>
     }
 
-       return <Slide right> {mplayer} </Slide>
+       return <Zoom right> {mplayer} </Zoom>
     }
 
 

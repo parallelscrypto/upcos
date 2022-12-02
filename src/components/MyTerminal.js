@@ -31,8 +31,7 @@ var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n
 
 //var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.oneafrika', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.coinbox']
 
-var tlds = ['.watch-this','.tutorial','.will-work','.my-story','.asking-while-homeless','.skit','.character','.character-development','.dance','.artwork','.upc-freestyle','.comic','.coinbox'];
-
+var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.notaslave', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.coinbox']
 
 
 
@@ -628,12 +627,7 @@ src={srcImg} height="200" width="200"/></p>
                             
 		   .then(data => {
                         //subtract 100 since we are naming the tlds with hundred in front for repeatability
-                        console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-                        console.log(tlds[data['tld'] - 100]);
-			let hrTLD = tlds[data['tld'] - 100];
-                        if(!hrTLD) {
-                           hrTLD = "[[alternate-parallel]]";
-                        }
+			let hrTLD = tlds[data['tld']];
                         if(data['tld'] == 777) {
                            hrTLD = "coinbox";
                         }
@@ -830,18 +824,72 @@ src={srcImg} height="200" width="200"/></p>
 		      onChange={(e) => { this.setState({domain: e.target.value}) } }
 			      >
                            <option selected>Select a domain</option>
-                           <option value="100">.watch-this</option>
-                           <option value="101">.tutorial</option>
-                           <option value="102">.will-work</option>
-                           <option value="103">.my-story</option>
-                           <option value="104">.asking-while-homeless</option>
-                           <option value="105">.skit</option>
-                           <option value="106">.character</option>
-                           <option value="107">.character-development</option>
-                           <option value="108">.dance</option>
-                           <option value="109">.artwork</option>
-                           <option value="110">.upc-freestyle</option>
-                           <option value="111">.comic</option>
+                           <option value="0">.watch-this</option>
+                           <option value="1">.hear-this</option>
+                           <option value="2">.will-work</option>
+                           <option value="3">.jokes</option>
+                           <option value="4">.tutorial</option>
+                           <option value="5">.mumia</option>
+                           <option value="6">.profile</option>
+                           <option value="7">.my-show</option>
+                           <option value="8">.news</option>
+                           <option value="9">.gif</option>
+                           <option value="10">.BLACK-WALL-STREET</option>
+                           <option value="11">.deliver</option>
+                           <option value="12">.grind</option>
+                           <option value="13">.11:11</option>
+                           <option value="14">.prediction</option>
+                           <option value="15">.dapp</option>
+                           <option value="16">.txt</option>
+                           <option value="17">.homeless</option>
+                           <option value="18">.link</option>
+                           <option value="19">.surprise</option>
+                           <option value="20">.freestyle</option>
+                           <option value="21">.poem</option>
+                           <option value="22">.stretch</option>
+                           <option value="23">.workout</option>
+                           <option value="24">.recipe</option>
+                           <option value="25">.moment-in-time</option>
+                           <option value="26">.meme</option>
+                           <option value="27">.upc</option>
+                           <option value="28">.marriage</option>
+                           <option value="29">.bowlgame</option>
+                           <option value="30">.character</option>
+                           <option value="31">.character-development</option>
+                           <option value="32">.skit</option>
+                           <option value="33">.ai</option>
+                           <option value="34">.wiki</option>
+                           <option value="35">.upcscript</option>
+                           <option value="36">.comment</option>
+                           <option value="37">.opposing-viewpoints</option>
+                           <option value="38">.meditate</option>
+                           <option value="39">.protest</option>
+                           <option value="41">.king-piece</option>
+                           <option value="42">.queen-piece</option>
+                           <option value="43">.castle-piece</option>
+                           <option value="44">.knight-piece</option>
+                           <option value="45">.bishop-piece</option>
+                           <option value="46">.pawn-piece</option>
+                           <option value="47">.decentralized-email-list</option>
+                           <option value="48">.sober-day</option>
+                           <option value="49">.notaslave</option>
+                           <option value="50">.afrika</option>
+                           <option value="51">.dance</option>
+                           <option value="52">.micro-finance</option>
+                           <option value="53">.artwork</option>
+                           <option value="54">.monthly-nft-club</option>
+                           <option value="55">.cringe</option>
+                           <option value="56">.thank-you</option>
+                           <option value="57">.dunk</option>
+                           <option value="58">.nice-try-CIA</option>
+                           <option value="59">.ad</option>
+                           <option value="60">.Channel channel</option>
+                           <option value="61">.barefoot</option>
+                           <option value="62">.backup</option>
+                           <option value="63">.dog-walk</option>
+                           <option value="64">.dog-lost</option>
+                           <option value="65">.promo-code</option>
+                           <option value="66">.dream-log</option>
                            <option value="777">.coinbox</option>
                         </select>
 
@@ -1028,7 +1076,7 @@ src={srcImg} height="200" width="200"/></p>
     var addy = this.props.address;
     addy  = addy.substr(0,15);
 
-    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV  </i> \n <b style='color:red'> [always.ask.questions]</b> \n <i style='color:#d66900'>Powered by MyData Crypto</i>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Black Is Beautiful! Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is colonized and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key).  The titles and links for UPC Band TV Channels 0-9 are listed below. </u> \n <i style='color:white'>  Channel Definitions: </i> \n <i style='color:orange'> Channel 0: Black Is Beautiful!;\n <a href='upc://000000000000'>Visit Channel 0[[000000000000]]</a>.\n <i style='color:red;font-size:.8em'><b><u>(Channel 0 is any unowned UPC ending in `0`)</u></b></i> \n Or type command `ch0` to tune into UPC Band Theater Channel 0 \n <i style='color:orange'>  Channel 1</i> \n <a href='upc://000000000001'>Visit Channel 1 [[000000000001]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 1 is any unowned UPC ending in `1`)</u></b></i> \n Or type command `ch1` to tune into UPC Band Theater Channel 1 \n <i style='color:orange'>  Channel 2</i> \n <a href='upc://000000000002'>Visit Channel 2 [[000000000002]]</a>  \n <i style='color:red;font-size:.8em'><b><u>(Channel 2 is any unowned UPC ending in `2`)</u></b></i>  \n Or type command `ch2` to tune into UPC Band Theater Channel 2 \n <i style='color:orange'>  Channel 3 </i> \n <a href='upc://000000000003'>Visit Channel 3 [[000000000003]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 3 is any unowned UPC ending in `3`)</u></b></i>  \n Or type command `ch3` to tune into UPC Band Theater Channel 3 \n <i style='color:orange'>  Channel 4</i>  \n <a href='upc://000000000004'>Visit Channel 4 [[000000000004]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 4 is any unowned UPC ending in `4`)</u></b></i>  \n Or type command `ch4` to tune into UPC Band Theater Channel 4 \n <i style='color:orange'>  Channel 5 </i>  \n <a href='upc://000000000005'>Visit Channel 5 [[000000000005]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 5 is any unowned UPC ending in `5`)</u></b></i>  \n Or type command `ch5` to tune into UPC Band Theater Channel 5 \n <i style='color:orange'>  Channel 6 <i>  \n <a href='upc://000000000006'>Visit Channel 6 [[000000000006]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 6 is any unowned UPC ending in `6`)</u></b></i>  \n Or type command `ch6` to tune into UPC Band Theater Channel 6 \n <i style='color:orange'>  Channel 7</i>  \n <a href='upc://000000000007'>Visit Channel 7 [[000000000007]]</a> \n <i style='color:red;font-size:.8em'><b><u>(Channel 7 is any unowned UPC ending in `7`)</u></b></i>  \n Or type command `ch7` to tune into UPC Band Theater Channel 7 \n <i style='color:orange'>  Channel 8</i>  \n <a href='upc://000000000008'>Visit Channel 8 [[000000000008]]</a>  \n <i style='color:red;font-size:.8em'><b><u>(Channel 8 is any unowned UPC ending in `8`)</u></b></i> \n Or type command `ch8` to tune into UPC Band Theater Channel 8 \n <i style='color:orange'>  Channel 9 </i>  \n <a href='upc://000000000009'>Visit Channel 9 [[000000000009]]</a>  \n <i style='color:red;font-size:.8em'><b><u>(Channel 9 is any unowned UPC ending in `9`)</u></b></i> \n Or type command `ch9` to tune into UPC Band Theater Channel 9 \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some MyData\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your MyData to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`colonize`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with colonize [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV  </i> \n <b style='color:red'> [always.ask.questions]</b> \n <i style='color:#d66900'>Powered by MyData Crypto</i>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is decolonized and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key). </u> \n <i style='color:white'> <b style='color:red'>1.</b> Type <i style='color:red'>`help`</i> to see available commands \n <b style='color:red'> 2. </b> Type <i style='color:red'>`claim`</i> to get some MyData Token.  You must pay a .15 Matic access fee and you recieve .25 MyData token each time you `claim`.  Therefore, in order to get the 1 token that you need to buy a UPC NFT, you must run the claim command 4 times. We prefer microtransactions in order to dispel the myth that one must be rich to participate in the NFT economy. \n <b style='color:red'> 3. </b> Type <i style='color:red'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <b style='color:red'> 4. </b> Type <i style='color:red'>`recon`</i> to allow your wallet to spend your MyData token in our smart contract.  You will not be able to decolonize {{dec}} a upc until you have run this command \n Type <i style='color:red'>`dec`</i> to buy the UPC [[" + this.state.account + "]]" + "\n  Type <i style='color:red'>`own`</i> to mint if successful with decolonize {dec} [[" + this.state.account + "]]" + "\n  <i style='color:red'>Type `sell` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:red'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:red'>`clear`</i> to clear screen";
     var promptlabel =  '[[ AWAITING COMMAND ]] => ';
 
           
@@ -1130,7 +1178,6 @@ var playButton =
     var player;				
     const terminal = this.progressTerminal.current
 
-    //var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV  </i> \n <i style='color:#d66900'>Malcolm's Little Secret \n <b style='color:red'> [Black Is Beautiful! TV Network]</b>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Black Is Beautiful! Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is colonized and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key).  The titles and links for UPC Band TV Channels 0-9 are listed below. </u> \n <i style='color:white'>  Channel Definitions: </i> \n <i style='color:orange'> Channel 0: Black Is Beautiful!;\n <a href='upc://000000000000'>Watch Channel 0[[000000000000]]</a>.\n Or type command `ch0` to tune into UPC Band Theater Channel 0 \n <i style='color:orange'>  Channel 1: Black Travel; </i> \n <a href='upc://000000000001'>Watch Channel 1 [[000000000001]]</a>   \n Or type command `ch1` to tune into UPC Band Theater Channel 1 \n <i style='color:orange'>  Channel 2: Off*Grid Max; </i> \n <a href='upc://000000000002'>Watch Channel 2 [[000000000002]]</a>   \n Or type command `ch2` to tune into UPC Band Theater Channel 2 \n <i style='color:orange'>  Channel 3: Black Comedy/Entertainment/Music; </i> \n <a href='upc://000000000003'>Watch Channel 3 [[000000000003]]</a>  \n Or type command `ch3` to tune into UPC Band Theater Channel 3 \n <i style='color:orange'>  Channel 4: Fitness and Sports; </i>  \n <a href='upc://000000000004'>Watch Channel 4 [[000000000004]]</a>  \n Or type command `ch4` to tune into UPC Band Theater Channel 4 \n <i style='color:orange'>  Channel 5: Black Alt Community; </i>  \n <a href='upc://000000000005'>Watch Channel 5 [[000000000005]]</a>  \n Or type command `ch5` to tune into UPC Band Theater Channel 5 \n <i style='color:orange'>  Channel 6: Black Spirituality; <i>  \n <a href='upc://000000000006'>Watch Channel 6 [[000000000006]]</a>  \n Or type command `ch6` to tune into UPC Band Theater Channel 6 \n <i style='color:orange'>  Channel 7: Black Life Education; </i>  \n <a href='upc://000000000007'>Watch Channel 7 [[000000000007]]</a>  \n Or type command `ch7` to tune into UPC Band Theater Channel 7 \n <i style='color:orange'>  Channel 8: Black Business Connect; </i>  \n <a href='upc://000000000008'>Watch Channel 8 [[000000000008]]</a>  \n Or type command `ch8` to tune into UPC Band Theater Channel 8 \n <i style='color:orange'>  Channel 9: Black Health; </i>  \n <a href='upc://000000000009'>Watch Channel 9 [[000000000009]]</a>  \n Or type command `ch9` to tune into UPC Band Theater Channel 9 \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some MyData\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your MyData to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`colonize`</i> to buy the UPC [[" + this.state.account + "]]" + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with colonize [[" + this.state.account + "]]" + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
     //var tutorial = "<html><body><h1>hello</h1></body></html>"
 
     return (
@@ -1769,223 +1816,6 @@ var playButton =
             },
 
 
-            ch0: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Is Beautiful! Channel</p>',
-              fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.getWalkieTalkie(this.state.account);
-                      bal.then((value) => {
-			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmUpK67CyydMb9yV27M7fpyTMYLxmGzm9Tqfb8gZRxWFQQ"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Is Beautiful! Channel</a>";
-                         terminal.pushToStdout(link);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
-              }
-            },
-
-
-            ch1: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Travel Channel</p>',
-              fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.getWalkieTalkie(this.state.account);
-                      bal.then((value) => {
-			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmWXFYqjMzdcXizN2bFuccp7NNEENKhuNPxmtrmcijkvU2"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Travel Channel</a>";
-                         terminal.pushToStdout(link);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
-              }
-            },
-
-
-
-            ch2: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Off*Grid Max Channel</p>',
-              fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.getWalkieTalkie(this.state.account);
-                      bal.then((value) => {
-			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmQPcnATGo1jTWq4L9VZcvmtoChR3Cfnzv3pvkz7QtRd4s"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Off*Grid Max Channel</a>";
-                         terminal.pushToStdout(link);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
-              }
-            },
-
-
-
-            ch3: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Entertainment Channel</p>',
-              fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.getWalkieTalkie(this.state.account);
-                      bal.then((value) => {
-			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmVUVaQ6icAtpnBmkj1vCUxQoM6S8ZnRujM7zmeyqjLiXr"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Entertainment Channel</a>";
-                         terminal.pushToStdout(link);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
-              }
-            },
-
-
-
-            ch4: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Fitness and Sports Channel</p>',
-              fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.getWalkieTalkie(this.state.account);
-                      bal.then((value) => {
-			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmaCyEkPxqXdMRiUDdB7QQW7ppPJVy7ckA9tY4h78kqQoa"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Fitness and Sports Channel</a>";
-                         terminal.pushToStdout(link);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
-              }
-            },
-
-
-
-            ch5: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Alternative Community Channel</p>',
-              fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.getWalkieTalkie(this.state.account);
-                      bal.then((value) => {
-			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmShhNEGmAVB4PYwLpzuoZB71tztWsWx6ddLYnu378qgJz"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Alt Community Channel</a>";
-                         terminal.pushToStdout(link);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
-              }
-            },
-
-
-            ch6: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Afro Spirituality Channel</p>',
-              fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.getWalkieTalkie(this.state.account);
-                      bal.then((value) => {
-			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmZuLpH8yUEoriXyXMDJS8UEk5FFozB5XVmSjGseqsVLHV"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Afro Spirituality Channel</a>";
-                         terminal.pushToStdout(link);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
-              }
-            },
-
-
-            ch7: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Life Education Channel</p>',
-              fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.getWalkieTalkie(this.state.account);
-                      bal.then((value) => {
-			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmRbz9GUgf5R8nNtqcA3kio4xVg5wCKHUd8aUvrytzQaxC"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Life Education Channel</a>";
-                         terminal.pushToStdout(link);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
-              }
-            },
-
-
-            ch8: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Business Connect Channel</p>',
-              fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.getWalkieTalkie(this.state.account);
-                      bal.then((value) => {
-			 value  = "https://upcunderground.mypinata.cloud/ipfs/QmT1wtfYwtxyuFzFLrysm8KCG49ThQ6UxitQpdbKRvk4ip"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Business Connect Channel</a>";
-                         terminal.pushToStdout(link);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
-              }
-            },
-
-
-            ch9: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Visit UPC Band Theater: Black Health Channel</p>',
-              fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var theBal;
-                  let bal = this.props.getWalkieTalkie(this.state.account);
-                      bal.then((value) => {
-			 value  = "https://upcunderground.mypinata.cloud/ipfs/Qmcc9ee8BsMufwS59z9q86xa9xKe1ppyw42RsGHpAVaHeo"
-			 var link = "<a href='"+value+"'>Click to travel to UPC Band Theater: Black Health Channel</a>";
-                         terminal.pushToStdout(link);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
-              }
-            },
-
-
-
-
-
             store: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Display link to this UPCs store</p>',
               fn: () => {
@@ -2107,12 +1937,9 @@ var playButton =
 
 
 			var upc = data['word'];
-			let hrTLD = tlds[data['tld'] - 100];
+			let hrTLD = tlds[data['tld']];
                         if(data['tld'] == 777) {
                            hrTLD = "coinbox";
-                        }
-                        if(!hrTLD) {
-                           hrTLD = "[[alternate-parallel]]";
                         }
 		        let tld = hrTLD + " (" + data['tld'] + ")";
 			var tmpStamp = parseInt(data['latestTimestamp']);
@@ -2263,12 +2090,9 @@ console.log("location is " + currentUrl);
 
 			var tmpStamp = parseInt(data['createdTimestamp']);
                         var created = new Date(tmpStamp * 1000);
-			let hrTLD = tlds[data['tld'] - 100];
+			let hrTLD = tlds[data['tld']];
                         if(data['tld'] == 777) {
                            hrTLD = "coinbox";
-                        }
-                        if(!hrTLD) {
-                           hrTLD = "[[alternate-parallel]]";
                         }
  
 		        let tld = hrTLD + " (" + data['tld'] + ")";
@@ -2807,7 +2631,7 @@ console.log("location is " + currentUrl);
 
 
             ch : {
-              description: '<p style="color:hotpink;font-size:1.1em">Play channel 1</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">Play channel <n> .  Syntax:  `ch {0-9}`  For example, to watch channel 0, type `ch 0`.  To watch channel 9, type `ch 9`. Only channels 0-9 are currently valid </p>',
               fn: ( channel ) => {
                    var theBal;
                    let front = this.channelFront(channel);
