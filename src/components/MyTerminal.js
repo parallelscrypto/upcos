@@ -1039,34 +1039,146 @@ src={srcImg} height="200" width="200"/></p>
   }
 
 
-  play= async () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  terminal.clearStdout();
-		  var self = this;
-                  let info = this.props.upcInfo(this.state.account)
-		   .then(data => {
-                        terminal.clearStdout();
-			var thelink = data['ipfs'];
-			self.setState({fullIpfs: thelink});
-			self.setState({showBigShow: true});
-                  });
-		  
+  play= async (upcId) => {
 
-                  const interval = setInterval(() => {
-                    if (this.state.progressBal != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({progressBal: info});
-                      var self = this;
-                      this.setState({ progress: this.state.progress + 10 })
+
+          var self = this;
+          if( !upcId ) {
+              upcId = this.state.account;
+          }
+
+          let infoOwned = this.props.upcInfo(upcId)
+           .then(data => {
+
+
+                var vr   = data['ipfs'];
+                var staker = data['staker'];
+
+                if(staker.includes('0x0000000000000000000')) {
+                var lastChar = upcId.slice(-1);
+
+                var fullNft = "00000000000" + lastChar;
+
+                    let info = this.props.upcInfo(fullNft)
+                      .then(data => {
+
+                    var unownedVr = data.ipfs;
+                    if(unownedVr.includes('tiktok')) {
+                       mplayer = <TikTok url={unownedVr} />
                     }
-                  }, 1500)
-                })
+                    //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
+                    //pasting does not get the player with controls (this iframe player below)
+		    else if(unownedVr.length == 11) {
+                       const youtubeID = unownedVr
+                       mplayer =
+                       <iframe className='video'
+                               style={{minHeight:"100vh",width:"100vw"}}
+                               title='Youtube player'
+                               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                               src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
+                       </iframe>
+                    }
+		    else {
+                       mplayer = <ReactPlayer 
+                                    width="100vw"
+                                    url={data['ipfs']} 
+                                />
 
-                return ''
+		    }
+
+                            self.setState({mplayer: mplayer});
+                            if(self.state.offerState == "video") {
+                               self.setState({player: mplayer});
+                            }
+	            })
+		}
+		else {
+	            
+                    var vr   = data['ipfs'];
+                    var mplayer;
+                    if(vr.includes('tiktok')) {
+
+                       mplayer = <TikTok url={vr} />
+                    }
+                    //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
+                    //pasting does not get the player with controls (this iframe player below)
+		    else if(vr.length == 11) {
+                       const youtubeID = data['ipfs']
+                       mplayer =
+                       <iframe className='video'
+                               style={{minHeight:"100vh",width:"100vw"}}
+                               title='Youtube player'
+                               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                               src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
+                       </iframe>
+                    }
+		    //arbitrary url video
+		    else if(!vr.includes('yout') && !vr.includes('facebook') 
+			    && !vr.includes('soundcloud') && !vr.includes('vimeo') 
+			    && !vr.includes('whistia') && !vr.includes('mixcloud') 
+			    && !vr.includes('dailymotion') && !vr.includes('twitch')) {
+                       const fullUrl = data['vr']
+                       mplayer =
+                       <iframe className='video'
+                               style={{minHeight:"100vh",width:"100vw"}}
+                               title='upc dj player'
+                               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                               src={fullUrl}>
+                       </iframe>
+                    }
+
+
+		    else {
+                       mplayer = <ReactPlayer 
+                                    width="100vw"
+                                    url={data['ipfs']} 
+                                />
+
+		    }
+                    //self.setState({mplayer: mplayer});
+                    self.setState({fullIpfs: mplayer});
+                    self.setState({showBigShow2: true});
+                    self.setState({showBigShow: true});
+                    if(self.state.offerState == "video") {
+                       //self.setState({player: mplayer});
+                       self.setState({fullIpfs: mplayer});
+                       self.setState({showBigShow2: true});
+                       self.setState({showBigShow: true});
+                    }
+		}
+	   })
+
+
+//                this.setState({progressBal: ''});
+//                this.setState({ isProgressing: true }, () => {
+//                  const terminal = this.progressTerminal.current
+//                  terminal.clearStdout();
+//		  var self = this;
+//                  let info = this.props.upcInfo(this.state.account)
+//		   .then(data => {
+//                        terminal.clearStdout();
+//			var thelink = data['ipfs'];
+//			self.setState({fullIpfs: thelink});
+//			self.setState({showBigShow: true});
+//                  });
+//		  
+//
+//                  const interval = setInterval(() => {
+//                    if (this.state.progressBal != '') { // Stop at 100%
+//                      clearInterval(interval)
+//                      this.setState({ isProgressing: false, progress: 0 })
+//                    } else {
+//                      this.setState({progressBal: info});
+//                      var self = this;
+//                      this.setState({ progress: this.state.progress + 10 })
+//                    }
+//                  }, 1500)
+//                })
+//
+//                return ''
+//
+//
+
 
   }
 
@@ -1186,7 +1298,7 @@ var playButton =
 	     <Modal style={{"color":"white","height":"90vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showModalUrl} closemodal={(e) => {this.setState({ showModalUrl: false }); }} type="lightSpeedIn" ></Modal>
 	     <Modal style={{"color":"white","height":"90vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showModalTutorial} closemodal={(e) => {this.setState({ showModalTutorial: false }); }} type="lightSpeedIn" > {this.state.tutorial} </Modal>
              <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle","width":"95vw","height":"95vh"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
-	     <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type="pulse" > [[upc://{this.state.account}]] <iframe title={this.state.upcRadioString} style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
+	     <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type="pulse" >{this.state.fullIpfs}</Modal>
 
 
 
@@ -1209,7 +1321,7 @@ var playButton =
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalSearch} closemodal={() => this.setState({ showModalSearch: false })} type="pulse" > {this.state.searchModalContent}</Modal>
 
-      <Modal style={{ height:"95vh", width:"95vw"}} visible={this.state.showBigShow2} closemodal={() => this.setState({ showBigShow2: false })} type="pulse"> [[upc://{this.state.account}]] <iframe style={{height:"95vh", width:"95vw"}} src={this.state.fullIpfs} /></Modal>
+      <Modal style={{ height:"95vh", width:"95vw"}} visible={this.state.showBigShow2} closemodal={() => this.setState({ showBigShow2: false })} type="pulse">{this.state.fullIpfs}</Modal>
 
 
 
