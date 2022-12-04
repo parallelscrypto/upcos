@@ -1117,7 +1117,7 @@ src={srcImg} height="200" width="200"/></p>
 			    && !vr.includes('soundcloud') && !vr.includes('vimeo') 
 			    && !vr.includes('whistia') && !vr.includes('mixcloud') 
 			    && !vr.includes('dailymotion') && !vr.includes('twitch')) {
-                       const fullUrl = data['vr']
+                       const fullUrl = data['ipfs']
                        mplayer =
                        <iframe className='video'
                                style={{minHeight:"100vh",width:"100vw"}}
