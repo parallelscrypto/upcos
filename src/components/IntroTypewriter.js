@@ -8,6 +8,10 @@ import Image2 from './extra/img-2.jpg'
 import Image3 from './extra/img-3.jpg'
 import Image4 from './extra/img-4.jpg'
 import QRCode from "react-qr-code";
+import Modal from "react-animated-modal";
+import Zoom from 'react-reveal/Zoom';
+import Flip from 'react-reveal/Flip';
+
 //import Typewriter from 'typewriter-effect';
 import TypeWriterEffect from "./react-typewriter-effect/src/Typewriter";
 var Barcode = require('react-barcode');
@@ -104,27 +108,29 @@ export default class IntroTypewriter extends Component {
        first11 = chan.substr(0,11);
        last1   = chan.substr(chan.length-1,1);
     }
-    console.log(first11);
-    console.log("ORORORROROROROROROORORROORORO");
-    console.log(last1);
 
-    var message = ["<decolonize.africa>" , this.state.channel , "[[" + this.state.code + "]]" , "</decolonize.africa>"]
+
+    var typewriter = 
+
+
+             <Modal style={{"height":"75vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={'true'} closemodal={(e) => {this.setState({ showModalSplash: false }); }} type="lightSpeedIn" >
+                <div style={{verticalAlign:"middle", textAlign:"center" }}>
+                  <div>
+                    <Zoom left> <b>Welcome to UPCOS</b></Zoom>
+                    <br/>
+                    <Zoom left> <i>Crypto Rush Afrika</i></Zoom>
+                    <br/>
+                    <Zoom left> <b>Now Loading UPC#</b></Zoom>
+                     <br/>
+
+		     <Flip right> <Barcode value={this.state.code} format="UPC" /> </Flip>
+		     
+                  </div>
+                </div>
+             </Modal>
+
     return (
-      <div 
-	 style={{background: this.state.customColor, textAlign:"center", color:"white", transform:'translateY(50vh)' , transform:'translateY(50vw)'}}
-      >
-         <i><span>{first11}</span><span style={{color:"red", weight:"bold"}}>[{last1}]</span></i>
-         <TypeWriterEffect
-            style={{transform:'translateY(150vw)', fontFamily:'system-ui'}}
-            startDelay={100}
-            multiTextDelay={1500}
-            cursorColor="white"
-            multiText={message}
-            typeSpeed={10}
-         />
-	<Barcode value={this.state.code} format="UPC" />
-	<p><b style={{color:"white", fontSize:"7px"}}>&#60;3 619</b></p>
-      </div>
+	 typewriter
     )
   }
 }

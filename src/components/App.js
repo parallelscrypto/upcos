@@ -941,7 +941,7 @@ class App extends Component {
 	getUPCSBalance={this.getUPCSBalance}
 	getMyBalance={this.getMyBalance}
 	intel={this.state.intel}
-
+        showModalSplash={'true'}
 	approveNav={this.approveNav}
 	checkNarativBalance={this.checkNarativBalance}
 	claimNarativToken={this.claimNarativToken}

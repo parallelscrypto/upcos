@@ -16,16 +16,27 @@ class TrebleCleff extends Component {
 
 
   componentDidMount = async () => {
-
-    this.state = {
-       account: this.props.account,
-       upcStatus: upcStatus
-    }
     var upcNum  = this.props.account;
+
+
+
+    var channelNum = upcNum.substr(-1);
     var upcInfo = this.props.upcInfo(upcNum);
     var myAddress = this.props.address;
     var upcStatus = "";
     var self = this;
+
+console.log("upcNum is ==== " + upcNum);
+console.log("channelNum is ==== " + channelNum);
+
+    this.state = {
+       account: this.props.account,
+       upcStatus: upcStatus,
+       channelNum: channelNum
+    }
+
+
+
     upcInfo.then((value) => { 
         var og      = value['og'];
         var staker  = value['staker'];
@@ -87,9 +98,9 @@ this.props.play()
                     <button
                         style={{background: "#000000", color:"green", width: "20vw", height: "20vw"}}
                         onClick={(e) => { 
-                                     this.props.meeting();
+                                     this.props.channelFront(this.props.account.substr(-1));
                         }}
-                  >meeting [[*****]]</button>
+                  >watch [[ch {this.props.account.substr(-1)} ]]</button>
 
 
 

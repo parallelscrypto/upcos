@@ -154,6 +154,7 @@ export default class MyTerminal extends Component {
        showProductContent: '',
        showTutorialContent: '',
        showModalTutorial: false,
+       showModalSplash: true,
        showQrModal: false,
        showBigShow: false,
        channelSlider: '',
@@ -312,11 +313,10 @@ console.log("outputting on " + upc );
                    var channelNum = upc.substr(upc.length - 1,1)
                    var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
                    var offerBuy = 
-                   <div style={{textAlign:"center", background:"#422a0b", border:"5px solid white"}}>
-                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I reject the status quo. It can be argued that my leaders have consistently failed to provide me with a way to earn a <u>dignified</u> living, therefore, this is how I will <u>responsibly</u> include myself in the economy using crypto.</b></p>
+                   <div style={{textAlign:"left", fontWeight:"bold", background:"#422a0b", border:"5px solid white", padding:"3px"}}>
+                       <p style={{color:"white"}}>Dear quasi-governmental entities who MIGHT ALLEDGELY aim to bring chaos and confusion to a BLACK led platform on a mission to DOMINATE Artificial Intelligence, please know that we are well aware of your tricks.  Africa, please watch this platform and see how `power` treats your own people when we rise up to take control of our own history and data.  As a non-affirmative-action-winning melinated individual who has been artifically held down and labeled `loser`, I declare that I would rather be sniped in the head than to be forced to live under the tyranny of the `americn black church` , `american black entertainment industry` or any other (alledged) quasi-governmental individuals/organization.  I am not suicidal in any way, so if I die mysteriously, it was not suicide.  I declare that I will not be lured into trouble, and that the quasi-government that Elon, Rand Paul, Donald J Trump, and other White men are allowed to acknowledge and speak openly about will now have motivation to murder me in front of our men, women and children in the same way that some people around the world felt was done to Malcolm X, MLK, others who challenged white power on a Global scale.</p> <p style={{color:"white"}}>  Men, I STRONGLY advise DO NOT EVER be friends with homosexuals.  I learned the painful, humiliating, and career ending way why the LGBTQ community is rejected in many cultures, and as a STRAIGHT but formerly open-minded individual, WE REJECT ALL LGBTQ propoganda here!  In my case, they tried to claim me as one of their own and project their FILTH onto my unknowing formerly soft azz, and then try to burdeon YO NIGGER AZZ with all of the unfortunate horrible assumptions of being a "FAG" and a "NIGGER".  It felt like being the victim in a human SACRAFICE for being openminded WHILE straight AND BLACK!  I know that there are places in the world where LGBTQ lifestyles were/are PUNISHABLE BY being __STONED_UNTIL_DEAD__, and I do not want to be grouped with those types of people and then undeservingly share the same fate.  Trust me, as a STRAIGHT MAN I do not want this, and I promise that you do not want this either.  We DO NOT hate or even care for them or their lifestyle.  Therefore, we will not acknowledge them, and we will never signal tolerance of their behaviors</p> <p style={{color:"white"}}>To be blunt, as a Melanated American, no one will force me to be a believer in anything that I do not want to believe in, I declare that will be my only `crime`.  I see ALL of your lures and stank-bait.  Yes, I said STANK-BAIT!  Stop trying to BAIT AND LURE ME and my people.  Maybe thats why Nigeria banned you from advertising in the whole entire country! How embarassing to once be Gods, and now banned like a dog who boo booed on the rug too many times.  I am banning yo azzes too lol!  </p>  <p style={{color:"white"}}> This blurb only appears in this special edition version of the app, and there are many other editions that are running parallel and forever to track our data and notify the community of fraud and bad intent (Yes, in the future, we will have an AI project that will help us as a community to detect outsider influence and subgigation, framejob attempts, micogressional trends, etc and help us form a coherent response as a community.  You know, using AI responsibly instead of training it to kill citizens, right San Fransisco????).  True innovators (no matter what color, religion, biological gender, etc, vax status, etc) can do circles around your affirmative action based clown-show that I have clearly lost lol</p><p style={{color:"white"}}>This is not aimed to insult anyones god or religion, however, the `instance` of `christ` that the `black american church` tried to implement upon me was essentially a mind control, bullying, psyop slave game.  I was supposed to be a slow sleepy fool who could not see that truth for what it was and is (ultimately at the end of the day its the WEF, BIS, Davos, Schwab, Great Reset. I cant `own nothing` because I `own` MyData!!!!!)!  I can reject people and ideoligies that exist to humiliate, marganilize, and destroy me, and I reject ALL of these things publically in front of my people</p><p style={{color:"white"}}>Now, as I buy this NFT to work together with my people, I irrevokably rebuke yo azz devil (this is not a blanket statement, if you are not `the devil`, I am not talking to you.)  Go back to the PITS OF HELL!  GO BACK to `YOUR OWN` people and try to gasslight them instead... and by `YOUR OWN`, I mean `MATRIX OWNED` regardless of race,religion, etc, etc, etc, vax status,etc, etc other means menat to divide us on the human level </p> <p style={{color:"white"}}>In light of my free speech (will it be free if the constitution is revoked, Trump??) can you imagine the character assassination attempts that they may throw at me, and this would be a question that I encourage each (specifically, but not exclusively) melinated individual to ask of Zuck, Dorsey, Bill Gates, or Elon Musk, TikTok before trusting them  with your data.  Should a non-affirmative-action-melanated-american neo-slave be mouthing off in this way in front of all of the white people of the world?  Shouldt there be a neo-slave in San Diego swinging from a tree for daring to write this operating system in apparent opposition to the `american black church` AND big tech??? Is there collusion between the `american black church` and big tech? If not currently, was there ever? Will they try to legislate me out of existence, kill me, lie on me to throw me into a cage? I declare that I will continue to write code from my country USA until that becomes illegal.  But before it becomes illegal for me to write code, I will continue to monitor the news regarding crypto legislation and get citizenship in a country what welcomes WHOLESOME single adult men who bring economic value to the table.  Wherever I go, I will  build teams and our goal will be no only to DOMNATE the web3 development industry, but to OWN it and bring hundreds of jobs, training, and self sustaining can-do mentality. That is the level that the people around here think on, and anyone who buys this NFT is thinking on LEGAL OWNERSHIP  level so that we can RESPONSIBLY rule OUR OWN world without outside infulence!</p>
 
-
-                       <p><img 
+                       <p style={{textAlign:"center"}}><img 
                                onClick={() => {
                                   this.sing();
                                  }
@@ -336,7 +336,7 @@ src={srcImg} height="200" width="200"/></p>
                                this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
                                this.ask();
                        }
-                       	} >ask [[{upc}]]</button>
+                       	} >decolonize [[{upc}]]</button>
                        <button 
                               style={{background: "#000000", color:"blue", width: "45vw", height: "20vw"}}
                               onClick={(e) => { this.setState({offerState: "video"});}} >watch channel {channelNum} on {upc.substr(0,upc.length-1)}[[{channelNum}]] </button>
@@ -702,6 +702,11 @@ src={srcImg} height="200" width="200"/></p>
 
   }
 
+
+
+  splash = async (upcId) => {
+                      this.setState({showModalSplash:true});
+  }
 
 
 
@@ -1188,7 +1193,7 @@ src={srcImg} height="200" width="200"/></p>
     var addy = this.props.address;
     addy  = addy.substr(0,15);
 
-    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV  </i> \n <b style='color:red'> [always.ask.questions]</b> \n <i style='color:#d66900'>Powered by MyData Crypto</i>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is decolonized and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key). </u> \n <i style='color:white'> <b style='color:red'>1.</b> Type <i style='color:red'>`help`</i> to see available commands \n <b style='color:red'> 2. </b> Type <i style='color:red'>`claim`</i> to get some MyData Token.  You must pay a .15 Matic access fee and you recieve .25 MyData token each time you `claim`.  Therefore, in order to get the 1 token that you need to buy a UPC NFT, you must run the claim command 4 times. We prefer microtransactions in order to dispel the myth that one must be rich to participate in the NFT economy. \n <b style='color:red'> 3. </b> Type <i style='color:red'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <b style='color:red'> 4. </b> Type <i style='color:red'>`recon`</i> to allow your wallet to spend your MyData token in our smart contract.  You will not be able to decolonize {{dec}} a upc until you have run this command \n Type <i style='color:red'>`dec`</i> to buy the UPC [[" + this.state.account + "]]" + "\n  Type <i style='color:red'>`own`</i> to mint if successful with decolonize {dec} [[" + this.state.account + "]]" + "\n  <i style='color:red'>Type `sell` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:red'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:red'>`clear`</i> to clear screen";
+    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV </i>\n <i>wake.tf.up</i> \n <b style='color:red'> [always.ask.questions]</b> \n <i style='color:#d66900'>Powered by MyData Crypto</i>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is decolonized and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key). </u> \n <i style='color:white'> <b style='color:red'>1.</b> Type <i style='color:red'>`help`</i> to see available commands \n <b style='color:red'> 2. </b> Type <i style='color:red'>`claim`</i> to get some MyData Token.  You must pay a .15 Matic access fee and you recieve .25 MyData token each time you `claim`.  Therefore, in order to get the 1 token that you need to buy a UPC NFT, you must run the claim command 4 times. We prefer microtransactions in order to dispel the myth that one must be rich to participate in the NFT economy. \n <b style='color:red'> 3. </b> Type <i style='color:red'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <b style='color:red'> 4. </b> Type <i style='color:red'>`recon`</i> to allow your wallet to spend your MyData token in our smart contract.  You will not be able to decolonize {{dec}} a upc until you have run this command \n Type <i style='color:red'>`dec`</i> to decolonize (buy) the UPC [[" + this.state.account + "]]" + "\n  Type <i style='color:red'>`own`</i> to mint if successful with decolonize {dec} [[" + this.state.account + "]]" + "\n  <i style='color:red'>Type `sell` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:red'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:red'>`clear`</i> to clear screen" + " \n Type <i style='color:red'>`ch [0-9]` to to watch the corresponding channel.  For example, type `ch 0` to watch channel 0, and type `ch 9` to watch channel 9.  Channel values 0-9 are valid";
     var promptlabel =  '[[ AWAITING COMMAND ]] => ';
 
           
@@ -1297,6 +1302,13 @@ var playButton =
       <div>
 	     <Modal style={{"color":"white","height":"90vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showModalUrl} closemodal={(e) => {this.setState({ showModalUrl: false }); }} type="lightSpeedIn" ></Modal>
 	     <Modal style={{"color":"white","height":"90vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showModalTutorial} closemodal={(e) => {this.setState({ showModalTutorial: false }); }} type="lightSpeedIn" > {this.state.tutorial} </Modal>
+
+
+	     <Modal style={{"color":"white","height":"90vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showModalSplash} closemodal={(e) => {this.setState({ showModalSplash: false }); }} type="lightSpeedIn" > {this.state.tutorial} </Modal>
+
+
+
+
              <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle","width":"95vw","height":"95vh"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
 	     <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type="pulse" >{this.state.fullIpfs}</Modal>
 
@@ -1304,8 +1316,9 @@ var playButton =
 
 
              <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showUploadModal} closemodal={() => this.setState({ showUploadModal: false })} type="pulse" > {myUpload}</Modal>
-	     <TrebleCleff handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} dex={this.dex} search={this.search} meeting={this.meeting}  account={this.state.account} tutorial={this.tutorial} upcInfo={this.props.upcInfo} address={this.props.address} />
+	     <TrebleCleff channelFront={this.channelFront} handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} dex={this.dex} search={this.search} meeting={this.meeting}  account={this.state.account} tutorial={this.tutorial} upcInfo={this.props.upcInfo} address={this.props.address} />
 
+	     <Modal style={{"height":"90vh", "width":"100vw" , "alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showChannelShow} closemodal={(e) => {this.setState({ showChannelShow: false }); }} type="pulse" >{this.state.channelSlider}</Modal>
 
                  {this.state.player}
 	     {this.state.bassCleff}
@@ -1400,25 +1413,16 @@ var playButton =
 
 
 
-            ask: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Please help this UPC by decolonizing the false narrative and self destructive mentality that has been injected by Babylon *</p>',
+            dec: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Please help this UPC by decolonizing  it of the false narrative and self destructive mentality that has been injected by Babylon *</p>',
               fn: (humanReadableName) => {
 		      this.ask(humanReadableName);
               }
             },
 
 
-            dex: {
-		    description: '<p style="color:hotpink;font-size:1.1em">Open the internal DEX window to swap tokens</p>',
-              fn: (upcId) => {
-                this.dex();
-                return ''
-              }
-            },
-
-
-            xcolonize: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Buy a UPC NFT without the GUI popup.  Example: If you are currently scanned into UPC #222222222222 and you would like to buy the domain `foo.fire`, you would type the following `colonizeb foo 2`.  The `2` after `foo` corresponds to the domain ending that you are purchasing.  The choices are 0=.upc, 1=.afro, 2=.fire  **</p>',
+            xdec: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Buy a UPC NFT without the GUI popup.  Example: If you are currently scanned into UPC #222222222222 and you would like to buy the upc foo.watch-this, you would type the following `xdec foo 0`.  The `0` after `foo` corresponds to the domain ending that you are purchasing.**</p>',
               fn: (humanReadableName,domain) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
