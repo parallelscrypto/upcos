@@ -150,7 +150,7 @@ export default class MyTerminal extends Component {
        showDexModal: false,
        showUploadModal: false,
        showProductModal: false,
-       showScanModal: false,
+       showEncryptModal: false,
        showProductContent: '',
        showTutorialContent: '',
        showModalTutorial: false,
@@ -188,6 +188,7 @@ export default class MyTerminal extends Component {
     this.handleFlip= this.handleFlip.bind(this);
     this.DisplayTime = this.DisplayTime.bind(this);
     this.getTimeZoneTimeObj= this.getTimeZoneTimeObj.bind(this);
+    this.pop= this.pop.bind(this);
   }
 
   printWelcomeMsg() {
@@ -313,9 +314,8 @@ console.log("outputting on " + upc );
                    var channelNum = upc.substr(upc.length - 1,1)
                    var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
                    var offerBuy = 
-                   <div style={{textAlign:"left", fontWeight:"bold", background:"#422a0b", border:"5px solid white", padding:"3px"}}>
-                       <p style={{color:"white"}}>Dear quasi-governmental entities who MIGHT ALLEDGELY aim to bring chaos and confusion to a BLACK led platform on a mission to DOMINATE Artificial Intelligence, please know that we are well aware of your tricks.  Africa, please watch this platform and see how `power` treats your own people when we rise up to take control of our own history and data.  As a non-affirmative-action-winning melinated individual who has been artifically held down and labeled `loser`, I declare that I would rather be sniped in the head than to be forced to live under the tyranny of the `americn black church` , `american black entertainment industry` or any other (alledged) quasi-governmental individuals/organization.  I am not suicidal in any way, so if I die mysteriously, it was not suicide.  I declare that I will not be lured into trouble, and that the quasi-government that Elon, Rand Paul, Donald J Trump, and other White men are allowed to acknowledge and speak openly about will now have motivation to murder me in front of our men, women and children in the same way that some people around the world felt was done to Malcolm X, MLK, others who challenged white power on a Global scale.</p> <p style={{color:"white"}}>  Men, I STRONGLY advise DO NOT EVER be friends with homosexuals.  I learned the painful, humiliating, and career ending way why the LGBTQ community is rejected in many cultures, and as a STRAIGHT but formerly open-minded individual, WE REJECT ALL LGBTQ propoganda here!  In my case, they tried to claim me as one of their own and project their FILTH onto my unknowing formerly soft azz, and then try to burdeon YO NIGGER AZZ with all of the unfortunate horrible assumptions of being a "FAG" and a "NIGGER".  It felt like being the victim in a human SACRAFICE for being openminded WHILE straight AND BLACK!  I know that there are places in the world where LGBTQ lifestyles were/are PUNISHABLE BY being __STONED_UNTIL_DEAD__, and I do not want to be grouped with those types of people and then undeservingly share the same fate.  Trust me, as a STRAIGHT MAN I do not want this, and I promise that you do not want this either.  We DO NOT hate or even care for them or their lifestyle.  Therefore, we will not acknowledge them, and we will never signal tolerance of their behaviors</p> <p style={{color:"white"}}>To be blunt, as a Melanated American, no one will force me to be a believer in anything that I do not want to believe in, I declare that will be my only `crime`.  I see ALL of your lures and stank-bait.  Yes, I said STANK-BAIT!  Stop trying to BAIT AND LURE ME and my people.  Maybe thats why Nigeria banned you from advertising in the whole entire country! How embarassing to once be Gods, and now banned like a dog who boo booed on the rug too many times.  I am banning yo azzes too lol!  </p>  <p style={{color:"white"}}> This blurb only appears in this special edition version of the app, and there are many other editions that are running parallel and forever to track our data and notify the community of fraud and bad intent (Yes, in the future, we will have an AI project that will help us as a community to detect outsider influence and subgigation, framejob attempts, micogressional trends, etc and help us form a coherent response as a community.  You know, using AI responsibly instead of training it to kill citizens, right San Fransisco????).  True innovators (no matter what color, religion, biological gender, etc, vax status, etc) can do circles around your affirmative action based clown-show that I have clearly lost lol</p><p style={{color:"white"}}>This is not aimed to insult anyones god or religion, however, the `instance` of `christ` that the `black american church` tried to implement upon me was essentially a mind control, bullying, psyop slave game.  I was supposed to be a slow sleepy fool who could not see that truth for what it was and is (ultimately at the end of the day its the WEF, BIS, Davos, Schwab, Great Reset. I cant `own nothing` because I `own` MyData!!!!!)!  I can reject people and ideoligies that exist to humiliate, marganilize, and destroy me, and I reject ALL of these things publically in front of my people</p><p style={{color:"white"}}>Now, as I buy this NFT to work together with my people, I irrevokably rebuke yo azz devil (this is not a blanket statement, if you are not `the devil`, I am not talking to you.)  Go back to the PITS OF HELL!  GO BACK to `YOUR OWN` people and try to gasslight them instead... and by `YOUR OWN`, I mean `MATRIX OWNED` regardless of race,religion, etc, etc, etc, vax status,etc, etc other means menat to divide us on the human level </p> <p style={{color:"white"}}>In light of my free speech (will it be free if the constitution is revoked, Trump??) can you imagine the character assassination attempts that they may throw at me, and this would be a question that I encourage each (specifically, but not exclusively) melinated individual to ask of Zuck, Dorsey, Bill Gates, or Elon Musk, TikTok before trusting them  with your data.  Should a non-affirmative-action-melanated-american neo-slave be mouthing off in this way in front of all of the white people of the world?  Shouldt there be a neo-slave in San Diego swinging from a tree for daring to write this operating system in apparent opposition to the `american black church` AND big tech??? Is there collusion between the `american black church` and big tech? If not currently, was there ever? Will they try to legislate me out of existence, kill me, lie on me to throw me into a cage? I declare that I will continue to write code from my country USA until that becomes illegal.  But before it becomes illegal for me to write code, I will continue to monitor the news regarding crypto legislation and get citizenship in a country what welcomes WHOLESOME single adult men who bring economic value to the table.  Wherever I go, I will  build teams and our goal will be no only to DOMNATE the web3 development industry, but to OWN it and bring hundreds of jobs, training, and self sustaining can-do mentality. That is the level that the people around here think on, and anyone who buys this NFT is thinking on LEGAL OWNERSHIP  level so that we can RESPONSIBLY rule OUR OWN world without outside infulence!</p>
-
+                   <div style={{textAlign:"center", fontWeight:"bold", background:"#422a0b", border:"5px solid white", padding:"3px"}}>
+                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I declare that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and intelligence.  Please decolonize UPC parcel #[[{upc}]] and use it to publicly assert your dignity and create a shared positive social environment where creators encourage each other.  Together, with our hard work and our solid values, we can replace historical lies with truth and build an economy with a mission to uplift the Melanated Afrikan Diaspora.  We are students of history, and using blockchain technology, we take our history, therefore, our future into our own hands.  With these NFTs, we build a worldwide unbreakable community based in mutually beneficial partnership and honor, while the colonizer admires our beautiful gardens from afar wishing that they'd respected our minds and been nicer!</b></p>
                        <p style={{textAlign:"center"}}><img 
                                onClick={() => {
                                   this.sing();
@@ -1044,6 +1044,61 @@ src={srcImg} height="200" width="200"/></p>
   }
 
 
+
+  pop = async (url) => {
+
+
+            var vr   = url;
+            var mplayer;
+            if(vr.includes('tiktok')) {
+
+               mplayer = <TikTok url={vr} />
+            }
+            //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
+            //pasting does not get the player with controls (this iframe player below)
+	    else if(vr.length == 11) {
+               const youtubeID = url
+               mplayer =
+               <iframe className='video'
+                       style={{minHeight:"100vh",width:"100vw"}}
+                       title='Youtube player'
+                       sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                       src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
+               </iframe>
+            }
+	    //arbitrary url video
+	    else if(!vr.includes('yout') && !vr.includes('facebook') 
+		    && !vr.includes('soundcloud') && !vr.includes('vimeo') 
+		    && !vr.includes('whistia') && !vr.includes('mixcloud') 
+		    && !vr.includes('dailymotion') && !vr.includes('twitch')) {
+               const fullUrl = url
+               mplayer =
+               <iframe className='video'
+                       style={{minHeight:"100vh",width:"100vw"}}
+                       title='upc dj player'
+                       sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                       src={fullUrl}>
+               </iframe>
+            }
+
+
+	    else {
+               mplayer = <ReactPlayer 
+                            width="100vw"
+                            url={url} 
+                        />
+
+	    }
+            //self.setState({mplayer: mplayer});
+            this.setState({fullIpfs: mplayer});
+            this.setState({showBigShow2: true});
+            this.setState({showBigShow: true});
+
+
+  }
+
+
+
   play= async (upcId) => {
 
 
@@ -1365,8 +1420,7 @@ var playButton =
 
       <Modal className={"dex"} style={{"width":"90vw", "height":"90vh"}} visible={this.state.showDexModal} closemodal={() => this.setState({ showDexModal: false })} type="pulse" > {this.state.dex}</Modal>
 
-      <Modal style={{"width":"90vw", "height":"90vh"}} visible={this.state.showScanModal} closemodal={() => this.setState({ showScanModal: false })} type="pulse" > {this.state.scanner}</Modal>
-      <Modal style={{ height:"95vh", width:"95vw"}} visible={this.state.showScanModal} closemodal={() => this.setState({ showScanModal: false })} type="pulse"> [[upc://{this.state.account}]] <iframe style={{height:"95vh", width:"95vw"}} allow="camera;microphone" src={'https://zfo3esiobabdv3jc47qeluzzrlu4wcy7uaj6vxo5i6pqodl6be3q.arweave.net/yV2ySQ4IAjrtIufgRdM5iunLCx-gE-rd3UefBw1-CTc/index.html'} /></Modal>
+      <Modal style={{"width":"90vw", "height":"90vh"}} visible={this.state.showEncryptModal} closemodal={() => this.setState({ showEncryptModal: false })} type="pulse" > {this.state.scanner}</Modal>
 
                     <button onClick={(e) => { this.handleFlip(e)}} >Overview this UPC!</button>
       <Terminal
@@ -1419,6 +1473,15 @@ var playButton =
 		      this.ask(humanReadableName);
               }
             },
+
+
+            pop : {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open artitrary link in a modal window*</p>',
+              fn: (url) => {
+		      this.pop(url);
+              }
+            },
+
 
 
             xdec: {
@@ -2394,6 +2457,28 @@ console.log("location is " + currentUrl);
                 return ''
               }
             },
+
+
+
+
+
+
+
+            enc : {
+              description: '<p style="color:hotpink;font-size:1.1em">** sha256 hash a string and xpayload it to blockchain</p>',
+              fn: () => {
+                this.setState({progressBal: ''});
+                  const terminal = this.progressTerminal.current
+		  var self = this;
+                  var encryptorLink = "https://hu7bvfsvvagyiw6o2cj3nnuml5jnw6ql6nuykmh6tb7p67xdpo7q.arweave.net/PT4allWoDYRbztCTtraMX1LbegvzaYUw_ph-_37je78/index.html#"+ "/" + this.state.account
+		  var link = "<a href='"+encryptorLink+"'>Click to visit UPCBR encryptor/validator for UPC# [[" + this.state.account + "]]</a>";
+                  terminal.pushToStdout(link);
+
+              }
+
+            },
+
+
 
             comics: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display XKCD comic interface</p>',
