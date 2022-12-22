@@ -55,9 +55,6 @@ export default class MyTerminal extends Component {
 
 
     var upcHash  = sha256(props.account)
-    upcHash = sha256(upcHash);
-    upcHash = sha256(upcHash);
-    upcHash = sha256(upcHash);
 
     var avatarType;
 

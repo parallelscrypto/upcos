@@ -6,6 +6,16 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Context.sol";
 import "./DecolonizeAfrica.sol";
 
+
+
+
+interface iERC721 {
+    function getTld(string memory wad) external returns (uint);
+    function getUpcOwner(string memory src) external returns (address);
+}
+
+
+
 //import "./stringUtils.sol";
 
 /**
@@ -14,7 +24,7 @@ import "./DecolonizeAfrica.sol";
  * Note they can later distribute these tokens as they wish using `transfer` and other
  * `ERC20` functions.
  */
-contract RefuseToAcceptNiggerStatus is Context, ERC20, ERC20Burnable {
+contract MyData is Context, ERC20, ERC20Burnable {
 
     uint public balance = 0;
     uint crownCount = 0;
@@ -48,21 +58,22 @@ contract RefuseToAcceptNiggerStatus is Context, ERC20, ERC20Burnable {
 
 
 
-    DecolonizeAfrica        upcNFT;
+    iERC721       upcNFT;
 
     Reward[] public rewards;
     /**
      * @dev Constructor that gives _msgSender() all of existing tokens.
      */
-    constructor () ERC20("RefuseToAcceptNiggerStatus", "NIGX") {
-        upcNFT    =   DecolonizeAfrica(0xF0176c005b5A453A5d8a7F5e3583fE52a28EDC5b);
+    constructor () ERC20("MyData", "DATA") {
+        //upcNFT = iERC721(0xF0176c005b5A453A5d8a7F5e3583fE52a28EDC5b);
         _mint(_msgSender(), 0 * (10 ** uint256(decimals())));
         owner =  payable(msg.sender);
     }
 
 
     
-    function addCrown(string memory kingmakerNft, string memory upcId, uint _numTokens) public {
+    function addCrown(address nftAddress, string memory kingmakerNft, string memory upcId, uint _numTokens) public {
+        upcNFT = iERC721(nftAddress);
         uint possKingmakerTld = upcNFT.getTld(kingmakerNft);
         require(possKingmakerTld == 99999, "Only the holder of a Kingmaker token (99999) may fully execute this function");
         address upcOwner = upcNFT.getUpcOwner(kingmakerNft);
@@ -96,7 +107,8 @@ contract RefuseToAcceptNiggerStatus is Context, ERC20, ERC20Burnable {
 
 
 
-    function mine (string memory upcId, uint256 _numTokens) public {
+    function mine (address nftAddress, string memory upcId, uint256 _numTokens) public {
+        upcNFT = iERC721(nftAddress);
 
         uint256 numTokens = _numTokens * (10 ** uint256(decimals()));
         require(crowns[upcId] >= numTokens , "Please mint fewer tokens");
