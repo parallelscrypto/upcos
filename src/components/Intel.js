@@ -78,6 +78,7 @@ class Intel extends Component {
 	    redeemUPCS={this.props.redeemUPCS} 
 	    buyUPCSWithTubmanX={this.props.buyUPCSWithTubmanX} 
 	    approveUPCS={this.props.approveUPCS} 
+	    approveFed={this.props.approveFed} 
 	    approveTubman4UPCS={this.props.approveTubman4UPCS} 
 	    approveInjectNarative={this.props.approveInjectNarative} 
 	    mintNft={this.props.mintNft} 
@@ -105,6 +106,9 @@ class Intel extends Component {
 	    setWt={this.props.setWt} 
 	    setIpfs={this.props.setIpfs} 
 	    upcInfo={this.props.upcInfo} 
+	    fedInfo={this.props.fedInfo} 
+	    addFed={this.props.addFed} 
+	    updateFedLink={this.props.updateFedLink} 
 	    nftInfo={this.props.nftInfo} 
 	    latestTokenId={this.props.latestTokenId} 
 	    account={this.state.code} />

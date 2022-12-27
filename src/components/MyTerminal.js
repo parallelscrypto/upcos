@@ -1456,9 +1456,18 @@ var playButton =
 
 
             preinject: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Buy an NFT using the GUI interface.  After completing this step, check the `Activity` tab below to make sure that your purchase went through.  After your transaction has been processed successfully, you can move to the last phase `step 2` Visit <a href="upc://000000000012">[[000000000012]]</a> to view a video tutorial on swap**</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Call this prior to injecting tokens into a upc code to approve [wei] number of tokens. `Syntax: preinject [wei]`**</p>',
               fn: (numNarativ) => {
 		      this.props.approveInjectNarative(numNarativ);
+              }
+            },
+
+
+
+            prefed: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Call this prior to injecting deploying your os. `Syntax: prefed`**</p>',
+              fn: () => {
+		      this.props.approveFed();
               }
             },
 
@@ -2320,6 +2329,54 @@ console.log("location is " + currentUrl);
             },
 
 
+
+            ls: {
+              description: '<p style="color:hotpink;font-size:1.1em">** list info on a federation given the id. if no id is passed, command will show all available federations</p>',
+              fn: (fedId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let info = this.props.fedInfo(fedId)
+		   .then(data => {
+ 
+                        var link = data['link'];
+		        var linkHtml = "<a href='"+link+"'>" + link + "</a>";
+                        terminal.pushToStdout(`[[federationsl]]`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`id: ${data['id']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`name: ${data['name']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`link: ` + linkHtml);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`owner: ${data['owner']}`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`[[/federations]]`);
+                  });
+		  
+
+                  const interval = setInterval(() => {
+                    if (this.state.progressBal != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({progressBal: info});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
+
+
+
+
+
+
+
             qr: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display QR for X-Referenced upcId</p>',
               fn: () => {
@@ -2422,6 +2479,51 @@ console.log("location is " + currentUrl);
                 return ''
               }
             },
+
+
+            mv: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Update params for your  UPC Open Federation operating system</p>' ,
+              fn: (linkId,link) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let approval = this.props.updateFedLink(linkId,link);
+                      approval.then((value) => {
+                         approval = value;
+			 terminal.pushToStdout(`Your operating system has been updated if applicable.`)
+                         // expected output: "Success!"
+                      });
+
+                })
+
+                return ''
+              }
+            },
+
+
+
+
+            deploy: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Deploy your operating system to the Open Federation</p>' ,
+              fn: (name,link) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let approval = this.props.addFed(name,link);
+                      approval.then((value) => {
+                         approval = value;
+			 terminal.pushToStdout(`Your operating system has been deployed if applicable.  Welkom to the Federation: ${approval}`)
+                         // expected output: "Success!"
+                      });
+
+                })
+
+                return ''
+              }
+            },
+
+
+
 
 
 

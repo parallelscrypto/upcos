@@ -24,6 +24,7 @@ import UpcDAO from '../abis/UpcDAO.json'
 import UPCMarket from '../abis/UPCMarket.json'
 import WalkieTalkie from '../abis/WalkieTalkie.json'
 import CoinBox from '../abis/CoinBox.json'
+import OpenFederation from '../abis/OpenFederation.json'
 
 
 import PokingsHauntUs from '../abis/PokingsHauntUs.json'
@@ -115,6 +116,22 @@ class App extends Component {
     } else {
       //window.alert('UPCNFT contract not deployed to detected network.')
     }
+
+
+
+
+
+    // Load PiggyBank 
+    const fedData = OpenFederation.networks[networkId]
+    if(fedData) {
+      const fedNft = new web3.eth.Contract(OpenFederation.abi, fedData.address)
+      this.setState({ fedNft })
+      this.setState({ fedData: fedData })
+    } else {
+      //window.alert('UPCNFT contract not deployed to detected network.')
+    }
+
+
 
 
 
@@ -402,6 +419,21 @@ class App extends Component {
   };
 
 
+
+
+  approveFed= async () => {
+    const web3 = window.web3
+    const intelXData = this.state.intelX;
+
+    const { accounts, contract } = this.state;
+
+    var fedData = this.state.fedData;
+    var approval = await this.state.intelX.methods.approve(fedData.address, "10000000000000000000000").send({ from: this.state.account });
+    this.setState({daiTokenBalance: approval.toString() });
+    return approval.toString();
+  };
+
+
   approveUSDC = async () => {
     const web3 = window.web3
     const intelXData = this.state.intelX;
@@ -491,6 +523,33 @@ class App extends Component {
   };
 
 
+  addFed = async (name,link) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    this.state.fedNft.methods.add(name,link).send({ from: this.state.account })
+      .once('receipt', (receipt) => {
+         this.setState({ loading: false })
+      })
+  };
+
+
+
+  updateFedLink = async (linkId,link) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    this.state.fedNft.methods.setLink(linkId,link).send({ from: this.state.account })
+      .once('receipt', (receipt) => {
+         this.setState({ loading: false })
+      })
+  };
+
+
 
 
   upcInfoNav = async (upcId) => {
@@ -536,6 +595,24 @@ class App extends Component {
     // Stores a given value, 5 by default.
     return this.state.upcNft.methods.upcInfo(upcId).call({ from: this.state.account });
   };
+
+
+
+
+  ///   ls command  list federations
+  fedInfo = async (fedId) => {
+    const { accounts, contract } = this.state;
+
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+
+
+    return this.state.fedNft.methods.structs(fedId).call({ from: this.state.account });
+  };
+
+
+
 
   latestTokenId = async (upcId) => {
     const { accounts, contract } = this.state;
@@ -845,6 +922,7 @@ class App extends Component {
     this.redeemUPCS= this.redeemUPCS.bind(this);
     this.buyUPCSWithNarativ= this.buyUPCSWithNarativ.bind(this);
     this.approveUPCS= this.approveUPCS.bind(this);
+    this.approveFed= this.approveFed.bind(this);
 
     this.buyNftNav= this.buyNftNav.bind(this);
     this.mintNftNav= this.mintNftNav.bind(this);
@@ -873,6 +951,11 @@ class App extends Component {
     this.setWt= this.setWt.bind(this);
     this.setIpfs= this.setIpfs.bind(this);
     this.upcInfo= this.upcInfo.bind(this);
+
+    this.addFed = this.addFed.bind(this);
+    this.updateFedLink= this.updateFedLink.bind(this);
+
+    this.fedInfo= this.fedInfo.bind(this);
     this.nftInfo= this.nftInfo.bind(this);
     this.latestTokenId= this.latestTokenId.bind(this);
     this.upcInfoNav= this.upcInfoNav.bind(this);
@@ -958,6 +1041,7 @@ class App extends Component {
 	approve={this.approve}
 	approveTubman4UPCS={this.approveTubman4UPCS}
 	approveInjectNarative={this.approveInjectNarative}
+	approveFed={this.approveFed}
 	buyNft={this.buyNft}
 	mintNft={this.mintNft}
 	getVrByUpcId={this.getVrByUpcId}
@@ -997,6 +1081,9 @@ class App extends Component {
 
 
 	upcInfo={this.upcInfo}
+        fedInfo={this.fedInfo}
+        addFed={this.addFed}
+        updateFedLink={this.updateFedLink}
 	nftInfo={this.nftInfo}
 	latestTokenId={this.latestTokenId}
       />

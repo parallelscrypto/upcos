@@ -1,8 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
+
 import "./MyData.sol";
 
 contract OpenFederation {
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIds;
+
     // Define the struct with three fields
     struct MyStruct {
         uint id;
@@ -12,6 +17,7 @@ contract OpenFederation {
     }
     MyData    private _token;
     address payable private  bank;
+    uint256  public latestTokenId;
 
 
     uint structCount = 0;
@@ -43,10 +49,6 @@ contract OpenFederation {
         _token = MyData(addy);
     }
 
-    // Define setter functions for each field
-    function setId(uint _id) public onlyOwner(_id){
-        structs[_id].id = _id;
-    }
 
     function setName(uint _id, string memory _name) public onlyOwner(_id){
         structs[_id].name = _name;
@@ -83,23 +85,24 @@ contract OpenFederation {
     }
 
     // Define the add and remove functions
-    function add(uint _id, string memory _name, string memory _link) public {
+    function add(string memory _name, string memory _link) public {
         // Check if the id is unique
-        require(isUnique(_id), "Id is not unique");
+
+        _tokenIds.increment();
+        uint256 newNftTokenId = _tokenIds.current();
+        latestTokenId = newNftTokenId;
+
+
         uint price = 10000 ether;
         _token.transferFrom(msg.sender, address(this), price);
         _token.burn(price);
         // Set the values of the struct
-        structs[_id].id = _id;
-        structs[_id].name = _name;
-        structs[_id].link = _link;
-        structs[_id].owner = msg.sender;
+        structs[latestTokenId].id = latestTokenId;
+        structs[latestTokenId].name = _name;
+        structs[latestTokenId].link = _link;
+        structs[latestTokenId].owner = msg.sender;
         structCount++;
     }
 
-    function remove(uint _id) public onlyOwner(_id){
-        // Delete the struct from the mapping
-        delete structs[_id];
-        structCount--;
-    }
 }
+
