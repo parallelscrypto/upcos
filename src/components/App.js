@@ -561,13 +561,13 @@ class App extends Component {
     return this.state.snbNft.methods.upcInfo(upcId).call({ from: this.state.account });
   };
 
-  latestTokenIdNav = async (upcId) => {
+  latestTokenIdFed = async (upcId) => {
     const { accounts, contract } = this.state;
 
     const gameID = "testGame";
     //console.log(this.state.sendCryptoValue);
     // Stores a given value, 5 by default.
-    return this.state.snbNft.methods.latestTokenId().call({ from: this.state.account });
+    return this.state.fedNft.methods.latestTokenId().call({ from: this.state.account });
   };
 
   nftInfoNav = async (nftId) => {
@@ -960,7 +960,7 @@ class App extends Component {
     this.latestTokenId= this.latestTokenId.bind(this);
     this.upcInfoNav= this.upcInfoNav.bind(this);
     this.nftInfoNav= this.nftInfoNav.bind(this);
-    this.latestTokenIdNav= this.latestTokenIdNav.bind(this);
+    this.latestTokenIdFed= this.latestTokenIdFed.bind(this);
 
     this.getStableBalance= this.getStableBalance.bind(this);
 
@@ -1073,7 +1073,7 @@ class App extends Component {
 
 	upcInfoNav={this.upcInfoNav}
 	nftInfoNav={this.nftInfoNav}
-	latestTokenIdNav={this.latestTokenIdNav}
+	latestTokenIdFed={this.latestTokenIdFed}
 
 
 	setHRNMarket={this.setHRNMarket}

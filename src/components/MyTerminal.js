@@ -216,6 +216,8 @@ export default class MyTerminal extends Component {
     var self = this;
 
 
+    let totalFeds = await this.props.latestTokenIdFed();
+    this.setState({totalFeds: totalFeds});
     this.heroFront(this.state.account);
     setInterval(function() {
         return self.DisplayTime(-300);
@@ -2332,18 +2334,18 @@ console.log("location is " + currentUrl);
 
             ls: {
               description: '<p style="color:hotpink;font-size:1.1em">** list info on a federation given the id. if no id is passed, command will show all available federations</p>',
-              fn: (fedId) => {
+              fn: async (fedId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
                   const terminal = this.progressTerminal.current
                   let info = this.props.fedInfo(fedId)
 		   .then(data => {
- 
+                        var fedid = data['id'] + ' of ' + this.state.totalFeds + ' total federations' ;
                         var link = data['link'];
 		        var linkHtml = "<a href='"+link+"'>" + link + "</a>";
-                        terminal.pushToStdout(`[[federationsl]]`);
+                        terminal.pushToStdout(`[[federations]]`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`id: ${data['id']}`);
+                        terminal.pushToStdout(`id: ` + fedid);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`name: ${data['name']}`);
                         terminal.pushToStdout(`=====`);

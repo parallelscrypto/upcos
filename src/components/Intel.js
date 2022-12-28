@@ -68,7 +68,7 @@ class Intel extends Component {
 	    approveNav={this.props.approveNav} 
 	    upcInfoNav={this.props.upcInfoNav} 
 	    nftInfoNav={this.props.nftInfoNav} 
-	    latestTokenIdNav={this.props.latestTokenIdNav} 
+	    latestTokenIdFed={this.props.latestTokenIdFed} 
             injectNarativ= {this.props.injectNarativ}
             claimNarativToken= {this.props.claimNarativToken}
             checkNarativBalance= {this.props.checkNarativBalance}

@@ -177,7 +177,7 @@ export default class ChannelCarousel2 extends Component {
 
 render () { 
 var show =
-  <Carousel defaultWait={'5000'} maxTurns={'1'}>
+  <Carousel  maxTurns={'0'}>
     {this.state.slides}
   </Carousel>
 
