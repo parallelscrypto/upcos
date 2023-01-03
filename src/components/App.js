@@ -6,6 +6,7 @@ import UPCNFT from '../abis/UPCNFT.json'
 import AfroNFT from '../abis/AfroNFT.json'
 import MLS from '../abis/MalcolmsLittleSecret.json'
 import DecolonizeAfrica from '../abis/DecolonizeAfrica.json'
+import MatrixCancelled from '../abis/MatrixCancelled.json'
 import HomelessNFT from '../abis/HomelessNFT.json'
 import RollinOnUPC from '../abis/RollinOnUPC.json'
 import UpcBandRadio from '../abis/UpcBandRadio.json'
@@ -137,9 +138,9 @@ class App extends Component {
 
 
     // Load UpcBandRadio
-    const upcNFTData = DecolonizeAfrica.networks[networkId]
+    const upcNFTData = MatrixCancelled.networks[networkId]
     if(upcNFTData) {
-      const upcNft = new web3.eth.Contract(DecolonizeAfrica.abi, upcNFTData.address)
+      const upcNft = new web3.eth.Contract(MatrixCancelled.abi, upcNFTData.address)
       this.setState({ upcNft })
       this.setState({ upcNFTData: upcNFTData })
     } else {
