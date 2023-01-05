@@ -113,12 +113,12 @@ export default class IntroTypewriter extends Component {
     var typewriter = 
 
 
-             <Modal style={{"height":"75vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={'true'} closemodal={(e) => {this.setState({ showModalSplash: false }); }} type="lightSpeedIn" >
-                <div style={{verticalAlign:"middle", textAlign:"center" }}>
+             <Modal style={{"background":'black',"height":"50vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={'true'} closemodal={(e) => {this.setState({ showModalSplash: false }); }} type="lightSpeedIn" >
+                <div style={{background:"black", verticalAlign:"middle", textAlign:"center" }}>
                   <div>
                     <Zoom left> <b>Welcome to UPCOS</b></Zoom>
                     <br/>
-                    <Zoom left> <i>Crypto Rush Afrika</i></Zoom>
+                    <Zoom left> <i  style={{color:"red"}}>matrix.cancelled</i></Zoom>
                     <br/>
                     <Zoom left> <b>Now Loading UPC#</b></Zoom>
                      <br/>

@@ -1428,7 +1428,7 @@ var playButton =
         commands={{
 
             usdc: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your MyData.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `colonize` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** DONT USE THIS COMMAND STUB YET! Approve UPC Band Radio to spend 50 of your MyData.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `colonize` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -1450,7 +1450,7 @@ var playButton =
 
 
             search: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** search upcs for content.  fields searched are owner, human readable name, vr, and ipfs.  No spaces in the search term, use dashes or underscores depending on how the owner named the file/human readable name**</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Search upcs for content.  Fields searched are owner, human readable name, vr, and ipfs.  No spaces in the search term, use dashes or underscores depending on how the owner named the file/human readable name**</p>',
               fn: (humanReadableName) => {
 		      this.search()
               }
@@ -1467,7 +1467,7 @@ var playButton =
 
 
             prefed: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Call this prior to injecting deploying your os. `Syntax: prefed`**</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Call this prior to injecting deploying your os into the OpenFederation. `Syntax: prefed`**</p>',
               fn: () => {
 		      this.props.approveFed();
               }
@@ -1527,7 +1527,7 @@ var playButton =
 
 
             own: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `ask` or `xcolonize` command</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `dec` or `own` command</p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1589,7 +1589,7 @@ var playButton =
               }
             },
 
-            flip: {
+            sell: {
               description: '<p style="color:hotpink;font-size:1.1em">** Flip this NFT!  Send it to the decentralized marketplace after you have put in the hard work of renovating this UPC property!  After this command succeeds, you can set-market-price with smp command.  Sale will not start until you set market price (smp) **</p>',
               fn: (nftId) => {
 		      this.flip(nftId);
@@ -1604,57 +1604,9 @@ var playButton =
             },
 
 
-             ///dex
 
-
-
-            step0t: {
-                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your MyData.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
-              fn: () => {
-                  
-                var progress = 0;
-                this.setState({approved: false});
-                this.setState({ isProgressing: true }, () => {
-                  let approval = this.props.approveUPCS();
-                  approval.then((value) => {
-                     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient MyData from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
-                     // expected output: "Success!"
-                  });
-                })
-        
-                         terminal.pushToStdout(`[[approve]]`);
-                terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
-                         terminal.pushToStdout(`[[/approve]]`);
-                return ''
-              }
-            },
-        
-            step0u: {
-                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 99999 of your MyData.  After you have spent 99999, you must run approve again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
-              fn: () => {
-                  
-                var progress = 0;
-                this.setState({approved: false});
-                this.setState({ isProgressing: true }, () => {
-                  let approval = this.props.approveTubman4UPCS();
-                  approval.then((value) => {
-                     terminal.pushToStdout(`You can now swap your MyData tokens for UPCStable using the 'upcs' command.  If you want 5 upcs, you need 25 MyData as there is a 5:1 exchange ratio.  The command to swap 25 MyData for 5 UPCS would be 'upcs 5000000000000000000'`)
-                     // expected output: "Success!"
-                  });
-                })
-        
-                         terminal.pushToStdout(`[[approve]]`);
-                terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
-                         terminal.pushToStdout(`[[/approve]]`);
-                return ''
-              }
-            },
-        
-        
-        
-        
             recon: {
-                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 50 of your MyData.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
+                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 1 of your MyData.  Each time you decolonize a UPC, you must run `recon` again.    You MUST run this command FIRST or all of your `dec` and `own` commands will fail.**</p>',
               fn: () => {
                   
                 var progress = 0;
@@ -1662,7 +1614,7 @@ var playButton =
                 this.setState({ isProgressing: true }, () => {
                   let approval = this.props.approve();
                   approval.then((value) => {
-                     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient MyData from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'hack' and 'hackb' commands will fail`)
+                     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient MyData from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'dec' and 'own' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
@@ -2139,7 +2091,6 @@ var playButton =
                         var upcEncoded = btoa(upcJson);
                         currentUrl = currentUrl.substring(0,currentUrl.lastIndexOf('/') + 1) + upcEncoded;
 
-console.log("location is " + currentUrl);
 
                         var upcLink = "<a href='"+ currentUrl +"'>[["+ data['word'] +"]]</a>";
                         terminal.pushToStdout(`[[xintel]]`);
@@ -2465,8 +2416,8 @@ console.log("location is " + currentUrl);
             },
 
 
-            xwt: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Set the Walkie Talkie resource for this UPC</p>' ,
+            xstore: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Set the online store link for this UPC</p>' ,
               fn: (_wtLink) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
