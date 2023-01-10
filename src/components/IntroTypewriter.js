@@ -116,9 +116,7 @@ export default class IntroTypewriter extends Component {
              <Modal style={{"background":'black',"height":"50vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={'true'} closemodal={(e) => {this.setState({ showModalSplash: false }); }} type="lightSpeedIn" >
                 <div style={{background:"black", verticalAlign:"middle", textAlign:"center" }}>
                   <div>
-                    <Zoom left> <b>Welcome to UPCOS</b></Zoom>
-                    <br/>
-                    <Zoom left> <i  style={{color:"red"}}>nostradio-10</i></Zoom>
+                    <Zoom left> <i  style={{color:"red"}}>loading nostradio-10</i></Zoom>
                     <br/>
                     <Zoom left> <b>Tuning into UPC#</b></Zoom>
                      <br/>
@@ -127,6 +125,7 @@ export default class IntroTypewriter extends Component {
 		     
                      <br/>
                      <i  style={{color:"red"}}>[[{this.state.code}]]</i>
+                     <b style={{color:"white"}}>powered by upcos </b>
                   </div>
                 </div>
              </Modal>

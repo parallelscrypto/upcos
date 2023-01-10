@@ -340,10 +340,13 @@ src={srcImg} height="200" width="200"/></p>
                                this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
                                this.ask();
                        }
-                       	} >program [[{upc}]]</button>
+                       	} >buy station [[{upc}]]</button>
                        <button 
                               style={{background: "#000000", color:"blue", width: "45vw", height: "20vw"}}
-                              onClick={(e) => { this.setState({offerState: "video"});}} >watch channel {channelNum} on {upc.substr(0,upc.length-1)}[[{channelNum}]] </button>
+                              onClick={(e) => { 
+				     this.channelFront(upc.substr(0,upc.length-1));
+                                     this.setState({offerState: "video"});}
+                                } >watch channel {channelNum} on {upc.substr(0,upc.length-1)}[[{channelNum}]] </button>
                    </div>
 
 
@@ -687,7 +690,7 @@ src={srcImg} height="200" width="200"/></p>
 				   terminal.pushToStdout(`=====`);
 				   terminal.pushToStdout(`upc: <a onclick="window.location.assign('${currentUrl}');window.location.reload()" href="${currentUrl}">${upc}</a>`);
 				   terminal.pushToStdout(`=====`);
-				   terminal.pushToStdout(`vr: ${data['vr']}`);
+				   terminal.pushToStdout(`stage: ${data['vr']}`);
 				   terminal.pushToStdout(`=====`);
 				   terminal.pushToStdout(`payload: ${payload}`);
 				   terminal.pushToStdout(`=====`);
@@ -1480,8 +1483,8 @@ var playButton =
 
 
 
-            pro: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Please help this UPC by programming something constructive into its metadata! type the command `pro` and possibly scroll around to find the modal window that will allow you to name your potential UPC Nft.  the name that you choose cannot be undone so please choose accordingly. *</p>',
+            buy: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Please help this UPC by programming something constructive into its metadata! type the command `buy` and possibly scroll around to find the modal window that will allow you to name your potential UPC Nft.  the name that you choose cannot be undone so please choose accordingly. *</p>',
               fn: (humanReadableName) => {
 		      this.ask(humanReadableName);
               }
@@ -1497,8 +1500,8 @@ var playButton =
 
 
 
-            xpro: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Buy a UPC NFT without the GUI popup.  Example: If you are currently scanned into UPC #222222222222 and you would like to buy the upc foo.watch-this, you would type the following `xpro foo 0`.  The `0` after `foo` corresponds to the domain ending that you are purchasing.**</p>',
+            xbuy: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Buy a UPC NFT without the GUI popup.  Example: If you are currently scanned into UPC #222222222222 and you would like to buy the upc foo.watch-this, you would type the following `xbuy foo 0`.  The `0` after `foo` corresponds to the domain ending that you are purchasing.**</p>',
               fn: (humanReadableName,domain) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -2116,7 +2119,7 @@ var playButton =
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`minted: ${data['minted']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`vr: ${data['vr']}`);
+                        terminal.pushToStdout(`stage: ${data['vr']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`payload: ${payload}`);
                         terminal.pushToStdout(`=====`);
@@ -2192,7 +2195,7 @@ var playButton =
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`minted: ${data['minted']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`vr: ${data['vr']}`);
+                        terminal.pushToStdout(`stage: ${data['vr']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`payload: ${data['ipfs']}`);
                         terminal.pushToStdout(`=====`);
@@ -2258,7 +2261,7 @@ var playButton =
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`minted: ${data['minted']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`vr: ${data['vr']}`);
+                        terminal.pushToStdout(`stage: ${data['vr']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`payload: ${data['ipfs']}`);
                         terminal.pushToStdout(`=====`);
@@ -2342,6 +2345,38 @@ var playButton =
                 return ''
               }
             },
+
+            ls: {
+              description: '<p style="color:hotpink;font-size:1.1em">** go to a federation given the id. if id is invalid or not passed, command will fail</p>',
+              fn: async (fedId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  let info = this.props.fedInfo(fedId)
+		   .then(data => {
+                        var fedid = data['id'] + ' of ' + this.state.totalFeds + ' total federations' ;
+
+                        var repLink = data['link'];
+		        var link = "<a href='"+repLink+"'>Click to visit federation # [[" + fedid + "]]</a>";
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`[federations]`);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`id: ` + data['id']);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`name: ` + data['name']);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`link: ` + link);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`owner: ` + data['owner']);
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`[federations]`);
+                  });
+                })
+
+                return ''
+              }
+            },
+
 
 
             goto: {
@@ -2530,8 +2565,8 @@ var playButton =
 
 
 
-            xvr: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Set your VR resource by passing the ipfs/hash value.  Example `xvr https://link.to.your.vr`` will set your vr resource so that when the public scans this upc and types `vr` they will see `https://link.to.your.vr`.  This does not have to be a vr link, it can be a regular website if you choose</p>' ,
+            ss: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Set your stage by passing the string value.  Example `ss https://link.to.your.vr`` will set your front stage resource so that when the public lands on your upc, they will see `https://link.to.your.vr`.</p>' ,
               fn: (_vrLink) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -2850,7 +2885,7 @@ var playButton =
 
 
 
-            vr: {
+            stage: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display UPC vr resource</p>',
               fn: () => {
                 this.setState({progressBal: ''});
