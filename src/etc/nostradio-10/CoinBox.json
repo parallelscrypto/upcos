@@ -1,5 +1,5 @@
 {
-  "contractName": "TubmanX",
+  "contractName": "CoinBox",
   "abi": [
 	{
 		"inputs": [],
@@ -55,24 +55,6 @@
 		],
 		"name": "Transfer",
 		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "winningHash",
-				"type": "string"
-			}
-		],
-		"name": "addReward",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
 	},
 	{
 		"inputs": [
@@ -186,6 +168,19 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "upcId",
+				"type": "string"
+			}
+		],
+		"name": "claimNarativToken",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "decimals",
 		"outputs": [
@@ -247,10 +242,39 @@
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "mine",
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "upcId",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "numNarativ",
+				"type": "uint256"
+			}
+		],
+		"name": "injectNarativ",
 		"outputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "upcId",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "numUSDC",
+				"type": "uint256"
+			}
+		],
+		"name": "injectUSDC",
+		"outputs": [],
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -261,6 +285,25 @@
 				"internalType": "string",
 				"name": "",
 				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"name": "narativBalanceReceived",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -291,10 +334,42 @@
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "swap",
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newAddress",
+				"type": "address"
+			}
+		],
+		"name": "setDecolonizeAfrica",
 		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newAddress",
+				"type": "address"
+			}
+		],
+		"name": "setNarativ",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newAddress",
+				"type": "address"
+			}
+		],
+		"name": "setOwner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -327,7 +402,7 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "recipient",
+				"name": "to",
 				"type": "address"
 			},
 			{
@@ -351,12 +426,12 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "sender",
+				"name": "from",
 				"type": "address"
 			},
 			{
 				"internalType": "address",
-				"name": "recipient",
+				"name": "to",
 				"type": "address"
 			},
 			{
@@ -377,10 +452,22 @@
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "withdraw",
-		"outputs": [],
-		"stateMutability": "nonpayable",
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"name": "usdcBalanceReceived",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	}
 ],
@@ -3779,13 +3866,19 @@
         }
       },
       "links": {},
-      "address": "0x42b39a816F2c5FeCeCCD5D785f7dAEeA8eC567c9",
+      "address": "0x8ed93B58D6cE957eb471ED97Cb4F74046Eddf30D",
       "transactionHash": "0xfb1014da042a2c60df030ad8563619de933d4a2046560f5c7df14cd3fb7cb0bd"
     },
     "137": {
       "events": {},
       "links": {},
-      "address": "0xEE011Bc9A8e1c1a489D2ae3de5f26f2CAF2644bf",
+      "address": "0xDFEb95D32e6b5dCCBdFf4de54f60Ee46e724d6CB",
+      "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
+    },
+    "250": {
+      "events": {},
+      "links": {},
+      "address": "0x3ddb17d4d400cB602b63Fcdf8211D2Cd92758cCc",
       "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
     }
   },

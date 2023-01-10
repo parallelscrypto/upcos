@@ -63,6 +63,14 @@ class Intel extends Component {
 	    mine={this.props.mine} 
 	    addCrown={this.props.addCrown} 
 	    getCrown={this.props.getCrown} 
+
+            upcNFTData={this.props.upcNFTData}
+            fedData={this.props.fedData}
+            piggyData={this.props.piggyData}
+            coinboxData={this.props.coinboxData}
+            walkieData={this.props.walkieData}
+            paytokenData={this.props.paytokenData}
+
 	    buyNftNav={this.props.buyNftNav} 
 	    mintNftNav={this.props.mintNftNav} 
 	    approveNav={this.props.approveNav} 

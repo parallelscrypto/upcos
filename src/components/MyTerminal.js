@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { ethers } from "ethers";
 import * as Tone from "tone";
 import Terminal from 'react-console-emulator'
 import ScratchCard from './ScratchCard'
@@ -21,13 +22,17 @@ import {CopyToClipboard} from 'react-copy-to-clipboard';
 import ReactPlayer from 'react-player'
 import ReactCardFlip from 'react-card-flip';
 import { TikTok } from 'react-tiktok';
+import NostRadioToken from '../abis/NostRadioToken.json'
+
+
+
 var Barcode = require('react-barcode');
 
 
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
-var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some MyData\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your MyData to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`ask`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with ask " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some nostradiotoken\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your nostradiotoken to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`ask`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with ask " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 //var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.oneafrika', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.coinbox']
 
@@ -314,7 +319,7 @@ console.log("outputting on " + upc );
                    var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
                    var offerBuy = 
                    <div style={{textAlign:"center", fontWeight:"bold", background:"#422a0b", border:"5px solid white", padding:"3px"}}>
-                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I declare that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and intelligence.  Please decolonize UPC parcel #[[{upc}]] and use it to publicly assert your dignity and create a shared positive social environment where creators encourage each other.  Together, with our hard work and our solid values, we can replace historical lies with truth and build an economy with a mission to uplift the Melanated Afrikan Diaspora.  We are students of history, and using blockchain technology, we take our history, therefore, our future into our own hands.  With these NFTs, we build a worldwide unbreakable community based in mutually beneficial partnership and honor, while the colonizer admires our beautiful gardens from afar wishing that they'd respected our minds and been nicer!</b></p>
+                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I declare that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and intelligence.  Please program UPC parcel #[[{upc}]] and use it to publicly assert your dignity and create a shared positive social environment where creators encourage each other.  Together, with our hard work and our solid values, we can replace historical lies with truth and build an economy with a mission to uplift the Melanated Afrikan Diaspora, also all individual allies with potential functionality to add to their respective coexisting UPC Operating System [upcos] are welcome.  Functionality, sound logic, and results supercede workless promises.  This nostradio station (NRS) can be purchased with one nostradio token (NRT) and can be used as a tool to facilitate freedom of speech and expression [especially for anyone whose narrative has been systemically opressed, silenced, destroyed, etc. through lies, fear, manipulation, framing, misleading, gaslighting, bigtech, collusion, etc]. With these NFTs, we build a worldwide community based in mutually beneficial partnership, respect, and honor.</b></p>
                        <p style={{textAlign:"center"}}><img 
                                onClick={() => {
                                   this.sing();
@@ -335,7 +340,7 @@ src={srcImg} height="200" width="200"/></p>
                                this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
                                this.ask();
                        }
-                       	} >decolonize [[{upc}]]</button>
+                       	} >program [[{upc}]]</button>
                        <button 
                               style={{background: "#000000", color:"blue", width: "45vw", height: "20vw"}}
                               onClick={(e) => { this.setState({offerState: "video"});}} >watch channel {channelNum} on {upc.substr(0,upc.length-1)}[[{channelNum}]] </button>
@@ -1006,7 +1011,7 @@ src={srcImg} height="200" width="200"/></p>
        let inject = this.props.checkNarativBalance(upcId)
        .then(data => {
           var price  = window.web3.utils.fromWei(data, "ether");
-          price += " MyData";
+          price += " nostradiotoken";
           terminal.pushToStdout(price)
       });
 
@@ -1247,7 +1252,7 @@ src={srcImg} height="200" width="200"/></p>
     var addy = this.props.address;
     addy  = addy.substr(0,15);
 
-    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV </i>\n <i>wake.tf.up</i> \n <b style='color:red'> [always.ask.questions]</b> \n <i style='color:#d66900'>Powered by MyData Crypto</i>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is decolonized and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key). </u> \n <i style='color:white'> <b style='color:red'>1.</b> Type <i style='color:red'>`help`</i> to see available commands \n <b style='color:red'> 2. </b> Type <i style='color:red'>`claim`</i> to get some MyData Token.  You must pay a .15 Matic access fee and you recieve .25 MyData token each time you `claim`.  Therefore, in order to get the 1 token that you need to buy a UPC NFT, you must run the claim command 4 times. We prefer microtransactions in order to dispel the myth that one must be rich to participate in the NFT economy. \n <b style='color:red'> 3. </b> Type <i style='color:red'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <b style='color:red'> 4. </b> Type <i style='color:red'>`recon`</i> to allow your wallet to spend your MyData token in our smart contract.  You will not be able to decolonize {{dec}} a upc until you have run this command \n Type <i style='color:red'>`dec`</i> to decolonize (buy) the UPC [[" + this.state.account + "]]" + "\n  Type <i style='color:red'>`own`</i> to mint if successful with decolonize {dec} [[" + this.state.account + "]]" + "\n  <i style='color:red'>Type `sell` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:red'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:red'>`clear`</i> to clear screen" + " \n Type <i style='color:red'>`ch [0-9]` to to watch the corresponding channel.  For example, type `ch 0` to watch channel 0, and type `ch 9` to watch channel 9.  Channel values 0-9 are valid";
+    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV </i>\n <i>wake.tf.up</i> \n <b style='color:red'> [always.ask.questions]</b> \n <i style='color:#d66900'>Powered by nostradiotoken Crypto</i>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is programd and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key). </u> \n <i style='color:white'> <b style='color:red'>1.</b> Type <i style='color:red'>`help`</i> to see available commands \n <b style='color:red'> 2. </b> Type <i style='color:red'>`claim`</i> to get some nostradiotoken Token.  You must pay a .15 Matic access fee and you recieve .25 nostradiotoken token each time you `claim`.  Therefore, in order to get the 1 token that you need to buy a UPC NFT, you must run the claim command 4 times. We prefer microtransactions in order to dispel the myth that one must be rich to participate in the NFT economy. \n <b style='color:red'> 3. </b> Type <i style='color:red'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <b style='color:red'> 4. </b> Type <i style='color:red'>`recon`</i> to allow your wallet to spend your nostradiotoken token in our smart contract.  You will not be able to program {{pro}} a upc until you have run this command \n Type <i style='color:red'>`pro`</i> to program (buy) the UPC [[" + this.state.account + "]]" + "\n  Type <i style='color:red'>`own`</i> to mint if successful with program {pro} [[" + this.state.account + "]]" + "\n  <i style='color:red'>Type `sell` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:red'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:red'>`clear`</i> to clear screen" + " \n Type <i style='color:red'>`ch [0-9]` to to watch the corresponding channel.  For example, type `ch 0` to watch channel 0, and type `ch 9` to watch channel 9.  Channel values 0-9 are valid";
     var promptlabel =  '[[ AWAITING COMMAND ]] => ';
 
           
@@ -1428,7 +1433,7 @@ var playButton =
         commands={{
 
             usdc: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** DONT USE THIS COMMAND STUB YET! Approve UPC Band Radio to spend 50 of your MyData.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `colonize` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** DONT USE THIS COMMAND STUB YET! Approve UPC Band Radio to spend 50 of your nostradiotoken.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `colonize` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -1436,7 +1441,7 @@ var playButton =
                 this.setState({ isProgressing: true }, () => {
                   let approval = this.props.approveUSDC();
                   approval.then((value) => {
-		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient MyData from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'colonize' and 'colonizeb' commands will fail`)
+		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient nostradiotoken from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'colonize' and 'colonizeb' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
@@ -1475,8 +1480,8 @@ var playButton =
 
 
 
-            dec: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Please help this UPC by decolonizing  it of the false narrative and self destructive mentality that has been injected by Babylon *</p>',
+            pro: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Please help this UPC by programming something constructive into its metadata! type the command `pro` and possibly scroll around to find the modal window that will allow you to name your potential UPC Nft.  the name that you choose cannot be undone so please choose accordingly. *</p>',
               fn: (humanReadableName) => {
 		      this.ask(humanReadableName);
               }
@@ -1492,8 +1497,8 @@ var playButton =
 
 
 
-            xdec: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Buy a UPC NFT without the GUI popup.  Example: If you are currently scanned into UPC #222222222222 and you would like to buy the upc foo.watch-this, you would type the following `xdec foo 0`.  The `0` after `foo` corresponds to the domain ending that you are purchasing.**</p>',
+            xpro: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Buy a UPC NFT without the GUI popup.  Example: If you are currently scanned into UPC #222222222222 and you would like to buy the upc foo.watch-this, you would type the following `xpro foo 0`.  The `0` after `foo` corresponds to the domain ending that you are purchasing.**</p>',
               fn: (humanReadableName,domain) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1527,7 +1532,7 @@ var playButton =
 
 
             own: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `dec` or `own` command</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `pro` or `own` command</p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1606,15 +1611,15 @@ var playButton =
 
 
             recon: {
-                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 1 of your MyData.  Each time you decolonize a UPC, you must run `recon` again.    You MUST run this command FIRST or all of your `dec` and `own` commands will fail.**</p>',
-              fn: () => {
+                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 1 of your nostradiotoken.  Each time you program a UPC, you must run `recon` again.    You MUST run this command FIRST or all of your `pro` and `own` commands will fail.**</p>',
+              fn: (numTokens) => {
                   
                 var progress = 0;
                 this.setState({approved: false});
                 this.setState({ isProgressing: true }, () => {
-                  let approval = this.props.approve();
+                  let approval = this.props.approve(numTokens);
                   approval.then((value) => {
-                     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient MyData from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'dec' and 'own' commands will fail`)
+                    terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient nostradiotoken from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'pro' and 'own' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
@@ -1626,7 +1631,7 @@ var playButton =
               }
             },
             bal: {
-               description: '<p style="color:hotpink;font-size:1.1em">** Display your MyData balance **</p>',
+               description: '<p style="color:hotpink;font-size:1.1em">** Display your nostradiotoken balance **</p>',
                fn: () => {
                  this.setState({progressBal: ''});
                  this.setState({ isProgressing: true }, () => {
@@ -1636,9 +1641,9 @@ var playButton =
                    let bal = this.props.getMyBalance();
                        bal.then((value) => {
                           theBal =window.web3.utils.fromWei(value, "ether");
-                          terminal.pushToStdout(`[[balance-MyData]]`);
-        		  terminal.pushToStdout(`${theBal} MyData`)
-                          terminal.pushToStdout(`[[/balance-MyData]]`);
+                          terminal.pushToStdout(`[[balance-nostradio-token]]`);
+        		  terminal.pushToStdout(`${theBal} nostradiotoken`)
+                          terminal.pushToStdout(`[[/balance-nostradio-token]]`);
                           terminal.pushToStdout(`================`);
                           terminal.pushToStdout(`================`);
                           // expected output: "Success!"
@@ -1675,7 +1680,7 @@ var playButton =
         
                
              swap: {
-                     description: '<p style="color:hotpink;font-size:1.1em">** MyData is the token used to write [[intel]] to UPC codes.  In order to acquire MyData, you must run the `swap` command. This will `swap` Polygon that you have purchased likely from an exchange for MyData from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of MyData that you would like to exchange for the Polygon in your wallet in wei.  This will trigger a transaction that will mint equiv. MyData for Polygon 1:1.  Example: to buy 5 MyData type `swap 5000000000000000000`. In other words, this would send 5 Polygon from your wallet for 5 MyData from the MyData mint.  Visit <a href="upc://000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
+                     description: '<p style="color:hotpink;font-size:1.1em">** nostradiotoken is the token used to write [[intel]] to UPC codes.  In order to acquire nostradiotoken, you must run the `swap` command. This will `swap` Polygon that you have purchased likely from an exchange for nostradiotoken from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of nostradiotoken that you would like to exchange for the Polygon in your wallet in wei.  This will trigger a transaction that will mint equiv. nostradiotoken for Polygon 1:1.  Example: to buy 5 nostradiotoken type `swap 5000000000000000000`. In other words, this would send 5 Polygon from your wallet for 5 nostradiotoken from the nostradiotoken mint.  Visit <a href="upc://000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
                fn: (amount) => {
                  this.setState({progressBal: ''});
                  this.setState({ isProgressing: true }, () => {
@@ -1684,7 +1689,7 @@ var playButton =
                    approval.then((value) => {
                       approval = value;
                           terminal.pushToStdout(`[[swap]]`);
-                      terminal.pushToStdout(`You have just swapped Polygon for MyData.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
+                      terminal.pushToStdout(`You have just swapped Polygon for nostradiotoken.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
                           terminal.pushToStdout(`[[/swap]]`);
                       // expected output: "Success!"
                    });
@@ -2283,8 +2288,64 @@ var playButton =
 
 
 
-            ls: {
-              description: '<p style="color:hotpink;font-size:1.1em">** list info on a federation given the id. if no id is passed, command will show all available federations</p>',
+            cd: {
+              description: '<p style="color:hotpink;font-size:1.1em">** change directory (upc code) on command line without gui or scanner</p>',
+              fn: async (upcId) => {
+                        this.setAccount(upcId);
+                        this.firstLookup(upcId);
+              }
+            },
+
+
+
+
+
+
+            whois: {
+              description: '<p style="color:hotpink;font-size:1.1em">** go to a federation given the id. if id is invalid or not passed, command will fail</p>',
+              fn: async () => {
+                  const terminal = this.progressTerminal.current
+                        let nftAddress = this.props.upcNFTData.address;
+                        var beLink = 'https://explorer.bitquery.io/matic/address/' + nftAddress;
+			var nftLinkFinal = "<a href='"+beLink+"'>[" + nftAddress + "][verify]</a>";
+
+                        let paytokenAddress = this.props.paytokenData.address;
+                        var paytokenLink = 'https://explorer.bitquery.io/matic/address/' + paytokenAddress;
+			var paytokenLinkFinal = "<a href='"+paytokenLink+"'>[" + paytokenAddress + "][verify]</a>";
+
+                        let fedAddress = this.props.fedData.address;
+                        var fedLink = 'https://explorer.bitquery.io/matic/address/' + fedAddress;
+			var fedLinkFinal = "<a href='"+fedLink+"'>[" + fedAddress + "][verify]</a>";
+
+                        let piggyAddress = this.props.piggyData.address;
+                        var piggyLink = 'https://explorer.bitquery.io/matic/address/' + piggyAddress;
+			var piggyLinkFinal = "<a href='"+piggyLink+"'>[" + piggyAddress + "][verify]</a>";
+
+                        let coinboxAddress = this.props.coinboxData.address;
+                        var coinboxLink = 'https://explorer.bitquery.io/matic/address/' + coinboxAddress;
+			var coinboxLinkFinal = "<a href='"+coinboxLink+"'>[" + coinboxAddress + "][verify]</a>";
+
+                        let walkieAddress = this.props.walkieData.address;
+                        var walkieLink = 'https://explorer.bitquery.io/matic/address/' + walkieAddress;
+			var walkieLinkFinal = "<a href='"+walkieLink+"'>[" + walkieAddress + "][verify]</a>";
+
+                        terminal.pushToStdout(`=====`);
+                        terminal.pushToStdout(`[upcos-instance-conntracts]`);
+                        terminal.pushToStdout(`nft-platform: ` + nftLinkFinal);
+                        terminal.pushToStdout(`currency: ` + paytokenLinkFinal);
+                        terminal.pushToStdout(`open-federation: ` + fedLinkFinal);
+                        terminal.pushToStdout(`angel: ` + piggyLinkFinal);
+                        terminal.pushToStdout(`coinbox: ` + coinboxLinkFinal);
+                        terminal.pushToStdout(`walkie: ` + walkieLinkFinal);
+                        terminal.pushToStdout(`[/upcos-instance-conntracts]`);
+
+                return ''
+              }
+            },
+
+
+            goto: {
+              description: '<p style="color:hotpink;font-size:1.1em">** go to a federation given the id. if id is invalid or not passed, command will fail</p>',
               fn: async (fedId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -2293,18 +2354,13 @@ var playButton =
 		   .then(data => {
                         var fedid = data['id'] + ' of ' + this.state.totalFeds + ' total federations' ;
                         var link = data['link'];
-		        var linkHtml = "<a href='"+link+"'>" + link + "</a>";
-                        terminal.pushToStdout(`[[federations]]`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`id: ` + fedid);
+                        terminal.pushToStdout(`[now-loading-external-republik]`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`name: ${data['name']}`);
+                        terminal.pushToStdout(`link: ` + link);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`link: ` + linkHtml);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`owner: ${data['owner']}`);
-                        terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`[[/federations]]`);
+                        terminal.pushToStdout(`[[/now-loading-external-republik]]`);
+                        window.location.href = link;
                   });
 		  
 
@@ -2323,12 +2379,6 @@ var playButton =
                 return ''
               }
             },
-
-
-
-
-
-
 
             qr: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display QR for X-Referenced upcId</p>',
@@ -2859,9 +2909,10 @@ var playButton =
             crown : {
               description: '<p style="color:hotpink;font-size:1.1em">** Crown a upc (give it the ability to mint tokens).  Crowner must hold nft (9999) and syntax is `crown <kingUpc> <crownedUpc>`</p>',
               fn: (kingUpc, upcId, numTokens ) => {
+                      let nftAddress = this.props.upcNFTData.address;
                       const terminal = this.progressTerminal.current
                       terminal.pushToStdout(`Please wait... attempting to crown on upc # ${upcId}`);
-                      this.props.addCrown(kingUpc, upcId, numTokens);
+                      this.props.addCrown(nftAddress, kingUpc, upcId, numTokens);
                       //this.setState({showProductModal:true});
               }
             },
@@ -2870,12 +2921,22 @@ var playButton =
               description: '<p style="color:hotpink;font-size:1.1em">** Check if a upc has a crown.  if this upc has been crownd, the owner can mint the tokens to their wallet.  The syntax is `cc <kingUpc>`</p>',
               fn: ( upcId ) => {
                    var theBal;
-                   let bal = this.props.getCrown(upcId);
+                   let nftAddress = this.props.upcNFTData.address;
+                   const { ethereum } = window;
+		   const provider = new ethers.providers.Web3Provider(ethereum);
+		   const signer = provider.getSigner();
+		   const fullAddy = ethers.utils.solidityKeccak256(["address"], [nftAddress]);
+                   const contract = new ethers.Contract(
+                     fullAddy,
+                     NostRadioToken.abi,
+                     provider
+                   );  
+                   let bal = contract.getCrown(fullAddy, upcId);
                        bal.then((value) => {
                           theBal =window.web3.utils.fromWei(value, "ether");
-                          terminal.pushToStdout(`[[balance-MyData]]`);
-        		  terminal.pushToStdout(`${theBal} MyData`)
-                          terminal.pushToStdout(`[[/balance-MyData]]`);
+                          terminal.pushToStdout(`[[balance-nostradiotoken]]`);
+        		  terminal.pushToStdout(`${theBal} nostradiotoken`)
+                          terminal.pushToStdout(`[[/balance-nostradiotoken]]`);
                           terminal.pushToStdout(`================`);
                           // expected output: "Success!"
                        });
@@ -2894,7 +2955,7 @@ var playButton =
 
 
             mine: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Mine MyData Token that has been Crowned into the UPC</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Mine nostradiotoken Token that has been Crowned into the UPC</p>',
               fn: (upcId, numTokens) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {

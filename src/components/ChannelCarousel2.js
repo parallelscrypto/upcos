@@ -96,7 +96,8 @@ export default class ChannelCarousel2 extends Component {
              let infoOwned = this.props.nftInfo(nftIds[i])
               .then(data2 => {
                    var vid = data2['vr'];
-                   var oneVid = this.loadOne(vid);
+                   var id  = data2['tokenId'];
+                   var oneVid = this.loadOne(id,vid);
                        oneVid.then((result) => {
                           var res = self.state.slides;
                           res.push(result)
@@ -114,15 +115,19 @@ export default class ChannelCarousel2 extends Component {
 
 
 
-  loadOne = async (vr) => {
+  loadOne = async (id,vr) => {
     var mplayer;
 
     if(vr.includes('tiktok')) {
 
        mplayer = 
                 <div>
+                   <pre>
+                      #!/sbin/upc
+                      xi {id}
+                   </pre>
                    <TikTok url={vr} />
-                   <p className="legend">Legend 1</p>
+                   <p className="legend">externally-hosted-tiktok-vid</p>
                 </div>
     }
     //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
@@ -137,7 +142,7 @@ export default class ChannelCarousel2 extends Component {
                            sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                            src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
                    </iframe>
-                   <p className="legend">Legend 1</p>
+                   <p className="legend">externally-hosted-tiktok-vid</p>
                 </div>
     }
     //arbitrary url video
@@ -154,7 +159,7 @@ export default class ChannelCarousel2 extends Component {
                            sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                            src={fullUrl}>
                    </iframe>
-                   <p className="legend">Legend 1</p>
+                   <p className="legend">externally-hosted-tiktok-vid</p>
                 </div>
     }
 
@@ -167,7 +172,7 @@ export default class ChannelCarousel2 extends Component {
                       url={vr}
                    />
 
-                   <p className="legend">Legend 1</p>
+                   <p className="legend">externally-hosted-tiktok-vid</p>
                 </div>
     }
 

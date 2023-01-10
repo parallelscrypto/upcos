@@ -118,13 +118,15 @@ export default class IntroTypewriter extends Component {
                   <div>
                     <Zoom left> <b>Welcome to UPCOS</b></Zoom>
                     <br/>
-                    <Zoom left> <i  style={{color:"red"}}>matrix.cancelled</i></Zoom>
+                    <Zoom left> <i  style={{color:"red"}}>nostradio-10</i></Zoom>
                     <br/>
-                    <Zoom left> <b>Now Loading UPC#</b></Zoom>
+                    <Zoom left> <b>Tuning into UPC#</b></Zoom>
                      <br/>
 
 		     <Flip right> <Barcode value={this.state.code} format="UPC" /> </Flip>
 		     
+                     <br/>
+                     <i  style={{color:"red"}}>[[{this.state.code}]]</i>
                   </div>
                 </div>
              </Modal>

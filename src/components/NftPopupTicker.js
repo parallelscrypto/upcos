@@ -10,7 +10,8 @@ import Image4 from './extra/img-4.jpg'
 import QRCode from "react-qr-code";
 import NftPopupQr from './NftPopupQr';
 import { ethers } from "ethers";
-import MLS from '../abis/DecolonizeAfrica.json'
+import NostRadioStation from '../etc/nostradio-10/NostRadioStation.json'
+import web3 from 'web3'
 
 
 export default class MyTicker extends Component {
@@ -49,8 +50,12 @@ export default class MyTicker extends Component {
 
   fetchChannel = async (channel) => {
 
+
+    const networkId = await web3.eth.net.getId()
+    const upcNFTData = NostRadioStation.networks[networkId]
+    let contractAddress = upcNFTData.address;
+
     var self = this;
-    let contractAddress = "0xf0176c005b5a453a5d8a7f5e3583fe52a28edc5b";
     const { ethereum } = window;
 
 
@@ -64,29 +69,23 @@ export default class MyTicker extends Component {
     const signer = provider.getSigner();
     const contract = new ethers.Contract(
       contractAddress,
-      MLS.abi,
+      NostRadioStation.abi,
       provider
     );
     if(channel.length == 12 || channel.length == 13) {
          //var lastChar = String(channel).subsr(-1);
          var currentChannel = await contract.upcInfo(channel);
-	 console.log("first ATTEMPT");
          var potentialCsv = currentChannel.ipfs
 	 if(!potentialCsv.includes(',')) {
             var defaultChannel = "00000000000";
             defaultChannel += channel.substr(-1); 
 	    currentChannel = await contract.upcInfo(defaultChannel);
-	 console.log("SECOND ATTEMPT");
-	 console.log(currentChannel);
 	 }
-	 console.log(currentChannel.ipfs);
          var channelVidsCommas =  currentChannel.ipfs;
          var channelArray      =  channelVidsCommas.split(',');
          var mediaLinks = new Array();
          for(let i = 0; i < channelArray.length; i++) {
             let mediaInfo = await contract.nftInfo(channelArray[i]);
-
-	    console.log("############################media links " + mediaInfo.vr);
             let popupQr = <div class="hitem"><NftPopupQr code={this.state.code} hash={uuid()}  video={mediaInfo.vr} value={mediaInfo.upcHash} /></div>
             mediaLinks.push(popupQr)
          }
@@ -100,7 +99,6 @@ export default class MyTicker extends Component {
 
 
     var myVids = this.state.videos;
-console.log(myVids);
 
     return (
 <>

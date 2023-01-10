@@ -1,5 +1,5 @@
 {
-  "contractName": "CoinBox",
+  "contractName": "NostRadioToken",
   "abi": [
 	{
 		"inputs": [],
@@ -55,6 +55,34 @@
 		],
 		"name": "Transfer",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "nftAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "kingmakerNft",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "upcId",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_numTokens",
+				"type": "uint256"
+			}
+		],
+		"name": "addCrown",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"inputs": [
@@ -170,14 +198,44 @@
 	{
 		"inputs": [
 			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "crownArchive",
+		"outputs": [
+			{
 				"internalType": "string",
-				"name": "upcId",
+				"name": "",
 				"type": "string"
 			}
 		],
-		"name": "claimNarativToken",
-		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"name": "crowns",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -221,6 +279,30 @@
 		"inputs": [
 			{
 				"internalType": "address",
+				"name": "nftAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "upcId",
+				"type": "string"
+			}
+		],
+		"name": "getCrown",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
 				"name": "spender",
 				"type": "address"
 			},
@@ -245,22 +327,33 @@
 		"inputs": [
 			{
 				"internalType": "string",
-				"name": "upcId",
+				"name": "_needle",
 				"type": "string"
 			},
 			{
-				"internalType": "uint256",
-				"name": "numNarativ",
-				"type": "uint256"
+				"internalType": "string",
+				"name": "_haystack",
+				"type": "string"
 			}
 		],
-		"name": "injectNarativ",
-		"outputs": [],
-		"stateMutability": "payable",
+		"name": "isEqual",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "pure",
 		"type": "function"
 	},
 	{
 		"inputs": [
+			{
+				"internalType": "address",
+				"name": "nftAddress",
+				"type": "address"
+			},
 			{
 				"internalType": "string",
 				"name": "upcId",
@@ -268,13 +361,13 @@
 			},
 			{
 				"internalType": "uint256",
-				"name": "numUSDC",
+				"name": "_numTokens",
 				"type": "uint256"
 			}
 		],
-		"name": "injectUSDC",
+		"name": "mine",
 		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -285,25 +378,6 @@
 				"internalType": "string",
 				"name": "",
 				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"name": "narativBalanceReceived",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -331,45 +405,6 @@
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newAddress",
-				"type": "address"
-			}
-		],
-		"name": "setDecolonizeAfrica",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newAddress",
-				"type": "address"
-			}
-		],
-		"name": "setNarativ",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newAddress",
-				"type": "address"
-			}
-		],
-		"name": "setOwner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -449,25 +484,6 @@
 			}
 		],
 		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"name": "usdcBalanceReceived",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
 		"type": "function"
 	}
 ],
@@ -3866,19 +3882,13 @@
         }
       },
       "links": {},
-      "address": "0x8ed93B58D6cE957eb471ED97Cb4F74046Eddf30D",
+      "address": "0x42b39a816F2c5FeCeCCD5D785f7dAEeA8eC567c9",
       "transactionHash": "0xfb1014da042a2c60df030ad8563619de933d4a2046560f5c7df14cd3fb7cb0bd"
     },
     "137": {
       "events": {},
       "links": {},
-      "address": "0x81c0EA5ed5e516760Ae42fD615c14214545567eD",
-      "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
-    },
-    "250": {
-      "events": {},
-      "links": {},
-      "address": "0x3ddb17d4d400cB602b63Fcdf8211D2Cd92758cCc",
+      "address": "0x75F40f464986759C1a8678301C936123aa15E50c",
       "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
     }
   },

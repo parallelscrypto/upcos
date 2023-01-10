@@ -2,45 +2,20 @@ import React, { Component } from 'react'
 import ReactCardFlip from 'react-card-flip';
 import Iframe from 'react-iframe'
 import Web3 from 'web3'
-import UPCNFT from '../abis/UPCNFT.json'
-import AfroNFT from '../abis/AfroNFT.json'
-import MLS from '../abis/MalcolmsLittleSecret.json'
-import DecolonizeAfrica from '../abis/DecolonizeAfrica.json'
-import MatrixCancelled from '../abis/MatrixCancelled.json'
-import HomelessNFT from '../abis/HomelessNFT.json'
-import RollinOnUPC from '../abis/RollinOnUPC.json'
-import UpcBandRadio from '../abis/UpcBandRadio.json'
-import SuperNavalnyBros from '../abis/SuperNavalnyBros.json'
-import xUPC from '../abis/xUPC.json'
-import piggy from '../abis/TipJar.json'
-import intelX from '../abis/intelX.json'
-import TubmanX from '../abis/TubmanX.json'
-import OneAfrika from '../abis/OneAfrika.json'
-import MyData from '../abis/MyData.json'
-import InclusionX from '../abis/InclusionX.json'
-import Keyz from '../abis/Keyz.json'
-import Key from '../abis/Key.json'
-import AQWB from '../abis/AQWB.json'
-import UpcDAO from '../abis/UpcDAO.json'
-import UPCMarket from '../abis/UPCMarket.json'
-import WalkieTalkie from '../abis/WalkieTalkie.json'
-import CoinBox from '../abis/CoinBox.json'
-import OpenFederation from '../abis/OpenFederation.json'
+import NostRadioStation from '../etc/nostradio-10/NostRadioStation.json'
+import NostRadioToken from '../etc/nostradio-10/NostRadioToken.json'
 
-
-import PokingsHauntUs from '../abis/PokingsHauntUs.json'
-import KegeExperiment from '../abis/KegeExperiment.json'
+import piggy from '../etc/nostradio-10/TipJar.json'
+import UPCMarket from '../etc/nostradio-10/UPCMarket.json'
+import WalkieTalkie from '../etc/nostradio-10/WalkieTalkie.json'
+import CoinBox from '../etc/nostradio-10/CoinBox.json'
+import OpenFederation from '../etc/nostradio-10/OpenFederation.json'
 
 //import Navbar from './Navbar'
 import VideoBackground from './VideoBackground'
-import Leases from './Leases'
-import Evictions from './Evictions'
-import Withdraw from './Withdraw'
-import Deposit from './Deposit'
 import IntroTypewriter from './IntroTypewriter'
 import Intel from './Intel'
 import UPCBR_Channel from './App2';
-
 import UpcStatsTicker from './UpcStatsTicker'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './App.css'
@@ -48,9 +23,7 @@ import 'react-tabs/style/react-tabs.css';
 import { TickerTape } from "react-ts-tradingview-widgets";
 
 
-
-//const market_address = "0x87268c47c73471C6577533D780Fee7906E67c342";
-const market_address = "0x9eF383659672C96aE3AdF94E659356a20Ec5A6B6";
+//const market_address = "0x9eF383659672C96aE3AdF94E659356a20Ec5A6B6";
 const usdc_address   = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
 var abi = require('human-standard-token-abi');
 
@@ -118,7 +91,7 @@ class App extends Component {
 
 
 
-    // Load PiggyBank 
+    // Load open federation
     const fedData = OpenFederation.networks[networkId]
     if(fedData) {
       const fedNft = new web3.eth.Contract(OpenFederation.abi, fedData.address)
@@ -129,14 +102,10 @@ class App extends Component {
     }
 
 
-
-
-
-
     // Load UpcBandRadio
-    const upcNFTData = MatrixCancelled.networks[networkId]
+    const upcNFTData = NostRadioStation.networks[networkId]
     if(upcNFTData) {
-      const upcNft = new web3.eth.Contract(MatrixCancelled.abi, upcNFTData.address)
+      const upcNft = new web3.eth.Contract(NostRadioStation.abi, upcNFTData.address)
       this.setState({ upcNft })
       this.setState({ upcNFTData: upcNFTData })
     } else {
@@ -144,26 +113,12 @@ class App extends Component {
     }
 
 
-
-	
-    // Load STABLE PAY currency
-    if(usdc_address)  {
-      const USDC = new web3.eth.Contract(abi, usdc_address)
-//      console.log("!!!!!!!!!! USDC IS !!!!!!!!!!!!!!!!")
-//      let coinName = await USDC.methods.balanceOf('0x533084893cE0AFEd5C29e1F3a413b1A65b6383F4').call();
-//      console.log(coinName);
-//      console.log(USDC);
-      this.setState({ USDC: USDC})
-    } else {
-      //window.alert('UPCGoldBank contract not deployed to detected network.')
-    }
-
-
     // Load PAY currency
-    const intelXData = MyData.networks[networkId]
+    const intelXData = NostRadioToken.networks[networkId]
     if(intelXData) {
-      const MYDATA = new web3.eth.Contract(MyData.abi, intelXData.address)
+      const MYDATA = new web3.eth.Contract(NostRadioToken.abi, intelXData.address)
       this.setState({ intelX: MYDATA })
+      this.setState({ intelXData: intelXData })
     } else {
       //window.alert('UPCGoldBank contract not deployed to detected network.')
     }
@@ -301,11 +256,11 @@ class App extends Component {
 
   sendToMarket = async (nftId) => {
     const { accounts, contract } = this.state;
-
+    var market_address = this.state.upcNFTData.address
     const gameID = "testGame";
     //console.log(this.state.sendCryptoValue);
     // Stores a given value, 5 by default.
-    var result = await this.state.upcNft.methods.safeTransferFrom(this.state.account, market_address, nftId).send({ from: this.state.account})
+    var result = await this.state.upcMarket.methods.safeTransferFrom(this.state.account, market_address, nftId).send({ from: this.state.account})
     return result.toString();
   };
 
@@ -403,14 +358,21 @@ class App extends Component {
 
 
 
-  approve= async () => {
+  approve= async (numTokens) => {
     const web3 = window.web3
     const intelXData = this.state.intelX;
 
     const { accounts, contract } = this.state;
 
     var upcNFTData = this.state.upcNFTData;
-    var approval = await this.state.intelX.methods.approve(upcNFTData.address, "50000000000000000000").send({ from: this.state.account });
+    if(!numTokens) {
+       numTokens =window.web3.utils.toWei("1", "ether");
+    }
+    else {
+       numTokens =window.web3.utils.toWei(numTokens, "ether");
+    }
+
+    var approval = await this.state.intelX.methods.approve(upcNFTData.address, numTokens).send({ from: this.state.account });
     this.setState({daiTokenBalance: approval.toString() });
     return approval.toString();
   };
@@ -1045,7 +1007,13 @@ class App extends Component {
 	mine={this.mine}
 	addCrown={this.addCrown}
 	getCrown={this.getCrown}
-        
+
+        upcNFTData={this.state.upcNFTData}
+        fedData={this.state.fedData}
+        piggyData={this.state.piggyData}
+        coinboxData={this.state.coinboxData}
+        walkieData={this.state.walkieData}
+        paytokenData={this.state.intelXData}
 
 
 	swap={this.swap}
@@ -1091,24 +1059,7 @@ class App extends Component {
       <UPCBR_Channel channel={upcChannel} />
       </div>
 		    console.log(this.state);
-    } else {
-      leases= <Leases
-        daiTokenBalance={this.state.daiTokenBalance}
-        stakingBalance={this.state.stakingBalance}
-        contractBalance={this.state.contractBalance}
-        stakeTokens={this.stakeTokens}
-        unstakeTokens={this.unstakeTokens}
-        handleChange={this.handleChange}
-        updateUpc={this.updateUpc}
-	getMyScannables={this.getMyScannables}
-	getScannable={this.getScannable}
-	myAccount={this.state.account}
-	getRewardInfo={this.getRewardInfo}
-	swap={this.swap}
-	withdraw={this.withdraw}
-      />
-    }
-
+    } 
     return (
       <div style={{background: "#7e7e5e", height: '100vh', width: '100vw', border:'none'}} >
 			       {deposit}

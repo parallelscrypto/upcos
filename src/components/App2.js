@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import ReactPlayer from 'react-player/youtube';
 //import Greeter from "./artifacts/contracts/Greeter.sol/Greeter.json";
-import MLS from '../abis/MalcolmsLittleSecret.json'
+import NostRadioStation from '../etc/nostradio-10/NostRadioStation.json'
 import ReactCardFlip from 'react-card-flip';
+import web3 from 'web3'
 
 
 import { ethers } from "ethers";
@@ -30,7 +31,13 @@ export default function UPCBR_Channel(props) {
   };
 
   const fetchChannel = async (channel) => {
-    let contractAddress = "0x2DA2c8eD74cd16F0c24CFFFA257455EAa5Bd93b7";
+
+    const networkId = await web3.eth.net.getId()
+    const upcNFTData = NostRadioStation.networks[networkId]
+    let contractAddress = upcNFTData.address;
+
+
+
     const { ethereum } = window;
 
 
@@ -44,7 +51,7 @@ export default function UPCBR_Channel(props) {
     const signer = provider.getSigner();
     const contract = new ethers.Contract(
       contractAddress,
-      MLS.abi,
+      NostRadioStation.abi,
       provider
     );
 

@@ -1,5 +1,5 @@
 {
-  "contractName": "MalcolmsLittleSecretNFT",
+  "contractName": "NostRadioStation",
   "abi": [
 	{
 		"inputs": [],
@@ -18359,7 +18359,7 @@
     "137": {
       "events": {},
       "links": {},
-      "address": "0xf0176c005b5a453a5d8a7f5e3583fe52a28edc5b",
+      "address": "0x10c0a0Ec21c1ec1e3c3EBF772e7C61d64Fd19193",
       "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
     }
   },
