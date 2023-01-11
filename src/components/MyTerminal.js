@@ -2357,9 +2357,9 @@ var playButton =
                         var fedid = data['id'] + ' of ' + this.state.totalFeds + ' total federations' ;
 
                         var repLink = data['link'];
-		        var link = "<a href='"+repLink+"'>Click to visit federation # [[" + fedid + "]]</a>";
+		        var link = "<a href='"+repLink+"'>[" + repLink+ "]</a>";
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`[federations]`);
+                        terminal.pushToStdout(`[federation]`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`id: ` + data['id']);
                         terminal.pushToStdout(`=====`);
@@ -2369,7 +2369,7 @@ var playButton =
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`owner: ` + data['owner']);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`[federations]`);
+                        terminal.pushToStdout(`[/federation]`);
                   });
                 })
 
@@ -2947,7 +2947,7 @@ var playButton =
                       let nftAddress = this.props.upcNFTData.address;
                       const terminal = this.progressTerminal.current
                       terminal.pushToStdout(`Please wait... attempting to crown on upc # ${upcId}`);
-                      this.props.addCrown(nftAddress, kingUpc, upcId, numTokens);
+                      this.props.addCrown(kingUpc, upcId, numTokens);
                       //this.setState({showProductModal:true});
               }
             },
@@ -2956,17 +2956,8 @@ var playButton =
               description: '<p style="color:hotpink;font-size:1.1em">** Check if a upc has a crown.  if this upc has been crownd, the owner can mint the tokens to their wallet.  The syntax is `cc <kingUpc>`</p>',
               fn: ( upcId ) => {
                    var theBal;
-                   let nftAddress = this.props.upcNFTData.address;
-                   const { ethereum } = window;
-		   const provider = new ethers.providers.Web3Provider(ethereum);
-		   const signer = provider.getSigner();
-		   const fullAddy = ethers.utils.solidityKeccak256(["address"], [nftAddress]);
-                   const contract = new ethers.Contract(
-                     fullAddy,
-                     NostRadioToken.abi,
-                     provider
-                   );  
-                   let bal = contract.getCrown(fullAddy, upcId);
+
+                   let bal = this.props.getCrown(upcId);
                        bal.then((value) => {
                           theBal =window.web3.utils.fromWei(value, "ether");
                           terminal.pushToStdout(`[[balance-nostradiotoken]]`);

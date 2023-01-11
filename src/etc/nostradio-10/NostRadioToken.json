@@ -59,11 +59,6 @@
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "nftAddress",
-				"type": "address"
-			},
-			{
 				"internalType": "string",
 				"name": "kingmakerNft",
 				"type": "string"
@@ -217,11 +212,6 @@
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			},
-			{
 				"internalType": "string",
 				"name": "",
 				"type": "string"
@@ -277,11 +267,6 @@
 	},
 	{
 		"inputs": [
-			{
-				"internalType": "address",
-				"name": "nftAddress",
-				"type": "address"
-			},
 			{
 				"internalType": "string",
 				"name": "upcId",
@@ -350,11 +335,6 @@
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "nftAddress",
-				"type": "address"
-			},
-			{
 				"internalType": "string",
 				"name": "upcId",
 				"type": "string"
@@ -405,6 +385,19 @@
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "addy",
+				"type": "address"
+			}
+		],
+		"name": "setUpcNft",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
