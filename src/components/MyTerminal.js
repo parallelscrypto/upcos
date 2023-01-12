@@ -23,7 +23,7 @@ import ReactPlayer from 'react-player'
 import ReactCardFlip from 'react-card-flip';
 import { TikTok } from 'react-tiktok';
 import NostRadioToken from '../abis/NostRadioToken.json'
-
+import Draggable from 'react-draggable';
 
 
 var Barcode = require('react-barcode');
@@ -144,6 +144,8 @@ export default class MyTerminal extends Component {
        offerState: "offer",
        bassCleff: '',
        upcRadioString: "Welcome to UPC NFT Radio!",
+       pipVisibility: "hidden",
+       pipDisplay:    "none",
        showModalBuy: false,
        showModalSearch: false,
        showModalUrl: false,
@@ -1357,6 +1359,13 @@ var playButton =
     var player;				
     const terminal = this.progressTerminal.current
 
+    var vidd = <ReactPlayer 
+          width="100vw"
+          url='https://www.youtube.com/watch?v=eXvBjCO19QY' 
+          />
+
+
+
     //var tutorial = "<html><body><h1>hello</h1></body></html>"
 
     return (
@@ -1429,7 +1438,9 @@ var playButton =
 
       <Modal style={{"width":"90vw", "height":"90vh"}} visible={this.state.showEncryptModal} closemodal={() => this.setState({ showEncryptModal: false })} type="pulse" > {this.state.scanner}</Modal>
 
-                    <button onClick={(e) => { this.handleFlip(e)}} >Overview this UPC!</button>
+
+      <button onClick={(e) => { this.handleFlip(e)}} >Overview this UPC!</button>
+
       <Terminal
         style={{"minHeight":"75vh",backgroundColor: "#000"}}
         ref={this.progressTerminal}
@@ -1497,6 +1508,16 @@ var playButton =
 		      this.pop(url);
               }
             },
+
+
+            s: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open the front stage video in draggable interface</p>',
+              fn: (url) => {
+		      this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		      this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+              }
+            },
+
 
 
 
@@ -3004,6 +3025,26 @@ var playButton =
         autoFocus={true}
 	promptLabelStyle={{"color":"green", "fontWeight":"bold", "fontSize":"1.1em"}}
       />
+
+
+      <Draggable
+        axis="both"
+        handle=".handle"
+        positionOffset={{x: '0', y: '-50%'}}
+        defaultPosition={{x: 0, y: -100}}
+        position={null}
+        grid={[25, 25]}
+        scale={1}
+        onStart={this.handleStart}
+        onDrag={this.handleDrag}
+        onStop={this.handleStop}>
+        <div style={{ background:"#ffffff" ,color:"#000000",zIndex:"99", visibility:this.state.pipVisibility, display: this.state.pipDisplay, width:"100vw",border:"3px dashed", padding:"5px"}}>
+	  <div className="handle" style={{background:"green", textAlign:"center"}}>Drag from here</div>
+          <div>{vidd}</div>
+        </div>
+      </Draggable>
+
+
 
       </div>
       </ReactCardFlip>
