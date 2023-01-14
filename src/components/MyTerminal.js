@@ -1108,9 +1108,9 @@ src={srcImg} height="200" width="200"/></p>
 
 
 
-  play= async (upcId) => {
+  play= async (upcId,pip) => {
 
-
+          
           var self = this;
           if( !upcId ) {
               upcId = this.state.account;
@@ -1155,10 +1155,21 @@ src={srcImg} height="200" width="200"/></p>
 
 		    }
 
-                            self.setState({mplayer: mplayer});
-                            if(self.state.offerState == "video") {
-                               self.setState({player: mplayer});
-                            }
+
+                           if( pip ) {
+
+		             this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		             this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay }));
+                           }
+                           else {
+
+
+                             self.setState({mplayer: mplayer});
+                             if(self.state.offerState == "video") {
+                                self.setState({player: mplayer});
+                             }
+
+                           }
 	            })
 		}
 		else {
@@ -1206,47 +1217,33 @@ src={srcImg} height="200" width="200"/></p>
 		    }
                     //self.setState({mplayer: mplayer});
                     self.setState({fullIpfs: mplayer});
-                    self.setState({showBigShow2: true});
-                    self.setState({showBigShow: true});
-                    if(self.state.offerState == "video") {
-                       //self.setState({player: mplayer});
-                       self.setState({fullIpfs: mplayer});
+                    if( pip ) {
+
+		      this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		      this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay }));
+                    }
+                    else {
                        self.setState({showBigShow2: true});
                        self.setState({showBigShow: true});
                     }
+
+
+
+                    if(self.state.offerState == "video") {
+                       //self.setState({player: mplayer});
+                       self.setState({fullIpfs: mplayer});
+                       if( pip ) {
+
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay }));
+                       }
+                       else {
+                          self.setState({showBigShow2: true});
+                          self.setState({showBigShow: true});
+                       }
+                    }
 		}
 	   })
-
-
-//                this.setState({progressBal: ''});
-//                this.setState({ isProgressing: true }, () => {
-//                  const terminal = this.progressTerminal.current
-//                  terminal.clearStdout();
-//		  var self = this;
-//                  let info = this.props.upcInfo(this.state.account)
-//		   .then(data => {
-//                        terminal.clearStdout();
-//			var thelink = data['ipfs'];
-//			self.setState({fullIpfs: thelink});
-//			self.setState({showBigShow: true});
-//                  });
-//		  
-//
-//                  const interval = setInterval(() => {
-//                    if (this.state.progressBal != '') { // Stop at 100%
-//                      clearInterval(interval)
-//                      this.setState({ isProgressing: false, progress: 0 })
-//                    } else {
-//                      this.setState({progressBal: info});
-//                      var self = this;
-//                      this.setState({ progress: this.state.progress + 10 })
-//                    }
-//                  }, 1500)
-//                })
-//
-//                return ''
-//
-//
 
 
   }
@@ -1512,9 +1509,12 @@ var playButton =
 
             s: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open the front stage video in draggable interface</p>',
-              fn: (url) => {
-		      this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
-		      this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+              fn: () => {
+
+		      this.play(this.state.account,true);
+
+		      //this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		      //this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
               }
             },
 
@@ -3026,24 +3026,22 @@ var playButton =
 	promptLabelStyle={{"color":"green", "fontWeight":"bold", "fontSize":"1.1em"}}
       />
 
-
-      <Draggable
-        axis="both"
-        handle=".handle"
-        positionOffset={{x: '0', y: '-50%'}}
-        defaultPosition={{x: 0, y: -100}}
-        position={null}
-        grid={[25, 25]}
-        scale={1}
-        onStart={this.handleStart}
-        onDrag={this.handleDrag}
-        onStop={this.handleStop}>
-        <div style={{ background:"#ffffff" ,color:"#000000",zIndex:"99", visibility:this.state.pipVisibility, display: this.state.pipDisplay, width:"100vw",border:"3px dashed", padding:"5px"}}>
-	  <div className="handle" style={{background:"green", textAlign:"center"}}>Drag from here</div>
-          <div>{vidd}</div>
-        </div>
-      </Draggable>
-
+                <Draggable
+                  axis="both"
+                  handle=".handle"
+                  positionOffset={{x: '0', y: '-50%'}}
+                  defaultPosition={{x: 0, y: -100}}
+                  position={null}
+                  grid={[25, 25]}
+                  scale={1}
+                  onStart={this.handleStart}
+                  onDrag={this.handleDrag}
+                  onStop={this.handleStop}>
+                  <div style={{ background:"#ffffff" ,color:"#000000",zIndex:"99", visibility:this.state.pipVisibility, display: this.state.pipDisplay, width:"100vw",border:"3px dashed", padding:"5px"}}>
+                    <div className="handle" style={{background:"green", textAlign:"center"}}>Drag from here</div>
+                    <div>{this.state.fullIpfs}</div>
+                  </div>
+                </Draggable>
 
 
       </div>

@@ -142,13 +142,6 @@ export default class MyTicker extends Component {
     }
   }
 
-  getPriceData = async () => {
-    const CoinGecko = require('coingecko-api');
-    const CoinGeckoClient = new CoinGecko();
-    let data = await CoinGeckoClient.ping();
-    console.log(data);
-  }
-
   render() {
     return (
       <div>

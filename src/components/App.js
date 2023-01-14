@@ -1053,7 +1053,6 @@ class App extends Component {
 	latestTokenId={this.latestTokenId}
       />
       <UpcStatsTicker latestTokenId={this.latestTokenId} getSaleInfo={this.getSaleInfo} marketInfo={this.state.marketInfo} style={{"position":"absolute","bottom":"0", background:"black"}} />
-      <TickerTape colorTheme="dark"></TickerTape>
 
       <b style={{color:"black"}}> Latest News from Channel [[{upcChannel}]] </b>
       <UPCBR_Channel channel={upcChannel} />

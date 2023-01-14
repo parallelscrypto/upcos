@@ -29,7 +29,6 @@
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
     "chai-bignumber": "3.0.0",
-    "coingecko-api": "^1.0.10",
     "dotenv": "^8.2.0",
     "file-system": "^2.2.2",
     "human-standard-token-abi": "^2.0.0",
