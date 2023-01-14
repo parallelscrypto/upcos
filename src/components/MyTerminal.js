@@ -1121,6 +1121,11 @@ src={srcImg} height="200" width="200"/></p>
 
 
                 var vr   = data['ipfs'];
+
+                if( pip ) {
+                   vr   = data['vr'];
+                }
+
                 var staker = data['staker'];
 
                 if(staker.includes('0x0000000000000000000')) {
@@ -1150,7 +1155,7 @@ src={srcImg} height="200" width="200"/></p>
 		    else {
                        mplayer = <ReactPlayer 
                                     width="100vw"
-                                    url={data['ipfs']} 
+                                    url={vr} 
                                 />
 
 		    }
@@ -1175,6 +1180,12 @@ src={srcImg} height="200" width="200"/></p>
 		else {
 	            
                     var vr   = data['ipfs'];
+
+                    if( pip ) {
+                       vr   = data['vr'];
+                    }
+
+
                     var mplayer;
                     if(vr.includes('tiktok')) {
 
@@ -1183,7 +1194,7 @@ src={srcImg} height="200" width="200"/></p>
                     //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
                     //pasting does not get the player with controls (this iframe player below)
 		    else if(vr.length == 11) {
-                       const youtubeID = data['ipfs']
+                       const youtubeID = vr
                        mplayer =
                        <iframe className='video'
                                style={{minHeight:"100vh",width:"100vw"}}
@@ -1197,7 +1208,7 @@ src={srcImg} height="200" width="200"/></p>
 			    && !vr.includes('soundcloud') && !vr.includes('vimeo') 
 			    && !vr.includes('whistia') && !vr.includes('mixcloud') 
 			    && !vr.includes('dailymotion') && !vr.includes('twitch')) {
-                       const fullUrl = data['ipfs']
+                       const fullUrl = vr
                        mplayer =
                        <iframe className='video'
                                style={{minHeight:"100vh",width:"100vw"}}
@@ -1211,7 +1222,7 @@ src={srcImg} height="200" width="200"/></p>
 		    else {
                        mplayer = <ReactPlayer 
                                     width="100vw"
-                                    url={data['ipfs']} 
+                                    url={vr} 
                                 />
 
 		    }
