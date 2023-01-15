@@ -1211,7 +1211,7 @@ src={srcImg} height="200" width="200"/></p>
                        const fullUrl = vr
                        mplayer =
                        <iframe className='video'
-                               style={{minHeight:"100vh",width:"100vw"}}
+                               style={{minHeight:"100vh",width:"88vw"}}
                                title='upc dj player'
                                sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                src={fullUrl}>
@@ -1386,10 +1386,7 @@ var playButton =
 	     <Modal style={{"color":"white","height":"90vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showModalSplash} closemodal={(e) => {this.setState({ showModalSplash: false }); }} type="lightSpeedIn" > {this.state.tutorial} </Modal>
 
 
-
-
-             <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle","width":"95vw","height":"95vh"}} visible={this.state.showProductModal} closemodal={() => this.setState({ showProductModal: false })} type="pulse" > {myProduct}</Modal>
-	     <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type="pulse" >{this.state.fullIpfs}</Modal>
+	     <Modal style={{"alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showBigShow} closemodal={(e) => {this.setState({ showBigShow: false }); }} type= "pulse" >{this.state.fullIpfs}</Modal>
 
 
 
@@ -1414,7 +1411,6 @@ var playButton =
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalSearch} closemodal={() => this.setState({ showModalSearch: false })} type="pulse" > {this.state.searchModalContent}</Modal>
 
       <Modal style={{ height:"95vh", width:"95vw"}} visible={this.state.showBigShow2} closemodal={() => this.setState({ showBigShow2: false })} type="pulse">{this.state.fullIpfs}</Modal>
-
 
 
       <Modal style={{ "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showBplayer} closemodal={() => this.setState({ showBplayer: false })} type="pulse" ><ReactPlayer playing={'true'} controls={'true'} width={'90vw'} height={'90vh'} pip={'true'} stopOnUnmount={'false'} url={this.state.fullIpfs} /></Modal>
@@ -1526,6 +1522,32 @@ var playButton =
 
 		      //this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
 		      //this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+              }
+            },
+
+
+
+            c: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open the front stage video in draggable interface</p>',
+              fn: (fullUrl) => {
+
+                       if( !fullUrl ) {
+                          fullUrl = "https://nostr.com";
+                       }
+
+                       var mplayer =
+                       <iframe className='video'
+                               style={{minHeight:"100vh",width:"88vw"}}
+                               title='upc dj player'
+                               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                               src={fullUrl}>
+                       </iframe>
+
+
+
+		      this.setState(prevState => ({ fullIpfs: mplayer }));
+		      this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		      this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
               }
             },
 
@@ -2689,7 +2711,7 @@ var playButton =
             dj: {
               description: '<p style="color:hotpink;font-size:1.1em">** Rule the DJ booth with this command!  This command plays the IPFS resource attached to this UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety </p>',
               fn: () => {
-		      this.play();
+		      this.play(this.state.account,true);
               }
 
 
@@ -3041,18 +3063,25 @@ var playButton =
                   axis="both"
                   handle=".handle"
                   positionOffset={{x: '0', y: '-50%'}}
-                  defaultPosition={{x: 0, y: -100}}
+                  defaultPosition={{x: 0, y: 0}}
                   position={null}
                   grid={[25, 25]}
                   scale={1}
                   onStart={this.handleStart}
                   onDrag={this.handleDrag}
                   onStop={this.handleStop}>
-                  <div style={{ background:"#ffffff" ,color:"#000000",zIndex:"99", visibility:this.state.pipVisibility, display: this.state.pipDisplay, width:"100vw",border:"3px dashed", padding:"5px"}}>
+                  <div style={{ opacity:"0.9", background:"#ffffff" ,color:"#000000",zIndex:"99", visibility:this.state.pipVisibility, display: this.state.pipDisplay, width:"90vw",border:"3px dashed", padding:"5px"}}>
                     <div className="handle" style={{background:"green", textAlign:"center"}}>Drag from here</div>
                     <div>{this.state.fullIpfs}</div>
                   </div>
                 </Draggable>
+
+
+
+
+
+
+
 
 
       </div>
