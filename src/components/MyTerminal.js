@@ -1211,7 +1211,7 @@ src={srcImg} height="200" width="200"/></p>
                        const fullUrl = vr
                        mplayer =
                        <iframe className='video'
-                               style={{minHeight:"100vh",width:"88vw"}}
+                               style={{height:"80vh",width:"88vw"}}
                                title='upc dj player'
                                sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                src={fullUrl}>
@@ -1537,7 +1537,7 @@ var playButton =
 
                        var mplayer =
                        <iframe className='video'
-                               style={{minHeight:"100vh",width:"88vw"}}
+                               style={{height:"80vh",width:"88vw"}}
                                title='upc dj player'
                                sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                src={fullUrl}>
@@ -2621,11 +2621,20 @@ var playButton =
 
             ss: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Set your stage by passing the string value.  Example `ss https://link.to.your.vr`` will set your front stage resource so that when the public lands on your upc, they will see `https://link.to.your.vr`.</p>' ,
-              fn: (_vrLink) => {
+              fn: (upcId, _vrLink) => {
+
+                if( upcId && !_vrLink ) {
+                   _vrLink = upcId;
+                   upcId = this.state.account;
+                }
+
+                console.log( "params are " );
+                console.log("id - " + upcId);
+                console.log("link - " + _vrLink);
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
                   const terminal = this.progressTerminal.current
-                  let approval = this.props.setVr(this.state.account, _vrLink);
+                  let approval = this.props.setVr(upcId, _vrLink);
                       approval.then((value) => {
                          approval = value;
 			 terminal.pushToStdout(`Approved: ${approval}`)
