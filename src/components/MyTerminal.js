@@ -1531,6 +1531,31 @@ var playButton =
 
 
 
+            book: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open client window in draggable interface</p>',
+              fn: (bookUrl) => {
+
+                          if(!bookUrl) {
+                             bookUrl = 'https://librivox.org';
+                          }
+                          var mplayer = <iframe className='video'
+                                  style={{height:"80vh",width:"88vw"}}
+                                  title='upc dj player'
+                                  sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                                  src={bookUrl}>
+                          </iframe>
+
+	                  this.setState(prevState => ({ fullIpfs: mplayer }));
+		          this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		          this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                     }
+            },
+
+
+
+
+
+
             c: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open client window in draggable interface</p>',
               fn: (fullUrl,winNum) => {
@@ -1544,6 +1569,7 @@ var playButton =
 
                     if(fullUrl.includes('tiktok')) {
                        mplayer = <TikTok url={fullUrl} />
+console.log("11111111111111111111");
                     }
                     //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
                     //pasting does not get the player with controls (this iframe player below)
@@ -1556,7 +1582,24 @@ var playButton =
                                sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
                        </iframe>
+console.log("222222222222222222");
                     }
+
+                    else if(!fullUrl.includes('yout') && !fullUrl.includes('facebook') 
+                       && !fullUrl.includes('soundcloud') && !fullUrl.includes('vimeo') 
+                       && !fullUrl.includes('whistia') && !fullUrl.includes('mixcloud') 
+                       && !fullUrl.includes('dailymotion') && !fullUrl.includes('twitch')) {
+                          mplayer = <iframe className='video'
+                                  style={{height:"80vh",width:"88vw"}}
+                                  title='upc dj player'
+                                  sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                                  src={fullUrl}>
+                          </iframe>
+
+		    }
+
+
+
 		    else {
                        mplayer = <ReactPlayer 
                                     width="100vw"
