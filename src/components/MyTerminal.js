@@ -143,9 +143,13 @@ export default class MyTerminal extends Component {
        showModal: false,
        offerState: "offer",
        bassCleff: '',
+       fullIpfs:'',
+       fullIpfs2:'',
        upcRadioString: "Welcome to UPC NFT Radio!",
        pipVisibility: "hidden",
        pipDisplay:    "none",
+       pipVisibility2: "hidden",
+       pipDisplay2:    "none",
        showModalBuy: false,
        showModalSearch: false,
        showModalUrl: false,
@@ -1528,26 +1532,52 @@ var playButton =
 
 
             c: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open the front stage video in draggable interface</p>',
-              fn: (fullUrl) => {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open client window in draggable interface</p>',
+              fn: (fullUrl,winNum) => {
 
-                       if( !fullUrl ) {
-                          fullUrl = "https://nostr.com";
-                       }
+                    var mplayer = <iframe className='video'
+                            style={{height:"80vh",width:"88vw"}}
+                            title='upc dj player'
+                            sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                            src={fullUrl}>
+                    </iframe>
 
-                       var mplayer =
+                    if(fullUrl.includes('tiktok')) {
+                       mplayer = <TikTok url={fullUrl} />
+                    }
+                    //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
+                    //pasting does not get the player with controls (this iframe player below)
+		    else if(fullUrl.length == 11 && !fullUrl.includes('http')) {
+                       const youtubeID = fullUrl
+                       mplayer =
                        <iframe className='video'
-                               style={{height:"80vh",width:"88vw"}}
-                               title='upc dj player'
+                               style={{minHeight:"100vh",width:"100vw"}}
+                               title='Youtube player'
                                sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
-                               src={fullUrl}>
+                               src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
                        </iframe>
+                    }
+		    else {
+                       mplayer = <ReactPlayer 
+                                    width="100vw"
+                                    url={fullUrl} 
+                                />
+
+		    }
 
 
 
-		      this.setState(prevState => ({ fullIpfs: mplayer }));
-		      this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
-		      this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
               }
             },
 
@@ -3085,6 +3115,24 @@ var playButton =
                   </div>
                 </Draggable>
 
+
+
+                <Draggable
+                  axis="both"
+                  handle=".handle2"
+                  positionOffset={{x: '0', y: '-50%'}}
+                  defaultPosition={{x: 0, y: 0}}
+                  position={null}
+                  grid={[25, 25]}
+                  scale={1}
+                  onStart={this.handleStart}
+                  onDrag={this.handleDrag}
+                  onStop={this.handleStop}>
+                  <div style={{ opacity:"0.9", background:"#ffffff" ,color:"#000000",zIndex:"99", visibility:this.state.pipVisibility2, display: this.state.pipDisplay2, width:"90vw",border:"3px dashed", padding:"5px"}}>
+                    <div className="handle2" style={{background:"blue", textAlign:"center"}}>Drag from here</div>
+                    <div>{this.state.fullIpfs2}</div>
+                  </div>
+                </Draggable>
 
 
 
