@@ -184,6 +184,7 @@ export default class MyTerminal extends Component {
     this.selectDomain = this.selectDomain.bind(this);
     this.channelFront= this.channelFront.bind(this);
     this.sing= this.sing.bind(this);
+    this.getMplayer= this.getMplayer.bind(this);
     this.setAccount = this.setAccount.bind(this);
     this.firstLookup= this.firstLookup.bind(this);
     this.prodLookup= this.prodLookup.bind(this);
@@ -572,6 +573,59 @@ src={srcImg} height="200" width="200"/></p>
        }
   }
 
+
+
+
+
+  getMplayer = (fullUrl) => {
+      var mplayer = <iframe className='video'
+              style={{height:"80vh",width:"88vw"}}
+              title='upc dj player'
+              sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+              src={fullUrl}>
+      </iframe>
+
+      if(fullUrl.includes('tiktok')) {
+         mplayer = <TikTok url={fullUrl} />
+      }
+      //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
+      //pasting does not get the player with controls (this iframe player below)
+      else if(fullUrl.length == 11 && !fullUrl.includes('http')) {
+         const youtubeID = fullUrl
+         mplayer =
+         <iframe className='video'
+                 style={{minHeight:"100vh",width:"100vw"}}
+                 title='Youtube player'
+                 sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                 src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
+         </iframe>
+      }
+
+      else if(!fullUrl.includes('yout') && !fullUrl.includes('facebook') 
+         && !fullUrl.includes('soundcloud') && !fullUrl.includes('vimeo') 
+         && !fullUrl.includes('whistia') && !fullUrl.includes('mixcloud') 
+         && !fullUrl.includes('dailymotion') && !fullUrl.includes('twitch')) {
+            mplayer = <iframe className='video'
+                    style={{height:"80vh",width:"88vw"}}
+                    title='upc dj player'
+                    sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                    src={fullUrl}>
+            </iframe>
+
+      }
+
+
+
+      else {
+         mplayer = <ReactPlayer 
+                      width="100vw"
+                      url={fullUrl} 
+                  />
+
+      }
+
+      return mplayer;
+  }
 
 
 
@@ -1560,56 +1614,8 @@ var playButton =
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open client window in draggable interface</p>',
               fn: (fullUrl,winNum) => {
 
-                    var mplayer = <iframe className='video'
-                            style={{height:"80vh",width:"88vw"}}
-                            title='upc dj player'
-                            sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
-                            src={fullUrl}>
-                    </iframe>
 
-                    if(fullUrl.includes('tiktok')) {
-                       mplayer = <TikTok url={fullUrl} />
-console.log("11111111111111111111");
-                    }
-                    //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
-                    //pasting does not get the player with controls (this iframe player below)
-		    else if(fullUrl.length == 11 && !fullUrl.includes('http')) {
-                       const youtubeID = fullUrl
-                       mplayer =
-                       <iframe className='video'
-                               style={{minHeight:"100vh",width:"100vw"}}
-                               title='Youtube player'
-                               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
-                               src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
-                       </iframe>
-console.log("222222222222222222");
-                    }
-
-                    else if(!fullUrl.includes('yout') && !fullUrl.includes('facebook') 
-                       && !fullUrl.includes('soundcloud') && !fullUrl.includes('vimeo') 
-                       && !fullUrl.includes('whistia') && !fullUrl.includes('mixcloud') 
-                       && !fullUrl.includes('dailymotion') && !fullUrl.includes('twitch')) {
-                          mplayer = <iframe className='video'
-                                  style={{height:"80vh",width:"88vw"}}
-                                  title='upc dj player'
-                                  sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
-                                  src={fullUrl}>
-                          </iframe>
-
-		    }
-
-
-
-		    else {
-                       mplayer = <ReactPlayer 
-                                    width="100vw"
-                                    url={fullUrl} 
-                                />
-
-		    }
-
-
-
+                      var mplayer = this.getMplayer(fullUrl);
                       if(winNum == "0") {
 		         this.setState(prevState => ({ fullIpfs: mplayer }));
 		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
@@ -3153,10 +3159,33 @@ console.log("222222222222222222");
                   onDrag={this.handleDrag}
                   onStop={this.handleStop}>
                   <div style={{ opacity:"0.9", background:"#ffffff" ,color:"#000000",zIndex:"99", visibility:this.state.pipVisibility, display: this.state.pipDisplay, width:"90vw",border:"3px dashed", padding:"5px"}}>
-                    <div className="handle" style={{background:"green", textAlign:"center"}}>Drag from here</div>
+                    <div className="handle" style={{background:"green", textAlign:"center"}}>drag-from-here (client0)</div>
+                      <input
+                        type="text"
+                        ref={(cSearch) => { this.cSearch = cSearch }}
+                        placeholder="search-term (no spaces)"
+			style={{borderBottom: "2px solid green",borderLeft: "2px solid green",marginBottom:"20px",height:"10vh",width:"70vw",background:"black", color:"white"}}
+                        required />
+
+                        <button
+                             style={{borderBottom: "2px solid green", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"green", height: "10vh", marginBottom:"20px"}}
+		             onClick={(event) => {
+                                  event.preventDefault()
+                                  let upcId = this.state.account
+                                  let cSearch = this.cSearch.value.toString()
+
+                                  var mplayer = this.getMplayer(cSearch);
+                                  this.setState({fullIpfs: mplayer});
+		             }}
+                        >
+                           search
+                        </button>
+
+
                     <div>{this.state.fullIpfs}</div>
                   </div>
                 </Draggable>
+
 
 
 
@@ -3172,7 +3201,29 @@ console.log("222222222222222222");
                   onDrag={this.handleDrag}
                   onStop={this.handleStop}>
                   <div style={{ opacity:"0.9", background:"#ffffff" ,color:"#000000",zIndex:"99", visibility:this.state.pipVisibility2, display: this.state.pipDisplay2, width:"90vw",border:"3px dashed", padding:"5px"}}>
-                    <div className="handle2" style={{background:"blue", textAlign:"center"}}>Drag from here</div>
+                    <div className="handle2" style={{background:"blue", textAlign:"center"}}>drag-from-here (client1)</div>
+                      <input
+                        type="text"
+                        ref={(cSearch2) => { this.cSearch2 = cSearch2 }}
+                        placeholder="search-term (no spaces)"
+			style={{borderBottom: "2px solid blue",borderLeft: "2px solid blue",marginBottom:"20px",height:"10vh",width:"70vw",background:"black", color:"white"}}
+                        required />
+
+                        <button
+                             style={{borderBottom: "2px solid blue", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"green", height: "10vh", marginBottom:"20px"}}
+		             onClick={(event) => {
+                                  event.preventDefault()
+                                  let upcId = this.state.account
+                                  let cSearch2 = this.cSearch2.value.toString()
+
+                                  var mplayer = this.getMplayer(cSearch2);
+                                  this.setState({fullIpfs2: mplayer});
+		             }}
+                        >
+                           search
+                        </button>
+
+
                     <div>{this.state.fullIpfs2}</div>
                   </div>
                 </Draggable>
