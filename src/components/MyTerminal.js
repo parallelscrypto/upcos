@@ -1433,7 +1433,6 @@ var playButton =
 
 
     //var tutorial = "<html><body><h1>hello</h1></body></html>"
-
     return (
       <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
       <div>
@@ -1504,7 +1503,7 @@ var playButton =
       <button onClick={(e) => { this.handleFlip(e)}} >Overview this UPC!</button>
 
       <Terminal
-        style={{"minHeight":"75vh",backgroundColor: "#000"}}
+        style={{"minHeight":"75vh",backgroundColor: "#000",zIndex:"99"}}
         ref={this.progressTerminal}
         commands={{
 
@@ -3147,7 +3146,9 @@ var playButton =
 	promptLabelStyle={{"color":"green", "fontWeight":"bold", "fontSize":"1.1em"}}
       />
 
+
                 <Draggable
+		  style={{zIndex:"0"}}
                   axis="both"
                   handle=".handle"
                   positionOffset={{x: '0', y: '-50%'}}
@@ -3158,29 +3159,41 @@ var playButton =
                   onStart={this.handleStart}
                   onDrag={this.handleDrag}
                   onStop={this.handleStop}>
-                  <div style={{ opacity:"0.9", background:"#ffffff" ,color:"#000000",zIndex:"99", visibility:this.state.pipVisibility, display: this.state.pipDisplay, width:"90vw",border:"3px dashed", padding:"5px"}}>
-                    <div className="handle" style={{background:"green", textAlign:"center"}}>drag-from-here (client0)</div>
-                      <input
-                        type="text"
-                        ref={(cSearch) => { this.cSearch = cSearch }}
-                        placeholder="search-term (no spaces)"
-			style={{borderBottom: "2px solid green",borderLeft: "2px solid green",marginBottom:"20px",height:"10vh",width:"70vw",background:"black", color:"white"}}
-                        required />
+                  <div style={{ opacity:"0.9", background:"#ffffff" ,color:"#000000", visibility:this.state.pipVisibility, display: this.state.pipDisplay, width:"90vw",border:"3px dashed", padding:"5px"}}>
+                    <div className="handle" style={{background:"green", display:"grid"}}><span style={{textAlign:"center"}}>drag-from-here (client1)</span></div>
+                      <div style={{textAlign:"center"}}>
+                         <input
+                           type="text"
+                           ref={(cSearch) => { this.cSearch = cSearch }}
+                           placeholder="url"
+		           style={{borderBottom: "2px solid green",borderLeft: "2px solid green",marginBottom:"20px",height:"10vh",width:"50vw",background:"black", color:"white"}}
+                            />
 
-                        <button
-                             style={{borderBottom: "2px solid green", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"green", height: "10vh", marginBottom:"20px"}}
-		             onClick={(event) => {
-                                  event.preventDefault()
-                                  let upcId = this.state.account
-                                  let cSearch = this.cSearch.value.toString()
+                         <button
+                              style={{borderBottom: "2px solid green", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"green", height: "10vh", marginBottom:"20px"}}
+		              onClick={(event) => {
+                                   event.preventDefault()
+                                   let upcId = this.state.account
+                                   let cSearch = this.cSearch.value.toString()
 
-                                  var mplayer = this.getMplayer(cSearch);
-                                  this.setState({fullIpfs: mplayer});
-		             }}
-                        >
-                           search
-                        </button>
+                                   var mplayer = this.getMplayer(cSearch);
+                                   this.setState({fullIpfs: mplayer});
+		              }}
+                         >
+                            search
+                         </button>
 
+
+                         <button
+                              style={{borderBottom: "2px solid green", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"red", height: "10vh", marginBottom:"20px"}}
+		              onClick={() => {
+		                 this.setState(prevState => ({ pipVisibility: "false"}));
+		                 this.setState(prevState => ({ pipDisplay: "none" }));
+		              }}
+                         >
+                           [x]close 
+                         </button>
+                      </div>
 
                     <div>{this.state.fullIpfs}</div>
                   </div>
@@ -3190,6 +3203,7 @@ var playButton =
 
 
                 <Draggable
+		  style={{zIndex:"0"}}
                   axis="both"
                   handle=".handle2"
                   positionOffset={{x: '0', y: '-50%'}}
@@ -3200,41 +3214,45 @@ var playButton =
                   onStart={this.handleStart}
                   onDrag={this.handleDrag}
                   onStop={this.handleStop}>
-                  <div style={{ opacity:"0.9", background:"#ffffff" ,color:"#000000",zIndex:"99", visibility:this.state.pipVisibility2, display: this.state.pipDisplay2, width:"90vw",border:"3px dashed", padding:"5px"}}>
-                    <div className="handle2" style={{background:"blue", textAlign:"center"}}>drag-from-here (client1)</div>
-                      <input
-                        type="text"
-                        ref={(cSearch2) => { this.cSearch2 = cSearch2 }}
-                        placeholder="search-term (no spaces)"
-			style={{borderBottom: "2px solid blue",borderLeft: "2px solid blue",marginBottom:"20px",height:"10vh",width:"70vw",background:"black", color:"white"}}
-                        required />
+                  <div style={{ opacity:"0.9", background:"#ffffff" ,color:"#000000", visibility:this.state.pipVisibility2, display: this.state.pipDisplay2, width:"90vw",border:"3px dashed", padding:"5px"}}>
+                    <div className="handle2" style={{background:"blue", display:"grid"}}><span style={{textAlign:"center"}}>drag-from-here (client1)</span></div>
+                      <div style={{textAlign:"center"}}>
+                         <input
+                           type="text"
+                           ref={(cSearch2) => { this.cSearch2 = cSearch2 }}
+                           placeholder="url"
+		           style={{borderBottom: "2px solid blue",borderLeft: "2px solid blue",marginBottom:"20px",height:"10vh",width:"50vw",background:"black", color:"white"}}
+                            />
 
-                        <button
-                             style={{borderBottom: "2px solid blue", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"green", height: "10vh", marginBottom:"20px"}}
-		             onClick={(event) => {
-                                  event.preventDefault()
-                                  let upcId = this.state.account
-                                  let cSearch2 = this.cSearch2.value.toString()
+                         <button
+                              style={{borderBottom: "2px solid blue", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"blue", height: "10vh", marginBottom:"20px"}}
+		              onClick={(event) => {
+                                   event.preventDefault()
+                                   let upcId = this.state.account
+                                   let cSearch2 = this.cSearch2.value.toString()
 
-                                  var mplayer = this.getMplayer(cSearch2);
-                                  this.setState({fullIpfs2: mplayer});
-		             }}
-                        >
-                           search
-                        </button>
+                                   var mplayer = this.getMplayer(cSearch2);
+                                   this.setState({fullIpfs2: mplayer});
+		              }}
+                         >
+                            search
+                         </button>
 
+
+                         <button
+                              style={{borderBottom: "2px solid blue", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid blue",background: "#000000", color:"red", height: "10vh", marginBottom:"20px"}}
+		              onClick={() => {
+		                 this.setState(prevState => ({ pipVisibility2: "false"}));
+		                 this.setState(prevState => ({ pipDisplay2: "none" }));
+		              }}
+                         >
+                           [x]close 
+                         </button>
+                      </div>
 
                     <div>{this.state.fullIpfs2}</div>
                   </div>
                 </Draggable>
-
-
-
-
-
-
-
-
       </div>
       </ReactCardFlip>
 
