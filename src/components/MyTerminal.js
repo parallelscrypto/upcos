@@ -5,6 +5,7 @@ import Terminal from 'react-console-emulator'
 import ScratchCard from './ScratchCard'
 import IpfsUpload from './IpfsUpload'
 import TrebleCleff from './TrebleCleff'
+import StageCarousel from './StageCarousel'
 import BassCleff from './BassCleff'
 import go from './Mission'
 //import ChannelCarousel from './ChannelCarousel'
@@ -230,7 +231,7 @@ export default class MyTerminal extends Component {
 
     let totalFeds = await this.props.latestTokenIdFed();
     this.setState({totalFeds: totalFeds});
-    this.heroFront(this.state.account);
+    //this.heroFront(this.state.account);
     setInterval(function() {
         return self.DisplayTime(-300);
      }, 1000);
@@ -246,7 +247,6 @@ export default class MyTerminal extends Component {
           if(!upc) {
              upc = this.state.account
           }
-console.log("outputting on " + upc );
           let info = this.props.upcInfo(upc)
            .then(data => {
                 var owner= data['staker'];
@@ -364,9 +364,22 @@ src={srcImg} height="200" width="200"/></p>
 		    //this.offer();
 		}
                 else {
+                 var carousel;
 
-		   this.heroFront(this.state.account);
-                   self.setState({offerState: "video"});
+                 let infoOwned = this.props.upcInfo(upc)
+                  .then(data => {
+                       var vr   = data['vr'];
+                       var staker = data['staker'];
+
+                       if(vr.includes('###')) {
+                          carousel = <StageCarousel upcInfo={this.props.upcInfo} nftInfo={this.props.nftInfo} upcId={upc} />
+                          this.setState({player: carousel});
+                       }
+                       else {
+                          this.heroFront(this.state.account);
+                       }
+                  });
+                  self.setState({offerState: "video"});
                 }
 	   })
   }

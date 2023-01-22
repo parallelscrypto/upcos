@@ -69,16 +69,15 @@ const Carousel = makeCarousel(CarouselUI);
 
 
 
-export default class ChannelCarousel2 extends Component {
+export default class StageCarousel extends Component {
 
 
 
   constructor(props) {
     super(props);
-    var channel = props.channel;
-    var fullNft = "00000000000" + channel;
+    var channel = props.upcId;
     this.state = {
-       channel: fullNft,
+       channel: channel,
        slides: []
     }
     this.loadOne= this.loadOne.bind(this);
@@ -89,25 +88,45 @@ export default class ChannelCarousel2 extends Component {
     let infoOwned = this.props.upcInfo(this.state.channel)
      .then(data => {
           var self = this;
-          var ipfs   = data['ipfs'];
-          var nftIds = ipfs.split(",");
+          var ipfs   = data['vr'];
+          var nftIds = ipfs.split("#");
+console.log("NFTIDS      " + nftIds);
           for(var i = 0; i < nftIds.length; i++) {
-             var vidSnippet; 
-             let infoOwned = this.props.nftInfo(nftIds[i])
-              .then(data2 => {
-                   var vid = data2['vr'];
-                   var id  = data2['tokenId'];
-                   var oneVid = this.loadOne(id,vid);
-                       oneVid.then((result) => {
-                          var res = self.state.slides;
-                          res.push(result)
-                          self.setState({slides: res})
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                          return null;
-                        });
-              })
+             var vidSnippet;
+             var vid;
+
+             var tmpId = nftIds[i];
+             //keep ss string clean.
+             if(tmpId.length == 11) {
+                var oneVid = this.loadOne(7777777,tmpId);
+                    oneVid.then((result) => {
+                       var res = self.state.slides;
+                       res.push(result)
+                       self.setState({slides: res})
+                     })
+                     .catch((error) => {
+                       console.log(error);
+                       return null;
+                     });
+             }
+             else {
+
+                let infoOwned = this.props.nftInfo(nftIds[i])
+                  .then(data2 => {
+                       vid = data2['vr'];
+                       var id  = data2['tokenId'];
+                       var oneVid = this.loadOne(id,vid);
+                           oneVid.then((result) => {
+                              var res = self.state.slides;
+                              res.push(result)
+                              self.setState({slides: res})
+                            })
+                            .catch((error) => {
+                              console.log(error);
+                              return null;
+                            });
+                  })
+             }
           }
     })
 
