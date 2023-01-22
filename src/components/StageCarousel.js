@@ -146,7 +146,6 @@ console.log("NFTIDS      " + nftIds);
                       xi {id}
                    </pre>
                    <TikTok url={vr} />
-                   <p className="legend">externally-hosted-tiktok-vid</p>
                 </div>
     }
     //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
@@ -161,7 +160,6 @@ console.log("NFTIDS      " + nftIds);
                            sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                            src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
                    </iframe>
-                   <p className="legend">external-vid</p>
                 </div>
     }
     //arbitrary url video
@@ -178,7 +176,6 @@ console.log("NFTIDS      " + nftIds);
                            sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                            src={fullUrl}>
                    </iframe>
-                   <p className="legend">external-url</p>
                 </div>
     }
 
@@ -191,7 +188,6 @@ console.log("NFTIDS      " + nftIds);
                       url={vr}
                    />
 
-                   <p className="legend">external-vid</p>
                 </div>
     }
 

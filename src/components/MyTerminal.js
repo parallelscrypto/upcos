@@ -37,7 +37,7 @@ var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n
 
 //var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.oneafrika', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.coinbox']
 
-var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.notaslave', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.coinbox']
+var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.notaslave', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.sha256','.slideshow','.coinbox']
 
 
 
@@ -975,6 +975,8 @@ src={srcImg} height="200" width="200"/></p>
                            <option value="64">.dog-lost</option>
                            <option value="65">.promo-code</option>
                            <option value="66">.dream-log</option>
+                           <option value="67">.sha256</option>
+                           <option value="68">.slideshow</option>
                            <option value="777">.coinbox</option>
                         </select>
 
@@ -1336,7 +1338,7 @@ src={srcImg} height="200" width="200"/></p>
     var addy = this.props.address;
     addy  = addy.substr(0,15);
 
-    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV </i>\n <i>wake.tf.up</i> \n <b style='color:red'> [always.ask.questions]</b> \n <i style='color:#d66900'>Powered by nostradiotoken Crypto</i>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is programd and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key). </u> \n <i style='color:white'> <b style='color:red'>1.</b> Type <i style='color:red'>`help`</i> to see available commands \n <b style='color:red'> 2. </b> Type <i style='color:red'>`claim`</i> to get some nostradiotoken Token.  You must pay a .15 Matic access fee and you recieve .25 nostradiotoken token each time you `claim`.  Therefore, in order to get the 1 token that you need to buy a UPC NFT, you must run the claim command 4 times. We prefer microtransactions in order to dispel the myth that one must be rich to participate in the NFT economy. \n <b style='color:red'> 3. </b> Type <i style='color:red'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <b style='color:red'> 4. </b> Type <i style='color:red'>`recon`</i> to allow your wallet to spend your nostradiotoken token in our smart contract.  You will not be able to program {{pro}} a upc until you have run this command \n Type <i style='color:red'>`pro`</i> to program (buy) the UPC [[" + this.state.account + "]]" + "\n  Type <i style='color:red'>`own`</i> to mint if successful with program {pro} [[" + this.state.account + "]]" + "\n  <i style='color:red'>Type `sell` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:red'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:red'>`clear`</i> to clear screen" + " \n Type <i style='color:red'>`ch [0-9]` to to watch the corresponding channel.  For example, type `ch 0` to watch channel 0, and type `ch 9` to watch channel 9.  Channel values 0-9 are valid";
+    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV </i>\n <i>wake.tf.up</i> \n <b style='color:red'> [always.ask.questions]</b> \n <i style='color:#d66900'>Powered by nostradiotoken Crypto</i>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is programd and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key). </u> \n <i style='color:white'> <b style='color:red'>1.</b> Type <i style='color:red'>`help`</i> to see available commands \n <b style='color:red'> 2. </b> Type <i style='color:red'>`claim`</i> to get some nostradiotoken Token.  You must pay a .15 Matic access fee and you recieve .25 nostradiotoken token each time you `claim`.  Therefore, in order to get the 1 token that you need to buy a UPC NFT, you must run the claim command 4 times. A user only needs one token to buy a UPC NFT, so no need to sit around typing claim a bunch of times trying to accumulate tokens. \n <b style='color:red'> 3. </b> Type <i style='color:red'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <b style='color:red'> 4. </b> Type <i style='color:red'>`recon`</i> to allow your wallet to spend your nostradiotoken token in our smart contract.  You will not be able to buy {{buy}} a upc until you have run this command \n Type <i style='color:red'>`buy`</i> to buy the UPC [[" + this.state.account + "]]" + "\n  Type <i style='color:red'>`own`</i> to mint if successful with program {buy} [[" + this.state.account + "]]" + "\n  <i style='color:red'>Type `sell` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:red'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:red'>`clear`</i> to clear screen" + " \n Type <i style='color:red'>`ch [0-9]` to to watch the corresponding channel.  For example, type `ch 0` to watch channel 0, and type `ch 9` to watch channel 9.  Channel values 0-9 are valid";
     var promptlabel =  '[[ AWAITING COMMAND ]] => ';
 
           
@@ -1588,10 +1590,12 @@ var playButton =
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open the front stage video in draggable interface</p>',
               fn: () => {
 
-		      this.play(this.state.account,true);
+                      var upc = this.state.account;
+                      var carousel = <StageCarousel upcInfo={this.props.upcInfo} nftInfo={this.props.nftInfo} upcId={upc} />
 
-		      //this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
-		      //this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+		      this.setState({ fullIpfs2: carousel });
+		      this.setState(prevState => ({ pipDisplay2: true}));
+		      this.setState(prevState => ({ pipVisibility2: true}));
               }
             },
 
@@ -3173,7 +3177,7 @@ var playButton =
                   onDrag={this.handleDrag}
                   onStop={this.handleStop}>
                   <div style={{ opacity:"0.9", background:"#ffffff" ,color:"#000000", visibility:this.state.pipVisibility, display: this.state.pipDisplay, width:"90vw",border:"3px dashed", padding:"5px"}}>
-                    <div className="handle" style={{background:"green", display:"grid"}}><span style={{textAlign:"center"}}>drag-from-here (client1)</span></div>
+                    <div className="handle" style={{background:"green", display:"grid"}}><span style={{textAlign:"center"}}>drag-from-here (client0)</span></div>
                       <div style={{textAlign:"center"}}>
                          <input
                            type="text"
@@ -3228,17 +3232,17 @@ var playButton =
                   onDrag={this.handleDrag}
                   onStop={this.handleStop}>
                   <div style={{ opacity:"0.9", background:"#ffffff" ,color:"#000000", visibility:this.state.pipVisibility2, display: this.state.pipDisplay2, width:"90vw",border:"3px dashed", padding:"5px"}}>
-                    <div className="handle2" style={{background:"blue", display:"grid"}}><span style={{textAlign:"center"}}>drag-from-here (client1)</span></div>
+                    <div className="handle2" style={{background:"red", display:"grid"}}><span style={{textAlign:"center"}}>drag-from-here (client1)</span></div>
                       <div style={{textAlign:"center"}}>
                          <input
                            type="text"
                            ref={(cSearch2) => { this.cSearch2 = cSearch2 }}
                            placeholder="url"
-		           style={{borderBottom: "2px solid blue",borderLeft: "2px solid blue",marginBottom:"20px",height:"10vh",width:"50vw",background:"black", color:"white"}}
+		           style={{borderBottom: "2px solid red",borderLeft: "2px solid red",marginBottom:"20px",height:"10vh",width:"50vw",background:"black", color:"white"}}
                             />
 
                          <button
-                              style={{borderBottom: "2px solid blue", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"blue", height: "10vh", marginBottom:"20px"}}
+                              style={{borderBottom: "2px solid red", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"red", height: "10vh", marginBottom:"20px"}}
 		              onClick={(event) => {
                                    event.preventDefault()
                                    let upcId = this.state.account
@@ -3253,7 +3257,7 @@ var playButton =
 
 
                          <button
-                              style={{borderBottom: "2px solid blue", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid blue",background: "#000000", color:"red", height: "10vh", marginBottom:"20px"}}
+                              style={{borderBottom: "2px solid red", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid red",background: "#000000", color:"red", height: "10vh", marginBottom:"20px"}}
 		              onClick={() => {
 		                 this.setState(prevState => ({ pipVisibility2: "false"}));
 		                 this.setState(prevState => ({ pipDisplay2: "none" }));
