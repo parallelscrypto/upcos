@@ -84,51 +84,59 @@ export default class StageCarousel extends Component {
   }
 
 
+
+
+  getYt = async (tmpId) => {
+                var res;
+                var oneVid = await this.loadOne(7777777,tmpId);
+	        res = this.state.slides;
+	        res.push(oneVid)
+	        this.setState({slides: res})
+
+  }
+
+
+  getNft = async (i, nftIds) => {
+                let infoOwned = await this.props.nftInfo(nftIds[i])
+                let vid = infoOwned['vr'];
+                var id  = infoOwned['tokenId'];
+                var oneVid = await this.loadOne(id,vid);
+		var res = this.state.slides;
+		res.push(oneVid)
+		this.setState({slides: res})
+   }
+
+
+
+
   componentDidMount = async () => {
-    let infoOwned = this.props.upcInfo(this.state.channel)
-     .then(data => {
+    var res;
+    var info = [];
+    let infoOwned = await this.props.upcInfo(this.state.channel)
           var self = this;
-          var ipfs   = data['vr'];
+          var ipfs   = infoOwned['vr'];
           var nftIds = ipfs.split("#");
-console.log("NFTIDS      " + nftIds);
+
           for(var i = 0; i < nftIds.length; i++) {
+             if(!nftIds[i]) continue;
              var vidSnippet;
              var vid;
 
              var tmpId = nftIds[i];
+             info[i] = { 
+                order: i,
+                data: nftIds[i]
+             }
+
+             console.log(info[i]);
              //keep ss string clean.
              if(tmpId.length == 11) {
-                var oneVid = this.loadOne(7777777,tmpId);
-                    oneVid.then((result) => {
-                       var res = self.state.slides;
-                       res.push(result)
-                       self.setState({slides: res})
-                     })
-                     .catch((error) => {
-                       console.log(error);
-                       return null;
-                     });
+                var entry = await this.getYt(tmpId); 
              }
              else {
-
-                let infoOwned = this.props.nftInfo(nftIds[i])
-                  .then(data2 => {
-                       vid = data2['vr'];
-                       var id  = data2['tokenId'];
-                       var oneVid = this.loadOne(id,vid);
-                           oneVid.then((result) => {
-                              var res = self.state.slides;
-                              res.push(result)
-                              self.setState({slides: res})
-                            })
-                            .catch((error) => {
-                              console.log(error);
-                              return null;
-                            });
-                  })
+                var entry = await this.getNft(i,nftIds); 
              }
           }
-    })
 
   }
 
