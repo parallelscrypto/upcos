@@ -256,11 +256,12 @@ class App extends Component {
 
   sendToMarket = async (nftId) => {
     const { accounts, contract } = this.state;
-    var market_address = this.state.upcNFTData.address
+    var market_address = this.state.upcMarket._address
+console.log("mk addy is " + market_address);
     const gameID = "testGame";
     //console.log(this.state.sendCryptoValue);
     // Stores a given value, 5 by default.
-    var result = await this.state.upcMarket.methods.safeTransferFrom(this.state.account, market_address, nftId).send({ from: this.state.account})
+    var result = await this.state.upcNft.methods.safeTransferFrom(this.state.account, market_address, nftId).send({ from: this.state.account})
     return result.toString();
   };
 

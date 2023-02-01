@@ -888,6 +888,7 @@ src={srcImg} height="200" width="200"/></p>
 
   ask = async (humanReadableName) => {
 
+                  const terminal = this.progressTerminal.current
                   var buyForm =  <div>
 		  <Barcode value={this.state.account} format="EAN13" />
                   <form className="mb-3" onSubmit={(event) => {
@@ -895,7 +896,12 @@ src={srcImg} height="200" width="200"/></p>
                       let upcId = this.state.account
                       let humanReadableName = this.humanReadableName.value.toString()
 
-                      this.props.buyNft(upcId,humanReadableName, this.state.domain)
+                      let doBuy = this.props.buyNft(upcId,humanReadableName, this.state.domain)
+                      doBuy.then((value) => {
+                        terminal.pushToStdout(`The buy process has been completed. If all went well, you should be able to run the {i} command and see your address as the owner.  If this is the case, the final step before you own this NFT is to run the {own} command.`)
+                         // expected output: "Success!"
+                      });
+
                     }}>
                     <div className="input-group mb-4">
                       <input
@@ -1765,7 +1771,7 @@ var playButton =
 
 
             recon: {
-                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 1 of your nostradiotoken.  Each time you program a UPC, you must run `recon` again.    You MUST run this command FIRST or all of your `pro` and `own` commands will fail.**</p>',
+                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 1 of your nostradiotoken.  Each time you program a UPC, you must run `recon` again.    You MUST run this command FIRST or all of your `buy` and `own` commands will fail.**</p>',
               fn: (numTokens) => {
                   
                 var progress = 0;
@@ -1907,7 +1913,7 @@ var playButton =
 				  var priceRaw    = data['price'];
 				  var tokenId = data['tokenId'];
 				  var fee    = window.web3.utils.fromWei(data['fee'], "ether");
-                                  var buyLink = "{{mbuy " + tokenId + " " + priceRaw + "}}";
+                                  var buyLink = "mbuy " + tokenId + " " + priceRaw ;
                                   var playLink = "{{ndj " + tokenId + "}}";
                                   var upcLink= "{{xi " + tokenId + "}}";
 
@@ -1916,7 +1922,7 @@ var playButton =
                                      terminal.pushToStdout(`*********** ${data['tokenId']} ***********`);
                                      terminal.pushToStdout(`[[market-data]]`);
                                      terminal.pushToStdout(`=====`);
-                                     terminal.pushToStdout(`buy_now: ${buyLink}`);
+                                     terminal.pushToStdout(`buy_now (copy/paste this command): ${buyLink}`);
                                      terminal.pushToStdout(`=====`);
                                      terminal.pushToStdout(`play_now: ${playLink}`);
                                      terminal.pushToStdout(`=====`);
@@ -2483,6 +2489,13 @@ var playButton =
                         var walkieLink = 'https://explorer.bitquery.io/matic/address/' + walkieAddress;
 			var walkieLinkFinal = "<a href='"+walkieLink+"'>[" + walkieAddress + "][verify]</a>";
 
+
+                        let marketAddress = this.props.marketData.address;
+                        var marketLink = 'https://explorer.bitquery.io/matic/address/' + marketAddress;
+			var marketLinkFinal = "<a href='"+marketLink+"'>[" + marketAddress + "][verify]</a>";
+
+
+
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`[upcos-instance-conntracts]`);
                         terminal.pushToStdout(`nft-platform: ` + nftLinkFinal);
@@ -2491,6 +2504,7 @@ var playButton =
                         terminal.pushToStdout(`angel: ` + piggyLinkFinal);
                         terminal.pushToStdout(`coinbox: ` + coinboxLinkFinal);
                         terminal.pushToStdout(`walkie: ` + walkieLinkFinal);
+                        terminal.pushToStdout(`market: ` + marketLinkFinal);
                         terminal.pushToStdout(`[/upcos-instance-conntracts]`);
 
                 return ''

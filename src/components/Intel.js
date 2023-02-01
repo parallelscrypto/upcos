@@ -70,6 +70,7 @@ class Intel extends Component {
             coinboxData={this.props.coinboxData}
             walkieData={this.props.walkieData}
             paytokenData={this.props.paytokenData}
+            marketData={this.props.marketData}
 
 	    buyNftNav={this.props.buyNftNav} 
 	    mintNftNav={this.props.mintNftNav} 
