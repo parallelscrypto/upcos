@@ -1015,6 +1015,7 @@ console.log("mk addy is " + market_address);
         coinboxData={this.state.coinboxData}
         walkieData={this.state.walkieData}
         paytokenData={this.state.intelXData}
+        marketData  = {this.state.upcMarketData}
 
 
 	swap={this.swap}
