@@ -838,7 +838,7 @@ src={srcImg} height="200" width="200"/></p>
                             self.setState({player: scantool });
                          }}
                     >
-                       scan
+                       scanner
                     </button>
              </div>
 
