@@ -71,6 +71,13 @@ class Intel extends Component {
             walkieData={this.props.walkieData}
             paytokenData={this.props.paytokenData}
             marketData={this.props.marketData}
+            trademarketData={this.props.trademarketData}
+
+
+            approveTrade={this.props.approveTrade}
+            createTrade={this.props.createTrade}
+            executeTrade={this.props.executeTrade}
+
 
 	    buyNftNav={this.props.buyNftNav} 
 	    mintNftNav={this.props.mintNftNav} 

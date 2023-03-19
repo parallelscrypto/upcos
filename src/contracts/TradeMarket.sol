@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract TradeMarket is IERC721Receiver {
 
@@ -10,17 +11,27 @@ contract TradeMarket is IERC721Receiver {
         address owner;
         uint256 nftId;
     }
-    
-    mapping (uint256 => NFT) public nfts;
-    address private  nftMarketplace = 0xd9145CCE52D386f254917e481eB44e9943F39138;
 
-    
+
+
+    mapping (uint256 => NFT) public nfts;
+    address private  nftMarketplace = 0x10c0a0Ec21c1ec1e3c3EBF772e7C61d64Fd19193;
+    address private  owner;
+
+
     event NFTAdded(uint256 indexed nftId, address indexed owner);
     event NFTSwapped(uint256 indexed nftId, address indexed oldOwner, address indexed newOwner);
-    
+
+    modifier onlyOwner {
+       require(msg.sender == owner);
+       _;
+    }
+
+
+
     function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes memory _data) public override returns(bytes4) {
 
-        //require(msg.sender == nftMarketplace, "Only NRT can be sold in this marketplace");
+        require(msg.sender == nftMarketplace, "Only NRT can be sold in this marketplace");
 
         //require(ERC721(msg.sender).ownerOf(_tokenId) == msg.sender, "Sender is not owner of NFT");
         require(nfts[_tokenId].nftId == 0, "NFT is already in TradeMarket");
@@ -34,8 +45,13 @@ contract TradeMarket is IERC721Receiver {
         emit NFTAdded(_tokenId, msg.sender);
         
         return 0x150b7a02;
-     }
+    }
 
+    
+    function setMarketplace(address marketplace) external onlyOwner {
+        nftMarketplace = marketplace;
+    }
+    
     
     function trade(uint256 _nftId1, uint256 _nftId2) public payable {
         address _offeredOwner = nfts[_nftId2].owner;
@@ -55,4 +71,3 @@ contract TradeMarket is IERC721Receiver {
         emit NFTSwapped(_nftId2, _offeredOwner, msg.sender);
     }
 }
-

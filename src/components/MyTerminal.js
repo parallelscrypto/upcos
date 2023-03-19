@@ -642,6 +642,43 @@ src={srcImg} height="200" width="200"/></p>
 
 
 
+  xtrade = async (nftId1,nftId2) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var theBal;
+                  let bal = this.props.executeTrade(nftId1,nftId2);
+                      bal.then((value) => {
+                         terminal.pushToStdout(`[[flip]]`);
+                         terminal.pushToStdout(`If you are the owner of nftId1, and if this 'xtrade' transaction clears before anyone elses, then congratulations on the successful atomic swap. If successful, the {i} command will show you as the owner the new owner of the nftId2.`);
+                         terminal.pushToStdout(`[[/flip]]`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+  }
+
+
+
+
+  trade = async (nftId) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var theBal;
+                  let bal = this.props.createTrade(nftId);
+                      bal.then((value) => {
+                         terminal.pushToStdout(`[[flip]]`);
+                         terminal.pushToStdout(`Creating an atomic swap for your NFT. If successful, the {i} command will show the marketplace as the owner.  Run the {whois} command to see the trade market address.`);
+                         terminal.pushToStdout(`[[/flip]]`);
+                         // expected output: "Success!"
+                      });
+                })
+
+                return ''
+  }
+
   flip= async (nftId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1758,6 +1795,19 @@ var playButton =
               }
             },
 
+
+
+
+            sell: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Flip this NFT!  Send it to the decentralized marketplace after you have put in the hard work of renovating this UPC property!  After this command succeeds, you can set-market-price with smp command.  Sale will not start until you set market price (smp) **</p>',
+              fn: (nftId) => {
+		      this.flip(nftId);
+              }
+            },
+
+
+
+
             sell: {
               description: '<p style="color:hotpink;font-size:1.1em">** Flip this NFT!  Send it to the decentralized marketplace after you have put in the hard work of renovating this UPC property!  After this command succeeds, you can set-market-price with smp command.  Sale will not start until you set market price (smp) **</p>',
               fn: (nftId) => {
@@ -1769,6 +1819,48 @@ var playButton =
               description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that are on the market **</p>',
               fn: (word) => {
 		      this.grep(word);
+              }
+            },
+
+
+
+            pretrade: {
+                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to send [nftId] to the trade market. You can not trade your NFT until you have successfully run this comman**</p>',
+              fn: (nftId) => {
+                  
+                var progress = 0;
+                this.setState({approved: false});
+                this.setState({ isProgressing: true }, () => {
+                  let approval = this.props.approveTrade(nftId);
+                  approval.then((value) => {
+                    var apprMsg = "You have successfullly approved your NFT to be traded in the market.  You can create the atomic swap (trade) by typing the following command: {trade " + nftId + "}";
+                    terminal.pushToStdout(``)
+                     // expected output: "Success!"
+                  });
+                })
+        
+                         terminal.pushToStdout(`[[approve]]`);
+                terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
+                         terminal.pushToStdout(`[[/approve]]`);
+                return ''
+              }
+            },
+
+
+
+            trade: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Send one of your UPC codes (NFTs) to the TradeMarket.  When your UPC code (NFT) is in the TradeMarket, any other user can execute on your offer as a 1 for 1 trade. When you send your NFT to the TradeMarket, there is no negotiating for the NFT that you get in exchange.  The crypto jargon for this type of trade is Atomic Swap, so if you run the `trade` command, you will be offering your NFT for an atomic swap.   syntax is `trade <myNftToCreateSwapOffer>`**</p>',
+              fn: (nftId) => {
+		      this.trade(nftId);
+              }
+            },
+
+
+
+            xtrade: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Execute a trade sending one of your UPC codes (NFTs) to the TradeMarket in an atomic swap for one of the NFTs in the marketplace.  syntax is `xtrade <myNftToOffer> <tradeMarketNft>` **</p>',
+              fn: (nftId1,nftId2) => {
+		      this.xtrade(nftId1,nftId2);
               }
             },
 
@@ -1794,6 +1886,9 @@ var playButton =
                 return ''
               }
             },
+
+
+
             bal: {
                description: '<p style="color:hotpink;font-size:1.1em">** Display your nostradiotoken balance **</p>',
                fn: () => {
@@ -2494,10 +2589,15 @@ var playButton =
 			var walkieLinkFinal = "<a href='"+walkieLink+"'>[" + walkieAddress + "][verify]</a>";
 
 
-console.log("MARKET IS " + this.props.marketData);
                         let marketAddress = this.props.marketData.address;
                         var marketLink = 'https://explorer.bitquery.io/matic/address/' + marketAddress;
 			var marketLinkFinal = "<a href='"+marketLink+"'>[" + marketAddress + "][verify]</a>";
+
+
+                        let trademarketAddress = this.props.trademarketData.address;
+                        var trademarketLink = 'https://explorer.bitquery.io/matic/address/' + trademarketAddress;
+			var trademarketLinkFinal = "<a href='"+trademarketLink+"'>[" + trademarketAddress + "][verify]</a>";
+
 
 
 
@@ -2509,7 +2609,8 @@ console.log("MARKET IS " + this.props.marketData);
                         terminal.pushToStdout(`angel: ` + piggyLinkFinal);
                         terminal.pushToStdout(`coinbox: ` + coinboxLinkFinal);
                         terminal.pushToStdout(`walkie: ` + walkieLinkFinal);
-                        terminal.pushToStdout(`market: ` + marketLinkFinal);
+                        terminal.pushToStdout(`sell-market: ` + marketLinkFinal);
+                        terminal.pushToStdout(`trade-market: ` + trademarketLinkFinal);
                         terminal.pushToStdout(`[/upcos-instance-conntracts]`);
 
                 return ''

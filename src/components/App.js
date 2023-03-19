@@ -7,6 +7,7 @@ import NostRadioToken from '../etc/nostradio-10/NostRadioToken.json'
 
 import piggy from '../etc/nostradio-10/TipJar.json'
 import UPCMarket from '../etc/nostradio-10/UPCMarket.json'
+import TradeMarket from '../etc/nostradio-10/TradeMarket.json'
 import WalkieTalkie from '../etc/nostradio-10/WalkieTalkie.json'
 import CoinBox from '../etc/nostradio-10/CoinBox.json'
 import OpenFederation from '../etc/nostradio-10/OpenFederation.json'
@@ -64,6 +65,19 @@ class App extends Component {
     } else {
       //window.alert('UPCNFT contract not deployed to detected network.')
     }
+
+
+    // Load TradeMarket
+    const trademarketData = TradeMarket.networks[networkId]
+    if(trademarketData) {
+      const trademarketNft = new web3.eth.Contract(TradeMarket.abi, trademarketData.address)
+      this.setState({ trademarketNft })
+      this.setState({ trademarketData: trademarketData })
+    } else {
+      //window.alert('UPCNFT contract not deployed to detected network.')
+    }
+
+
 
 
     // Load CoinBox
@@ -254,6 +268,38 @@ class App extends Component {
   };
 
 
+
+
+  createTrade = async (nftId) => {
+    const { accounts, contract } = this.state;
+    var market_address = this.state.trademarketNft._address
+console.log("mk addy is " + market_address);
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    var result = await this.state.upcNft.methods.safeTransferFrom(this.state.account, market_address, nftId).send({ from: this.state.account})
+    return result.toString();
+  };
+
+
+
+
+  executeTrade = async (nftId1,nftId2) => {
+    const { accounts, contract } = this.state;
+    var market_address = this.state.trademarketNft._address
+console.log("mk addy is " + market_address);
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    var result = await this.state.trademarketNft.methods.trade(nftId1, nftId2).send({ from: this.state.account})
+    return result.toString();
+  };
+
+
+
+
+
+
   sendToMarket = async (nftId) => {
     const { accounts, contract } = this.state;
     var market_address = this.state.upcMarket._address
@@ -354,6 +400,24 @@ console.log("mk addy is " + market_address);
     var upcNFTData = this.state.coinboxData;
     var approval = await this.state.intelX.methods.approve(upcNFTData.address, numNarativ).send({ from: this.state.account });
     this.setState({daiTokenBalance: approval.toString() });
+    return approval.toString();
+  };
+
+
+
+  approveTrade= async (nftId) => {
+    const web3 = window.web3
+    const intelXData = this.state.intelX;
+
+    const { accounts, contract } = this.state;
+
+    var nftData = this.state.upcNFTData;
+    var trademarketData = this.state.trademarketNft
+
+    console.log("--------here it is---------");
+    console.log(trademarketData);
+    console.log(trademarketData._address);
+    var approval = await this.state.upcNft.methods.approve(trademarketData._address, nftId).send({ from: this.state.account });
     return approval.toString();
   };
 
@@ -884,6 +948,10 @@ console.log("mk addy is " + market_address);
     this.approveUPCS= this.approveUPCS.bind(this);
     this.approveFed= this.approveFed.bind(this);
 
+    this.approveTrade = this.approveTrade.bind(this);
+    this.createTrade  = this.createTrade.bind(this);
+    this.executeTrade  = this.executeTrade.bind(this);
+
     this.buyNftNav= this.buyNftNav.bind(this);
     this.mintNftNav= this.mintNftNav.bind(this);
     this.approveNav= this.approveNav.bind(this);
@@ -993,6 +1061,11 @@ console.log("mk addy is " + market_address);
 	buyUPCSWithNarativ={this.buyUPCSWithNarativ}
 	approveUPCS={this.approveUPCS}
 
+
+	approveTrade={this.approveTrade}
+	createTrade={this.createTrade}
+	executeTrade={this.executeTrade}
+
 	buyNftNav={this.buyNftNav}
 	mintNftNav={this.mintNftNav}
 	approveUSDC={this.approveUSDC}
@@ -1016,6 +1089,7 @@ console.log("mk addy is " + market_address);
         walkieData={this.state.walkieData}
         paytokenData={this.state.intelXData}
         marketData  = {this.state.upcMarketData}
+        trademarketData  = {this.state.trademarketData}
 
 
 	swap={this.swap}
