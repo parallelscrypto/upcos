@@ -37,7 +37,7 @@ var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n
 
 //var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.oneafrika', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.coinbox']
 
-var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.not-a-slave', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.sha256','.slideshow','.champion','.for-sale','public-key','.ticket','happy-birthday','metal-detect','.coinbox']
+var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.not-a-slave', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.sha256','.slideshow','.champion','.for-sale','public-key','.ticket','happy-birthday','metal-detect','open-room','.coinbox']
 
 
 
@@ -1026,6 +1026,7 @@ src={srcImg} height="200" width="200"/></p>
                            <option value="72">.ticket</option>
                            <option value="73">.happy-birthday</option>
                            <option value="74">.metal-detect</option>
+                           <option value="75">.open-room</option>
                            <option value="777">.coinbox</option>
                         </select>
 
@@ -1636,7 +1637,7 @@ var playButton =
 
 
             s: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open the front stage video in draggable interface</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open the front stage inside of the command line as a draggable interface</p>',
               fn: () => {
 
                       var upc = this.state.account;
@@ -1733,7 +1734,7 @@ var playButton =
 
 
             own: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `pro` or `own` command</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `buy` command</p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1765,7 +1766,7 @@ var playButton =
 
 
             pwn: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `colonize` or `xcolonize` command</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `buy` command</p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -1805,15 +1806,6 @@ var playButton =
               }
             },
 
-
-
-
-            sell: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Flip this NFT!  Send it to the decentralized marketplace after you have put in the hard work of renovating this UPC property!  After this command succeeds, you can set-market-price with smp command.  Sale will not start until you set market price (smp) **</p>',
-              fn: (nftId) => {
-		      this.flip(nftId);
-              }
-            },
 
             grep: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that are on the market **</p>',
@@ -2181,13 +2173,26 @@ var playButton =
 
 
             nfts: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that are on the market **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that you own **</p>',
               fn: () => {
 		      var addy = this.props.address;
                       addy  = addy.substr(0,15);
 		      this.grep(addy);
               }
             },
+
+
+
+            trades : {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that are on the **TRADES** market **</p>',
+              fn: () => {
+
+                      let addy = this.props.trademarketData.address;
+                      addy  = addy.substr(0,15);
+		      this.grep(addy);
+              }
+            },
+
 
 
             last : {
