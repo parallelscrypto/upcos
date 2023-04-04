@@ -37,7 +37,7 @@ var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n
 
 //var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.oneafrika', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.coinbox']
 
-var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.not-a-slave', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.sha256','.slideshow','.champion','.for-sale','public-key','.ticket','happy-birthday','metal-detect','open-room','.coinbox']
+var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.mic', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-CIA','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.sha256','.slideshow','.champion','.for-sale','.public-key','.ticket','.happy-birthday','.metal-detect','.open-room','.scrap-bot','.coinbox']
 
 
 
@@ -1000,7 +1000,7 @@ src={srcImg} height="200" width="200"/></p>
                            <option value="46">.pawn-piece</option>
                            <option value="47">.decentralized-email-list</option>
                            <option value="48">.sober-day</option>
-                           <option value="49">.not-a-slave</option>
+                           <option value="49">.mic</option>
                            <option value="50">.afrika</option>
                            <option value="51">.dance</option>
                            <option value="52">.micro-finance</option>
@@ -1027,6 +1027,7 @@ src={srcImg} height="200" width="200"/></p>
                            <option value="73">.happy-birthday</option>
                            <option value="74">.metal-detect</option>
                            <option value="75">.open-room</option>
+                           <option value="76">.scrap-bot</option>
                            <option value="777">.coinbox</option>
                         </select>
 
@@ -2374,7 +2375,7 @@ var playButton =
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`token_id: ${data['tokenId']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
+                        terminal.pushToStdout(`dna_hash: ${data['upcHash']}`);
                         terminal.pushToStdout(`=====`);
 	                terminal.pushToStdout(`upc: <a onclick="window.location.assign('${currentUrl}');window.location.reload()" href="${currentUrl}">${upc}</a>`);
                         terminal.pushToStdout(`=====`);
@@ -2450,7 +2451,7 @@ var playButton =
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`token_id: ${data['tokenId']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
+                        terminal.pushToStdout(`dna_hash: ${data['upcHash']}`);
                         terminal.pushToStdout(`=====`);
 	                terminal.pushToStdout(`upc: <a onclick="window.location.assign('${currentUrl}');window.location.reload()" href="${currentUrl}">${upc}</a>`);
                         terminal.pushToStdout(`=====`);
@@ -2516,7 +2517,7 @@ var playButton =
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`token_id: ${data['tokenId']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`upc_hash: ${data['upcHash']}`);
+                        terminal.pushToStdout(`dna_hash: ${data['upcHash']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`upc: ${data['word']}`);
                         terminal.pushToStdout(`=====`);
