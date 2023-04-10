@@ -191,6 +191,7 @@ export default class MyTerminal extends Component {
     this.prodLookup= this.prodLookup.bind(this);
     this.search= this.search.bind(this);
     this.tutorial= this.tutorial.bind(this);
+    this.gpt = this.gpt.bind(this);
     this.meeting= this.meeting.bind(this);
     this.grep= this.grep.bind(this);
     this.forward= this.forward.bind(this);
@@ -831,6 +832,37 @@ src={srcImg} height="200" width="200"/></p>
                       this.setState({showModalTutorial:true});
   }
 
+
+
+  gpt = async (upcId) => {
+
+
+
+                 const api_url = "https://api-inference.huggingface.co/models/OpenAssistant/oasst-sft-1-pythia-12b";
+                 const pipeline = "text-generation/"
+                 const payload = JSON.stringify({
+                   "query": {"inputs": "write a poem about a jar of jelly from the perspective of a jar of peanut butter.  the jelly has done something extraordinary"},
+                 });
+                 
+                 // Add your token from https://huggingface.co/settings/token
+                 const body= {
+                     'headers':  {"Authorization": "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"},
+                     'wait_for_model': true,
+                     'use_gpu': false,
+                     'method' : "POST",
+                     'contentType' : "application/json",
+                     'payload' : payload
+                   };
+                 
+                 var xmlHttp = new XMLHttpRequest();
+                 xmlHttp.open("GET", api_url, false);
+                 xmlHttp.send(body);
+                 console.log(xmlHttp.responseText);
+                 //const HF_API_TOKEN = "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";
+                 //const model = "THUDM/chatglm-6b"
+                 //const data = {inputs:"write a poem about a jar of jelly from the perspective of a jar of peanut butter.  the jelly has done something extraordinary"};
+                 
+  }
 
 
 
@@ -1595,6 +1627,15 @@ var playButton =
             },
 
 
+            gpt: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open a upcGPT window for the 12 digit code passed in.  If no code is passed, the current upc code is used.  You can either use this command (for example) as `gpt 000000000000` if you want to open a upcGPT window to `The Zeros`. **</p>',
+              fn: (upcId) => {
+                 this.gpt(upcId);
+              }
+            },
+
+
+
             search: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Search upcs for content.  Fields searched are owner, human readable name, vr, and ipfs.  No spaces in the search term, use dashes or underscores depending on how the owner named the file/human readable name**</p>',
               fn: (humanReadableName) => {
@@ -1672,6 +1713,29 @@ var playButton =
                      }
             },
 
+
+
+
+            upcgpt: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open client window in draggable interface</p>',
+              fn: (fullUrl,winNum) => {
+
+		      fullUrl = "https://chat.lmsys.org";
+                      winNum = "0";
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
 
 
 
