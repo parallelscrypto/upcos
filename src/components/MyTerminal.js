@@ -53,15 +53,15 @@ const commands = {
 }
 
 export default class MyTerminal extends Component {
-
+  
   constructor(props) {
     super(props)
 
     this.progressTerminal = React.createRef()
 
+    const hero_unique_string = "this-is-repatriation-os";
 
-
-    var upcHash  = sha256(props.account)
+    var upcHash  = sha256(props.account + hero_unique_string)
 
     var avatarType;
 
@@ -328,6 +328,10 @@ export default class MyTerminal extends Component {
                      }
 
  
+                   const hero_unique_string = "this-is-repatriation-os";
+
+                   upcHash += hero_unique_string;
+
                    var channelNum = upc.substr(upc.length - 1,1)
                    var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
                    var offerBuy = 
@@ -1500,6 +1504,9 @@ var playButton =
     }
 
     
+    const hero_unique_string = "this-is-repatriation-os";
+
+    upcHash  += hero_unique_string;
     var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
     var cardValue = {
        value:  upcHash,

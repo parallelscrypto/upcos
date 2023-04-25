@@ -2,15 +2,16 @@ import React, { Component } from 'react'
 import ReactCardFlip from 'react-card-flip';
 import Iframe from 'react-iframe'
 import Web3 from 'web3'
-import NostRadioStation from '../etc/nostradio-10/NostRadioStation.json'
-import NostRadioToken from '../etc/nostradio-10/NostRadioToken.json'
 
+import NostRadioStation from '../etc/repatriate/WelcomeHome.json'
+import NostRadioToken from '../etc/repatriate/Repatriate.json'
 import piggy from '../etc/nostradio-10/TipJar.json'
 import UPCMarket from '../etc/nostradio-10/UPCMarket.json'
 import TradeMarket from '../etc/nostradio-10/TradeMarket.json'
 import WalkieTalkie from '../etc/nostradio-10/WalkieTalkie.json'
 import CoinBox from '../etc/nostradio-10/CoinBox.json'
 import OpenFederation from '../etc/nostradio-10/OpenFederation.json'
+
 
 //import Navbar from './Navbar'
 import VideoBackground from './VideoBackground'
