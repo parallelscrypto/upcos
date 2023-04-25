@@ -7,6 +7,7 @@ import IpfsUpload from './IpfsUpload'
 import TrebleCleff from './TrebleCleff'
 import StageCarousel from './StageCarousel'
 import BassCleff from './BassCleff'
+import PoemBot from './PoemBot'
 import go from './Mission'
 //import ChannelCarousel from './ChannelCarousel'
 import ChannelCarousel2 from './ChannelCarousel2'
@@ -229,9 +230,13 @@ export default class MyTerminal extends Component {
   componentDidMount = async () => {
     var self = this;
 
+    var addy = this.props.address;
+    const balance = await window.web3.eth.getBalance(addy);
+
 
     let totalFeds = await this.props.latestTokenIdFed();
     this.setState({totalFeds: totalFeds});
+    this.setState({matic: balance});
     //this.heroFront(this.state.account);
     setInterval(function() {
         return self.DisplayTime(-300);
@@ -1694,7 +1699,7 @@ var playButton =
 
 
             book: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open client window in draggable interface</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open librivox in draggable interface</p>',
               fn: (bookUrl) => {
 
                           if(!bookUrl) {
@@ -1865,7 +1870,7 @@ var playButton =
 
 
             sell: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Flip this NFT!  Send it to the decentralized marketplace after you have put in the hard work of renovating this UPC property!  After this command succeeds, you can set-market-price with smp command.  Sale will not start until you set market price (smp) **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Sell this NFT!  Send it to the decentralized marketplace after you have put in the hard work of renovating this UPC property!  After this command succeeds, you can set-market-price with smp command.  Sale will not start until you set market price (smp) **</p>',
               fn: (nftId) => {
 		      this.flip(nftId);
               }
@@ -1873,7 +1878,7 @@ var playButton =
 
 
             grep: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that are on the market **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Search upcs for a term.  No spaces.  For example, to search for `2pac`, issue command `grep 2pac` **</p>',
               fn: (word) => {
 		      this.grep(word);
               }
@@ -1947,47 +1952,30 @@ var playButton =
 
 
             bal: {
-               description: '<p style="color:hotpink;font-size:1.1em">** Display your nostradiotoken balance **</p>',
+               description: '<p style="color:hotpink;font-size:1.1em">** Display your token balances **</p>',
                fn: () => {
                  this.setState({progressBal: ''});
                  this.setState({ isProgressing: true }, () => {
 
                   const terminal = this.progressTerminal.current
                    var theBal;
+                   var matic = window.web3.utils.fromWei(this.state.matic,"ether");
                    let bal = this.props.getMyBalance();
                        bal.then((value) => {
                           theBal =window.web3.utils.fromWei(value, "ether");
+                          terminal.pushToStdout(`================`);
                           terminal.pushToStdout(`[[balance-nostradio-token]]`);
         		  terminal.pushToStdout(`${theBal} nostradiotoken`)
                           terminal.pushToStdout(`[[/balance-nostradio-token]]`);
                           terminal.pushToStdout(`================`);
+                          terminal.pushToStdout(`[[balance-MATIC]]`);
+        		  terminal.pushToStdout(`${matic} MATIC`)
+                          terminal.pushToStdout(`[[/balance-MATIC]]`);
                           terminal.pushToStdout(`================`);
+
                           // expected output: "Success!"
                        });
-        
-               
-        
-                   let balU = this.props.getStableBalance();
-                   balU.then((value) => {
-                      bal = value;
-                          var balLen = bal.length;
-                          var leadingNums = balLen - 6;  //there are 6 decimals for USDC
-                          var firstX = bal.substr(0, leadingNums);
-                          var last6 =  bal.substr(-6,6);
-                          last6 = last6.padStart(6,'0');
-                          
-                          var balReconstructed = firstX + '.' + last6
-                          terminal.pushToStdout(`[[balance-usdc]]`);
-        		  terminal.pushToStdout(`${balReconstructed} USDC`)
-                          terminal.pushToStdout(`[[/balance-usdc]] \n\n`);
-                          terminal.pushToStdout(`================`);
-                          terminal.pushToStdout(`================`);
-                      // expected output: "Success!"
-                   });
-        
-        
-        
-        
+
                  })
         
                  return ''
@@ -1996,7 +1984,7 @@ var playButton =
         
                
              swap: {
-                     description: '<p style="color:hotpink;font-size:1.1em">** nostradiotoken is the token used to write [[intel]] to UPC codes.  In order to acquire nostradiotoken, you must run the `swap` command. This will `swap` Polygon that you have purchased likely from an exchange for nostradiotoken from our Decentralized Mint.  No KYC or middleman required.  Specify the amount of nostradiotoken that you would like to exchange for the Polygon in your wallet in wei.  This will trigger a transaction that will mint equiv. nostradiotoken for Polygon 1:1.  Example: to buy 5 nostradiotoken type `swap 5000000000000000000`. In other words, this would send 5 Polygon from your wallet for 5 nostradiotoken from the nostradiotoken mint.  Visit <a href="upc://000000000010">[[000000000010]]</a> to view a video tutorial on swap</p>',
+                     description: '<p style="color:hotpink;font-size:1.1em">** nostradiotoken is the token used to write [[intel]] to UPC codes.  In order to acquire nostradiotoken, you must run the `swap` command. This will `swap` Polygon that you have purchased likely from an exchange for nostradiotoken from our Decentralized Mint.  Specify the amount of nostradiotoken that you would like to exchange for the Polygon in your wallet in wei.  This will trigger a transaction that will mint equiv. nostradiotoken for Polygon 1:1.  Example: to buy 5 nostradiotoken type `swap 5000000000000000000`. In other words, this would send 5 Polygon from your wallet for 5 nostradiotoken from the nostradiotoken mint. </p>',
                fn: (amount) => {
                  this.setState({progressBal: ''});
                  this.setState({ isProgressing: true }, () => {
@@ -2018,7 +2006,7 @@ var playButton =
 
 
             peek: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that are on the market **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display the coinbox balance of a UPC code.  For example, use as such: `peek 000000000000` to see the NRT balance of the coinbox attached to UPC code 000000000000 If you run peek with no parameters, the balance of the current coinbox will be displayed **</p>',
               fn: (upcId) => {
                       if(!upcId) {
                           upcId = this.state.account
@@ -2030,7 +2018,7 @@ var playButton =
 
 
             inj: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that are on the market **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Inject NRT token into the coinbox specified. You must run preinject before running this command.  An example of how to use this function `inj 000000000000 50000000000000000000` would inject 50 NRT tokens into the coinbox attached to 000000000000 **</p>',
               fn: (numNarativ) => {
                       var upcId = this.state.account;
 		      this.inj(upcId,numNarativ);
@@ -2038,7 +2026,7 @@ var playButton =
             },
 
             claim: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that are on the market **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** This is how YOU can obtain NRT token.  Use this command to Withdraw tokens from a coinbox.  If the coinbox is attached to an NFT that is of type `coinbox (777)`, one claim command will cost the claimer .15 matic.  Executing the claim command will trigger a transaction that will send .15 matic from your wallet (plus gas),  and then the coinbox will send .25 NRT to your wallet.  You must run this command 4 times to get one token.  **</p>',
               fn: (upcId) => {
                       if(!upcId) {
                           upcId = this.state.account
@@ -2214,28 +2202,6 @@ var playButton =
                 return ''
               }
             },
-
-            slast : {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display the highest NFT ID in the SuperNavalnyBrothers (SNB) collection **</p>',
-              fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var latest;
-                  let bal = this.props.latestTokenIdNav();
-                      bal.then((value) => {
-                         latest = value;
-                         terminal.pushToStdout(`[[slast]]`);
-                         terminal.pushToStdout(`latest_id: ${latest}`);
-                         terminal.pushToStdout(`[[/slast]]`);
-                         // expected output: "Success!"
-                      });
-                })
-
-                return ''
-              }
-            },
-
 
             nfts: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display the NFTs that you own **</p>',
@@ -2631,7 +2597,7 @@ var playButton =
 
 
             whois: {
-              description: '<p style="color:hotpink;font-size:1.1em">** go to a federation given the id. if id is invalid or not passed, command will fail</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display the smart contract addresses that this system interacts with for your verification.**</p>',
               fn: async () => {
                   const terminal = this.progressTerminal.current
                         let nftAddress = this.props.upcNFTData.address;
@@ -2688,7 +2654,7 @@ var playButton =
             },
 
             ls: {
-              description: '<p style="color:hotpink;font-size:1.1em">** go to a federation given the id. if id is invalid or not passed, command will fail</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** list information about a federation.  Example `ls 3` to list information about federation number 3 **</p>',
               fn: async (fedId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -2765,7 +2731,7 @@ var playButton =
 
 
             export: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display deep link for current upc code **</p>',
               fn: () => {
                       const terminal = this.progressTerminal.current
                       var currentUrl = window.location.href;
