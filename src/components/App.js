@@ -5,12 +5,12 @@ import Web3 from 'web3'
 
 import NostRadioStation from '../etc/repatriate/WelcomeHome.json'
 import NostRadioToken from '../etc/repatriate/Repatriate.json'
-import piggy from '../etc/nostradio-10/TipJar.json'
-import UPCMarket from '../etc/nostradio-10/UPCMarket.json'
-import TradeMarket from '../etc/nostradio-10/TradeMarket.json'
-import WalkieTalkie from '../etc/nostradio-10/WalkieTalkie.json'
-import CoinBox from '../etc/nostradio-10/CoinBox.json'
-import OpenFederation from '../etc/nostradio-10/OpenFederation.json'
+import piggy from '../etc/repatriate/TipJar.json'
+import UPCMarket from '../etc/repatriate/UPCMarket.json'
+import TradeMarket from '../etc/repatriate/TradeMarket.json'
+import WalkieTalkie from '../etc/repatriate/WalkieTalkie.json'
+import CoinBox from '../etc/repatriate/CoinBox.json'
+import OpenFederation from '../etc/repatriate/OpenFederation.json'
 
 
 //import Navbar from './Navbar'
