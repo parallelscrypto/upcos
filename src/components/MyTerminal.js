@@ -1756,6 +1756,28 @@ var playButton =
             },
 
 
+            com: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open chat client window in draggable interface</p>',
+              fn: (fullUrl,winNum) => {
+
+		      fullUrl = "https://chatcrypt.com";
+                      winNum = "0";
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
+
+
 
 
 
