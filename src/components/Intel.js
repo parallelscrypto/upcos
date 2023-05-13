@@ -59,7 +59,8 @@ class Intel extends Component {
 	    <div>
 
 	    <MyTerminal 
-	    address={this.props.address} 
+	    address={this.props.address}
+            handleUpdateUpc={this.props.handleUpdateUpc}
 	    mine={this.props.mine} 
 	    addCrown={this.props.addCrown} 
 	    getCrown={this.props.getCrown} 
@@ -130,7 +131,6 @@ class Intel extends Component {
 	    account={this.state.code} />
 
 
-	    <div style={{paddingTop:"20px",width:"100vw",height:"50px",background:"black",color:"white",fontWeight:"bold"}}>[[{this.state.code}]] News Ticker</div>
             <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
              <div style={{background:"#000000",borderTop:"dashed",borderBottom:"dashed",borderWidth:"12px",borderColor:"white"}}>
 	        <NftPopupTicker code={this.state.code} style={{"position":"absolute","bottom":"0",background:"white"}} />

@@ -2,12 +2,14 @@ import React, { Component } from 'react'
 import { ethers } from "ethers";
 import * as Tone from "tone";
 import Terminal from 'react-console-emulator'
+import IPFSTerminal from './IPFSTerminal'
 import ScratchCard from './ScratchCard'
 import IpfsUpload from './IpfsUpload'
 import TrebleCleff from './TrebleCleff'
 import StageCarousel from './StageCarousel'
 import BassCleff from './BassCleff'
 import PoemBot from './PoemBot'
+import CommentSection from './CommentSection'
 import go from './Mission'
 //import ChannelCarousel from './ChannelCarousel'
 import ChannelCarousel2 from './ChannelCarousel2'
@@ -1163,6 +1165,7 @@ src={srcImg} height="200" width="200"/></p>
 
   setAccount = async (code) => {
       this.setState({account: code});
+      this.props.handleUpdateUpc(code);
   }
 
 
@@ -1571,6 +1574,7 @@ var playButton =
 
                  {this.state.player}
 	     {this.state.bassCleff}
+
       </div>
       <div>
       <div id="curTime"></div>

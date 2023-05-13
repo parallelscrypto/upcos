@@ -17,6 +17,7 @@ import OpenFederation from '../etc/repatriate/OpenFederation.json'
 import VideoBackground from './VideoBackground'
 import IntroTypewriter from './IntroTypewriter'
 import Intel from './Intel'
+import CommentSection from './CommentSection'
 import UPCBR_Channel from './App2';
 import UpcStatsTicker from './UpcStatsTicker'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
@@ -904,6 +905,11 @@ console.log("mk addy is " + market_address);
   };
 
 
+  handleUpdateUpc= async (upcId) => {
+     this.setState({code:upcId});
+  };
+
+
 
   constructor(props) {
     super(props)
@@ -933,6 +939,7 @@ console.log("mk addy is " + market_address);
       this.state.intel = currentPath;
     }
     this.handleChange = this.handleChange.bind(this);
+    this.handleUpdateUpc= this.handleUpdateUpc.bind(this);
     this.refreshFeed= this.refreshFeed.bind(this);
     this.injectNarativ= this.injectNarativ.bind(this);
     this.claimNarativToken= this.claimNarativToken.bind(this);
@@ -1047,6 +1054,7 @@ console.log("mk addy is " + market_address);
       deposit = 
         <div  style={{ background:"white"}} >
         <Intel
+        handleUpdateUpc={this.handleUpdateUpc}
 	address={this.state.account}
         handleChange={this.handleChange}
         updateUpc={this.updateUpc}
@@ -1130,11 +1138,11 @@ console.log("mk addy is " + market_address);
 	latestTokenId={this.latestTokenId}
       />
       <UpcStatsTicker latestTokenId={this.latestTokenId} getSaleInfo={this.getSaleInfo} marketInfo={this.state.marketInfo} style={{"position":"absolute","bottom":"0", background:"black"}} />
+      <CommentSection upc={this.state.code} />
 
       <b style={{color:"black"}}> Latest News from Channel [[{upcChannel}]] </b>
       <UPCBR_Channel channel={upcChannel} />
       </div>
-		    console.log(this.state);
     } 
     return (
       <div style={{background: "#7e7e5e", height: '100vh', width: '100vw', border:'none'}} >
