@@ -40,6 +40,7 @@
     "mobx": "^6.0.4",
     "mobx-react-lite": "^3.1.6",
     "prop-types": "^15.8.1",
+    "peerjs": "latest",
     "qrcode-react": "^0.1.16",
     "react": "16.8.4",
     "react-animated-modal": "^1.1.1",

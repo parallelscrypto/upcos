@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import ReactCardFlip from 'react-card-flip';
 import Iframe from 'react-iframe'
 import Web3 from 'web3'
-
+import VideoChat from './VideoChat'
 import NostRadioStation from '../etc/repatriate/WelcomeHome.json'
 import NostRadioToken from '../etc/repatriate/Repatriate.json'
 import piggy from '../etc/repatriate/TipJar.json'
@@ -1139,7 +1139,7 @@ console.log("mk addy is " + market_address);
       />
       <UpcStatsTicker latestTokenId={this.latestTokenId} getSaleInfo={this.getSaleInfo} marketInfo={this.state.marketInfo} style={{"position":"absolute","bottom":"0", background:"black"}} />
       <CommentSection upc={this.state.code} />
-
+      <VideoChat />
       <b style={{color:"black"}}> Latest News from Channel [[{upcChannel}]] </b>
       <UPCBR_Channel channel={upcChannel} />
       </div>

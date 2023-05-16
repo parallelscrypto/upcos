@@ -479,7 +479,8 @@ src={srcImg} height="200" width="200"/></p>
                        mplayer =
                        <iframe className='video'
                                style={{minHeight:"100vh",width:"100vw"}}
-                               title='upc dj player'
+		               allow="camera; microphone"
+                               title='1 upc dj player'
                                sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                src={fullUrl}>
                        </iframe>
@@ -604,7 +605,8 @@ src={srcImg} height="200" width="200"/></p>
   getMplayer = (fullUrl) => {
       var mplayer = <iframe className='video'
               style={{height:"80vh",width:"88vw"}}
-              title='upc dj player'
+	      allow="camera; microphone"
+              title='2 upc dj player'
               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
               src={fullUrl}>
       </iframe>
@@ -619,6 +621,7 @@ src={srcImg} height="200" width="200"/></p>
          mplayer =
          <iframe className='video'
                  style={{minHeight:"100vh",width:"100vw"}}
+		 allow="camera; microphone"
                  title='Youtube player'
                  sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                  src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
@@ -631,7 +634,8 @@ src={srcImg} height="200" width="200"/></p>
          && !fullUrl.includes('dailymotion') && !fullUrl.includes('twitch')) {
             mplayer = <iframe className='video'
                     style={{height:"80vh",width:"88vw"}}
-                    title='upc dj player'
+		    allow="camera; microphone"
+                    title='3 upc dj player'
                     sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                     src={fullUrl}>
             </iframe>
@@ -1258,7 +1262,8 @@ src={srcImg} height="200" width="200"/></p>
                mplayer =
                <iframe className='video'
                        style={{minHeight:"100vh",width:"100vw"}}
-                       title='upc dj player'
+		       allow="camera; microphone"
+                       title='4 upc dj player'
                        sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                        src={fullUrl}>
                </iframe>
@@ -1386,7 +1391,8 @@ src={srcImg} height="200" width="200"/></p>
                        mplayer =
                        <iframe className='video'
                                style={{height:"80vh",width:"88vw"}}
-                               title='upc dj player'
+		               allow="camera; microphone"
+                               title='5 upc dj player'
                                sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                src={fullUrl}>
                        </iframe>
@@ -1724,7 +1730,8 @@ var playButton =
                           }
                           var mplayer = <iframe className='video'
                                   style={{height:"80vh",width:"88vw"}}
-                                  title='upc dj player'
+		                  allow="camera; microphone"
+                                  title='6 upc dj player'
                                   sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                   src={bookUrl}>
                           </iframe>
@@ -1765,6 +1772,30 @@ var playButton =
               fn: (fullUrl,winNum) => {
 
 		      fullUrl = "https://chatcrypt.com";
+                      winNum = "0";
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
+
+
+
+            vc: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open video chat window</p>',
+              fn: (fullUrl,winNum) => {
+
+                      fullUrl = "https://meet.jit.si/";
+
                       winNum = "0";
                       var mplayer = this.getMplayer(fullUrl);
                       if(winNum == "0") {

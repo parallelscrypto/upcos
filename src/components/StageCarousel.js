@@ -164,6 +164,7 @@ export default class StageCarousel extends Component {
                 <div>
                    <iframe className='video'
                            style={{minHeight:"100vh",width:"100vw"}}
+                           allow="camera; microphone"
                            title='Youtube player'
                            sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                            src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
@@ -180,7 +181,8 @@ export default class StageCarousel extends Component {
                <div>
                    <iframe className='video'
                            style={{minHeight:"100vh",width:"100vw"}}
-                           title='upc dj player'
+                           allow='camera;microphone'
+                           title='upcOS-init'
                            sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                            src={fullUrl}>
                    </iframe>
