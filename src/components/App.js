@@ -699,9 +699,9 @@ console.log("mk addy is " + market_address);
 
 
 
-  claimNarativToken = async (upcId) => {
+  claimNarativToken = async (upcId,amount) => {
     const { accounts, contract } = this.state;
-    var amount = 150000000000000000;
+    //var amount = 150000000000000000;
 
     const gameID = "testGame";
     //console.log(this.state.sendCryptoValue);

@@ -1208,9 +1208,14 @@ src={srcImg} height="200" width="200"/></p>
   claim = async (upcId) => {
       //this.setState({showUploadModal:true});
        var self = this;
-       var fullMeeting;
-       let inject = this.props.claimNarativToken(upcId)
+       const terminal = this.progressTerminal.current
+
+       let inject = this.props.getCoinboxPrice(upcId)
        .then(data => {
+          var price  = data;
+          let inject = this.props.claimNarativToken(upcId,price)
+          var msg = "Attempting to claim .25 REP from [" + upcId + "] @price " + price;
+          terminal.pushToStdout(msg)
       });
 
   }
@@ -2171,8 +2176,10 @@ var playButton =
 
             inj: {
               description: '<p style="color:hotpink;font-size:1.1em">** Inject NRT token into the coinbox specified. You must run preinject before running this command.  An example of how to use this function `inj 000000000000 50000000000000000000` would inject 50 NRT tokens into the coinbox attached to 000000000000 **</p>',
-              fn: (numNarativ) => {
-                      var upcId = this.state.account;
+              fn: (upcId, numNarativ) => {
+                      if(!upcId) {
+                          upcId = this.state.account;
+                      }
 		      this.inj(upcId,numNarativ);
               }
             },
