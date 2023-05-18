@@ -74,6 +74,10 @@ class Intel extends Component {
             marketData={this.props.marketData}
             trademarketData={this.props.trademarketData}
 
+            getCoinboxPrice={this.props.getCoinboxPrice}
+            setTokenPrice={this.props.setTokenPrice}
+            setTokenFee={this.props.setTokenFee}
+
 
             approveTrade={this.props.approveTrade}
             createTrade={this.props.createTrade}

@@ -194,7 +194,7 @@ export default class MyTerminal extends Component {
     this.prodLookup= this.prodLookup.bind(this);
     this.search= this.search.bind(this);
     this.tutorial= this.tutorial.bind(this);
-    this.gpt = this.gpt.bind(this);
+    this.upcai= this.upcai.bind(this);
     this.meeting= this.meeting.bind(this);
     this.grep= this.grep.bind(this);
     this.forward= this.forward.bind(this);
@@ -848,7 +848,7 @@ src={srcImg} height="200" width="200"/></p>
 
 
 
-  gpt = async (upcId) => {
+  upcai = async (upcId) => {
 
 
 
@@ -1166,6 +1166,36 @@ src={srcImg} height="200" width="200"/></p>
 
   }
 
+
+  price = async (upcId) => {
+       const terminal = this.progressTerminal.current
+      //this.setState({showUploadModal:true});
+       var self = this;
+       if(!upcId) {
+         upcId = this.state.account;
+       }
+
+
+
+       let inject = this.props.getCoinboxPrice(upcId)
+       .then(data => {
+          var price  = window.web3.utils.fromWei(data, "ether");
+          price += " MATIC/REP@" + upcId;
+          terminal.pushToStdout(price)
+      });
+
+
+
+  }
+
+
+  setTokenPrice= async (upcId,price) => {
+      this.props.setTokenPrice(upcId,price);
+  }
+
+  setTokenFee= async (upcId,price) => {
+      this.props.setTokenFee(upcId,price);
+  }
 
   setAccount = async (code) => {
       this.setState({account: code});
@@ -2088,6 +2118,55 @@ var playButton =
 		      this.peek(upcId);
               }
             },
+
+
+
+            price : {
+              description: '<p style="color:hotpink;font-size:1.1em">** check the price of tokens on a coinbox **</p>',
+              fn: (upcId) => {
+                      if(!upcId) {
+                          upcId = this.state.account
+                      }
+		      this.price(upcId);
+              }
+            },
+
+
+            price : {
+              description: '<p style="color:hotpink;font-size:1.1em">** check the price of tokens on a coinbox **</p>',
+              fn: (upcId) => {
+                      if(!upcId) {
+                          upcId = this.state.account
+                      }
+		      this.price(upcId);
+              }
+            },
+
+
+            xprice : {
+              description: '<p style="color:hotpink;font-size:1.1em">** set price for coinbox **</p>',
+              fn: (upcId,price) => {
+                      if(!upcId) {
+                          upcId = this.state.account
+                      }
+		      this.setTokenPrice(upcId,price);
+              }
+            },
+
+
+
+            xfee : {
+              description: '<p style="color:hotpink;font-size:1.1em">** set price for coinbox **</p>',
+              fn: (upcId,price) => {
+                      if(!upcId) {
+                          upcId = this.state.account
+                      }
+		      this.setTokenFee(upcId,price);
+              }
+            },
+
+
+
 
 
             inj: {

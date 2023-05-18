@@ -1,12 +1,11 @@
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Context.sol";
 //import "./stringUtils.sol";
-import "./OneAfrika.sol";
-import "./DecolonizeAfrica.sol";
+import "./WelcomeHome.sol";
+import "./Repatriate.sol";
 
 interface USDC {
     function transfer(address dst, uint wad) external returns (bool);
@@ -45,22 +44,23 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
     }
 
     mapping(string => uint)     public totalClaims;
+    mapping(string => uint)     public tokenPrice;
+    mapping(string => uint)     public tokenFee;
     mapping(string => uint)     public narativBalanceReceived;
     mapping(string => uint)     public usdcBalanceReceived;
     uint256    currentNftPrice;
     uint public balance = 0;
     uint rehash = 3;
     address payable private owner;
-    address payable private community;
 
     struct Reward {
         uint256  amount;
         string  winningHash;
     }
 
-    OneAfrika       private _narativ;
+    Repatriate       private _narativ;
     USDC          private _usdc;
-    DecolonizeAfrica        upcNFT;
+    WelcomeHome        upcNFT;
 
     Reward[] public rewards;
 
@@ -69,10 +69,9 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
      */
     constructor () ERC20("CoinBox", "cbx") {
         owner     =   payable(msg.sender);
-        community =   payable(0xbaF306E29157cCE66b182fFfc279c04cDed87adD);
         _usdc     =   USDC(0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174);
-        _narativ  =   OneAfrika(0x7E88a42D5CAc4902F33AEfe1a09036783d773F82);
-        upcNFT    =   DecolonizeAfrica(0xF0176c005b5A453A5d8a7F5e3583fE52a28EDC5b);
+        _narativ  =   Repatriate(0x78EE27E9a0Db3324d4d6175910dF8d030c3654AC);
+        upcNFT    =   WelcomeHome(0x984224BeED35Af9f88A3B58C8df6F7c5BbAf0483);
     }
 
     function injectNarativ(string memory upcId, uint256 numNarativ) public payable {
@@ -94,17 +93,28 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
 
         if(possCoinboxTld == 777 ) {
             deduce = 250000000000000000;
+            
+            uint ownerFee          = 150000000000000000;
+            if(tokenPrice[upcId] > 0) {
+               ownerFee = tokenPrice[upcId];
+            }
+
+            uint infastructureFee  = 100000000000000000;
+            if(tokenFee[upcId] > 0) {
+               infastructureFee = tokenFee[upcId];
+            }
+
             require(narativBalanceReceived[upcId] >= deduce , "Sorry, this coinbox is empty");
-            require(msg.value >= 0.15 ether , "Accessing coinbox requires a .15 token fee");
-            uint ownerFee          = 50000000000000000;
-            uint infastructureFee  = 50000000000000000;
-            uint communityFee      = 50000000000000000;
-            uint remainder         = msg.value - ownerFee - infastructureFee - communityFee;
+
+            uint totalPrice         =  ownerFee + infastructureFee;
+
+            require(msg.value >= totalPrice , "Accessing coinbox requires sufficient token fee.");
+            uint remainder         = msg.value - ownerFee - infastructureFee;
 
             payableOwner.transfer(ownerFee);
             owner.transfer(infastructureFee);
-            community.transfer(communityFee);
 
+            //if for some reason the user sends more than needed, transfer the extra to the upc owner
             if(remainder > 0) {
                 payableOwner.transfer(remainder);
             }            
@@ -123,16 +133,42 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
         _narativ.transfer(msg.sender, deduce);
     }
 
+
+    function setTokenPrice(string memory upcId, uint price) public {
+        require(price > 0 , "Will not set price to zero tokens");
+        tokenPrice[upcId] = price;
+    }
+
+
+    function setTokenFee(string memory upcId, uint fee) public {
+        tokenFee[upcId] = fee;
+    }
+
+
     function setDecolonizeAfrica(address newAddress) public  onlyOwner{
-        upcNFT = DecolonizeAfrica(newAddress);
+        upcNFT = WelcomeHome(newAddress);
     }
 
     
     function setNarativ(address newAddress) public  onlyOwner{
-        _narativ = OneAfrika(newAddress);
+        _narativ = Repatriate(newAddress);
     }
 
-    
+    function getPrice(string memory upcId) public returns (uint256)  {
+        uint fee = tokenFee[upcId];
+        uint price = tokenPrice[upcId];
+
+        if(fee <= 0)  {
+           fee = 100000000000000000;
+        }
+
+        if(price <= 0) {
+           price = 150000000000000000;
+        }
+
+        return fee + price;
+    }
+
     function setOwner(address newAddress) public  onlyOwner{
         owner = payable(newAddress);
     }    

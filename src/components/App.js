@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import ReactCardFlip from 'react-card-flip';
 import Iframe from 'react-iframe'
 import Web3 from 'web3'
-import VideoChat from './VideoChat'
 import NostRadioStation from '../etc/repatriate/WelcomeHome.json'
 import NostRadioToken from '../etc/repatriate/Repatriate.json'
 import piggy from '../etc/repatriate/TipJar.json'
@@ -660,6 +659,34 @@ console.log("mk addy is " + market_address);
     return this.state.walkieNft.methods.getWalkieTalkie(upcId).call({ from: this.state.account });
   };
 
+  getCoinboxPrice = async (upcId) => {
+    const { accounts, contract } = this.state;
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.coinboxNft.methods.getPrice(upcId).call({ from: this.state.account });
+  };
+
+  setTokenPrice = async (upcId,price) => {
+    const { accounts, contract } = this.state;
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.coinboxNft.methods.setTokenPrice(upcId,price).send({ from: this.state.account });
+  };
+
+
+
+
+  setTokenFee = async (upcId,price) => {
+    const { accounts, contract } = this.state;
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.coinboxNft.methods.setTokenFee(upcId,price).send({ from: this.state.account });
+  };
+
+
 
 
   injectNarativ = async (upcId,numNarativ) => {
@@ -945,6 +972,9 @@ console.log("mk addy is " + market_address);
     this.claimNarativToken= this.claimNarativToken.bind(this);
     this.checkNarativBalance= this.checkNarativBalance.bind(this);
 
+    this.getCoinboxPrice= this.getCoinboxPrice.bind(this);
+    this.setTokenPrice= this.setTokenPrice.bind(this);
+    this.setTokenFee= this.setTokenFee.bind(this);
 
     this.addCrown= this.addCrown.bind(this);
     this.getCrown= this.getCrown.bind(this);
@@ -1101,6 +1131,9 @@ console.log("mk addy is " + market_address);
         trademarketData  = {this.state.trademarketData}
 
 
+        setTokenPrice= {this.setTokenPrice}
+        setTokenFee= {this.setTokenFee}
+        getCoinboxPrice= {this.getCoinboxPrice}
 	swap={this.swap}
 	wn={this.wn}
 	wm={this.wm}
@@ -1139,7 +1172,6 @@ console.log("mk addy is " + market_address);
       />
       <UpcStatsTicker latestTokenId={this.latestTokenId} getSaleInfo={this.getSaleInfo} marketInfo={this.state.marketInfo} style={{"position":"absolute","bottom":"0", background:"black"}} />
       <CommentSection upc={this.state.code} />
-      <VideoChat />
       <b style={{color:"black"}}> Latest News from Channel [[{upcChannel}]] </b>
       <UPCBR_Channel channel={upcChannel} />
       </div>
