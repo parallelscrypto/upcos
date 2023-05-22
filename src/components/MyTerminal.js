@@ -1848,6 +1848,29 @@ var playButton =
             },
 
 
+            upcdev: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Build a permanant website from client window in draggable interface</p>',
+              fn: (fullUrl,winNum) => {
+                      var upc = this.state.account;
+                      var url = "https://4icynw3ox4brquw2ccoujcha7zytderrtisa26ro4emumvc4v4aq.arweave.net/4gWG226_AxhS2hCdRIjg_nExkjGaJA16LuEZRlRcrwE/index.html#/upload/" + upc;
+
+                      winNum = 0;
+                      var mplayer = this.getMplayer(url);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
+
+
 
 
 
