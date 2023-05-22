@@ -36,7 +36,7 @@ var Barcode = require('react-barcode');
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
-var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Repariate\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your Repariate to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`ask`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with ask " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Repatriate\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your Repatriate to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`ask`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with ask " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 //var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.oneafrika', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-DEVIL','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.coinbox']
 
@@ -432,7 +432,7 @@ src={srcImg} height="200" width="200"/></p>
                        <iframe className='video'
                                style={{minHeight:"100vh",width:"100vw"}}
                                title='Youtube player'
-                               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                               sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
                        </iframe>
                     }
@@ -466,7 +466,7 @@ src={srcImg} height="200" width="200"/></p>
                        <iframe className='video'
                                style={{minHeight:"100vh",width:"100vw"}}
                                title='Youtube player'
-                               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                               sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
                        </iframe>
                     }
@@ -481,7 +481,7 @@ src={srcImg} height="200" width="200"/></p>
                                style={{minHeight:"100vh",width:"100vw"}}
 		               allow="camera; microphone"
                                title='1 upc dj player'
-                               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                               sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                src={fullUrl}>
                        </iframe>
                     }
@@ -607,7 +607,7 @@ src={srcImg} height="200" width="200"/></p>
               style={{height:"80vh",width:"88vw"}}
 	      allow="camera; microphone"
               title='2 upc dj player'
-              sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+              sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
               src={fullUrl}>
       </iframe>
 
@@ -623,7 +623,7 @@ src={srcImg} height="200" width="200"/></p>
                  style={{minHeight:"100vh",width:"100vw"}}
 		 allow="camera; microphone"
                  title='Youtube player'
-                 sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                 sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                  src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
          </iframe>
       }
@@ -636,7 +636,7 @@ src={srcImg} height="200" width="200"/></p>
                     style={{height:"80vh",width:"88vw"}}
 		    allow="camera; microphone"
                     title='3 upc dj player'
-                    sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                    sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                     src={fullUrl}>
             </iframe>
 
@@ -1214,7 +1214,7 @@ src={srcImg} height="200" width="200"/></p>
        .then(data => {
           var price  = data;
           let inject = this.props.claimNarativToken(upcId,price)
-          var msg = "Attempting to claim .25 REP from [" + upcId + "] @price " + price;
+          var msg = "Attempting to claim .25 REP from [" + upcId + "] @price " + price + " MATIC";
           terminal.pushToStdout(msg)
       });
 
@@ -1229,7 +1229,7 @@ src={srcImg} height="200" width="200"/></p>
        let inject = this.props.checkNarativBalance(upcId)
        .then(data => {
           var price  = window.web3.utils.fromWei(data, "ether");
-          price += " Repariate";
+          price += " Repatriate";
           terminal.pushToStdout(price)
       });
 
@@ -1284,7 +1284,7 @@ src={srcImg} height="200" width="200"/></p>
                <iframe className='video'
                        style={{minHeight:"100vh",width:"100vw"}}
                        title='Youtube player'
-                       sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                       sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                        src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
                </iframe>
             }
@@ -1299,7 +1299,7 @@ src={srcImg} height="200" width="200"/></p>
                        style={{minHeight:"100vh",width:"100vw"}}
 		       allow="camera; microphone"
                        title='4 upc dj player'
-                       sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                       sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                        src={fullUrl}>
                </iframe>
             }
@@ -1362,7 +1362,7 @@ src={srcImg} height="200" width="200"/></p>
                        <iframe className='video'
                                style={{minHeight:"100vh",width:"100vw"}}
                                title='Youtube player'
-                               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                               sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
                        </iframe>
                     }
@@ -1413,7 +1413,7 @@ src={srcImg} height="200" width="200"/></p>
                        <iframe className='video'
                                style={{minHeight:"100vh",width:"100vw"}}
                                title='Youtube player'
-                               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                               sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
                        </iframe>
                     }
@@ -1428,7 +1428,7 @@ src={srcImg} height="200" width="200"/></p>
                                style={{height:"80vh",width:"88vw"}}
 		               allow="camera; microphone"
                                title='5 upc dj player'
-                               sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                               sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                src={fullUrl}>
                        </iframe>
                     }
@@ -1480,7 +1480,7 @@ src={srcImg} height="200" width="200"/></p>
     var addy = this.props.address;
     addy  = addy.substr(0,15);
 
-    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV </i>\n <i>wake.tf.up</i> \n <b style='color:red'> [always.ask.questions]</b> \n <i style='color:#d66900'>Powered by Repariate Crypto</i>  \n <u style='color:green'>Scan any UPC code.  The last digit is the TV channel number. (Example: If the UPC code is <i style='color:white'> [[610764032820]] </i> and it is unowned, the front stage video will be the TV  <i style='color:white'> Channel `0` </i> since the last digit of the UPC is a <i style='color:white'> `0` </i>.  As soon as <i style='color:white'> [[610764032820]] </i> is programd and owned, the front stage video will be blank, and it will stay this way until the owner explicitly issues the command {xvr} to update the programming. When the owner updates the programming, it is now <i style='color:white'> [[610764032820]] UPC Band Radio Station </i> owned, controlled, and protected by the NFT owners private key). </u> \n <i style='color:white'> <b style='color:red'>1.</b> Type <i style='color:red'>`help`</i> to see available commands \n <b style='color:red'> 2. </b> Type <i style='color:red'>`claim`</i> to get some Repariate Token.  You must pay a .15 Matic access fee and you recieve .25 Repariate token each time you `claim`.  Therefore, in order to get the 1 token that you need to buy a UPC NFT, you must run the claim command 4 times. A user only needs one token to buy a UPC NFT, so no need to sit around typing claim a bunch of times trying to accumulate tokens. \n <b style='color:red'> 3. </b> Type <i style='color:red'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <b style='color:red'> 4. </b> Type <i style='color:red'>`recon`</i> to allow your wallet to spend your Repariate token in our smart contract.  You will not be able to buy {{buy}} a upc until you have run this command \n Type <i style='color:red'>`buy`</i> to buy the UPC [[" + this.state.account + "]]" + "\n  Type <i style='color:red'>`own`</i> to mint if successful with program {buy} [[" + this.state.account + "]]" + "\n  <i style='color:red'>Type `sell` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:red'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:red'>`clear`</i> to clear screen" + " \n Type <i style='color:red'>`ch [0-9]` to to watch the corresponding channel.  For example, type `ch 0` to watch channel 0, and type `ch 9` to watch channel 9.  Channel values 0-9 are valid";
+    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV </i>\n <i>wake.tf.up</i> \n <b style='color:red'> [always.ask.questions]</b> \n <i style='color:#d66900'>Powered by Repatriate Crypto</i> \n <i style='color:white'> <b style='color:red'>1.</b> Type <i style='color:red'>`help`</i> to see available commands \n <b style='color:red'> 2. </b> Type <i style='color:red'>`claim`</i> to get some Repatriate Token.  You must pay a access determined by the upc owner plus the infrastructure fee, and you recieve .25 Repatriate token each time you `claim`.  To check the price of tokens in a particular coinbox, type the `price` command.  To recap, in order to get the 1 token that you need to buy a UPC NFT, you must run the claim command 4 times. A user only needs one token to buy a UPC NFT, so no need to sit around typing claim a bunch of times trying to accumulate tokens. \n <b style='color:red'> 3. </b> Type <i style='color:red'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <b style='color:red'> 4. </b> Type <i style='color:red'>`recon`</i> to allow your wallet to spend your Repatriate token in our smart contract.  You will not be able to buy {{buy}} a upc until you have run this command \n Type <i style='color:red'>`buy`</i> to buy the UPC [[" + this.state.account + "]]" + "\n  Type <i style='color:red'>`own`</i> to mint if successful with program {buy} [[" + this.state.account + "]]" + "\n  <i style='color:red'>Type `sell` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:red'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:red'>`clear`</i> to clear screen" + " \n Type <i style='color:red'>`ch [0-9]` to to watch the corresponding channel.  For example, type `ch 0` to watch channel 0, and type `ch 9` to watch channel 9.  Channel values 0-9 are valid";
     var promptlabel =  '[[ AWAITING COMMAND ]] => ';
 
           
@@ -1669,7 +1669,7 @@ var playButton =
         commands={{
 
             usdc: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** DONT USE THIS COMMAND STUB YET! Approve UPC Band Radio to spend 50 of your Repariate.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `colonize` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** DONT USE THIS COMMAND STUB YET! Approve UPC Band Radio to spend 50 of your Repatriate.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `colonize` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -1677,7 +1677,7 @@ var playButton =
                 this.setState({ isProgressing: true }, () => {
                   let approval = this.props.approveUSDC();
                   approval.then((value) => {
-		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Repariate from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'colonize' and 'colonizeb' commands will fail`)
+		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Repatriate from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'colonize' and 'colonizeb' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
@@ -1767,7 +1767,7 @@ var playButton =
                                   style={{height:"80vh",width:"88vw"}}
 		                  allow="camera; microphone"
                                   title='6 upc dj player'
-                                  sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                                  sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                   src={bookUrl}>
                           </iframe>
 
@@ -2034,7 +2034,7 @@ var playButton =
 
 
             recon: {
-                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 1 of your Repariate.  Each time you program a UPC, you must run `recon` again.    You MUST run this command FIRST or all of your `buy` and `own` commands will fail.**</p>',
+                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 1 of your Repatriate.  Each time you program a UPC, you must run `recon` again.    You MUST run this command FIRST or all of your `buy` and `own` commands will fail.**</p>',
               fn: (numTokens) => {
                   
                 var progress = 0;
@@ -2042,7 +2042,7 @@ var playButton =
                 this.setState({ isProgressing: true }, () => {
                   let approval = this.props.approve(numTokens);
                   approval.then((value) => {
-                    terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Repariate from your wallet when you buy an NFT.  This approval is good for 1 NFT, and you must run this command each time before buying an NFT, or your 'buy' and 'own' commands will fail`)
+                    terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Repatriate from your wallet when you buy an NFT.  This approval is good for 1 NFT, and you must run this command each time before buying an NFT, or your 'buy' and 'own' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
@@ -2092,7 +2092,7 @@ var playButton =
         
                
              swap: {
-                     description: '<p style="color:hotpink;font-size:1.1em">** Repariate is the token used to write [[intel]] to UPC codes.  In order to acquire Repariate, you must run the `swap` command. This will `swap` Polygon that you have purchased likely from an exchange for Repariate from our Decentralized Mint.  Specify the amount of Repariate that you would like to exchange for the Polygon in your wallet in wei.  This will trigger a transaction that will mint equiv. Repariate for Polygon 1:1.  Example: to buy 5 Repariate type `swap 5000000000000000000`. In other words, this would send 5 Polygon from your wallet for 5 Repariate from the Repariate mint. </p>',
+                     description: '<p style="color:hotpink;font-size:1.1em">** Repatriate is the token used to write [[intel]] to UPC codes.  In order to acquire Repatriate, you must run the `swap` command. This will `swap` Polygon that you have purchased likely from an exchange for Repatriate from our Decentralized Mint.  Specify the amount of Repatriate that you would like to exchange for the Polygon in your wallet in wei.  This will trigger a transaction that will mint equiv. Repatriate for Polygon 1:1.  Example: to buy 5 Repatriate type `swap 5000000000000000000`. In other words, this would send 5 Polygon from your wallet for 5 Repatriate from the Repatriate mint. </p>',
                fn: (amount) => {
                  this.setState({progressBal: ''});
                  this.setState({ isProgressing: true }, () => {
@@ -2101,7 +2101,7 @@ var playButton =
                    approval.then((value) => {
                       approval = value;
                           terminal.pushToStdout(`[[swap]]`);
-                      terminal.pushToStdout(`You have just swapped Polygon for Repariate.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
+                      terminal.pushToStdout(`You have just swapped Polygon for Repatriate.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
                           terminal.pushToStdout(`[[/swap]]`);
                       // expected output: "Success!"
                    });
@@ -3435,9 +3435,9 @@ var playButton =
                    let bal = this.props.getCrown(upcId);
                        bal.then((value) => {
                           theBal =window.web3.utils.fromWei(value, "ether");
-                          terminal.pushToStdout(`[[balance-Repariate]]`);
-        		  terminal.pushToStdout(`${theBal} Repariate`)
-                          terminal.pushToStdout(`[[/balance-Repariate]]`);
+                          terminal.pushToStdout(`[[balance-Repatriate]]`);
+        		  terminal.pushToStdout(`${theBal} Repatriate`)
+                          terminal.pushToStdout(`[[/balance-Repatriate]]`);
                           terminal.pushToStdout(`================`);
                           // expected output: "Success!"
                        });
@@ -3456,7 +3456,7 @@ var playButton =
 
 
             mine: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Mine Repariate Token that has been Crowned into the UPC</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Mine Repatriate Token that has been Crowned into the UPC</p>',
               fn: (upcId, numTokens) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
