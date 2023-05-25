@@ -107,6 +107,33 @@ export default class StageCarousel extends Component {
    }
 
 
+  getHTML = async (vr) => {
+                //arbitrary url video
+
+                var mplayer = "";
+		var res = this.state.slides;
+
+                if(vr.includes('https://arweave.net/') ) {
+                   const fullUrl = vr
+                   mplayer =
+                           <div>
+                               <iframe className='video'
+                                       style={{minHeight:"100vh",width:"100vw"}}
+                                       allow='camera;microphone'
+                                       title='upcOS-init'
+                                       sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                                       src={vr}>
+                               </iframe>
+                            </div>
+                }
+
+
+                var toPush = <Zoom right> {mplayer} </Zoom>
+		res.push(toPush)
+		this.setState({slides: res})
+   }
+
+
 
 
   componentDidMount = async () => {
@@ -115,7 +142,17 @@ export default class StageCarousel extends Component {
     let infoOwned = await this.props.upcInfo(this.state.channel)
           var self = this;
           var ipfs   = infoOwned['vr'];
-          var nftIds = ipfs.split("#");
+          const containsGreaterThan = ipfs.includes('>');
+
+          var nftIds;
+
+          if(containsGreaterThan) {
+             nftIds = ipfs.split(">");
+          }
+          else {
+             nftIds = ipfs.split("#");
+          }
+
 
           for(var i = 0; i < nftIds.length; i++) {
              if(!nftIds[i]) continue;
@@ -130,7 +167,11 @@ export default class StageCarousel extends Component {
 
              console.log(info[i]);
              //keep ss string clean.
-             if(tmpId.length == 11) {
+             if(containsGreaterThan) {
+
+                var entry = await this.getHTML(nftIds[i]); 
+             }
+             else if(tmpId.length == 11) {
                 var entry = await this.getYt(tmpId); 
              }
              else {
@@ -188,7 +229,6 @@ export default class StageCarousel extends Component {
                    </iframe>
                 </div>
     }
-
 
     else {
        mplayer = 

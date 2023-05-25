@@ -40,7 +40,7 @@ var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n
 
 //var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.oneafrika', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-DEVIL','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.coinbox']
 
-var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.mic', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-DEVIL','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.sha256','.slideshow','.champion','.for-sale','.public-key','.ticket','.happy-birthday','.metal-detect','.open-room','.scrap-bot','.coinbox']
+var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.mic', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-DEVIL','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.sha256','.slideshow','.champion','.for-sale','.public-key','.ticket','.happy-birthday','.metal-detect','.open-room','.scrap-bot','.blog','.coinbox']
 
 
 
@@ -382,7 +382,7 @@ src={srcImg} height="200" width="200"/></p>
                        var vr   = data['vr'];
                        var staker = data['staker'];
 
-                       if(vr.includes('###')) {
+                       if( (vr.includes('###')) ||  (vr.includes('>>>') ) ) {
                           carousel = <StageCarousel upcInfo={this.props.upcInfo} nftInfo={this.props.nftInfo} upcId={upc} />
                           this.setState({player: carousel});
                        }
@@ -1081,6 +1081,7 @@ src={srcImg} height="200" width="200"/></p>
                            <option value="74">.metal-detect</option>
                            <option value="75">.open-room</option>
                            <option value="76">.scrap-bot</option>
+                           <option value="77">.blog</option>
                            <option value="777">.coinbox</option>
                         </select>
 
@@ -2849,7 +2850,7 @@ var playButton =
 
 
                       var upc = this.state.account;
-                      var link = "https://4icynw3ox4brquw2ccoujcha7zytderrtisa26ro4emumvc4v4aq.arweave.net/4gWG226_AxhS2hCdRIjg_nExkjGaJA16LuEZRlRcrwE/index.html#/upload/" + upc;
+                      var link = "https://tfktlwgahlg4t5jjpg6w25z7rkp4ktcmofvqifht3thabeu37ura.arweave.net/mVU12MA6zcn1KXm9bXc_ip_FTExxawQU89zOAJKb_SI/index.html#/upload/" + upc;
 
 
                       terminal.pushToStdout(`=====`);
