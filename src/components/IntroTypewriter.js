@@ -116,9 +116,9 @@ export default class IntroTypewriter extends Component {
              <Modal style={{"background":'black',"height":"50vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={'true'} closemodal={(e) => {this.setState({ showModalSplash: false }); }} type="lightSpeedIn" >
                 <div style={{background:"black", verticalAlign:"middle", textAlign:"center" }}>
                   <div>
-                    <Zoom left> <i  style={{color:"red"}}>loading nostradio-10</i></Zoom>
+                    <Zoom left> <i  style={{color:"red"}}>loading repatriateOS </i></Zoom>
                     <br/>
-                    <Zoom left> <b>Tuning into UPC#</b></Zoom>
+                    <Zoom left> <b>Welcome Home</b></Zoom>
                      <br/>
 
 		     <Flip right> <Barcode value={this.state.code} format="UPC" /> </Flip>

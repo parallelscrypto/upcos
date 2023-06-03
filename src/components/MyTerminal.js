@@ -197,6 +197,7 @@ export default class MyTerminal extends Component {
     this.upcai= this.upcai.bind(this);
     this.meeting= this.meeting.bind(this);
     this.grep= this.grep.bind(this);
+    this.grepMe= this.grepMe.bind(this);
     this.forward= this.forward.bind(this);
     this.heroFront= this.heroFront.bind(this);
     this.handleFlip= this.handleFlip.bind(this);
@@ -741,6 +742,112 @@ src={srcImg} height="200" width="200"/></p>
     e.preventDefault();
     window.location.assign("https://google.com")
   }
+
+
+  grepMe = async (word) => {
+
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var latest;
+                  let bal = this.props.latestTokenId();
+                      bal.then((value) => {
+                         latest = Math.round(value);
+			 var i = 1;
+			 for(i = 1; i < latest + 2; i++) {
+
+                            let info = this.props.nftInfo(i)
+                            
+		   .then(data => {
+                        //subtract 100 since we are naming the tlds with hundred in front for repeatability
+			let hrTLD = tlds[data['tld']];
+                        if(data['tld'] == 777) {
+                           hrTLD = "coinbox";
+                        }
+                        
+		        let tld = hrTLD + " (" + data['tld'] + ")";
+			var tmpStamp = parseInt(data['latestTimestamp']);
+                        var newDate = new Date(tmpStamp * 1000);
+                        var payload = "{{ idj " + data['ipfs'] + " }}";
+			var tmpStamp = parseInt(data['createdTimestamp']);
+                        var created = new Date(tmpStamp * 1000);
+
+
+                        var currentUrl = window.location.href;
+                        var upcJson = '{"code":"' + data['word'] + '"}';
+                        var upcEncoded = btoa(upcJson);
+                        currentUrl = currentUrl.substring(0,currentUrl.lastIndexOf('/') + 1) + upcEncoded;
+
+
+                        var upcLink = <a href={currentUrl}>{data['word']}</a>;
+
+
+
+
+			var fileName = data['ipfs'];
+                        var hrn = data['humanReadableName'];
+			var og= data['og'];
+			var upc = data['word'];
+			var owner= data['staker'];
+			var tldSearch= data['tld'];
+			var upcHash= data['upcHash'];
+			var vr= data['vr'];
+			var tokenId = data['tokenId'];
+
+		        if(fileName.includes(word) 
+				|| hrn.includes(word)
+				|| owner.includes(word)
+				|| tldSearch.includes(word)
+				|| upcHash.includes(word)
+				|| vr.includes(word)
+				|| upc.includes(word)
+			) {
+				if(upc) {
+				   terminal.pushToStdout(`[[ai-xintel]]`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`owner: ${data['staker']}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`token_id: ${tokenId}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`tld: ${tld}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`upc: <a onclick="window.location.assign('${currentUrl}');window.location.reload()" href="${currentUrl}">${upc}</a>`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`stage: ${data['vr']}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`payload: ${payload}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`[[/ai-xintel]]`);
+				}
+                        }
+                  });
+	
+        		 }
+        		      
+        		 // expected output: "Success!"
+        	      });
+                })
+
+                return ''
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   grep = async (word) => {
@@ -2365,7 +2472,7 @@ var playButton =
               fn: () => {
 		      var addy = this.props.address;
                       addy  = addy.substr(0,15);
-		      this.grep(addy);
+		      this.grepMe(addy);
               }
             },
 
@@ -2743,8 +2850,40 @@ var playButton =
             cd: {
               description: '<p style="color:hotpink;font-size:1.1em">** change directory (upc code) on command line without gui or scanner</p>',
               fn: async (upcId) => {
-                        this.setAccount(upcId);
-                        this.firstLookup(upcId);
+
+                        var fullUpc;
+          
+                        let latest = await this.props.latestTokenId();
+
+                        var withinBounds = true;
+
+                        if( Math.abs(upcId) > latest) {
+                          console.log( Math.abs(upcId) );
+                           withinBounds = false;
+                        }
+                        else {
+var bla = Math.abs(upcId);
+                          console.log( bla +  "  noooop  " + latest );
+                        }
+
+
+                        if ( upcId.length <12 && withinBounds ) {
+
+                           console.log("nftId");
+                           let info = this.props.nftInfo(upcId)
+		            .then(data => {
+                                 var fullUpc = data['word'];
+                                 this.setAccount(fullUpc);
+                                 this.firstLookup(fullUpc);
+                               })
+
+                        }
+                        else {
+                           console.log("upcId");
+                           this.setAccount(upcId);
+                           this.firstLookup(upcId);
+                        }
+
               }
             },
 
