@@ -338,7 +338,7 @@ export default class MyTerminal extends Component {
                    var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
                    var offerBuy = 
                    <div style={{textAlign:"center", fontWeight:"bold", background:"#422a0b", border:"5px solid white", padding:"3px"}}>
-                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I declare that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and intelligence.  Please program UPC parcel #[[{upc}]] and use it to publicly assert your dignity and create a shared positive social environment where creators encourage each other.  Together, with our hard work and our solid values, we can replace historical lies with truth and build an economy with a mission to uplift the Melanated Afrikan Diaspora, also all individual allies with potential functionality to add to their respective coexisting UPC Operating System [upcos] are welcome.  Functionality, sound logic, and results supercede workless promises.  This WelcomeHome Celebration can be purchased with one Repatriate token (REP) and can be used as a tool to facilitate freedom of speech and expression [especially for anyone whose narrative has been systemically opressed, silenced, destroyed, etc. through lies, fear, manipulation, framing, misleading, gaslighting, bigtech, collusion, etc]. With these NFTs, we build a worldwide community based in mutually beneficial partnership, respect, and honor.</b></p>
+                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I declare that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and intelligence.  Please program UPC parcel #[[{upc}]] and use it to publicly assert your dignity and create a shared positive social environment where creators encourage each other.  Together, with our hard work and our solid values, we can replace historical lies with truth and build an economy with a mission to uplift the Melanated Afrikan Diaspora, also all individual allies with potential functionality to add to their respective coexisting UPC Operating System [upcos] are welcome.  Functionality, sound logic, and results supercede workless promises.  This WelcomeHome Celebration can be purchased with one Repatriate token (REP) and can be used as a tool to facilitate economic empowerment [especially for anyone whose work and narrative has been systemically opressed, silenced, destroyed, etc. through lies, fear, manipulation, framing, misleading, gaslighting, bigtech, collusion, etc]. With these NFTs, we build a worldwide community based in mutually beneficial partnership, respect, and honor.</b></p>
                        <p style={{textAlign:"center"}}><img 
                                onClick={() => {
                                   this.sing();
@@ -605,7 +605,7 @@ src={srcImg} height="200" width="200"/></p>
 
   getMplayer = (fullUrl) => {
       var mplayer = <iframe className='video'
-              style={{height:"80vh",width:"88vw"}}
+              style={{height:"80vh",width:"96vw"}}
 	      allow="camera; microphone"
               title='2 upc dj player'
               sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
@@ -634,7 +634,7 @@ src={srcImg} height="200" width="200"/></p>
          && !fullUrl.includes('whistia') && !fullUrl.includes('mixcloud') 
          && !fullUrl.includes('dailymotion') && !fullUrl.includes('twitch')) {
             mplayer = <iframe className='video'
-                    style={{height:"80vh",width:"88vw"}}
+                    style={{height:"80vh",width:"96vw"}}
 		    allow="camera; microphone"
                     title='3 upc dj player'
                     sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
@@ -1533,7 +1533,7 @@ src={srcImg} height="200" width="200"/></p>
                        const fullUrl = vr
                        mplayer =
                        <iframe className='video'
-                               style={{height:"80vh",width:"88vw"}}
+                               style={{height:"80vh",width:"96vw"}}
 		               allow="camera; microphone"
                                title='5 upc dj player'
                                sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
@@ -1798,15 +1798,6 @@ var playButton =
             },
 
 
-            gpt: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open a upcGPT window for the 12 digit code passed in.  If no code is passed, the current upc code is used.  You can either use this command (for example) as `gpt 000000000000` if you want to open a upcGPT window to `The Zeros`. **</p>',
-              fn: (upcId) => {
-                 this.gpt(upcId);
-              }
-            },
-
-
-
             search: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Search upcs for content.  Fields searched are owner, human readable name, vr, and ipfs.  No spaces in the search term, use dashes or underscores depending on how the owner named the file/human readable name**</p>',
               fn: (humanReadableName) => {
@@ -1872,7 +1863,7 @@ var playButton =
                              bookUrl = 'https://librivox.org';
                           }
                           var mplayer = <iframe className='video'
-                                  style={{height:"80vh",width:"88vw"}}
+                                  style={{height:"80vh",width:"96vw"}}
 		                  allow="camera; microphone"
                                   title='6 upc dj player'
                                   sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
@@ -1908,6 +1899,46 @@ var playButton =
  
               }
             },
+
+
+
+
+            sheeit: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open a spread sheet in a window & sheeit </p>',
+              fn: (sheetNum) => {
+
+
+                      if (Number.isInteger(sheetNum) && sheetNum < 0) {
+                         sheetNum = 0;
+                      }
+
+                      var upcHash  = sha256(this.state.account)
+                      for(var i=0; i<sheetNum; i++) {
+                          upcHash = sha256(upcHash);
+                      } 
+
+
+		      var fullUrl = "https://ethercalc.net/" + upcHash;
+                      var winNum = "1";
+
+                      this.cSearch2.value = "";
+                      this.cSearch2.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
+
+
 
 
             com: {
@@ -2861,10 +2892,6 @@ var playButton =
                           console.log( Math.abs(upcId) );
                            withinBounds = false;
                         }
-                        else {
-var bla = Math.abs(upcId);
-                          console.log( bla +  "  noooop  " + latest );
-                        }
 
 
                         if ( upcId.length <12 && withinBounds ) {
@@ -3651,7 +3678,7 @@ var bla = Math.abs(upcId);
                   onStart={this.handleStart}
                   onDrag={this.handleDrag}
                   onStop={this.handleStop}>
-                  <div style={{ opacity:"0.9", background:"#ffffff" ,color:"#000000", visibility:this.state.pipVisibility, display: this.state.pipDisplay, width:"90vw",border:"3px dashed", padding:"5px"}}>
+                  <div style={{ opacity:"0.9", background:"#ffffff" ,color:"#000000", visibility:this.state.pipVisibility, display: this.state.pipDisplay, width:"98vw",border:"3px dashed", padding:"5px"}}>
                     <div className="handle" style={{background:"green", display:"grid"}}><span style={{textAlign:"center"}}>drag-from-here (client0)</span></div>
                       <div style={{textAlign:"center"}}>
                          <input
@@ -3706,7 +3733,7 @@ var bla = Math.abs(upcId);
                   onStart={this.handleStart}
                   onDrag={this.handleDrag}
                   onStop={this.handleStop}>
-                  <div style={{ opacity:"0.9", background:"#ffffff" ,color:"#000000", visibility:this.state.pipVisibility2, display: this.state.pipDisplay2, width:"90vw",border:"3px dashed", padding:"5px"}}>
+                  <div style={{ opacity:"0.9", background:"#ffffff" ,color:"#000000", visibility:this.state.pipVisibility2, display: this.state.pipDisplay2, width:"98vw",border:"3px dashed", padding:"5px"}}>
                     <div className="handle2" style={{background:"red", display:"grid"}}><span style={{textAlign:"center"}}>drag-from-here (client1)</span></div>
                       <div style={{textAlign:"center"}}>
                          <input
