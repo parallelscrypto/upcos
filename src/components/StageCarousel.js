@@ -167,8 +167,14 @@ export default class StageCarousel extends Component {
 
              console.log(info[i]);
              //keep ss string clean.
-             if(containsGreaterThan) {
 
+             var stagePiece = nftIds[i];
+             var loadHtml = false;
+             if( stagePiece.includes('https://arweave.net/') ) {
+                  loadHtml = true;
+             }
+
+             if(containsGreaterThan && loadHtml) {
                 var entry = await this.getHTML(nftIds[i]); 
              }
              else if(tmpId.length == 11) {
