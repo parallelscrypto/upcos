@@ -113,7 +113,7 @@ export default class StageCarousel extends Component {
                 var mplayer = "";
 		var res = this.state.slides;
 
-                if(vr.includes('https://arweave.net/') ) {
+                if(vr.includes('https:') ) {
                    const fullUrl = vr
                    mplayer =
                            <div>
@@ -170,7 +170,7 @@ export default class StageCarousel extends Component {
 
              var stagePiece = nftIds[i];
              var loadHtml = false;
-             if( stagePiece.includes('https://arweave.net/') ) {
+             if( stagePiece.includes('https:') ) {
                   loadHtml = true;
              }
 
