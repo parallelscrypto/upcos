@@ -27,7 +27,7 @@ contract UPCMarket is IERC721Receiver {
     
     constructor() {
         bank = payable(msg.sender);
-        nftMarketplace = address(0x10c0a0Ec21c1ec1e3c3EBF772e7C61d64Fd19193);
+        nftMarketplace = address(0x77e45380585826D0947a032453a2d7B0d18d6078);
     }
 
 

@@ -7,9 +7,9 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 
-import "./Repatriate.sol";
+import "./Flip.sol";
 
-contract WelcomeHome is ERC721, Ownable {
+contract Upc is ERC721, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -67,14 +67,14 @@ contract WelcomeHome is ERC721, Ownable {
     address payable private  bank;
     uint    public totalBalance;
     uint256    currentNftPrice;
-    Repatriate    private _token;
+    Flip    private _token;
     string    public defaultProtocol;
 
 
-    constructor() ERC721("WelcomeHome", "WH") Ownable()  {
+    constructor() ERC721("UPC", "UPC") Ownable()  {
         bank = payable(msg.sender);
         defaultIpfs = "https://librivox.org/search?primary_key=0&search_category=author&search_page=1&search_form=get_results";
-        defaultVr = "https://nostr.com";
+        defaultVr = "https://arweave.net/sStyb2LGfiQEWv1BHCE8vONzDGSKlMOG2xhOs0XBKzU";
         currentNftPrice = 1 ether;
         tlds[0] = "upc";
         tlds[1] = "afro";
@@ -86,8 +86,6 @@ contract WelcomeHome is ERC721, Ownable {
         super._transfer(from,to,tokenId);
         nftIdLookup[tokenId].staker = to;
         nftIdLookup[tokenId].latestTimestamp = block.timestamp;
-
-        
         string memory upcId = nftIdLookup[tokenId].word;
         upcIdLookup[upcId].staker = to;
         upcIdLookup[upcId].latestTimestamp = block.timestamp;
@@ -95,7 +93,15 @@ contract WelcomeHome is ERC721, Ownable {
     }
 
     function setPayToken(address  addy) external onlyOwner {
-        _token = Repatriate(addy);
+        _token = Flip(addy);
+    }
+
+    function setDefaultVr(string memory vr) external onlyOwner {
+        defaultVr = vr;
+    }
+
+    function setDefaultPayload(string memory payload) external onlyOwner {
+        defaultIpfs = payload;
     }
 
     function hasBeenMinted(string memory upcId) external view returns(bool) {
@@ -103,9 +109,7 @@ contract WelcomeHome is ERC721, Ownable {
         return nftsToMintByHash[upcHash].minted;
     }
     
-
     function getMyNfts() external view returns(NFTMeta[] memory) {
-
 
         uint i = 1;
         uint localNftCount = 1;
@@ -140,7 +144,6 @@ contract WelcomeHome is ERC721, Ownable {
         return nftIdLookup[nftId];
     }    
     
-   
     function upcInfo(string memory upcId) external view returns(NFTMeta memory) {
         return upcIdLookup[upcId];
     }
@@ -152,7 +155,6 @@ contract WelcomeHome is ERC721, Ownable {
     function getUpcOwner(string memory upcId) external view returns(address) {
         return upcIdLookup[upcId].staker;
     }        
-    
 
     function resolveDomain(string memory humanReadableName, uint tld) external view returns(NFTMeta memory) {
         uint256 tmpTokenId = 0;
@@ -167,18 +169,13 @@ contract WelcomeHome is ERC721, Ownable {
         }
         
         require(tmpTokenId > 0 , "Domain not found");
-        
-        
         return nftIdLookup[tmpTokenId];
-        
     }    
-
 
     function withdrawTokens() external onlyOwner {
         bank.transfer(address(this).balance);
         totalBalance = 0;
     }
-
 
     function buyNft(string memory upcId, string memory humanReadableName, uint _tld) public payable{
         bytes32 upcHash = sha256(abi.encodePacked(upcId));
@@ -195,7 +192,6 @@ contract WelcomeHome is ERC721, Ownable {
             require(fireDomainToNftLookup[humanReadableName] < 1 , "Error, this FIRE DOMAIN NAME has already been purchased.");
         }
         
-
         uint256 tmpPrice = currentNftPrice;
         if(_tld == 99999) {
             tmpPrice = 9999999999999999999999999 ether;
@@ -204,8 +200,6 @@ contract WelcomeHome is ERC721, Ownable {
         require(testStr.length > 0 , "Sorry, this UPC domain is already taken");   
         _token.transferFrom(msg.sender, address(this), tmpPrice);
         _token.burn(tmpPrice);
-
-
 
         _tokenIds.increment();
         uint256 newNftTokenId = _tokenIds.current();
@@ -239,8 +233,6 @@ contract WelcomeHome is ERC721, Ownable {
 
         addressToNFTMeta[msg.sender].push(nftMeta);        
         
-        
-        
         if(_tld == 0) {
             upcDomainToNftLookup[humanReadableName] = newNftTokenId;
         }
@@ -254,7 +246,6 @@ contract WelcomeHome is ERC721, Ownable {
         
     }
 
-
     //returns the position in the address array that an nft holds
     function findTokenIndexByAddress(address owner, uint256 tokenId) public view returns (int) {
         uint i = 0;
@@ -267,17 +258,14 @@ contract WelcomeHome is ERC721, Ownable {
         return found;
     }
     
-    
     function getVrByUpcId(string memory upcId) public view returns (string memory) {
         bytes32 upcHash = sha256(abi.encodePacked(upcId));
         return nftsToMintByHash[upcHash].vr;
     }
         
-    
     function getVrByHash(bytes32 upcHash) public view returns (string memory) {
         return nftsToMintByHash[upcHash].vr;
     }
-    
     
     function getIpfsByHash(bytes32 upcHash) public view returns (string memory) {
         return nftsToMintByHash[upcHash].ipfs;
@@ -287,8 +275,6 @@ contract WelcomeHome is ERC721, Ownable {
         return nftsToMintByHash[upcHash].humanReadableName;
     }    
 
-
-    
     function setVr(string memory upcId, string memory _vr) public {
         require(msg.sender == upcIdLookup[upcId].staker , "Only owner can set VR");
         upcIdLookup[upcId].vr = _vr;
@@ -321,13 +307,11 @@ contract WelcomeHome is ERC721, Ownable {
         NFTMeta memory nftToMint;
 
         int indexToMint = findTokenIndexByAddress(msg.sender, tokenIdToMint);
-        
 
         require(indexToMint >= 0, "Error trying to mint an NFT that is not in range");
         
         //cast the result to a uint
         nftToMint = nftsToMintByAddress[msg.sender][uint(indexToMint)];
-
 
         NFTMeta memory nftMeta;
         nftMeta.tokenId                 = nftToMint.tokenId;
@@ -355,24 +339,14 @@ contract WelcomeHome is ERC721, Ownable {
         upcIdLookup[upcId].createdTimestamp   = block.timestamp;
         upcIdLookup[upcId].og                 = msg.sender;
         //upcIdLookup[upcId].protocol           = defaultProtocol;
-        
-
 
         uint tmpTld                           = upcIdLookup[upcId].tld;
-        nftIdLookup[nftToMint.tokenId].tld    = tmpTld;
-        
-        
+        nftIdLookup[nftToMint.tokenId].tld    = tmpTld;   
         nftIdLookup[nftToMint.tokenId].latestTimestamp  = block.timestamp;
         nftIdLookup[nftToMint.tokenId].createdTimestamp = block.timestamp;
         //nftIdLookup[nftToMint.tokenId].protocol = defaultProtocol;
-
-
-
-    
         _safeMint(staker, tokenIdToMint);
         //_setTokenURI(tokenIdToMint, defaultIpfs);
-
         return tokenIdToMint;
-
     }
 }

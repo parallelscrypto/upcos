@@ -26,7 +26,6 @@ import {CopyToClipboard} from 'react-copy-to-clipboard';
 import ReactPlayer from 'react-player'
 import ReactCardFlip from 'react-card-flip';
 import { TikTok } from 'react-tiktok';
-import NostRadioToken from '../abis/NostRadioToken.json'
 import Draggable from 'react-draggable';
 
 
@@ -36,7 +35,7 @@ var Barcode = require('react-barcode');
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
-var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Repatriate\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your Repatriate to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`ask`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with ask " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Flip\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your Flip to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`ask`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with ask " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 //var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.oneafrika', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-DEVIL','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.coinbox']
 
@@ -338,7 +337,7 @@ export default class MyTerminal extends Component {
                    var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
                    var offerBuy = 
                    <div style={{textAlign:"center", fontWeight:"bold", background:"#422a0b", border:"5px solid white", padding:"3px"}}>
-                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I declare that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and intelligence.  Please program UPC parcel #[[{upc}]] and use it to publicly assert your dignity and create a shared positive social environment where creators encourage each other.  Together, with our hard work and our solid values, we can replace historical lies with truth and build an economy with a mission to uplift the Melanated Afrikan Diaspora, also all individual allies with potential functionality to add to their respective coexisting UPC Operating System [upcos] are welcome.  Functionality, sound logic, and results supercede workless promises.  This WelcomeHome Celebration can be purchased with one Repatriate token (REP) and can be used as a tool to facilitate economic empowerment [especially for anyone whose work and narrative has been systemically opressed, silenced, destroyed, etc. through lies, fear, manipulation, framing, misleading, gaslighting, bigtech, collusion, etc]. With these NFTs, we build a worldwide community based in mutually beneficial partnership, respect, and honor.</b></p>
+                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I declare that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and intelligence.  Please program UPC parcel #[[{upc}]] and use it to publicly assert your dignity and create a shared positive social environment where creators encourage each other.  Together, with our hard work and our solid values, we can replace historical lies with truth and build an economy with a mission to uplift the Melanated Afrikan Diaspora, also all individual allies with potential functionality to add to their respective coexisting UPC Operating System [upcos] are welcome.  Functionality, sound logic, and results supercede workless promises.  This WelcomeHome Celebration can be purchased with one Flip token (REP) and can be used as a tool to facilitate economic empowerment [especially for anyone whose work and narrative has been systemically opressed, silenced, destroyed, etc. through lies, fear, manipulation, framing, misleading, gaslighting, bigtech, collusion, etc]. With these NFTs, we build a worldwide community based in mutually beneficial partnership, respect, and honor.</b></p>
                        <p style={{textAlign:"center"}}><img 
                                onClick={() => {
                                   this.sing();
@@ -1081,6 +1080,27 @@ src={srcImg} height="200" width="200"/></p>
 
 
 
+  getBulkPrice = async () => {
+      var addy = this.props.address;
+      const terminal = this.progressTerminal.current;
+      const price = await this.props.getBulkPrice();
+
+      var matic = window.web3.utils.fromWei(price,"ether");
+      terminal.pushToStdout(`bulk-price: ` + matic + ` matic. Execute the bc command to see how many tokens you recieve at this current price`);
+      return price;
+  }
+
+  getBulkCount = async () => {
+      var addy = this.props.address;
+      const terminal = this.progressTerminal.current;
+      const count = await this.props.getBulkCount();
+      var matic = window.web3.utils.fromWei(count,"ether");
+      terminal.pushToStdout(`bulk-count-per-price-unit:` + matic + ` tokens that you will recieve if you run the bulk command.  execute the bp command to see how much you must pay for this number of tokens`);
+      return count;
+  }
+
+
+
 
 
   ask = async (humanReadableName) => {
@@ -1337,7 +1357,7 @@ src={srcImg} height="200" width="200"/></p>
        let inject = this.props.checkNarativBalance(upcId)
        .then(data => {
           var price  = window.web3.utils.fromWei(data, "ether");
-          price += " Repatriate";
+          price += " Flip";
           terminal.pushToStdout(price)
       });
 
@@ -1588,7 +1608,7 @@ src={srcImg} height="200" width="200"/></p>
     var addy = this.props.address;
     addy  = addy.substr(0,15);
 
-    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV </i>\n <i>wake.tf.up</i> \n <b style='color:red'> [always.ask.questions]</b> \n <i style='color:#d66900'>Powered by Repatriate Crypto</i> \n <i style='color:white'> <b style='color:red'>1.</b> Type <i style='color:red'>`help`</i> to see available commands \n <b style='color:red'> 2. </b> Type <i style='color:red'>`claim`</i> to get some Repatriate Token.  You must pay a access determined by the upc owner plus the infrastructure fee, and you recieve .25 Repatriate token each time you `claim`.  To check the price of tokens in a particular coinbox, type the `price` command.  To recap, in order to get the 1 token that you need to buy a UPC NFT, you must run the claim command 4 times. A user only needs one token to buy a UPC NFT, so no need to sit around typing claim a bunch of times trying to accumulate tokens. \n <b style='color:red'> 3. </b> Type <i style='color:red'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <b style='color:red'> 4. </b> Type <i style='color:red'>`recon`</i> to allow your wallet to spend your Repatriate token in our smart contract.  You will not be able to buy {{buy}} a upc until you have run this command \n Type <i style='color:red'>`buy`</i> to buy the UPC [[" + this.state.account + "]]" + "\n  Type <i style='color:red'>`own`</i> to mint if successful with program {buy} [[" + this.state.account + "]]" + "\n  <i style='color:red'>Type `sell` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:red'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:red'>`clear`</i> to clear screen" + " \n Type <i style='color:red'>`ch [0-9]` to to watch the corresponding channel.  For example, type `ch 0` to watch channel 0, and type `ch 9` to watch channel 9.  Channel values 0-9 are valid";
+    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV </i>\n <i>wake.tf.up</i> \n <b style='color:red'> [always.ask.questions]</b> \n <i style='color:#d66900'>Powered by Flip Crypto</i> \n <i style='color:white'> <b style='color:red'>1.</b> Type <i style='color:red'>`help`</i> to see available commands \n <b style='color:red'> 2. </b> Type <i style='color:red'>`claim`</i> to get some Flip Token.  You must pay a access determined by the upc owner plus the infrastructure fee, and you recieve .25 Flip token each time you `claim`.  To check the price of tokens in a particular coinbox, type the `price` command.  To recap, in order to get the 1 token that you need to buy a UPC NFT, you must run the claim command 4 times. A user only needs one token to buy a UPC NFT, so no need to sit around typing claim a bunch of times trying to accumulate tokens. \n <b style='color:red'> 3. </b> Type <i style='color:red'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <b style='color:red'> 4. </b> Type <i style='color:red'>`recon`</i> to allow your wallet to spend your Flip token in our smart contract.  You will not be able to buy {{buy}} a upc until you have run this command \n Type <i style='color:red'>`buy`</i> to buy the UPC [[" + this.state.account + "]]" + "\n  Type <i style='color:red'>`own`</i> to mint if successful with program {buy} [[" + this.state.account + "]]" + "\n  <i style='color:red'>Type `sell` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:red'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:red'>`clear`</i> to clear screen" + " \n Type <i style='color:red'>`ch [0-9]` to to watch the corresponding channel.  For example, type `ch 0` to watch channel 0, and type `ch 9` to watch channel 9.  Channel values 0-9 are valid";
     var promptlabel =  '[[ AWAITING COMMAND ]] => ';
 
           
@@ -1777,7 +1797,7 @@ var playButton =
         commands={{
 
             usdc: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** DONT USE THIS COMMAND STUB YET! Approve UPC Band Radio to spend 50 of your Repatriate.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `colonize` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** DONT USE THIS COMMAND STUB YET! Approve UPC Band Radio to spend 50 of your Flip.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `colonize` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
               fn: () => {
                   const terminal = this.progressTerminal.current
                 var progress = 0;
@@ -1785,7 +1805,7 @@ var playButton =
                 this.setState({ isProgressing: true }, () => {
                   let approval = this.props.approveUSDC();
                   approval.then((value) => {
-		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Repatriate from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'colonize' and 'colonizeb' commands will fail`)
+		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Flip from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'colonize' and 'colonizeb' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
@@ -2170,7 +2190,7 @@ var playButton =
 
 
             recon: {
-                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 1 of your Repatriate.  Each time you program a UPC, you must run `recon` again.    You MUST run this command FIRST or all of your `buy` and `own` commands will fail.**</p>',
+                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 1 of your Flip.  Each time you program a UPC, you must run `recon` again.    You MUST run this command FIRST or all of your `buy` and `own` commands will fail.**</p>',
               fn: (numTokens) => {
                   
                 var progress = 0;
@@ -2178,7 +2198,7 @@ var playButton =
                 this.setState({ isProgressing: true }, () => {
                   let approval = this.props.approve(numTokens);
                   approval.then((value) => {
-                    terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Repatriate from your wallet when you buy an NFT.  This approval is good for 1 NFT, and you must run this command each time before buying an NFT, or your 'buy' and 'own' commands will fail`)
+                    terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Flip from your wallet when you buy an NFT.  This approval is good for 1 NFT, and you must run this command each time before buying an NFT, or your 'buy' and 'own' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
@@ -2209,7 +2229,7 @@ var playButton =
                           theBal =window.web3.utils.fromWei(value, "ether");
                           terminal.pushToStdout(`================`);
                           terminal.pushToStdout(`[[balance-repatriate-token]]`);
-        		  terminal.pushToStdout(`${theBal} Repatriate`)
+        		  terminal.pushToStdout(`${theBal} Flip`)
                           terminal.pushToStdout(`[[/balance-repatriate-token]]`);
                           terminal.pushToStdout(`================`);
                           terminal.pushToStdout(`[[balance-MATIC]]`);
@@ -2228,7 +2248,7 @@ var playButton =
         
                
              swap: {
-                     description: '<p style="color:hotpink;font-size:1.1em">** Repatriate is the token used to write [[intel]] to UPC codes.  In order to acquire Repatriate, you must run the `swap` command. This will `swap` Polygon that you have purchased likely from an exchange for Repatriate from our Decentralized Mint.  Specify the amount of Repatriate that you would like to exchange for the Polygon in your wallet in wei.  This will trigger a transaction that will mint equiv. Repatriate for Polygon 1:1.  Example: to buy 5 Repatriate type `swap 5000000000000000000`. In other words, this would send 5 Polygon from your wallet for 5 Repatriate from the Repatriate mint. </p>',
+                     description: '<p style="color:hotpink;font-size:1.1em">** Flip is the token used to write [[intel]] to UPC codes.  In order to acquire Flip, you must run the `swap` command. This will `swap` Polygon that you have purchased likely from an exchange for Flip from our Decentralized Mint.  Specify the amount of Flip that you would like to exchange for the Polygon in your wallet in wei.  This will trigger a transaction that will mint equiv. Flip for Polygon 1:1.  Example: to buy 5 Flip type `swap 5000000000000000000`. In other words, this would send 5 Polygon from your wallet for 5 Flip from the Flip mint. </p>',
                fn: (amount) => {
                  this.setState({progressBal: ''});
                  this.setState({ isProgressing: true }, () => {
@@ -2237,7 +2257,7 @@ var playButton =
                    approval.then((value) => {
                       approval = value;
                           terminal.pushToStdout(`[[swap]]`);
-                      terminal.pushToStdout(`You have just swapped Polygon for Repatriate.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
+                      terminal.pushToStdout(`You have just swapped Polygon for Flip.  Check your Activity tab below to track the transaction. \n  Type 'bal' to see your new balance! Balances can sometimes take minutes to update.  THANK YOU! ${approval}`)
                           terminal.pushToStdout(`[[/swap]]`);
                       // expected output: "Success!"
                    });
@@ -2320,8 +2340,52 @@ var playButton =
               }
             },
 
+
+            bulk: {
+              description: '<p style="color:hotpink;font-size:1.1em">** This is how YOU can obtain pay token.  Use this command to Withdraw tokens from a coinbox IN BULK.  If the coinbox is attached to an NFT that is of type `coinbox (777)`**</p>',
+              fn: async (upcId) => {
+                      var upcId = this.state.account
+                      var bulkPrice = await this.getBulkPrice();
+		      this.props.claimNarativTokenBulk(bulkPrice,upcId);
+              }
+            },
+
+
+            xbp: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Set the bulk price for x tokens.  Admin function**</p>',
+              fn: (price) => {
+		      this.props.setTokenPriceBulk(price);
+              }
+            },
+
+
+            xbc: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Set the bulk price for x tokens.  Admin function**</p>',
+              fn: (count) => {
+		      this.props.setTokenCountBulk(count);
+              }
+            },
+
+
+            bc: {
+              description: '<p style="color:hotpink;font-size:1.1em">** View bulk count**</p>',
+              fn: () => {
+                      this.getBulkCount();
+              }
+            },
+
+
+            bp: {
+              description: '<p style="color:hotpink;font-size:1.1em">** View bulk price**</p>',
+              fn: () => {
+                      this.getBulkPrice();
+              }
+            },
+
+
+
             claim: {
-              description: '<p style="color:hotpink;font-size:1.1em">** This is how YOU can obtain NRT token.  Use this command to Withdraw tokens from a coinbox.  If the coinbox is attached to an NFT that is of type `coinbox (777)`, one claim command will cost the claimer .15 matic.  Executing the claim command will trigger a transaction that will send .15 matic from your wallet (plus gas),  and then the coinbox will send .25 NRT to your wallet.  You must run this command 4 times to get one token.  **</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** This is how YOU can obtain NRT token.  Use this command to Withdraw tokens from a coinbox.  If the coinbox is attached to an NFT that is of type `coinbox (777)`**</p>',
               fn: (upcId) => {
                       if(!upcId) {
                           upcId = this.state.account
@@ -3620,9 +3684,9 @@ var playButton =
                    let bal = this.props.getCrown(upcId);
                        bal.then((value) => {
                           theBal =window.web3.utils.fromWei(value, "ether");
-                          terminal.pushToStdout(`[[balance-Repatriate]]`);
-        		  terminal.pushToStdout(`${theBal} Repatriate`)
-                          terminal.pushToStdout(`[[/balance-Repatriate]]`);
+                          terminal.pushToStdout(`[[balance-Flip]]`);
+        		  terminal.pushToStdout(`${theBal} Flip`)
+                          terminal.pushToStdout(`[[/balance-Flip]]`);
                           terminal.pushToStdout(`================`);
                           // expected output: "Success!"
                        });
@@ -3641,7 +3705,7 @@ var playButton =
 
 
             mine: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Mine Repatriate Token that has been Crowned into the UPC</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Mine Flip Token that has been Crowned into the UPC. specify in whole number, not wei.  example: "mine 777777777777 50" will mine 50 tokens from upc 777777777777</p>',
               fn: (upcId, numTokens) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {

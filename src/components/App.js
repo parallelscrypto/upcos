@@ -2,14 +2,14 @@ import React, { Component } from 'react'
 import ReactCardFlip from 'react-card-flip';
 import Iframe from 'react-iframe'
 import Web3 from 'web3'
-import NostRadioStation from '../etc/repatriate/WelcomeHome.json'
-import NostRadioToken from '../etc/repatriate/Repatriate.json'
-import piggy from '../etc/repatriate/TipJar.json'
-import UPCMarket from '../etc/repatriate/UPCMarket.json'
-import TradeMarket from '../etc/repatriate/TradeMarket.json'
-import WalkieTalkie from '../etc/repatriate/WalkieTalkie.json'
-import CoinBox from '../etc/repatriate/CoinBox.json'
-import OpenFederation from '../etc/repatriate/OpenFederation.json'
+import NostRadioStation from '../etc/flipitup/Upc.json'
+import NostRadioToken from '../etc/flipitup/Flip.json'
+import piggy from '../etc/flipitup/TipJar.json'
+import UPCMarket from '../etc/flipitup/UPCMarket.json'
+import TradeMarket from '../etc/flipitup/TradeMarket.json'
+import WalkieTalkie from '../etc/flipitup/WalkieTalkie.json'
+import CoinBox from '../etc/flipitup/CoinBox.json'
+import OpenFederation from '../etc/flipitup/OpenFederation.json'
 
 
 //import Navbar from './Navbar'
@@ -697,6 +697,60 @@ console.log("mk addy is " + market_address);
     return this.state.coinboxNft.methods.injectNarativ(upcId,numNarativ).send({ from: this.state.account });
   };
 
+  getBulkCount= async () => {
+    const { accounts, contract } = this.state;
+    //var amount = 150000000000000000;
+    var upcId = "000000000000";
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.coinboxNft.methods.bulkCount().call({ from: this.state.account });
+  };
+
+
+
+  getBulkPrice= async () => {
+    const { accounts, contract } = this.state;
+    //var amount = 150000000000000000;
+    var upcId = "000000000000";
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.coinboxNft.methods.bulkPrice().call({ from: this.state.account });
+  };
+
+
+
+  claimNarativTokenBulk = async (amount,upcId) => {
+    const { accounts, contract } = this.state;
+    //var amount = 150000000000000000;
+    var upcId = "000000000000";
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    console.log("%%%AMOUNT is " + amount  );
+    return this.state.coinboxNft.methods.claimTokensBulk(upcId).send({ value: amount, from: this.state.account });
+  };
+
+
+  setTokenPriceBulk = async (price) => {
+    const { accounts, contract } = this.state;
+    //var amount = 150000000000000000;
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.coinboxNft.methods.setBulkPrice(price).send({ from: this.state.account });
+  };
+
+
+  setTokenCountBulk = async (count) => {
+    const { accounts, contract } = this.state;
+    //var amount = 150000000000000000;
+    const gameID = "testGame";
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.coinboxNft.methods.setBulkCount(count).send({ from: this.state.account });
+  };
 
 
   claimNarativToken = async (upcId,amount) => {
@@ -970,6 +1024,16 @@ console.log("mk addy is " + market_address);
     this.refreshFeed= this.refreshFeed.bind(this);
     this.injectNarativ= this.injectNarativ.bind(this);
     this.claimNarativToken= this.claimNarativToken.bind(this);
+    this.claimNarativTokenBulk= this.claimNarativTokenBulk.bind(this);
+    this.setTokenCountBulk= this.setTokenCountBulk.bind(this);
+    this.setTokenPriceBulk= this.setTokenPriceBulk.bind(this);
+
+    this.getBulkCount= this.getBulkCount.bind(this);
+    this.getBulkPrice= this.getBulkPrice.bind(this);
+
+
+
+
     this.checkNarativBalance= this.checkNarativBalance.bind(this);
 
     this.getCoinboxPrice= this.getCoinboxPrice.bind(this);
@@ -1095,6 +1159,15 @@ console.log("mk addy is " + market_address);
 	approveNav={this.approveNav}
 	checkNarativBalance={this.checkNarativBalance}
 	claimNarativToken={this.claimNarativToken}
+	claimNarativTokenBulk={this.claimNarativTokenBulk}
+
+	setTokenCountBulk={this.setTokenCountBulk}
+	setTokenPriceBulk={this.setTokenPriceBulk}
+
+	getBulkCount={this.getBulkCount}
+	getBulkPrice={this.getBulkPrice}
+
+
 	injectNarativ={this.injectNarativ}
 	redeemUPCS={this.redeemUPCS}
 	buyUPCSWithNarativ={this.buyUPCSWithNarativ}

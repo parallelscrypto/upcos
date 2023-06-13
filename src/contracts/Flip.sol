@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Context.sol";
-import "./WelcomeHome.sol";
+import "./Upc.sol";
 
 
 
@@ -24,7 +24,7 @@ interface iERC721 {
  * Note they can later distribute these tokens as they wish using `transfer` and other
  * `ERC20` functions.
  */
-contract Repatriate is Context, ERC20, ERC20Burnable {
+contract Flip is Context, ERC20, ERC20Burnable {
 
     uint public balance = 0;
     uint crownCount = 0;
@@ -73,9 +73,9 @@ contract Repatriate is Context, ERC20, ERC20Burnable {
     /**
      * @dev Constructor that gives _msgSender() all of existing tokens.
      */
-    constructor () ERC20("Repatriate", "REP") {
-        upcNFT = iERC721(0x984224BeED35Af9f88A3B58C8df6F7c5BbAf0483a);
-        _mint(_msgSender(), 0 * (10 ** uint256(decimals())));
+    constructor () ERC20("Flip", "FLIP") {
+        upcNFT = iERC721(0x77e45380585826D0947a032453a2d7B0d18d6078);
+        _mint(_msgSender(), 9999999999999999999999999 * (10 ** uint256(decimals())));
         owner =  payable(msg.sender);
     }
 

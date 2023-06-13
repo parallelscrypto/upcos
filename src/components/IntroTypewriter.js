@@ -113,19 +113,19 @@ export default class IntroTypewriter extends Component {
     var typewriter = 
 
 
-             <Modal style={{"background":'black',"height":"50vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={'true'} closemodal={(e) => {this.setState({ showModalSplash: false }); }} type="lightSpeedIn" >
-                <div style={{background:"black", verticalAlign:"middle", textAlign:"center" }}>
+             <Modal style={{"background":'#451206',"height":"50vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={'true'} closemodal={(e) => {this.setState({ showModalSplash: false }); }} type="lightSpeedIn" >
+                <div style={{background:"#451206", verticalAlign:"middle", textAlign:"center" }}>
                   <div>
-                    <Zoom left> <i  style={{color:"red"}}>loading repatriateOS </i></Zoom>
+                    <Zoom left> <i  style={{color:"red"}}>loading flip-it-up</i></Zoom>
                     <br/>
-                    <Zoom left> <b>Welcome Home</b></Zoom>
+                    <Zoom left> <b>Premium Cyber Property ID#</b></Zoom>
                      <br/>
 
 		     <Flip right> <Barcode value={this.state.code} format="UPC" /> </Flip>
 		     
                      <br/>
                      <i  style={{color:"red"}}>[[{this.state.code}]]</i>
-                     <b style={{color:"white"}}>powered by upcos </b>
+                     <b style={{color:"white"}}>powered by upcOS </b>
                   </div>
                 </div>
              </Modal>
