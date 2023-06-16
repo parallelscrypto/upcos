@@ -13,12 +13,13 @@ import { TikTok } from 'react-tiktok';
 
 
 
-const width = '100%', height='75vh';
+const width = '100%', height='100vh';
 const Container = styled.div`
   border: 1px dashed red;
   position: relative;
   overflow: hidden;
   width: ${width};
+  height: ${height};
 `;
 const Children  = styled.div`
   width: ${width};

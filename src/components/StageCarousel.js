@@ -18,6 +18,7 @@ const Container = styled.div`
   border: 1px dashed red;
   position: relative;
   overflow: hidden;
+  text-align: center;
   width: ${width};
 `;
 const Children  = styled.div`
@@ -118,7 +119,7 @@ export default class StageCarousel extends Component {
                    mplayer =
                            <div>
                                <iframe className='video'
-                                       style={{minHeight:"100vh",width:"100vw"}}
+                                       style={{minHeight:"80vh",width:"90vw"}}
                                        allow='camera;microphone'
                                        title='upcOS-init'
                                        sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
