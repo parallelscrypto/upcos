@@ -3137,7 +3137,6 @@ var playButton =
               }
             },
 
-
             export: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display deep link for current upc code **</p>',
               fn: () => {
@@ -3152,6 +3151,28 @@ var playButton =
                       //this.setState({showProductModal:true});
               }
             },
+
+
+            export2: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display deep link for WEB2 current upc code.  This command is used to share your upc code with people who do not want to use the blockchain, but want to see your content. **</p>',
+              fn: () => {
+                      const terminal = this.progressTerminal.current
+                      var currentUrl = window.location.href;
+
+                      let info = this.props.upcInfo(this.state.account)
+		       .then(data => {
+                            var showString = data['vr'];
+                            console.log("skring iz " + showString);
+                            var upcJson = '{"show":"' + showString + '"}';
+                            var upcEncoded = btoa(upcJson);
+                            currentUrl = currentUrl.substring(0,currentUrl.lastIndexOf('/') + 1) + upcEncoded;
+                            currentUrl = currentUrl.replace('intel', 'export');
+
+                            terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser ` + currentUrl);
+                      });
+              }
+            },
+
 
 
             411: {
