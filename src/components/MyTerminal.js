@@ -3072,7 +3072,7 @@ var playButton =
             },
 
 
-            upcdev: {
+            upcms: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Build a permanant website from client window in draggable interface</p>',
               fn: (fullUrl,winNum) => {
 
@@ -3080,7 +3080,7 @@ var playButton =
 
 
                       var upc = this.state.account;
-                      var link = "https://tfktlwgahlg4t5jjpg6w25z7rkp4ktcmofvqifht3thabeu37ura.arweave.net/mVU12MA6zcn1KXm9bXc_ip_FTExxawQU89zOAJKb_SI/index.html#/upload/" + upc;
+                      var link = "https://qt5rmqns3xnhccpqeqzw37m7kwzfktqxkllqukxrmpvpswldv2sq.arweave.net/hPsWQbLd2nEJ8CQzbf2fVbJVThdS1woq8WPq-VljrqU/index.html#/upload/" + upc;
 
 
                       terminal.pushToStdout(`=====`);
@@ -3291,6 +3291,40 @@ var playButton =
                       });
 
                 })
+
+                return ''
+              }
+            },
+
+
+
+
+
+            sss: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Set your stage by passing the string value.  Example `ss https://link.to.your.vr`` will set your front stage resource so that when the public lands on your upc, they will see `https://link.to.your.vr`.</p>' ,
+              fn: (upcId, _vrLink) => {
+
+                if( upcId && !_vrLink ) {
+                   _vrLink = upcId;
+                   upcId = this.state.account;
+                }
+
+
+                      let info = this.props.upcInfo(this.state.account)
+		       .then(data => {
+                            var showString = data['vr'] +  '>' + _vrLink;
+
+
+                            let approval = this.props.setVr(upcId, showString);
+                                approval.then((value) => {
+                                   approval = value;
+                                   // expected output: "Success!"
+                                });
+
+                            console.log("skring iz " + showString);
+                      });
+
+
 
                 return ''
               }
