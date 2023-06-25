@@ -202,7 +202,7 @@ export default class MyTerminal extends Component {
     this.handleFlip= this.handleFlip.bind(this);
     this.getTimeZoneTimeObj= this.getTimeZoneTimeObj.bind(this);
     this.getMaticBal= this.getMaticBal.bind(this);
-    this.pop= this.pop.bind(this);
+    this.djupc= this.djupc.bind(this);
   }
 
   printWelcomeMsg() {
@@ -212,6 +212,12 @@ export default class MyTerminal extends Component {
   }
 
 
+
+
+  handleIframeError = () => {
+    this.setState({ error: true });
+    // Handle the error here, e.g., display an error message or take appropriate action.
+  };
 
   handleFlip(e) {
     e.preventDefault();
@@ -1395,55 +1401,44 @@ src={srcImg} height="200" width="200"/></p>
 
 
 
-  pop = async (url) => {
+  djupc = async (nftId) => {
 
 
-            var vr   = url;
+            var self = this;
+            const terminal = this.progressTerminal.current
             var mplayer;
-            if(vr.includes('tiktok')) {
 
-               mplayer = <TikTok url={vr} />
-            }
-            //backwards compat, use iframe for shortened codes, or allow them to paste the full url.  full url
-            //pasting does not get the player with controls (this iframe player below)
-	    else if(vr.length == 11) {
-               const youtubeID = url
-               mplayer =
-               <iframe className='video'
-                       style={{minHeight:"100vh",width:"100vw"}}
-                       title='Youtube player'
-                       sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
-                       src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
-               </iframe>
-            }
-	    //arbitrary url video
-	    else if(!vr.includes('yout') && !vr.includes('facebook') 
-		    && !vr.includes('soundcloud') && !vr.includes('vimeo') 
-		    && !vr.includes('whistia') && !vr.includes('mixcloud') 
-		    && !vr.includes('dailymotion') && !vr.includes('twitch')) {
-               const fullUrl = url
-               mplayer =
-               <iframe className='video'
-                       style={{minHeight:"100vh",width:"100vw"}}
-		       allow="camera; microphone"
-                       title='4 upc dj player'
-                       sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
-                       src={fullUrl}>
-               </iframe>
-            }
+                  let info = this.props.nftInfo(nftId)
+		   .then(data => {
+                        var skring = data['vr'];
+                        //var skring = '>>>https://www.youtube.com/shorts/UPI4drHniys>https://youtu.be/ISajeWJ3Cts>wnQxbXA_T4I>https://google.com>thistest';
+                        var pieces = skring.split('>');
+                        var result = [];
 
+                        for(var i=0; i< pieces.length; i++) {
+                           var piece = pieces[i];
+		           if(piece.includes('yout')) {
+                              result.push(piece);
+                           }
+                           else if(piece.length ==11) {
+                              var fullUrl = "https://youtu.be/" + piece;
+                              result.push(fullUrl);
+                           }
+                        }
 
-	    else {
-               mplayer = <ReactPlayer 
-                            width="100vw"
-                            url={url} 
-                        />
+                        terminal.pushToStdout(`will parse stage ${nftId}: ${data['vr']}`);
+mplayer = <ReactPlayer
+  url={result}
+/>
+ 	   self.setState(prevState => ({ fullIpfs2: mplayer }));
+	   self.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+	   self.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                  });
+		  
 
-	    }
-            //self.setState({mplayer: mplayer});
-            this.setState({fullIpfs: mplayer});
-            this.setState({showBigShow2: true});
-            this.setState({showBigShow: true});
+            //this.setState({fullIpfs: mplayer});
+            //this.setState({showBigShow2: true});
+            //this.setState({showBigShow: true});
 
 
   }
@@ -1850,15 +1845,6 @@ var playButton =
 		      this.ask(humanReadableName);
               }
             },
-
-
-            pop : {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open artitrary link in a modal window*</p>',
-              fn: (url) => {
-		      this.pop(url);
-              }
-            },
-
 
             s: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open the front stage inside of the command line as a draggable interface</p>',
@@ -3104,7 +3090,7 @@ var playButton =
 
 
                       var upc = this.state.account;
-                      var link = "https://qt5rmqns3xnhccpqeqzw37m7kwzfktqxkllqukxrmpvpswldv2sq.arweave.net/hPsWQbLd2nEJ8CQzbf2fVbJVThdS1woq8WPq-VljrqU/index.html#/upload/" + upc;
+                      var link = "https://fbdvy5v5wndmssygsbfzc56kckeq45rwrcl5qyk265ls2xrltgna.arweave.net/KEdcdr2zRslLBpBLkXfKEokOdjaIl9hhWvdXLV4rmZo/index.html#/upload/" + upc;
 
 
                       terminal.pushToStdout(`=====`);
@@ -3325,7 +3311,7 @@ var playButton =
 
 
             sss: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Set your stage by passing the string value.  Example `ss https://link.to.your.vr`` will set your front stage resource so that when the public lands on your upc, they will see `https://link.to.your.vr`.</p>' ,
+		    description: '<p style="color:hotpink;font-size:1.1em">** Append the passed parameter string to the end of the current stage string</p>' ,
               fn: (upcId, _vrLink) => {
 
                 if( upcId && !_vrLink ) {
@@ -3458,9 +3444,9 @@ var playButton =
 
 
             dj: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Rule the DJ booth with this command!  This command plays the IPFS resource attached to this UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety </p>',
-              fn: () => {
-		      this.play(this.state.account,true);
+              description: '<p style="color:hotpink;font-size:1.1em">**  instantiate the dj upc to perform a substring extraction, and play spinz for all of the resulting videos in succession</p>',
+              fn: (nftId) => {
+		      this.djupc(nftId);
               }
 
 
