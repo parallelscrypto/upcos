@@ -3164,22 +3164,46 @@ var playButton =
 
 
             export2: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display deep link for WEB2 current upc code.  This command is used to share your upc code with people who do not want to use the blockchain, but want to see your content. **</p>',
-              fn: () => {
-                      const terminal = this.progressTerminal.current
-                      var currentUrl = window.location.href;
+              description: '<p style="color:hotpink;font-size:1.1em">** Display deep link for WEB2 current upc code.  This command is used to share your upc code with people who do not want to use the blockchain, but want to see your content.  this command will create a shortened url and you can specify the slug by passing as a param to this command.  the slug may only contain the characters a-z, 0-9 and underscore. if you get an undefined back instead of a url, you have tried an invalid or unavailable slug, try again or run command with no param to  get random  slug**</p>',
 
-                      let info = this.props.upcInfo(this.state.account)
-		       .then(data => {
-                            var showString = data['vr'];
-                            console.log("skring iz " + showString);
-                            var upcJson = '{"show":"' + showString + '"}';
-                            var upcEncoded = btoa(upcJson);
-                            currentUrl = currentUrl.substring(0,currentUrl.lastIndexOf('/') + 1) + upcEncoded;
-                            currentUrl = currentUrl.replace('intel', 'export');
+              fn: async (slug) => {
 
-                            terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser ` + currentUrl);
-                      });
+
+                const terminal = this.progressTerminal.current
+                var currentUrl = window.location.href;
+
+                let info = await this.props.upcInfo(this.state.account)
+                var showString = info['vr'];
+                console.log("skring iz " + showString);
+                var upcJson = '{"show":"' + showString + '"}';
+                var upcEncoded = btoa(upcJson);
+                currentUrl = currentUrl.substring(0,currentUrl.lastIndexOf('/') + 1) + upcEncoded;
+                currentUrl = currentUrl.replace('intel', 'export');
+                var encodedWeb2 = encodeURIComponent(currentUrl);
+                var toShorten = "https://is.gd/create.php?format=json&url="+currentUrl;
+                //currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
+                if (! (slug === '' || slug === null) ) {
+                   toShorten += "&shorturl="+slug;
+                }
+
+                console.log("SHORTTTTTTTTTening");
+                console.log(currentUrl);
+
+                const response = await axios.get(toShorten, {
+                      params: {
+                        format: 'json',
+                        shorturl: slug,
+                        url: currentUrl
+                      }
+                    })
+
+
+                console.log(response);
+
+
+                var shortUrl = response.data.shorturl;
+                terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser ` + shortUrl);
+
               }
             },
 
