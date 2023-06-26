@@ -71,20 +71,81 @@ const Carousel = makeCarousel(CarouselUI);
 
 
 export default class StageCarousel extends Component {
-
-
-
   constructor(props) {
     super(props);
     var channel = props.upcId;
     this.state = {
-       channel: channel,
-       slides: []
-    }
-    this.loadOne= this.loadOne.bind(this);
+      channel: channel,
+      slides: []
+    };
+    this.loadOne = this.loadOne.bind(this);
+    this.getLink = this.getLink.bind(this);
   }
 
+  componentDidMount = async () => {
+    var res;
+    var info = [];
+    let infoOwned = await this.props.upcInfo(this.state.channel);
+    var self = this;
+    var ipfs = infoOwned['vr'];
+    const containsGreaterThan = ipfs.includes('>');
+    const containsLinkType = ipfs.includes('[') && ipfs.includes('|') && ipfs.includes(']');
 
+    var nftIds;
+
+    if (containsGreaterThan) {
+      nftIds = ipfs.split('>');
+    } else {
+      nftIds = ipfs.split('#');
+    }
+
+    for (var i = 0; i < nftIds.length; i++) {
+      if (!nftIds[i]) continue;
+      var vidSnippet;
+      var vid;
+
+      var tmpId = nftIds[i];
+      info[i] = {
+        order: i,
+        data: nftIds[i]
+      };
+
+      //keep ss string clean.
+
+      var stagePiece = nftIds[i];
+      var loadHtml = false;
+      if (stagePiece.includes('https:')) {
+        loadHtml = true;
+      }
+      if (containsGreaterThan && loadHtml && !containsLinkType) {
+        var entry = await this.getHTML(nftIds[i]);
+      } else if (containsLinkType) {
+        console.log("LINKKKKKKK");
+        var entry = this.getLink(nftIds[i]);
+      } else if (tmpId.length == 11) {
+        var entry = await this.getYt(tmpId);
+      } else {
+        var entry = await this.getNft(i, nftIds);
+      }
+    }
+  };
+
+  getLink = linkEntity => {
+    const linkParts = linkEntity.slice(1, -1).split('|');
+    const title = linkParts[0];
+    const url = linkParts[1];
+
+    var res = this.state.slides;
+    var toPush = (
+      <Slide right>
+        <h2>{title}</h2>
+        <a href={url} target="_blank" rel="noopener noreferrer">{url}</a>
+      </Slide>
+    );
+
+    res.push(toPush);
+    this.setState({ slides: res });
+  };
 
 
   getYt = async (tmpId) => {
@@ -134,59 +195,6 @@ export default class StageCarousel extends Component {
 		this.setState({slides: res})
    }
 
-
-
-
-  componentDidMount = async () => {
-    var res;
-    var info = [];
-    let infoOwned = await this.props.upcInfo(this.state.channel)
-          var self = this;
-          var ipfs   = infoOwned['vr'];
-          const containsGreaterThan = ipfs.includes('>');
-
-          var nftIds;
-
-          if(containsGreaterThan) {
-             nftIds = ipfs.split(">");
-          }
-          else {
-             nftIds = ipfs.split("#");
-          }
-
-
-          for(var i = 0; i < nftIds.length; i++) {
-             if(!nftIds[i]) continue;
-             var vidSnippet;
-             var vid;
-
-             var tmpId = nftIds[i];
-             info[i] = { 
-                order: i,
-                data: nftIds[i]
-             }
-
-             console.log(info[i]);
-             //keep ss string clean.
-
-             var stagePiece = nftIds[i];
-             var loadHtml = false;
-             if( stagePiece.includes('https:') ) {
-                  loadHtml = true;
-             }
-
-             if(containsGreaterThan && loadHtml) {
-                var entry = await this.getHTML(nftIds[i]); 
-             }
-             else if(tmpId.length == 11) {
-                var entry = await this.getYt(tmpId); 
-             }
-             else {
-                var entry = await this.getNft(i,nftIds); 
-             }
-          }
-
-  }
 
 
 

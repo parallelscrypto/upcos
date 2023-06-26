@@ -185,6 +185,7 @@ export default class MyTerminal extends Component {
     this.firstLookup();
 
     this.selectDomain = this.selectDomain.bind(this);
+    this.createLink= this.createLink.bind(this);
     this.channelFront= this.channelFront.bind(this);
     this.sing= this.sing.bind(this);
     this.getMplayer= this.getMplayer.bind(this);
@@ -748,6 +749,10 @@ src={srcImg} height="200" width="200"/></p>
     window.location.assign("https://google.com")
   }
 
+  createLink = (title, link) => {
+    const formattedTitle = title.replace(/ /g, '-');
+    return `>[${formattedTitle}|${link}]`;
+  };
 
   grepMe = async (word) => {
 
@@ -3327,6 +3332,28 @@ var playButton =
                 })
 
                 return ''
+              }
+            },
+
+
+
+
+            link: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Append a link to the end of the current stage string.  pass the title and url as params.  for example, `link this-is-a-link https://link-location-goes-here.wherever`. none of the arguments can contain a space</p>' ,
+              fn: (title, _vrLink) => {
+                 var link = this.createLink(title,_vrLink);
+
+                 var upcId = this.state.account;
+                 let info = this.props.upcInfo(upcId)
+		  .then(data => {
+                       var showString = data['vr'] + link;
+                       let approval = this.props.setVr(upcId, showString);
+                           approval.then((value) => {
+                              approval = value;
+                              // expected output: "Success!"
+                           });
+                       console.log("skring iz " + showString);
+                 });
               }
             },
 
