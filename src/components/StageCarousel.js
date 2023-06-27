@@ -88,11 +88,11 @@ export default class StageCarousel extends Component {
     let infoOwned = await this.props.upcInfo(this.state.channel);
     var self = this;
     var ipfs = infoOwned['vr'];
-    const containsGreaterThan = ipfs.includes('>');
-    const containsLinkType = ipfs.includes('[') && ipfs.includes('|') && ipfs.includes(']');
 
     var nftIds;
 
+
+    var containsGreaterThan = ipfs.includes('>');
     if (containsGreaterThan) {
       nftIds = ipfs.split('>');
     } else {
@@ -113,6 +113,9 @@ export default class StageCarousel extends Component {
       //keep ss string clean.
 
       var stagePiece = nftIds[i];
+
+      var containsLinkType = stagePiece.includes('[') && stagePiece.includes('|') && stagePiece.includes(']');
+
       var loadHtml = false;
       if (stagePiece.includes('https:')) {
         loadHtml = true;
