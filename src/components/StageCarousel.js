@@ -142,17 +142,31 @@ export default class StageCarousel extends Component {
     var res = this.state.slides;
 
     var toPush = (
-      <Flip>
-        <div
-          style={{backgroundColor:"black",color:"white"}}
-        >
-           <h3
-              style={{color:"green"}}
-             >[user-provided-external-link]</h3>
+      <Zoom>
+
+         <div
+           style={{
+             display: 'flex',
+             flexDirection: 'column',
+             justifyContent: 'center',
+             alignItems: 'center',
+             height: '100vh',
+             backgroundColor: 'black',
+             color: 'white'
+           }}
+         >
+           <h3 style={{ color: 'green' }}>[user-provided-external-link]</h3>
            <h2>[title: {title}]</h2>
-           <p>[link: <a href={url} target="_blank" rel="noopener noreferrer">{url}</a>]</p>
-        </div>
-      </Flip>
+           <p>
+             [link:{' '}
+             <a href={url} target="_blank" rel="noopener noreferrer">
+               {url}
+             </a>
+             ]
+           </p>
+         </div>
+
+      </Zoom>
     );
 
 
@@ -192,9 +206,11 @@ export default class StageCarousel extends Component {
                 if(vr.includes('https:') ) {
                    const fullUrl = vr
                    mplayer =
-                           <div>
+                           <div
+                              style={{height:"100vh"}}
+                            >
                                <iframe className='video'
-                                       style={{minHeight:"80vh",width:"90vw"}}
+                                       style={{minHeight:"80vh",width:"88vw"}}
                                        allow='camera;microphone'
                                        title='upcOS-init'
                                        sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'

@@ -3186,7 +3186,7 @@ var playButton =
                 currentUrl = currentUrl.replace('intel', 'export');
                 var encodedWeb2 = encodeURIComponent(currentUrl);
                 var toShorten = "https://is.gd/create.php?format=json&url="+currentUrl;
-                //currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
+                currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
                 if (! (slug === '' || slug === null) ) {
                    toShorten += "&shorturl="+slug;
                 }
