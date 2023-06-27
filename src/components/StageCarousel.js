@@ -3,6 +3,7 @@ import makeCarousel from 'react-reveal/makeCarousel';
 // we'll need the Slide component for sliding animations
 // but you can use any other effect
 import Slide from 'react-reveal/Slide';
+import Flip from 'react-reveal/Flip';
 import Zoom from 'react-reveal/Zoom';
 // we'll use styled components for this tutorial
 // but you can use any other styling options ( like plain old css )
@@ -139,12 +140,22 @@ export default class StageCarousel extends Component {
     const url = linkParts[1];
 
     var res = this.state.slides;
+
     var toPush = (
-      <Slide right>
-        <h2>{title}</h2>
-        <a href={url} target="_blank" rel="noopener noreferrer">{url}</a>
-      </Slide>
+      <Flip>
+        <div
+          style={{backgroundColor:"black",color:"white"}}
+        >
+           <h3
+              style={{color:"green"}}
+             >[user-provided-external-link]</h3>
+           <h2>[title: {title}]</h2>
+           <p>[link: <a href={url} target="_blank" rel="noopener noreferrer">{url}</a>]</p>
+        </div>
+      </Flip>
     );
+
+
 
     res.push(toPush);
     this.setState({ slides: res });
