@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import makeCarousel from 'react-reveal/makeCarousel';
+import Typewriter from 'typewriter-effect';
 // we'll need the Slide component for sliding animations
 // but you can use any other effect
 import Slide from 'react-reveal/Slide';
@@ -77,10 +78,12 @@ export default class StageCarousel extends Component {
     var channel = props.upcId;
     this.state = {
       channel: channel,
+      showTypewriter: false,
       slides: []
     };
     this.loadOne = this.loadOne.bind(this);
     this.getLink = this.getLink.bind(this);
+    this.handleButtonClick= this.handleButtonClick.bind(this);
   }
 
   componentDidMount = async () => {
@@ -124,7 +127,6 @@ export default class StageCarousel extends Component {
       if (containsGreaterThan && loadHtml && !containsLinkType) {
         var entry = await this.getHTML(nftIds[i]);
       } else if (containsLinkType) {
-        console.log("LINKKKKKKK");
         var entry = this.getLink(nftIds[i]);
       } else if (tmpId.length == 11) {
         var entry = await this.getYt(tmpId);
@@ -134,38 +136,71 @@ export default class StageCarousel extends Component {
     }
   };
 
+
+  handleButtonClick = () => {
+    this.setState({ showTypewriter: true });
+  };
+
+
+
   getLink = linkEntity => {
     const linkParts = linkEntity.slice(1, -1).split('|');
     const title = linkParts[0];
     const url = linkParts[1];
 
-    var res = this.state.slides;
 
+    var postObject;
+    var postText = "";
+    var isPost = false;
+    if(title == "post") {
+       isPost = true;
+       postText = atob(url);
+       postObject = JSON.parse(postText);
+    }
+    var res = this.state.slides;
+if(title=="post") {
+console.log(postObject.title);
+console.log(postObject.body);
+}
     var toPush = (
       <Zoom>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          backgroundColor: 'black',
+          color: 'white'
+        }}
+      >
+        <h3 style={{ color: 'green' }}>[user-provided-external-link]</h3>
+        <h2>[key: {title}]</h2>
+        {isPost ? (
 
-         <div
-           style={{
-             display: 'flex',
-             flexDirection: 'column',
-             justifyContent: 'center',
-             alignItems: 'center',
-             height: '100vh',
-             backgroundColor: 'black',
-             color: 'white'
-           }}
-         >
-           <h3 style={{ color: 'green' }}>[user-provided-external-link]</h3>
-           <h2>[title: {title}]</h2>
-           <p>
-             [link:{' '}
-             <a href={url} target="_blank" rel="noopener noreferrer">
-               {url}
-             </a>
-             ]
-           </p>
-         </div>
+            <div>
+               <p style={{background:"green"}}>
+               title: <br/>
+               {postObject.title}
+               </p>
 
+               <p style={{background:"green"}}>
+               body: <br/>
+               {postObject.body}
+               </p>
+            </div>
+
+        ) : (
+          <p>
+            [link:{' '}
+            <a href={url} target="_blank" rel="noopener noreferrer">
+              {url}
+            </a>
+            ]{' '}
+          </p>
+        )}
+      </div>
       </Zoom>
     );
 

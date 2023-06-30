@@ -1109,13 +1109,22 @@ src={srcImg} height="200" width="200"/></p>
     var dataT = this.state.dataType;
 
     if(dataT == 'post') {
-        dataString = "[" + "post" + "|" + encodedData + "]";
+           const post = {
+             title: key,
+             body: value
+           };
+
+        const jsonString = btoa(JSON.stringify(post));
+
+
+        dataString = "[" + "post" + "|" + jsonString + "]";
+        console.log("dataString");
+        console.log(dataString);
     } 
     else {
         dataString = "[" + key + "|" + value + "]";
     }
 
-    alert("its " + dataString);
     let info = this.props.upcInfo(upcId)
      .then(data => {
           var showString = data['vr'] +  '>' + dataString;
@@ -1889,27 +1898,6 @@ var playButton =
         ref={this.progressTerminal}
         commands={{
 
-            usdc: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** DONT USE THIS COMMAND STUB YET! Approve UPC Band Radio to spend 50 of your Flip.  After you have spent 50, you must run approve again.    You MUST run this command FIRST or all of your `colonize` and `own` commands will fail. Visit <a href="upc://000000000011">[[000000000011]]</a> to view a video tutorial on approve **</p>',
-              fn: () => {
-                  const terminal = this.progressTerminal.current
-                var progress = 0;
-                this.setState({approved: false});
-                this.setState({ isProgressing: true }, () => {
-                  let approval = this.props.approveUSDC();
-                  approval.then((value) => {
-		     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Flip from your wallet when you buy an NFT.  This approval is good for 50 NFTs.  After you have bought 50, you must run this command again, or your 'colonize' and 'colonizeb' commands will fail`)
-                     // expected output: "Success!"
-                  });
-                })
-
-                         terminal.pushToStdout(`[[approve]]`);
-		terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
-                         terminal.pushToStdout(`[[/approve]]`);
-                return ''
-              }
-            },
-
 
             search: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Search upcs for content.  Fields searched are owner, human readable name, vr, and ipfs.  No spaces in the search term, use dashes or underscores depending on how the owner named the file/human readable name**</p>',
@@ -1938,13 +1926,13 @@ var playButton =
 
 
             buy: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Please help this UPC by programming something constructive into its metadata! type the command `buy` and possibly scroll around to find the modal window that will allow you to name your potential UPC Nft.  the name that you choose cannot be undone so please choose accordingly. *</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Please enrich this UPC by programming something into its metadata. type the command `buy` and possibly scroll around to find the modal window that will allow you to name your potential UPC Nft.  the name that you choose cannot be undone so please choose accordingly. *</p>',
               fn: (humanReadableName) => {
 		      this.ask(humanReadableName);
               }
             },
 
-            s: {
+            st: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open the front stage inside of the command line as a draggable interface</p>',
               fn: () => {
 
@@ -1979,32 +1967,6 @@ var playButton =
 		          this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
                      }
             },
-
-
-
-
-            upcgpt: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open client window in draggable interface</p>',
-              fn: (fullUrl,winNum) => {
-
-		      fullUrl = "https://chat.lmsys.org";
-                      winNum = "0";
-                      var mplayer = this.getMplayer(fullUrl);
-                      if(winNum == "0") {
-		         this.setState(prevState => ({ fullIpfs: mplayer }));
-		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
-		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
-                      }
-                      else if(winNum == "1") {
-		         this.setState(prevState => ({ fullIpfs2: mplayer }));
-		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
-		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
-                      }
- 
-              }
-            },
-
-
 
 
             sheeit: {
@@ -2044,7 +2006,7 @@ var playButton =
 
 
             k: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open chat client window in draggable interface</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open kick window in draggable interface</p>',
               fn: (user) => {
 
 		      var fullUrl = "https://kick.com/" + user;
@@ -2401,17 +2363,6 @@ var playButton =
             },
 
 
-            price : {
-              description: '<p style="color:hotpink;font-size:1.1em">** check the price of tokens on a coinbox **</p>',
-              fn: (upcId) => {
-                      if(!upcId) {
-                          upcId = this.state.account
-                      }
-		      this.price(upcId);
-              }
-            },
-
-
             xprice : {
               description: '<p style="color:hotpink;font-size:1.1em">** set price for coinbox **</p>',
               fn: (upcId,price) => {
@@ -2569,14 +2520,6 @@ var playButton =
                       });
                 })
 
-                return ''
-              }
-            },
-
-
-            ads: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Mutate the DAO qr codes into ads that you can watch for CRYPTO! Command to be completed in future version **</p>',
-              fn: (nftId, price) => {
                 return ''
               }
             },
@@ -3666,183 +3609,6 @@ var playButton =
 
 
 
-            bdj: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Background DJ! Play music in the background or with the screen off while you workout or do whatever! Resources can be video or audio, but only audio will play with the screen off. Playlists are being integrated into bplaya.</p>',
-              fn: (upcId) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-                  var self = this;
-
-                  let info = this.props.upcInfo(upcId)
-                   .then(data => {
-                        var ipfsLocal = data['ipfs'];
-
-                        var fullIpfs = "https://upcunderground.mypinata.cloud/" + ipfsLocal;
-                        if(fullIpfs.includes('QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU') ) {
-
-                           fullIpfs = fullIpfs.replace('upcunderground.mypinata.cloud','ipfs.io');
-                        }
-
-                        var link = <a href={fullIpfs} >View my IPFS Website!</a>
-                           self.setState({fullIpfs: fullIpfs});
-                           self.setState({showBplayer: true});
-
-
-                        const interval = setInterval(() => {
-                          if (this.state.progressBal != '') { // Stop at 100%
-                            clearInterval(interval)
-                            this.setState({ isProgressing: false, progress: 0 })
-                          } else {
-                            this.setState({progressBal: info});
-                            var self = this;
-                            this.setState({ progress: this.state.progress + 10 })
-                          }
-                        }, 1500)
-                      })
-
-                      return ''
-
-
-                  });
-
-
-              }
-
-
-            },
-
-
-
-
-
-
-            idj: {
-              description: '<p style="color:hotpink;font-size:1.1em">** DjMediaPlayer! Loads the media player and plays the RAW IPFS resource attached to this UPC. Raw resources can include IPNS resources.  Just run ip /ipfs/##hash##` or `ipl /ipns/##hash##` and load those raw resouces.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety </p>',
-              fn: (rawHash) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-		  var self = this;
-                  let info = this.props.upcInfo(this.state.account)
-		   .then(data => {
-			var fullIpfs = "https://ipfs.io/" + rawHash;
-			var link = <a href={fullIpfs} >View my IPFS Website!</a>
-			   self.setState({fullIpfs: fullIpfs});
-			   self.setState({showBigShow: true});
-                  });
-		  
-
-                  const interval = setInterval(() => {
-                    if (this.state.progressBal != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({progressBal: info});
-                      var self = this;
-                      this.setState({ progress: this.state.progress + 10 })
-                    }
-                  }, 1500)
-                })
-
-                return ''
-              }
-
-
-            },
-
-
-
-
-            ndj: {
-              description: '<p style="color:hotpink;font-size:1.1em">** NFT ID DjMediaPlayer! Runs an X-Reference and reads the data from the [[nftId]] passed in.  Next the XBMP loads and plays the IPFS resource attached to XRd UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety  </p>',
-              fn: (nftId) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-		  var self = this;
-
-                  let info = this.props.nftInfo(nftId)
-		   .then(data => {
-                        var ipfsLocal = data['ipfs'];
-
-      			var fullIpfs = "https://upcunderground.mypinata.cloud/" + ipfsLocal;
-			if(fullIpfs.includes('QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU') ) {
-
-			   fullIpfs = fullIpfs.replace('upcunderground.mypinata.cloud','ipfs.io');
-			}
-      			   self.setState({fullIpfs: fullIpfs});
-      			   self.setState({showBigShow: true});
-      		  
-      
-                        const interval = setInterval(() => {
-                          if (this.state.progressBal != '') { // Stop at 100%
-                            clearInterval(interval)
-                            this.setState({ isProgressing: false, progress: 0 })
-                          } else {
-                            this.setState({progressBal: info});
-                            var self = this;
-                            this.setState({ progress: this.state.progress + 10 })
-                          }
-                        }, 1500)
-                      })
-      
-                      return ''
-
-
-                  });
-		  
-
-              }
-
-
-            },
-
-            xdj: {
-              description: '<p style="color:hotpink;font-size:1.1em">** DjMediaPlayer! Runs an X-Reference and reads the data from the [[############]] passed in.  Next the DMP loads and plays the IPFS resource attached to XRd UPC.  Resources can be video, audio or even an app!  If it is an app, it is community practice to post a github link to the code so that we can compile and run from our own IPFS node to self verify code safety  </p>',
-              fn: (upcId) => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-		  var self = this;
-
-                  let info = this.props.upcInfo(upcId)
-		   .then(data => {
-                        var ipfsLocal = data['ipfs'];
-
-      			var fullIpfs = "https://upcunderground.mypinata.cloud/" + ipfsLocal;
-			if(fullIpfs.includes('QmXyNMhV8bQFp6wzoVpkz3NqDi7Fj72Deg7KphAuew3RYU') ) {
-
-			   fullIpfs = fullIpfs.replace('upcunderground.mypinata.cloud','ipfs.io');
-			}
-
-      			var link = <a href={fullIpfs} >View my IPFS Website!</a>
-      			   self.setState({fullIpfs: fullIpfs});
-      			   self.setState({showBigShow: true});
-      		  
-      
-                        const interval = setInterval(() => {
-                          if (this.state.progressBal != '') { // Stop at 100%
-                            clearInterval(interval)
-                            this.setState({ isProgressing: false, progress: 0 })
-                          } else {
-                            this.setState({progressBal: info});
-                            var self = this;
-                            this.setState({ progress: this.state.progress + 10 })
-                          }
-                        }, 1500)
-                      })
-      
-                      return ''
-
-
-                  });
-		  
-
-              }
-
-
-            },
 
             room: {
               description: '<p style="color:hotpink;font-size:1.1em">** Create a VR room or dial into an existing room</p>',
@@ -3881,65 +3647,6 @@ var playButton =
               }
 
 
-            },
-
-
-
-
-            stage: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display UPC vr resource</p>',
-              fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-		  var self = this;
-                  let info = this.props.upcInfo(this.state.account)
-		   .then(data => {
-			 var vrLink = data['vr'];
-			 var link = "<a href='"+vrLink+"'>Click to visit VR for [[" + this.state.account + "]]</a>";
-                         terminal.pushToStdout(link);
-                  });
-		  
-
-                  const interval = setInterval(() => {
-                    if (this.state.progressBal != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({progressBal: info});
-                      var self = this;
-                      this.setState({ progress: this.state.progress + 10 })
-                    }
-                  }, 1500)
-                })
-
-                return ''
-              }
-
-
-            },
-
-
-            ipfs411: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Learn commands that you can type to access different crypto related services via IPFS</p>',
-              fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-		     terminal.pushToStdout(`type 'ip ipns/app.ens.eth'  ===TO GO TO==  ENS App`);
-		     terminal.pushToStdout(`type 'ip ipns/app.uniswap.org'  ===TO GO TO== Uniswap App `);
-		     terminal.pushToStdout(`type 'ip ipns/elasticdao.org'  ===TO GO TO== ElasticDAO `);
-		     terminal.pushToStdout(`type 'ip ipns/gnosis-auction.eth'  ===TO GO TO== gnosis-auction.eth `);
-		     terminal.pushToStdout(`type 'ip ipns/olympusdao.eth'  ===TO GO TO== Olympus DAO `);
-		     terminal.pushToStdout(`type 'ip ipns/powerindex.io'  ===TO GO TO== PowerIndex `);
-		     terminal.pushToStdout(`type 'ip ipns/rekt.eth'  ===TO GO TO== Rekt `);
-		     terminal.pushToStdout(`type 'ip ipns/sourcify.eth'  ===TO GO TO== Sourcify `);
-		     terminal.pushToStdout(`type 'ip ipns/tornado.cash'  ===TO GO TO== Tornado Cash `);
-		     terminal.pushToStdout(`type 'ip ipns/zkeducation.eth'  ===TO GO TO== Zero Knowledge Education `);
-                })
-
-                return ''
-              }
             },
 
             crown : {
