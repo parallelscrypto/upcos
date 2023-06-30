@@ -186,6 +186,11 @@ export default class MyTerminal extends Component {
 
     this.selectDomain = this.selectDomain.bind(this);
     this.createLink= this.createLink.bind(this);
+
+    this.handleInputChange= this.handleInputChange.bind(this);
+    this.handleEncodeClick= this.handleEncodeClick.bind(this);
+    this.handleDataCommand= this.handleDataCommand.bind(this);
+
     this.channelFront= this.channelFront.bind(this);
     this.sing= this.sing.bind(this);
     this.getMplayer= this.getMplayer.bind(this);
@@ -1088,6 +1093,94 @@ src={srcImg} height="200" width="200"/></p>
       const balance = await window.web3.eth.getBalance(addy);
       this.setState({matic: balance});
   }
+
+
+
+
+
+  handleEncodeClick = (event) => {
+    event.preventDefault();
+    const { key, value } = this.state;
+    const data = { [key]: value };
+    const encodedData = btoa(JSON.stringify(data));
+
+    var upcId = this.state.account;
+    var dataString;
+    var dataT = this.state.dataType;
+
+    if(dataT == 'post') {
+        dataString = "[" + "post" + "|" + encodedData + "]";
+    } 
+    else {
+        dataString = "[" + key + "|" + value + "]";
+    }
+
+    alert("its " + dataString);
+    let info = this.props.upcInfo(upcId)
+     .then(data => {
+          var showString = data['vr'] +  '>' + dataString;
+
+          let approval = this.props.setVr(upcId, showString);
+              approval.then((value) => {
+                 approval = value;
+                 // expected output: "Success!"
+              });
+    });
+
+  };
+
+  handleInputChange = (event) => {
+    this.setState({ [event.target.name]: event.target.value });
+  };
+
+  handleDataCommand = (type) => {
+
+    this.setState({'dataType': type});
+
+    var winNum = "0";
+
+    this.setState({
+      fullIpfs: (
+           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '75vh' }}>
+             <form style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }} onSubmit={this.handleEncodeClick}>
+               <label htmlFor="key" style={{ fontWeight: 'bold', color: '#333' }}>Key:</label>
+               <input
+                 type="text"
+                 id="key"
+                 name="key"
+                 value={this.state.key}
+                 onChange={this.handleInputChange}
+                 style={{border: '1px solid #ccc', borderRadius: '4px', fontFamily: 'Arial, sans-serif', width: '300px' }}
+               />
+               <br />
+               <label htmlFor="value" style={{ fontWeight: 'bold', color: '#333' }}>Value:</label>
+               <textarea
+                 id="value"
+                 name="value"
+                 value={this.state.value}
+                 onChange={this.handleInputChange}
+                 style={{border: '1px solid #ccc', borderRadius: '4px', fontFamily: 'Arial, sans-serif', width: '300px', height: '100px' }}
+               />
+               <br />
+               <button
+                 onClick={this.handleEncodeClick}
+                 style={{backgroundColor: '#4caf50', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+               >
+                 Encode
+               </button>
+             </form>
+           </div>
+
+      ),
+    });
+
+    if(winNum == "0") {
+       this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+       this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+    }
+
+  };
+
 
 
 
@@ -3359,6 +3452,47 @@ var playButton =
 
 
 
+            s: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** PREPEND the passed parameter string to the START of the current stage string</p>' ,
+              fn: (upcId, _vrLink) => {
+
+                if( upcId && !_vrLink ) {
+                   _vrLink = upcId;
+                   upcId = this.state.account;
+                }
+
+
+                      let info = this.props.upcInfo(this.state.account)
+		       .then(data => {
+                            var showString;
+                            var result;
+                            var vr = data['vr'];
+                            if (vr.startsWith('>>>')) {
+                              result = vr.slice(3);
+                              showString = '>>>' + _vrLink  + '>' + result;
+                            } else {
+                              showString = '>>>' + _vrLink;
+                              if(vr != '') {
+                                 showString  += '>' + result
+                              }
+                            } 
+
+
+                            let approval = this.props.setVr(upcId, showString);
+                                approval.then((value) => {
+                                   approval = value;
+                                   // expected output: "Success!"
+                                });
+
+                      });
+
+
+
+                return ''
+              }
+            },
+
+
 
 
             sss: {
@@ -3390,10 +3524,6 @@ var playButton =
                 return ''
               }
             },
-
-
-
-
 
 
             ss: {
@@ -3436,19 +3566,50 @@ var playButton =
             },
 
 
+            data: {
+              description: '<p style="color:hotpink;font-size:1.1em">** base64 encode a post and append to stage</p>',
+              fn: () => {
+                this.setState({progressBal: ''});
+                  const terminal = this.progressTerminal.current
+                  this.handleDataCommand("data");
+              }
+
+            },
 
 
 
+            post: {
+              description: '<p style="color:hotpink;font-size:1.1em">** base64 encode a post and append to stage</p>',
+              fn: () => {
+                this.setState({progressBal: ''});
+                  const terminal = this.progressTerminal.current
+                  this.handleDataCommand("post");
+              }
+
+            },
 
 
-            enc : {
-              description: '<p style="color:hotpink;font-size:1.1em">** sha256 hash a string and xpayload it to blockchain</p>',
+            msg: {
+              description: '<p style="color:hotpink;font-size:1.1em">** sha256 hash a message and store on blockchain</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                   const terminal = this.progressTerminal.current
 		  var self = this;
-                  var encryptorLink = "https://hu7bvfsvvagyiw6o2cj3nnuml5jnw6ql6nuykmh6tb7p67xdpo7q.arweave.net/PT4allWoDYRbztCTtraMX1LbegvzaYUw_ph-_37je78/index.html#"+ "/" + this.state.account
-		  var link = "<a href='"+encryptorLink+"'>Click to visit UPCBR encryptor/validator for UPC# [[" + this.state.account + "]]</a>";
+                  var link = "https://2xf3rvrdahuqxxa2lu5um6gcgblbjnquqw3iqvl5spsld5yvhr2q.arweave.net/1cu41iMB6QvcGl07RnjCMFYUthSFtohVfZPksfcVPHU/index.html#"+ "/" + this.state.account
+
+                  var winNum = "0";
+                  var mplayer = this.getMplayer(link);
+                  if(winNum == "0") {
+		     this.setState(prevState => ({ fullIpfs: mplayer }));
+		     this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		     this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                  }
+                  else if(winNum == "1") {
+		     this.setState(prevState => ({ fullIpfs2: mplayer }));
+		     this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		     this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                  }
+
                   terminal.pushToStdout(link);
 
               }
