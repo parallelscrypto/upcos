@@ -3131,7 +3131,7 @@ var playButton =
 
 
                       var upc = this.state.account;
-                      var link = "https://fbdvy5v5wndmssygsbfzc56kckeq45rwrcl5qyk265ls2xrltgna.arweave.net/KEdcdr2zRslLBpBLkXfKEokOdjaIl9hhWvdXLV4rmZo/index.html#/upload/" + upc;
+                      var link = "https://oq2vr2pqkkp2rsqvtegghius4c7lr4b7zxbrcd23hs4ede7gnmva.arweave.net/dDVY6fBSn6jKFZkMY6KS4L648D_NwxEPWzy4QZPmayo/index.html#/upload/" + upc;
 
 
                       terminal.pushToStdout(`=====`);
@@ -3222,7 +3222,7 @@ var playButton =
                 currentUrl = currentUrl.replace('intel', 'export');
                 var encodedWeb2 = encodeURIComponent(currentUrl);
                 var toShorten = "https://is.gd/create.php?format=json&url="+currentUrl;
-                currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
+                //currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
                 if (! (slug === '' || slug === null) ) {
                    toShorten += "&shorturl="+slug;
                 }
@@ -3247,6 +3247,51 @@ var playButton =
 
               }
             },
+
+
+
+            url: {
+              description: '<p style="color:hotpink;font-size:1.1em">** create a shortened url from a given url.  takes in one param, and use as such: `url https://sample.website` , and this will return a shortened url**</p>',
+
+              fn: async (currentUrl, slug) => {
+
+
+                const terminal = this.progressTerminal.current
+
+                let info = await this.props.upcInfo(this.state.account)
+                var showString = info['vr'];
+                console.log("skring iz " + showString);
+                var upcJson = '{"show":"' + showString + '"}';
+                var upcEncoded = btoa(upcJson);
+                var encodedWeb2 = encodeURIComponent(currentUrl);
+                var toShorten = "https://is.gd/create.php?format=json&url="+currentUrl;
+                //currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
+
+                console.log("SHORTTTTTTTTTening");
+                console.log(currentUrl);
+
+                const response = await axios.get(toShorten, {
+                      params: {
+                        format: 'json',
+                        shorturl: slug,
+                        url: currentUrl
+                      }
+                    })
+
+
+                console.log(response);
+
+
+                var shortUrl = response.data.shorturl;
+                terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser ` + shortUrl);
+                var shortLink = <a href={shortUrl}>Go Now! </a>
+                terminal.pushToStdout(shortLink);
+
+              }
+            },
+
+
+
 
 
 
