@@ -1,6 +1,6 @@
 /* Styles go here */
 .App {
-  font-family: sans-serif;
+  font-family: 'Hanalei Fill';
   text-align: center;
 }
 
@@ -40,6 +40,13 @@ body {
   color: #28a745;
 }
 
+div {
+    color: #7bf069;
+    font-size: large;
+    font-family: 'Orbitron';
+
+}
+
 .slider {
   height:100vh;
 }
@@ -67,7 +74,7 @@ section {
   border-radius: 2px;
   border: 1px solid lightgrey;
   color: white;
-  font-family: sans-serif;
+  font-family: 'Hanalei Fill';
   text-align: center;
   font-size: 25px;
   line-height: 60px;

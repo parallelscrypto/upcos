@@ -479,7 +479,7 @@ src={srcImg} height="200" width="200"/></p>
                                style={{minHeight:"100vh",width:"100vw"}}
                                title='Youtube player'
                                sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
-                               src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
+                               src={`https://youtube.com/embed/${youtubeID}?autoplay=0`} allowfullscreen>
                        </iframe>
                     }
 		    //arbitrary url video
@@ -616,11 +616,11 @@ src={srcImg} height="200" width="200"/></p>
 
   getMplayer = (fullUrl) => {
       var mplayer = <iframe className='video'
-              style={{height:"80vh",width:"96vw"}}
+              style={{height:"100vh",width:"96vw"}}
 	      allow="camera; microphone"
               title='2 upc dj player'
-              sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
-              src={fullUrl}>
+              sandbox='allow-downloads allow-fullscreen allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+              src={fullUrl} allowfullscreen>
       </iframe>
 
       if(fullUrl.includes('tiktok')) {
@@ -635,8 +635,8 @@ src={srcImg} height="200" width="200"/></p>
                  style={{minHeight:"100vh",width:"100vw"}}
 		 allow="camera; microphone"
                  title='Youtube player'
-                 sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
-                 src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
+                 sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-fullscreen allow-popups allow-scripts allow-presentation'
+                 src={`https://youtube.com/embed/${youtubeID}?autoplay=0`} allowfullscreen>
          </iframe>
       }
 
@@ -645,7 +645,7 @@ src={srcImg} height="200" width="200"/></p>
          && !fullUrl.includes('whistia') && !fullUrl.includes('mixcloud') 
          && !fullUrl.includes('dailymotion') && !fullUrl.includes('twitch')) {
             mplayer = <iframe className='video'
-                    style={{height:"80vh",width:"96vw"}}
+                    style={{height:"100vh",width:"96vw"}}
 		    allow="camera; microphone"
                     title='3 upc dj player'
                     sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
@@ -1826,6 +1826,7 @@ var playButton =
     return (
       <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
       <div>
+             <script src="https://www.jdoodle.com/assets/jdoodle-pym.min.js" type="text/javascript"></script>
 	     <Modal style={{"color":"white","height":"90vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showModalUrl} closemodal={(e) => {this.setState({ showModalUrl: false }); }} type="lightSpeedIn" ></Modal>
 	     <Modal style={{"color":"white","height":"90vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showModalTutorial} closemodal={(e) => {this.setState({ showModalTutorial: false }); }} type="lightSpeedIn" > {this.state.tutorial} </Modal>
 
@@ -1932,7 +1933,7 @@ var playButton =
               }
             },
 
-            st: {
+            stg: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open the front stage inside of the command line as a draggable interface</p>',
               fn: () => {
 
@@ -1940,6 +1941,38 @@ var playButton =
                       var carousel = <StageCarousel upcInfo={this.props.upcInfo} nftInfo={this.props.nftInfo} upcId={upc} />
 
 		      this.setState({ fullIpfs2: carousel });
+		      this.setState(prevState => ({ pipDisplay2: true}));
+		      this.setState(prevState => ({ pipVisibility2: true}));
+              }
+            },
+
+            st: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open the smart talk ide</p>',
+              fn: () => {
+
+                      var upc = this.state.account;
+                      var carousel = 
+                          <html>
+                            <head>
+                            </head>
+                            <body>
+                               <div style={{height:"100vh"}} data-pym-src='https://www.jdoodle.com/plugin' data-language="java"
+                                 data-version-index="4" data-libs="mavenlib1, mavenlib2">
+                               </div>
+			        <script src="https://www.jdoodle.com/assets/jdoodle-pym.min.js" type="text/javascript"></script>
+                            </body>
+                          </html>
+      
+                      var iframeIde = <iframe className='video'
+                                  style={{height:"80vh",width:"96vw"}}
+		                  allow="camera; microphone"
+                                  title='6 upc dj player'
+                                  sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                                  src={carousel}>
+                          </iframe>
+
+
+		      this.setState({ fullIpfs2: iframeIde });
 		      this.setState(prevState => ({ pipDisplay2: true}));
 		      this.setState(prevState => ({ pipVisibility2: true}));
               }
@@ -3129,9 +3162,8 @@ var playButton =
 
                       const terminal = this.progressTerminal.current
 
-
                       var upc = this.state.account;
-                      var link = "https://oq2vr2pqkkp2rsqvtegghius4c7lr4b7zxbrcd23hs4ede7gnmva.arweave.net/dDVY6fBSn6jKFZkMY6KS4L648D_NwxEPWzy4QZPmayo/index.html#/upload/" + upc;
+                      var link = "https://gkyj45f27u6cj5n3mji7qowqtbdbgnecncxlaeezzzypjdzmzlfa.arweave.net/MrCedLr9PCT1u2JR-DrQmEYTNIJorrAQmc5w9I8syso/index.html#/upload/" + upc;
 
 
                       terminal.pushToStdout(`=====`);

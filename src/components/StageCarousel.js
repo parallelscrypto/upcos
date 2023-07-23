@@ -19,7 +19,7 @@ const width = '100%', height='75vh';
 const Container = styled.div`
   border: 1px dashed red;
   position: relative;
-  overflow: hidden;
+  overflow: auto;
   text-align: center;
   width: ${width};
 `;
@@ -128,10 +128,13 @@ export default class StageCarousel extends Component {
         var entry = await this.getHTML(nftIds[i]);
       } else if (containsLinkType) {
         var entry = this.getLink(nftIds[i]);
+console.log("in html");
       } else if (tmpId.length == 11) {
         var entry = await this.getYt(tmpId);
+console.log("in yt");
       } else {
         var entry = await this.getNft(i, nftIds);
+console.log("in nft");
       }
     }
   };
@@ -245,7 +248,7 @@ console.log(postObject.body);
                               style={{height:"100vh"}}
                             >
                                <iframe className='video'
-                                       style={{minHeight:"80vh",width:"88vw"}}
+                                       style={{minHeight:"100vh",width:"88vw"}}
                                        allow='camera;microphone'
                                        title='upcOS-init'
                                        sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
@@ -314,6 +317,7 @@ console.log(postObject.body);
        mplayer = 
                 <div>
                    <ReactPlayer 
+                      height="100vh"
                       width="100vw"
                       url={vr}
                    />
