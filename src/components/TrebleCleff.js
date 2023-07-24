@@ -100,7 +100,7 @@ this.props.play()
                         onClick={(e) => { 
                                      this.props.channelFront(this.props.account.substr(-1));
                         }}
-                  >watch [[ch {this.props.account.substr(-1)} ]]</button>
+                  >watch ch {this.props.account.substr(-1)} </button>
 
 
 

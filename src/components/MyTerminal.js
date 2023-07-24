@@ -192,6 +192,7 @@ export default class MyTerminal extends Component {
     this.handleDataCommand= this.handleDataCommand.bind(this);
 
     this.channelFront= this.channelFront.bind(this);
+    this.changeBgColor= this.changeBgColor.bind(this);
     this.sing= this.sing.bind(this);
     this.getMplayer= this.getMplayer.bind(this);
     this.setAccount = this.setAccount.bind(this);
@@ -239,6 +240,16 @@ export default class MyTerminal extends Component {
     this.setState({offerState: 'video'});
     this.setState(prevState => ({ player: mplayer }));
   }
+
+
+
+
+  changeBgColor= async () => {
+document.body.style.setProperty('--background', "pink");
+  }
+
+
+
 
 
   componentDidMount = async () => {
@@ -376,7 +387,7 @@ src={srcImg} height="200" width="200"/></p>
                               onClick={(e) => { 
 				     this.channelFront(upc.substr(0,upc.length-1));
                                      this.setState({offerState: "video"});}
-                                } >watch channel {channelNum} on {upc.substr(0,upc.length-1)}[[{channelNum}]] </button>
+                                } >watch channel {channelNum} </button>
                    </div>
 
 
@@ -1933,7 +1944,7 @@ var playButton =
               }
             },
 
-            stg: {
+            st: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open the front stage inside of the command line as a draggable interface</p>',
               fn: () => {
 
@@ -1945,40 +1956,6 @@ var playButton =
 		      this.setState(prevState => ({ pipVisibility2: true}));
               }
             },
-
-            st: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open the smart talk ide</p>',
-              fn: () => {
-
-                      var upc = this.state.account;
-                      var carousel = 
-                          <html>
-                            <head>
-                            </head>
-                            <body>
-                               <div style={{height:"100vh"}} data-pym-src='https://www.jdoodle.com/plugin' data-language="java"
-                                 data-version-index="4" data-libs="mavenlib1, mavenlib2">
-                               </div>
-			        <script src="https://www.jdoodle.com/assets/jdoodle-pym.min.js" type="text/javascript"></script>
-                            </body>
-                          </html>
-      
-                      var iframeIde = <iframe className='video'
-                                  style={{height:"80vh",width:"96vw"}}
-		                  allow="camera; microphone"
-                                  title='6 upc dj player'
-                                  sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
-                                  src={carousel}>
-                          </iframe>
-
-
-		      this.setState({ fullIpfs2: iframeIde });
-		      this.setState(prevState => ({ pipDisplay2: true}));
-		      this.setState(prevState => ({ pipVisibility2: true}));
-              }
-            },
-
-
 
             book: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open librivox in draggable interface</p>',
@@ -2085,29 +2062,6 @@ var playButton =
               }
             },
 
-
-
-            vc: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open video chat window</p>',
-              fn: (fullUrl,winNum) => {
-
-                      fullUrl = "https://meet.jit.si/";
-
-                      winNum = "0";
-                      var mplayer = this.getMplayer(fullUrl);
-                      if(winNum == "0") {
-		         this.setState(prevState => ({ fullIpfs: mplayer }));
-		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
-		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
-                      }
-                      else if(winNum == "1") {
-		         this.setState(prevState => ({ fullIpfs2: mplayer }));
-		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
-		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
-                      }
- 
-              }
-            },
 
 
             c: {
@@ -2838,29 +2792,29 @@ var playButton =
                         var upcLink = "<a href='"+ currentUrl +"'>[["+ data['word'] +"]]</a>";
                         terminal.pushToStdout(`[[xintel]]`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`og_owner: ${data['og']}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">og_owner:</u> ${data['og']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`owner: ${data['staker']}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">owner:</u>  ${data['staker']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">human_readable_name:</u>   ${data['humanReadableName']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`tld: ${tld}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">tld:</u> ${tld}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`token_id: ${data['tokenId']}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">token_id:</u> ${data['tokenId']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`dna_hash: ${data['upcHash']}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">dna_hash:</u> ${data['upcHash']}`);
                         terminal.pushToStdout(`=====`);
-	                terminal.pushToStdout(`upc: <a onclick="window.location.assign('${currentUrl}');window.location.reload()" href="${currentUrl}">${upc}</a>`);
+	                terminal.pushToStdout(`<u style="color:orange;font-size:1em">upc:</u> <a onclick="window.location.assign('${currentUrl}');window.location.reload()" href="${currentUrl}">${upc}</a>`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`minted: ${data['minted']}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">minted:</u> ${data['minted']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`stage: ${data['vr']}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">stage:</u> ${data['vr']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`payload: ${payload}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">payload:</u> ${payload}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">latest_update:</u> ${newDate.toString()}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`created_date: ${created.toString()}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">created_date:</u> ${created.toString()}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`[[/xintel]]`);
                   });
@@ -2966,6 +2920,21 @@ var playButton =
                   const terminal = this.progressTerminal.current
                   let info = this.props.upcInfo(this.state.account)
 		   .then(data => {
+
+			var upc = data['word'];
+                        if(data['tld'] == 777) {
+                           hrTLD = "coinbox";
+                        }
+                        var payload = "{{ idj " + data['ipfs'] + " }}";
+			var tmpStamp = parseInt(data['createdTimestamp']);
+                        var currentUrl = window.location.href;
+                        var upcJson = '{"code":"' + data['word'] + '"}';
+                        var upcEncoded = btoa(upcJson);
+                        currentUrl = currentUrl.substring(0,currentUrl.lastIndexOf('/') + 1) + upcEncoded;
+
+
+
+
 			var tmpStamp = parseInt(data['latestTimestamp']);
                         var newDate = new Date(tmpStamp * 1000);
 
@@ -2980,29 +2949,29 @@ var playButton =
 
                         terminal.pushToStdout(`[[intel]]`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`og_owner: ${data['og']}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">og_owner:</u> ${data['og']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`owner: ${data['staker']}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">owner:</u>  ${data['staker']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">human_readable_name:</u>   ${data['humanReadableName']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`tld: ${tld}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">tld:</u> ${tld}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`token_id: ${data['tokenId']}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">token_id:</u> ${data['tokenId']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`dna_hash: ${data['upcHash']}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">dna_hash:</u> ${data['upcHash']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`upc: ${data['word']}`);
+	                terminal.pushToStdout(`<u style="color:orange;font-size:1em">upc:</u> <a onclick="window.location.assign('${currentUrl}');window.location.reload()" href="${currentUrl}">${upc}</a>`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`minted: ${data['minted']}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">minted:</u> ${data['minted']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`stage: ${data['vr']}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">stage:</u> ${data['vr']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`payload: ${data['ipfs']}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">payload:</u> ${payload}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`latest_update: ${newDate.toString()}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">latest_update:</u> ${newDate.toString()}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`created_date: ${created.toString()}`);
+                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">created_date:</u> ${created.toString()}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`[[/intel]]`);
                   });
@@ -3587,7 +3556,7 @@ var playButton =
 
 
             data: {
-              description: '<p style="color:hotpink;font-size:1.1em">** base64 encode a post and append to stage</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** base64 encode arbitrary data and append to stage</p>',
               fn: () => {
                 this.setState({progressBal: ''});
                   const terminal = this.progressTerminal.current
