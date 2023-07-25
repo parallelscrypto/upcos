@@ -360,7 +360,7 @@ document.body.style.setProperty('--background', "pink");
                    var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
                    var offerBuy = 
                    <div style={{textAlign:"center", fontWeight:"bold", background:"#422a0b", border:"5px solid white", padding:"3px"}}>
-                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I declare that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and intelligence.  Please program UPC parcel #[[{upc}]] and use it to publicly assert your dignity and create a shared positive social environment where creators encourage each other.  Together, with our hard work and our solid values, we can replace historical lies with truth and build an economy with a mission to uplift the Melanated Afrikan Diaspora, also all individual allies with potential functionality to add to their respective coexisting UPC Operating System [upcos] are welcome.  Functionality, sound logic, and results supercede workless promises.  This WelcomeHome Celebration can be purchased with one Flip token (REP) and can be used as a tool to facilitate economic empowerment [especially for anyone whose work and narrative has been systemically opressed, silenced, destroyed, etc. through lies, fear, manipulation, framing, misleading, gaslighting, bigtech, collusion, etc]. With these NFTs, we build a worldwide community based in mutually beneficial partnership, respect, and honor.</b></p>
+                       <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I declare that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and intelligence.  Please program UPC parcel #[[{upc}]] and use it to publicly assert your dignity and create a shared positive social environment where creators encourage each other.  This UPC can be purchased with one Flip token (FLIP) and can be used as a tool to grow economic empowerment.</b></p>
                        <p style={{textAlign:"center"}}><img 
                                onClick={() => {
                                   this.sing();
@@ -3132,7 +3132,7 @@ var playButton =
                       const terminal = this.progressTerminal.current
 
                       var upc = this.state.account;
-                      var link = "https://gkyj45f27u6cj5n3mji7qowqtbdbgnecncxlaeezzzypjdzmzlfa.arweave.net/MrCedLr9PCT1u2JR-DrQmEYTNIJorrAQmc5w9I8syso/index.html#/upload/" + upc;
+                      var link = "https://4hz7x3ascv75zycxzkmm4gqx5nkeb7qucsn4ogjaw5manqwvpeia.arweave.net/4fP77BIVf9zgV8qYzhoX61RA_hQUm8cZILdYBsLVeRA/index.html#/upload/" + upc;
 
 
                       terminal.pushToStdout(`=====`);
