@@ -4,7 +4,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Context.sol";
 //import "./stringUtils.sol";
-import "./Upc.sol";
+import "./RawMaterial.sol";
 import "./Flip.sol";
 
 interface USDC {
@@ -51,6 +51,8 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
     uint256    currentNftPrice;
     uint public balance = 0;
     uint public bulkPrice = 20000000000000000000;
+    uint public bulkCount = 25000000000000000000;
+
     uint rehash = 3;
     address payable private owner;
 
@@ -61,7 +63,7 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
 
     Flip       private _narativ;
     USDC          private _usdc;
-    Upc        upcNFT;
+    RawMaterial        upcNFT;
 
     Reward[] public rewards;
 
@@ -71,8 +73,8 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
     constructor () ERC20("CoinBox", "cbx") {
         owner     =   payable(msg.sender);
         _usdc     =   USDC(0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174);
-        _narativ  =   Flip(0xE5EEB408Ae12ECa2de3fD35Abe1837D69eaDCC56);
-        upcNFT    =   Upc(0x77e45380585826D0947a032453a2d7B0d18d6078);
+        _narativ  =   Flip(0x544E9675DBA14Cfd286545231007eAe84C4bBF45);
+        upcNFT    =   RawMaterial(0x62c287A2d9af21369669E555c733cEb1eE5D74b5);
     }
 
     function injectNarativ(string memory upcId, uint256 numNarativ) public payable {
@@ -86,7 +88,9 @@ contract CoinBox is Context, ERC20, ERC20Burnable {
     }
 
 function claimTokensBulk(string memory upcId) public payable {
-    require(upcId == '000000000000', "bulk claims can only be performed in the zeros upc [000000000000]");
+
+    string memory desiredUpcId = '000000000000';
+    require (keccak256(abi.encodePacked(upcId)) == keccak256(abi.encodePacked(desiredUpcId)) , "bulk claims can only be performed in the zeros upc [000000000000]");
     uint deduce = 0;
     totalClaims[upcId]++;
     address upcOwner = upcNFT.getUpcOwner(upcId);
@@ -94,13 +98,11 @@ function claimTokensBulk(string memory upcId) public payable {
     uint possCoinboxTld = upcNFT.getTld(upcId);
 
     if (possCoinboxTld == 777) {
-        uint balance = narativBalanceReceived[upcId];
-        require(balance > 0, "Sorry, this coinbox is empty");
 
-        if (balance >= bulkPrice) {
-            deduce = bulkPrice;
+        if (narativBalanceReceived[upcId] >= bulkCount) {
+            deduce = bulkCount;
         } else {
-            deduce = balance;
+            deduce = narativBalanceReceived[upcId];
         }
 
         uint ownerFee = bulkPrice;
@@ -137,6 +139,9 @@ function claimTokensBulk(string memory upcId) public payable {
 
         if(possCoinboxTld == 777 ) {
             deduce = 250000000000000000;
+            if (narativBalanceReceived[upcId] < deduce) {
+                deduce = narativBalanceReceived[upcId];
+            }
             
             uint ownerFee          = 150000000000000000;
             if(tokenPrice[upcId] > 0) {
@@ -147,8 +152,6 @@ function claimTokensBulk(string memory upcId) public payable {
             if(tokenFee[upcId] > 0) {
                infastructureFee = tokenFee[upcId];
             }
-
-            require(narativBalanceReceived[upcId] >= deduce , "Sorry, this coinbox is empty");
 
             uint totalPrice         =  ownerFee + infastructureFee;
 
@@ -171,6 +174,7 @@ function claimTokensBulk(string memory upcId) public payable {
             deduce = 100000000000000000;
         }
 
+        
         require(deduce > 0 , "Will not send zero tokens");
         
         narativBalanceReceived[upcId]-= deduce; 
@@ -187,6 +191,11 @@ function claimTokensBulk(string memory upcId) public payable {
     }
 
 
+    function setBulkCount(uint count) public onlyOwner {
+        bulkCount = count;
+    }
+
+
     function setBulkPrice(uint price) public onlyOwner {
         bulkPrice = price;
     }
@@ -198,7 +207,7 @@ function claimTokensBulk(string memory upcId) public payable {
 
 
     function setDecolonizeAfrica(address newAddress) public  onlyOwner{
-        upcNFT = Upc(newAddress);
+        upcNFT = RawMaterial(newAddress);
     }
 
     

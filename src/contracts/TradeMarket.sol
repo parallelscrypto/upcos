@@ -15,7 +15,7 @@ contract TradeMarket is IERC721Receiver {
 
 
     mapping (uint256 => NFT) public nfts;
-    address private  nftMarketplace = 0x77e45380585826D0947a032453a2d7B0d18d6078;
+    address private  nftMarketplace = 0x62c287A2d9af21369669E555c733cEb1eE5D74b5;
     address private  owner;
 
 

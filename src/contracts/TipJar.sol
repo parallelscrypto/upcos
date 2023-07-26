@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Context.sol";
-import "./Upc.sol";
+import "./RawMaterial.sol";
 
 //import "./stringUtils.sol";
 
@@ -35,9 +35,9 @@ contract TipJar is Context, ERC20, ERC20Burnable {
     mapping(string => uint)     public balanceReceived;
     uint workerCost = 20000000000000000;
     mapping(address => WorkerMeta[])    public workersForAddress;
-    mapping(string  => WorkerMeta[])    public workersOnUpc;
+    mapping(string  => WorkerMeta[])    public workersOnRawMaterial;
     mapping(string  => bool)    public usedGuids;
-    Upc upcNFT;
+    RawMaterial upcNFT;
 
 
     Reward[] public rewards;
@@ -47,7 +47,7 @@ contract TipJar is Context, ERC20, ERC20Burnable {
     constructor () ERC20("tip://", "<tip>") {
         //_mint(_msgSender(), 10000 * (10 ** uint256(decimals())));
         owner =  payable(msg.sender);
-        upcNFT = Upc(0x77e45380585826D0947a032453a2d7B0d18d6078);
+        upcNFT = RawMaterial(0x62c287A2d9af21369669E555c733cEb1eE5D74b5);
     }
     
     modifier onlyOwner
@@ -65,7 +65,7 @@ contract TipJar is Context, ERC20, ERC20Burnable {
 
 
     function setUPCNFT(address newAddress) public  onlyOwner{
-        upcNFT = Upc(newAddress);
+        upcNFT = RawMaterial(newAddress);
     }
 
     function pigIn(string memory upcId) public payable {

@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Context.sol";
-import "./UPCNFT.sol";
+import "./RawMaterial.sol";
 
 //import "./stringUtils.sol";
 
@@ -37,7 +37,7 @@ contract WalkieTalkie is Context, ERC20, ERC20Burnable {
     mapping(address => WorkerMeta[])    public workersForAddress;
     mapping(string  => WorkerMeta[])    public workersOnUpc;
     mapping(string  => bool)    public usedGuids;
-    UPCNFT upcNFT;
+    RawMaterial upcNFT;
 
 
     Reward[] public rewards;
@@ -47,7 +47,7 @@ contract WalkieTalkie is Context, ERC20, ERC20Burnable {
     constructor () ERC20("walkieTalkie://", "<wktk>") {
         //_mint(_msgSender(), 10000 * (10 ** uint256(decimals())));
         owner =  payable(msg.sender);
-        upcNFT = UPCNFT(0xc3B0b50C63A3cAC1a8320a07AA25770D6dACaE87);
+        upcNFT = RawMaterial(0x62c287A2d9af21369669E555c733cEb1eE5D74b5);
     }
     
     modifier onlyOwner
@@ -63,7 +63,7 @@ contract WalkieTalkie is Context, ERC20, ERC20Burnable {
     }
 
     function setUPCNFT(address newAddress) public  onlyOwner{
-        upcNFT = UPCNFT(newAddress);
+        upcNFT = RawMaterial(newAddress);
     }
 
      function getWalkieTalkie(string memory upcId) external view returns(string memory) {

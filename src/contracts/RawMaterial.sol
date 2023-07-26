@@ -8,6 +8,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 
 import "./Flip.sol";
+import "./Chmod.sol";
 
 contract RawMaterial is ERC721, Ownable {
     using Counters for Counters.Counter;
@@ -68,10 +69,11 @@ contract RawMaterial is ERC721, Ownable {
     uint    public totalBalance;
     uint256    currentNftPrice;
     Flip    private _token;
+    Chmod   private chmod;
     string    public defaultProtocol;
 
 
-    constructor() ERC721("RawMaterial", "RawMaterial") Ownable()  {
+    constructor() ERC721("RawMaterial", "RAM") Ownable()  {
         bank = payable(msg.sender);
         defaultIpfs = "https://librivox.org/search?primary_key=0&search_category=author&search_page=1&search_form=get_results";
         defaultVr = "https://arweave.net/sStyb2LGfiQEWv1BHCE8vONzDGSKlMOG2xhOs0XBKzU";
@@ -80,6 +82,7 @@ contract RawMaterial is ERC721, Ownable {
         tlds[1] = "afro";
         tlds[2] = "fire";
         defaultProtocol = "upc";
+        chmod = Chmod(0x2A80b28D7E0806fa5304a2678B59652c1a48f575);
     }
 
     function _transfer(address from, address to, uint256 tokenId) internal virtual override {
@@ -275,8 +278,9 @@ contract RawMaterial is ERC721, Ownable {
         return nftsToMintByHash[upcHash].humanReadableName;
     }    
 
+
     function setVr(string memory upcId, string memory _vr) public {
-        require(msg.sender == upcIdLookup[upcId].staker , "Only owner can set VR");
+        require(chmod.checkPermission(upcId, msg.sender), "No write permission");
         upcIdLookup[upcId].vr = _vr;
         upcIdLookup[upcId].latestTimestamp = block.timestamp;
         uint256 tmpTokenId = upcIdLookup[upcId].tokenId;
@@ -286,7 +290,7 @@ contract RawMaterial is ERC721, Ownable {
     
     
     function setIpfs(string memory upcId, string memory _ipfs) public {
-        require(msg.sender == upcIdLookup[upcId].staker , "Only owner can set VR");
+        require(chmod.checkPermission(upcId, msg.sender), "No write permission");
         upcIdLookup[upcId].ipfs = _ipfs;
         upcIdLookup[upcId].latestTimestamp = block.timestamp;
         uint256 tmpTokenId = upcIdLookup[upcId].tokenId;
