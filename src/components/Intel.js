@@ -99,6 +99,12 @@ class Intel extends Component {
             getBulkPrice= {this.props.getBulkPrice}
             getBulkCount= {this.props.getBulkCount}
 
+
+
+            revokePermission= {this.props.revokePermission}
+            grantPermission= {this.props.grantPermission}
+            checkPermission= {this.props.checkPermission}
+
             checkNarativBalance= {this.props.checkNarativBalance}
 	    setHRNMarket={this.props.setHRNMarket}
 	    setUpcMarket={this.props.setUpcMarket}

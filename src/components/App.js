@@ -2,14 +2,15 @@ import React, { Component } from 'react'
 import ReactCardFlip from 'react-card-flip';
 import Iframe from 'react-iframe'
 import Web3 from 'web3'
-import NostRadioStation from '../etc/flipitup/Upc.json'
-import NostRadioToken from '../etc/flipitup/Flip.json'
-import piggy from '../etc/flipitup/TipJar.json'
-import UPCMarket from '../etc/flipitup/UPCMarket.json'
-import TradeMarket from '../etc/flipitup/TradeMarket.json'
-import WalkieTalkie from '../etc/flipitup/WalkieTalkie.json'
-import CoinBox from '../etc/flipitup/CoinBox.json'
-import OpenFederation from '../etc/flipitup/OpenFederation.json'
+import NostRadioStation from '../etc/rawmaterial/RawMaterial.json'
+import NostRadioToken from '../etc/rawmaterial/Flip.json'
+import piggy from '../etc/rawmaterial/TipJar.json'
+import UPCMarket from '../etc/rawmaterial/UPCMarket.json'
+import TradeMarket from '../etc/rawmaterial/TradeMarket.json'
+import WalkieTalkie from '../etc/rawmaterial/WalkieTalkie.json'
+import CoinBox from '../etc/rawmaterial/CoinBox.json'
+import OpenFederation from '../etc/rawmaterial/OpenFederation.json'
+import Chmod from '../etc/rawmaterial/Chmod.json'
 
 
 //import Navbar from './Navbar'
@@ -74,6 +75,17 @@ class App extends Component {
       const trademarketNft = new web3.eth.Contract(TradeMarket.abi, trademarketData.address)
       this.setState({ trademarketNft })
       this.setState({ trademarketData: trademarketData })
+    } else {
+      //window.alert('UPCNFT contract not deployed to detected network.')
+    }
+
+
+    // Load Chmods
+    const chmodData = Chmod.networks[networkId]
+    if(chmodData) {
+      const chmodNft = new web3.eth.Contract(Chmod.abi, chmodData.address)
+      this.setState({ chmodNft })
+      this.setState({ chmodData: chmodData })
     } else {
       //window.alert('UPCNFT contract not deployed to detected network.')
     }
@@ -199,6 +211,28 @@ class App extends Component {
          this.setState({ loading: false })
       })
   };
+
+
+  revokePermission = async (upcId, address) => {
+    const { accounts, contract } = this.state;
+    var stakingBalance = await this.state.chmodNft.methods.revokePermission(upcId, address).send({ from: this.state.account });
+    return stakingBalance.toString();
+  };
+
+
+  grantPermission = async (upcId, address) => {
+    const { accounts, contract } = this.state;
+    var stakingBalance = await this.state.chmodNft.methods.grantPermission(upcId, address).send({ from: this.state.account });
+    return stakingBalance.toString();
+  };
+
+
+  checkPermission = async (upcId, address) => {
+    const { accounts, contract } = this.state;
+    var stakingBalance = await this.state.chmodNft.methods.checkPermission(upcId, address).call({ from: this.state.account });
+    return stakingBalance.toString();
+  };
+
 
   addCrown = async (kingNft, upcId, numTokens) => {
     const { accounts, contract } = this.state;
@@ -1032,6 +1066,9 @@ console.log("mk addy is " + market_address);
     this.getBulkPrice= this.getBulkPrice.bind(this);
 
 
+    this.revokePermission= this.revokePermission.bind(this);
+    this.grantPermission= this.grantPermission.bind(this);
+    this.checkPermission= this.checkPermission.bind(this);
 
 
     this.checkNarativBalance= this.checkNarativBalance.bind(this);
@@ -1166,6 +1203,12 @@ console.log("mk addy is " + market_address);
 
 	getBulkCount={this.getBulkCount}
 	getBulkPrice={this.getBulkPrice}
+
+
+
+	revokePermission={this.revokePermission}
+	grantPermission={this.grantPermission}
+	checkPermission={this.checkPermission}
 
 
 	injectNarativ={this.injectNarativ}

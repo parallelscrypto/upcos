@@ -2285,9 +2285,9 @@ var playButton =
                        bal.then((value) => {
                           theBal =window.web3.utils.fromWei(value, "ether");
                           terminal.pushToStdout(`================`);
-                          terminal.pushToStdout(`[[balance-repatriate-token]]`);
+                          terminal.pushToStdout(`[[balance-flip-token]]`);
         		  terminal.pushToStdout(`${theBal} Flip`)
-                          terminal.pushToStdout(`[[/balance-repatriate-token]]`);
+                          terminal.pushToStdout(`[[/balance-flip-token]]`);
                           terminal.pushToStdout(`================`);
                           terminal.pushToStdout(`[[balance-MATIC]]`);
         		  terminal.pushToStdout(`${matic} MATIC`)
@@ -2401,6 +2401,28 @@ var playButton =
               description: '<p style="color:hotpink;font-size:1.1em">** Set the bulk price for x tokens.  Admin function**</p>',
               fn: (price) => {
 		      this.props.setTokenPriceBulk(price);
+              }
+            },
+
+
+            chmod: {
+              description: '<p style="color:hotpink;font-size:1.1em">** change write permissions on current upc if you own it.  chmod takes 2 argumenst, an action and an address.  valid actions are add, check, remove.  the second argument is the address to apply the write permissions to**</p>',
+              fn: async (action,address) => {
+
+                      const terminal = this.progressTerminal.current;
+                      var upcId = this.state.account;
+                      if(action == "add") {
+                         this.props.grantPermission(upcId,address);
+                      }
+                      else if(action == "remove") {
+                         this.props.revokePermission(upcId,address);
+                      }
+                      else if(action == "check") {
+                         var hasPerm = await this.props.checkPermission(upcId,address);
+                         terminal.pushToStdout(`!!!!!!!!!!`);
+                         terminal.pushToStdout(`has_permissions: ` + hasPerm );
+                         terminal.pushToStdout(`!!!!!!!!!!`);
+                      }
               }
             },
 
@@ -3132,7 +3154,7 @@ var playButton =
                       const terminal = this.progressTerminal.current
 
                       var upc = this.state.account;
-                      var link = "https://4hz7x3ascv75zycxzkmm4gqx5nkeb7qucsn4ogjaw5manqwvpeia.arweave.net/4fP77BIVf9zgV8qYzhoX61RA_hQUm8cZILdYBsLVeRA/index.html#/upload/" + upc;
+                      var link = "https://h7yzlcttu52mtsuhavtflljzzlhrpuy3hg3tygbqgtswaaz6232a.arweave.net/P_GVinOndMnKhwVmVa05ys8X0xs5tzwYMDTlYAM-1vQ/index.html#/upload/" + upc;
 
 
                       terminal.pushToStdout(`=====`);
