@@ -1978,6 +1978,42 @@ var playButton =
                      }
             },
 
+            fire: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open firepad.io collab suite in a window & sheeit </p>',
+              fn: (sheetNum) => {
+
+
+                      if (Number.isInteger(sheetNum) && sheetNum < 0) {
+                         sheetNum = 0;
+                      }
+
+                      var upcHash  = sha256(this.state.account)
+                      for(var i=0; i<sheetNum; i++) {
+                          upcHash = sha256(upcHash);
+                      } 
+
+
+		      var fullUrl = "https://demo.firepad.io/#" + upcHash;
+                      var winNum = "0";
+
+                      this.cSearch2.value = "";
+                      this.cSearch2.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
+
+
 
             sheeit: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open a spread sheet in a window & sheeit </p>',
