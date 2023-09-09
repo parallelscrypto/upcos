@@ -92,17 +92,19 @@ export default class StageCarousel extends Component {
     let infoOwned = await this.props.upcInfo(this.state.channel);
     var self = this;
     var ipfs = infoOwned['vr'];
-
+    if(ipfs.substring(0,3) == '>>>') {
+       ipfs = ipfs.substring(3);
+    }
     var nftIds;
 
 
     var containsGreaterThan = ipfs.includes('>');
     if (containsGreaterThan) {
       nftIds = ipfs.split('>');
-    } else {
-      nftIds = ipfs.split('#');
     }
 
+console.log("MYNFTZZZZZZZZZZZZZ========");
+console.log(nftIds);
     for (var i = 0; i < nftIds.length; i++) {
       if (!nftIds[i]) continue;
       var vidSnippet;
@@ -117,6 +119,8 @@ export default class StageCarousel extends Component {
       //keep ss string clean.
 
       var stagePiece = nftIds[i];
+console.log("CURRENT STAGE PIECE IS ");
+console.log(stagePiece);
 
       var containsLinkType = stagePiece.includes('[') && stagePiece.includes('|') && stagePiece.includes(']');
 
@@ -124,8 +128,21 @@ export default class StageCarousel extends Component {
       if (stagePiece.includes('https:')) {
         loadHtml = true;
       }
-      if (containsGreaterThan && loadHtml && !containsLinkType) {
+
+      var loadMission= false;
+      var missionString = "";
+      if (stagePiece.includes('mission')) {
+        loadMission = true;
+        missionString = stagePiece;
+console.log(missionString);
+      }
+
+      if (loadMission) {
+console.log("in mission");
+      }
+      else if (containsGreaterThan && loadHtml && !containsLinkType) {
         var entry = await this.getHTML(nftIds[i]);
+console.log("in main");
       } else if (containsLinkType) {
         var entry = this.getLink(nftIds[i]);
 console.log("in html");

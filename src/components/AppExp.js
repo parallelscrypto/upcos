@@ -60,13 +60,15 @@ class AppExp extends Component {
     
     // Extract the value of the 'show' variable
     const showValue = dataObject.show;
+    const codeValue = dataObject.code;
 
+console.log("the DATAOBJ ISZZZ " + codeValue );
 
 
     return (
       <div style={{background: "#7e7e5e", height: '100vh', width: '100vw', border:'none'}} >
          <div>
-            <StaticCarousel show={showValue} />
+            <StaticCarousel code={codeValue} show={showValue} />
             <CommentSection upc={this.state.code} />
          </div>
       </div>

@@ -3275,7 +3275,7 @@ var playButton =
                 let info = await this.props.upcInfo(this.state.account)
                 var showString = info['vr'];
                 console.log("skring iz " + showString);
-                var upcJson = '{"show":"' + showString + '"}';
+                var upcJson = '{"show":"' + showString + '","code":"'+ this.state.account+'"}';
                 var upcEncoded = btoa(upcJson);
                 currentUrl = currentUrl.substring(0,currentUrl.lastIndexOf('/') + 1) + upcEncoded;
                 currentUrl = currentUrl.replace('intel', 'export');

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Modal from "react-animated-modal";
 import makeCarousel from 'react-reveal/makeCarousel';
 // we'll need the Slide component for sliding animations
 // but you can use any other effect
@@ -14,6 +15,7 @@ import { TikTok } from 'react-tiktok';
 
 
 
+var Barcode = require('react-barcode');
 const width = '100%', height='75vh';
 const Container = styled.div`
   border: 1px dashed red;
@@ -78,7 +80,9 @@ export default class StaticCarousel extends Component {
   constructor(props) {
     super(props);
     var channel = props.upcId;
+    var upc = props.code;
     this.state = {
+       code: upc,
        channel: channel,
        slides: []
     }
@@ -158,6 +162,32 @@ export default class StaticCarousel extends Component {
     else {
        nftIds = ipfs.split("#");
     }
+
+    var splash = 
+             <Modal style={{"background":'##86a865',"height":"50vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={'true'} closemodal={(e) => {this.setState({ showModalSplash: false }); }} type="lightSpeedIn" >
+                <div style={{background:"#451206", verticalAlign:"middle", textAlign:"center" }}> 
+                  <div>
+                    <Zoom left> <i  style={{color:"red"}}>Now Playing:</i></Zoom>
+                    <br/>
+                    <Zoom left> <b>Raw Material Property ID#</b></Zoom>
+                     <br/>
+
+                     <Flip right> <Barcode value={this.state.code} format="UPC" /> </Flip>
+    
+                     <br/>
+                     <i  style={{color:"red"}}>[[{this.state.code}]]</i>
+                     <b style={{color:"white"}}>powered by upcOS </b>
+                  </div>
+                </div>
+             </Modal>;
+
+
+    var res = this.state.slides;
+    console.log("RES COUNT = " + res.length);
+    if(res.length == 0 ) {
+       res.push(splash);
+    }
+
 
 
     for(var i = 0; i < nftIds.length; i++) {
