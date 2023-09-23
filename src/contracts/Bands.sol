@@ -86,9 +86,20 @@ contract Bands {
     }
 
     function setBandTopic(uint256 _bandId, uint256 _topicId) public onlyOwner {
+
         require(_bandId >= 0 && _bandId <= 9, "Invalid band");
+
+        // Verify if the provided topicId exists
+        require(_topicId < topics.length, "Topic does not exist");
+
+        // Get the topic name
+        string memory topicName = topics[_topicId].name;
+
         bands[_bandId].currentTopicId = _topicId;
+        bands[_bandId].name = topicName; // Set the band's name
+
         emit BandTopicUpdated(_bandId, _topicId);
+
     }
 
     function getExperienceCount() public view returns (uint256) {
