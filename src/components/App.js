@@ -11,6 +11,7 @@ import WalkieTalkie from '../etc/rawmaterial/WalkieTalkie.json'
 import CoinBox from '../etc/rawmaterial/CoinBox.json'
 import OpenFederation from '../etc/rawmaterial/OpenFederation.json'
 import Chmod from '../etc/rawmaterial/Chmod.json'
+import Bands from '../etc/rawmaterial/Bands.json'
 
 
 //import Navbar from './Navbar'
@@ -89,6 +90,20 @@ class App extends Component {
     } else {
       //window.alert('UPCNFT contract not deployed to detected network.')
     }
+
+
+    // Load Bands
+    const bandsData = Bands.networks[networkId]
+    if(bandsData) {
+      const bandsNft = new web3.eth.Contract(Bands.abi, bandsData.address)
+      this.setState({ bandsNft })
+      this.setState({ bandsData: bandsData })
+    } else {
+      //window.alert('UPCNFT contract not deployed to detected network.')
+    }
+
+
+
 
 
 
@@ -232,6 +247,33 @@ class App extends Component {
     var stakingBalance = await this.state.chmodNft.methods.checkPermission(upcId, address).call({ from: this.state.account });
     return stakingBalance.toString();
   };
+
+
+
+  bandit= async (url,upc) => {
+    const { accounts, contract } = this.state;
+    var stakingBalance = await this.state.bandsNft.methods.createExperience(url,upc).send({ from: this.state.account });
+    return stakingBalance.toString();
+  };
+
+
+  setTopic= async (band,topic) => {
+    const { accounts, contract } = this.state;
+    var stakingBalance = await this.state.bandsNft.methods.setBandTopic(band,topic).send({ from: this.state.account });
+    return stakingBalance.toString();
+  };
+
+
+
+  createTopic = async (topic) => {
+    const { accounts, contract } = this.state;
+    var stakingBalance = await this.state.bandsNft.methods.createTopic(topic).send({ from: this.state.account });
+    return stakingBalance.toString();
+  };
+
+
+
+
 
 
   addCrown = async (kingNft, upcId, numTokens) => {
@@ -473,6 +515,27 @@ console.log("mk addy is " + market_address);
     }
 
     var approval = await this.state.intelX.methods.approve(upcNFTData.address, numTokens).send({ from: this.state.account });
+    this.setState({daiTokenBalance: approval.toString() });
+    return approval.toString();
+  };
+
+
+
+  approveBands= async (numTokens) => {
+    const web3 = window.web3
+    const intelXData = this.state.intelX;
+
+    const { accounts, contract } = this.state;
+
+    var bandsData = this.state.bandsData;
+    if(!numTokens) {
+       numTokens =window.web3.utils.toWei("1", "ether");
+    }
+    else {
+       numTokens =window.web3.utils.toWei(numTokens, "ether");
+    }
+
+    var approval = await this.state.intelX.methods.approve(bandsData.address, numTokens).send({ from: this.state.account });
     this.setState({daiTokenBalance: approval.toString() });
     return approval.toString();
   };
@@ -1069,6 +1132,10 @@ console.log("mk addy is " + market_address);
     this.revokePermission= this.revokePermission.bind(this);
     this.grantPermission= this.grantPermission.bind(this);
     this.checkPermission= this.checkPermission.bind(this);
+    this.bandit= this.bandit.bind(this);
+    this.setTopic= this.setTopic.bind(this);
+    this.approveBands= this.approveBands.bind(this);
+    this.createTopic= this.createTopic.bind(this);
 
 
     this.checkNarativBalance= this.checkNarativBalance.bind(this);
@@ -1209,6 +1276,10 @@ console.log("mk addy is " + market_address);
 	revokePermission={this.revokePermission}
 	grantPermission={this.grantPermission}
 	checkPermission={this.checkPermission}
+
+	createTopic={this.createTopic}
+	setTopic={this.setTopic}
+	approveBands={this.approveBands}
 
 
 	injectNarativ={this.injectNarativ}

@@ -100,6 +100,12 @@ class Intel extends Component {
             getBulkCount= {this.props.getBulkCount}
 
 
+            bandit= {this.props.bandit}
+            setTopic= {this.props.setTopic}
+            createTopic= {this.props.createTopic}
+            approveBands= {this.props.approveBands}
+
+
 
             revokePermission= {this.props.revokePermission}
             grantPermission= {this.props.grantPermission}

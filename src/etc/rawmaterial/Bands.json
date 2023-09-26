@@ -243,9 +243,26 @@
 		"name": "getExperiencesByBand",
 		"outputs": [
 			{
-				"internalType": "uint256[]",
+				"components": [
+					{
+						"internalType": "string",
+						"name": "url",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "upc",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "topicId",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct Bands.Experience[]",
 				"name": "",
-				"type": "uint256[]"
+				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",
@@ -283,6 +300,31 @@
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getTopics",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "topicId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					}
+				],
+				"internalType": "struct Bands.Topic[]",
+				"name": "",
+				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",
@@ -3714,7 +3756,7 @@
     "137": {
       "events": {},
       "links": {},
-      "address": "0xD88c90694863b9BB76A77984706F62A52388A0B7",
+      "address": "0xC6c3aCa31950ae95e9d904Cf86064Cf7a9fCf2D5",
       "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
     },
     "250": {

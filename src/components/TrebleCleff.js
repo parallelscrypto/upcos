@@ -98,9 +98,9 @@ this.props.play()
                     <button
                         style={{background: "#000000", color:"green", width: "20vw", height: "20vw"}}
                         onClick={(e) => { 
-                                     this.props.channelFront(this.props.account.substr(-1));
+                                     this.props.channelFront(this.props.account.substr(0,1));
                         }}
-                  >watch ch {this.props.account.substr(-1)} </button>
+                  >band # [{this.props.account.substr(0,1)}] </button>
 
 
 

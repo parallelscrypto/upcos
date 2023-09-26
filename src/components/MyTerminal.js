@@ -1353,6 +1353,60 @@ src={srcImg} height="200" width="200"/></p>
 
   }
 
+
+
+
+
+
+  bandui = async (humanReadableName) => {
+
+                  const terminal = this.progressTerminal.current
+                  var bandForm =  <div>
+                  <form className="mb-3" onSubmit={(event) => {
+                      event.preventDefault()
+                      let upcId = this.state.account
+                      let topic = this.topicText.value.toString()
+
+                      let doBuy = this.props.createTopic(topic)
+                      doBuy.then((value) => {
+                        terminal.pushToStdout(`Create topic transaction has returned a value.`)
+                         // expected output: "Success!"
+                      });
+
+                    }}>
+                    <div className="input-group mb-4">
+                      <input
+                        type="text"
+                        ref={(topicText) => { this.topicText= topicText}}
+                        className="form-control form-control-lg break"
+                        placeholder="Topic Text..."
+                        required />
+
+                    <button
+                   type="submit"
+                   className="btn btn-primary btn-block btn-lg"
+                  >
+                  ADD TOPIC
+              </button>
+
+             </div>
+                  </form>
+             </div>
+
+                      this.setState({bandModalContent:bandForm});
+                      this.setState({showModalBand:true});
+
+  }
+
+
+
+
+
+
+
+
+
+
   dex = async () => {
 
 	    var myDex = <Dex 
@@ -1867,6 +1921,9 @@ var playButton =
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalBuy} closemodal={() => this.setState({ showModalBuy: false })} type="pulse" > {this.state.buyModalContent}</Modal>
 
 
+      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalBand} closemodal={() => this.setState({ showModalBand: false })} type="pulse" > {this.state.bandModalContent}</Modal>
+
+
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalSearch} closemodal={() => this.setState({ showModalSearch: false })} type="pulse" > {this.state.searchModalContent}</Modal>
 
@@ -2157,6 +2214,71 @@ var playButton =
             },
 
 
+
+            addtopic: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** add a topic to the bands</p>',
+              fn: (humanReadableName) => {
+		      this.bandui(humanReadableName);
+              }
+            },
+
+
+
+            sbt: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** set a band topic. pass params *band*,*topic* </p>',
+              fn: (band,topic) => {
+                      this.props.setTopic(band,topic);
+              }
+            },
+
+
+
+
+
+            bandit: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Add a upc code to a band</p>',
+              fn: (domain) => {
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  let approval = this.props.bandit(domain,this.state.account);
+console.log('domain!!!!!!!!!!!!');
+console.log(domain);
+console.log(this.state.account);
+
+                      approval.then((value) => {
+                         approval = value;
+			 var congrats = "Thank you for your purchase! You now own NFT for " + this.state.account;
+                         terminal.pushToStdout(`[[colonizeb]]`);
+                         terminal.pushToStdout(congrats)
+                         terminal.pushToStdout(`[[/colonizeb]]`);
+			      
+                         // expected output: "Success!"
+                      });
+
+
+                  const interval = setInterval(() => {
+                    if (this.state.approved != '') { // Stop at 100%
+                      clearInterval(interval)
+                      this.setState({ isProgressing: false, progress: 0 })
+                    } else {
+                      this.setState({approved: approval});
+                      var self = this;
+                      this.setState({ progress: this.state.progress + 10 })
+                    }
+                  }, 1500)
+                })
+
+                return ''
+              }
+            },
+
+
+
+
+
+
+
+
             own: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `buy` command</p>',
               fn: (upcId) => {
@@ -2290,6 +2412,29 @@ var playButton =
                 this.setState({approved: false});
                 this.setState({ isProgressing: true }, () => {
                   let approval = this.props.approve(numTokens);
+                  approval.then((value) => {
+                    terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Flip from your wallet when you buy an NFT.  This approval is good for 1 NFT, and you must run this command each time before buying an NFT, or your 'buy' and 'own' commands will fail`)
+                     // expected output: "Success!"
+                  });
+                })
+        
+                         terminal.pushToStdout(`[[approve]]`);
+                terminal.pushToStdout(`Processing approval. Check the activity tab for detailed info`)
+                         terminal.pushToStdout(`[[/approve]]`);
+                return ''
+              }
+            },
+
+
+
+            preband: {
+                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 1 of your Flip.  Each time you program a UPC, you must run `recon` again.    You MUST run this command FIRST or all of your `buy` and `own` commands will fail.**</p>',
+              fn: (numTokens) => {
+                  
+                var progress = 0;
+                this.setState({approved: false});
+                this.setState({ isProgressing: true }, () => {
+                  let approval = this.props.approveBands(numTokens);
                   approval.then((value) => {
                     terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Flip from your wallet when you buy an NFT.  This approval is good for 1 NFT, and you must run this command each time before buying an NFT, or your 'buy' and 'own' commands will fail`)
                      // expected output: "Success!"

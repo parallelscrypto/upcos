@@ -18,7 +18,7 @@ contract Bands {
     }
 
     struct Band {
-        string name;
+        string name; 
         uint256 currentTopicId;
     }
 
@@ -129,16 +129,15 @@ contract Bands {
     }
 
 
-
-    function getExperiencesByBand(uint256 _bandId) public view returns (uint256[] memory) {
+    function getExperiencesByBand(uint256 _bandId) public view returns (Experience[] memory) {
         require(_bandId >= 0 && _bandId <= 9, "Invalid band");
 
-        uint256[] memory bandExperiences = new uint256[](experiences.length);
+        Experience[] memory bandExperiences = new Experience[](experiences.length);
         uint256 count = 0;
 
         for (uint256 i = 0; i < experiences.length; i++) {
             if (experiences[i].topicId == bands[_bandId].currentTopicId) {
-                bandExperiences[count] = i;
+                bandExperiences[count] = experiences[i];
                 count++;
             }
         }
@@ -151,6 +150,9 @@ contract Bands {
         return bandExperiences;
     }
 
+    function getTopics() public view returns (Topic[] memory) {
+        return topics;
+    }
 
 
 }
