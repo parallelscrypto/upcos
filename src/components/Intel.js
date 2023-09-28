@@ -102,7 +102,10 @@ class Intel extends Component {
 
             bandit= {this.props.bandit}
             setTopic= {this.props.setTopic}
+            getBandTopic= {this.props.getBandTopic}
+            getExperiencesByBand= {this.props.getExperiencesByBand}
             createTopic= {this.props.createTopic}
+            getTopics= {this.props.getTopics}
             approveBands= {this.props.approveBands}
 
 

@@ -263,6 +263,20 @@ class App extends Component {
     return stakingBalance.toString();
   };
 
+  getBandTopic= async (band) => {
+    const { accounts, contract } = this.state;
+    var stakingBalance = await this.state.bandsNft.methods.getBandTopic(band).call({ from: this.state.account });
+    return stakingBalance;
+  };
+
+
+  getExperiencesByBand = async (band) => {
+    const { accounts, contract } = this.state;
+    var stakingBalance = await this.state.bandsNft.methods.getExperiencesByBand(band).call({ from: this.state.account });
+    return stakingBalance;
+  };
+
+
 
 
   createTopic = async (topic) => {
@@ -272,6 +286,13 @@ class App extends Component {
   };
 
 
+
+
+  getTopics= async () => {
+    const { accounts, contract } = this.state;
+    var topics = await this.state.bandsNft.methods.getTopics().call({ from: this.state.account });
+    return topics;
+  };
 
 
 
@@ -1134,8 +1155,11 @@ console.log("mk addy is " + market_address);
     this.checkPermission= this.checkPermission.bind(this);
     this.bandit= this.bandit.bind(this);
     this.setTopic= this.setTopic.bind(this);
+    this.getBandTopic= this.getBandTopic.bind(this);
+    this.getExperiencesByBand= this.getExperiencesByBand.bind(this);
     this.approveBands= this.approveBands.bind(this);
     this.createTopic= this.createTopic.bind(this);
+    this.getTopics= this.getTopics.bind(this);
 
 
     this.checkNarativBalance= this.checkNarativBalance.bind(this);
@@ -1278,7 +1302,11 @@ console.log("mk addy is " + market_address);
 	checkPermission={this.checkPermission}
 
 	createTopic={this.createTopic}
+	getTopics={this.getTopics}
 	setTopic={this.setTopic}
+	bandit={this.bandit}
+	getBandTopic={this.getBandTopic}
+	getExperiencesByBand={this.getExperiencesByBand}
 	approveBands={this.approveBands}
 
 

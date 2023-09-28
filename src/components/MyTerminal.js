@@ -148,11 +148,14 @@ export default class MyTerminal extends Component {
        bassCleff: '',
        fullIpfs:'',
        fullIpfs2:'',
+       fullIpfs3:'',
        upcRadioString: "Welcome to UPC NFT Radio!",
        pipVisibility: "hidden",
        pipDisplay:    "none",
        pipVisibility2: "hidden",
        pipDisplay2:    "none",
+       pipVisibility3: "hidden",
+       pipDisplay3:    "none",
        showModalBuy: false,
        showModalSearch: false,
        showModalUrl: false,
@@ -1573,6 +1576,33 @@ src={srcImg} height="200" width="200"/></p>
 
 
 
+
+
+  band = async (band) => {
+            var self = this;
+            const terminal = this.progressTerminal.current
+            var mplayer;
+
+
+            let bandData = this.props.getExperiencesByBand(band)
+
+            console.log(bandData);
+
+
+ 	    self.setState(prevState => ({ fullIpfs3: mplayer }));
+	    self.setState(prevState => ({ pipVisibility3: !prevState.pipVisibility3 }));
+	    self.setState(prevState => ({ pipDisplay3: !prevState.pipDisplay3}));
+            //this.setState({fullIpfs: mplayer});
+            //this.setState({showBigShow2: true});
+            //this.setState({showBigShow: true});
+
+
+  }
+
+
+
+
+
   djupc = async (nftId) => {
 
 
@@ -2215,6 +2245,72 @@ var playButton =
 
 
 
+
+            band: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** list topic for a band</p>',
+
+
+                    fn: async (band) => {
+
+                       var topic = await this.band(band)
+		       //terminal.pushToStdout(`[[band-topic]]`);
+		       //terminal.pushToStdout(`<u style="color:orange;font-size:1em">band: </u> ${band}`);
+		       //terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${topic['topicId']}`);
+		       //terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${topic['name']}`);
+		       //terminal.pushToStdout(`[[/band-topic]]`);
+
+                    }
+
+		 },
+
+
+
+
+
+            topic: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** list topic for a band</p>',
+
+
+                    fn: async (band) => {
+
+                       var topic = await this.props.getBandTopic(band)
+		       terminal.pushToStdout(`[[band-topic]]`);
+		       terminal.pushToStdout(`<u style="color:orange;font-size:1em">band: </u> ${band}`);
+		       terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${topic['topicId']}`);
+		       terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${topic['name']}`);
+		       terminal.pushToStdout(`[[/band-topic]]`);
+
+                    }
+
+		 },
+
+
+
+
+            topics: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** list all available topics</p>',
+
+                    fn: () => {
+                    this.props.getTopics()
+
+		      .then(data => {
+                              for(var i=0; i<data.length; i++) {
+                                  terminal.pushToStdout(`[[topic]]`);
+                                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">topicId: </u> ${data[i]['topicId']}`);
+                                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${data[i]['name']}`);
+                                  terminal.pushToStdout(`[[/topic]]`);
+                              }
+                     });
+		  
+
+
+
+
+
+		   }
+		 },
+
+
             addtopic: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** add a topic to the bands</p>',
               fn: (humanReadableName) => {
@@ -2247,10 +2343,10 @@ console.log(this.state.account);
 
                       approval.then((value) => {
                          approval = value;
-			 var congrats = "Thank you for your purchase! You now own NFT for " + this.state.account;
-                         terminal.pushToStdout(`[[colonizeb]]`);
+			 var congrats = "transaction complete. use the appropriate band command to view video if transaction succeeded for upc #" + this.state.account;
+                         terminal.pushToStdout(`[[bandit]]`);
                          terminal.pushToStdout(congrats)
-                         terminal.pushToStdout(`[[/colonizeb]]`);
+                         terminal.pushToStdout(`[[/bandit]]`);
 			      
                          // expected output: "Success!"
                       });
@@ -4069,6 +4165,64 @@ console.log(this.state.account);
                     <div>{this.state.fullIpfs2}</div>
                   </div>
                 </Draggable>
+
+
+
+
+
+
+                <Draggable
+		  style={{zIndex:"2"}}
+                  axis="both"
+                  handle=".handle"
+                  positionOffset={{x: '0', y: '-50%'}}
+                  defaultPosition={{x: 0, y: 0}}
+                  position={null}
+                  grid={[25, 25]}
+                  scale={1}
+                  onStart={this.handleStart}
+                  onDrag={this.handleDrag}
+                  onStop={this.handleStop}>
+                  <div style={{ opacity:"0.9", background:"#ffffff" ,color:"#000000", visibility:this.state.pipVisibility3, display: this.state.pipDisplay3, width:"98vw",border:"3px dashed", padding:"5px"}}>
+                    <div className="handle" style={{background:"blue", display:"grid"}}><span style={{textAlign:"center"}}>drag-from-here (band-player)</span></div>
+                      <div style={{textAlign:"center"}}>
+                         <input
+                           type="text"
+                           ref={(cSearch) => { this.cSearch = cSearch }}
+                           placeholder="url"
+		           style={{borderBottom: "2px solid green",borderLeft: "2px solid green",marginBottom:"20px",height:"10vh",width:"50vw",background:"black", color:"white"}}
+                            />
+
+                         <button
+                              style={{borderBottom: "2px solid green", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"green", height: "10vh", marginBottom:"20px"}}
+		              onClick={(event) => {
+                                   event.preventDefault()
+                                   let upcId = this.state.account
+                                   let cSearch = this.cSearch.value.toString()
+
+                                   var mplayer = this.getMplayer(cSearch);
+                                   this.setState({fullIpfs: mplayer});
+		              }}
+                         >
+                            search
+                         </button>
+
+
+                         <button
+                              style={{borderBottom: "2px solid green", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"red", height: "10vh", marginBottom:"20px"}}
+		              onClick={() => {
+		                 this.setState(prevState => ({ pipVisibility: "false"}));
+		                 this.setState(prevState => ({ pipDisplay: "none" }));
+		              }}
+                         >
+                           [x]close 
+                         </button>
+                      </div>
+
+                    <div>{this.state.fullIpfs3}</div>
+                  </div>
+                </Draggable>
+
       </div>
       </ReactCardFlip>
 
