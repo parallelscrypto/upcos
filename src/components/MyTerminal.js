@@ -156,6 +156,7 @@ export default class MyTerminal extends Component {
        pipDisplay2:    "none",
        pipVisibility3: "hidden",
        pipDisplay3:    "none",
+       bandList:    [],
        showModalBuy: false,
        showModalSearch: false,
        showModalUrl: false,
@@ -1574,38 +1575,70 @@ src={srcImg} height="200" width="200"/></p>
       this.setState({player:myUpload});
   }
 
+band = async (band) => {
+    var self = this;
+    const terminal = this.progressTerminal.current;
+    var mplayer;
+    let bandData = await this.props.getExperiencesByBand(band);
+    console.log(bandData);
+    var listItems = [];
+    for (var index = 0; index < bandData.length; index += 3) {
+        var rowItems = bandData.slice(index, index + 3);
+        rowItems.forEach((item, rowIndex) => {
+            // Add a click event handler to each li element
+            listItems.push(
+                <li
+                    key={index + rowIndex}
+                    style={{
+                        cursor: 'pointer', // Add cursor pointer
+                        backgroundColor: index % 2 === 0 ? 'white' : 'black',
+                        color: index % 2 === 0 ? 'black' : 'white',
+                        padding: '10px',
+                        border: '1px solid #ccc',
+                        margin: '2px'
+                    }}
+                    // Add an onClick event to handle the click
+                    onClick={() => {
+                        // Update the iframe source with the clicked item's URL
+                        self.setState({ fullIpfs: item[0] });
+                    }}
+                >
+                    <a href={item[0]} target="_blank" onClick={(e) => e.preventDefault()}>{item[0]}</a><br />
+                    UPC: {item[1]}<br />
+                    Topic ID: {item[2]}
+                </li>
+            );
+        });
+    }
+    var ulElement = (
+        <div
+            style={{
+                maxHeight: '25vh', // Set maximum height to 25vh
+                overflowY: 'auto', // Enable vertical scrolling if content overflows
+                margin: '20px', // Enable vertical scrolling if content overflows
+            }}
+        >
+            <ul>
+                {listItems}
+            </ul>
+        </div>
+    );
+    console.log(ulElement);
+    self.setState(prevState => ({ fullIpfs3: mplayer }));
+    self.setState(prevState => ({ bandList: ulElement }));
+    self.setState(prevState => ({ pipVisibility3: !prevState.pipVisibility3 }));
+    self.setState(prevState => ({ pipDisplay3: !prevState.pipDisplay3 }));
+}
 
 
 
 
-  band = async (band) => {
-            var self = this;
-            const terminal = this.progressTerminal.current
-            var mplayer;
-
-
-            let bandData = this.props.getExperiencesByBand(band)
-
-            console.log(bandData);
-
-
- 	    self.setState(prevState => ({ fullIpfs3: mplayer }));
-	    self.setState(prevState => ({ pipVisibility3: !prevState.pipVisibility3 }));
-	    self.setState(prevState => ({ pipDisplay3: !prevState.pipDisplay3}));
-            //this.setState({fullIpfs: mplayer});
-            //this.setState({showBigShow2: true});
-            //this.setState({showBigShow: true});
-
-
-  }
 
 
 
 
 
   djupc = async (nftId) => {
-
-
             var self = this;
             const terminal = this.progressTerminal.current
             var mplayer;
@@ -1627,7 +1660,6 @@ src={srcImg} height="200" width="200"/></p>
                               result.push(fullUrl);
                            }
                         }
-
                         terminal.pushToStdout(`will parse stage ${nftId}: ${data['vr']}`);
 mplayer = <ReactPlayer
   url={result}
@@ -1636,13 +1668,6 @@ mplayer = <ReactPlayer
 	   self.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
 	   self.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
                   });
-		  
-
-            //this.setState({fullIpfs: mplayer});
-            //this.setState({showBigShow2: true});
-            //this.setState({showBigShow: true});
-
-
   }
 
 
@@ -4167,12 +4192,8 @@ console.log(this.state.account);
                 </Draggable>
 
 
-
-
-
-
                 <Draggable
-		  style={{zIndex:"2"}}
+		  style={{zIndex:"2", height:"100vh"}}
                   axis="both"
                   handle=".handle"
                   positionOffset={{x: '0', y: '-50%'}}
@@ -4189,8 +4210,8 @@ console.log(this.state.account);
                          <input
                            type="text"
                            ref={(cSearch) => { this.cSearch = cSearch }}
-                           placeholder="url"
-		           style={{borderBottom: "2px solid green",borderLeft: "2px solid green",marginBottom:"20px",height:"10vh",width:"50vw",background:"black", color:"white"}}
+		  placeholder="url"
+			  style={{borderBottom: "2px solid green",borderLeft: "2px solid green",marginBottom:"20px",height:"10vh",width:"50vw",background:"black", color:"white"}}
                             />
 
                          <button
@@ -4206,19 +4227,18 @@ console.log(this.state.account);
                          >
                             search
                          </button>
-
-
                          <button
                               style={{borderBottom: "2px solid green", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"red", height: "10vh", marginBottom:"20px"}}
 		              onClick={() => {
-		                 this.setState(prevState => ({ pipVisibility: "false"}));
-		                 this.setState(prevState => ({ pipDisplay: "none" }));
+		                 this.setState(prevState => ({ pipVisibility3: "false"}));
+		                 this.setState(prevState => ({ pipDisplay3: "none" }));
 		              }}
                          >
                            [x]close 
                          </button>
                       </div>
-
+                    <div>{this.state.bandList}</div>
+                    <iframe src={this.state.fullIpfs} style={{width:"100vw", height: "75vh"}}> </iframe>
                     <div>{this.state.fullIpfs3}</div>
                   </div>
                 </Draggable>
