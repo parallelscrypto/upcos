@@ -294,6 +294,13 @@ class App extends Component {
     return topics;
   };
 
+  getTopic= async (topicId) => {
+    const { accounts, contract } = this.state;
+    var topics = await this.state.bandsNft.methods.getTopic(topicId).call({ from: this.state.account });
+    return topics;
+  };
+
+
 
 
 
@@ -1160,6 +1167,7 @@ console.log("mk addy is " + market_address);
     this.approveBands= this.approveBands.bind(this);
     this.createTopic= this.createTopic.bind(this);
     this.getTopics= this.getTopics.bind(this);
+    this.getTopic= this.getTopic.bind(this);
 
 
     this.checkNarativBalance= this.checkNarativBalance.bind(this);
@@ -1303,6 +1311,7 @@ console.log("mk addy is " + market_address);
 
 	createTopic={this.createTopic}
 	getTopics={this.getTopics}
+	getTopic={this.getTopic}
 	setTopic={this.setTopic}
 	bandit={this.bandit}
 	getBandTopic={this.getBandTopic}

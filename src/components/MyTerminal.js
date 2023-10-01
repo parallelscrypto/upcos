@@ -190,6 +190,7 @@ export default class MyTerminal extends Component {
 
     this.selectDomain = this.selectDomain.bind(this);
     this.createLink= this.createLink.bind(this);
+    this.band= this.band.bind(this);
 
     this.handleInputChange= this.handleInputChange.bind(this);
     this.handleEncodeClick= this.handleEncodeClick.bind(this);
@@ -241,6 +242,8 @@ export default class MyTerminal extends Component {
        mplayer = "";
     }
 
+    //const terminal = this.progressTerminal.current
+    //terminal.clearStdout();
     this.setState({offerState: 'video'});
     this.setState(prevState => ({ player: mplayer }));
   }
@@ -1580,7 +1583,12 @@ band = async (band) => {
     const terminal = this.progressTerminal.current;
     var mplayer;
     let bandData = await this.props.getExperiencesByBand(band);
-    console.log(bandData);
+    let bandTopic = await this.props.getBandTopic(band);
+    let topicId = bandTopic.topicId;
+    let name    = bandTopic.name;
+    //let topic = await this.props.getTopic(bandTopic);
+    console.log("topiccccccccccccc");
+    console.log(bandTopic);
     var listItems = [];
     for (var index = 0; index < bandData.length; index += 3) {
         var rowItems = bandData.slice(index, index + 3);
@@ -1591,11 +1599,12 @@ band = async (band) => {
                     key={index + rowIndex}
                     style={{
                         cursor: 'pointer', // Add cursor pointer
-                        backgroundColor: index % 2 === 0 ? 'white' : 'black',
+                        background: index % 2 === 0 ? 'white' : 'black',
                         color: index % 2 === 0 ? 'black' : 'white',
-                        padding: '10px',
-                        border: '1px solid #ccc',
-                        margin: '2px'
+                        marginBottom: '5px',
+                        listStyle: 'none',
+                        paddingLeft: '5px',
+                        border: '1px dashed #ccc',
                     }}
                     // Add an onClick event to handle the click
                     onClick={() => {
@@ -1605,7 +1614,8 @@ band = async (band) => {
                 >
                     <a href={item[0]} target="_blank" onClick={(e) => e.preventDefault()}>{item[0]}</a><br />
                     UPC: {item[1]}<br />
-                    Topic ID: {item[2]}
+                    Topic ID: {item[2]} <br />
+                    Topic: {name} 
                 </li>
             );
         });
@@ -1613,12 +1623,17 @@ band = async (band) => {
     var ulElement = (
         <div
             style={{
-                maxHeight: '25vh', // Set maximum height to 25vh
+                minHeight: '25vh', // Set maximum height to 25vh
                 overflowY: 'auto', // Enable vertical scrolling if content overflows
-                margin: '20px', // Enable vertical scrolling if content overflows
+                background: 'black', // Enable vertical scrolling if content overflows
             }}
         >
-            <ul>
+            <h2 style={{textAlign:"center"}}>Band {band} topic : {name} </h2> <br/>
+            <ul
+                style={{
+                       padding: '5px'
+                }} 
+               >
                 {listItems}
             </ul>
         </div>
@@ -1960,7 +1975,7 @@ var playButton =
 
 
              <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showUploadModal} closemodal={() => this.setState({ showUploadModal: false })} type="pulse" > {myUpload}</Modal>
-	     <TrebleCleff channelFront={this.channelFront} handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} dex={this.dex} search={this.search} meeting={this.meeting}  account={this.state.account} tutorial={this.tutorial} upcInfo={this.props.upcInfo} address={this.props.address} />
+	     <TrebleCleff band={this.band} channelFront={this.channelFront} handleFlip={this.handleFlip} printWelcomeMsg={this.printWelcomeMsg} play={this.play} dex={this.dex} search={this.search} meeting={this.meeting}  account={this.state.account} tutorial={this.tutorial} upcInfo={this.props.upcInfo} address={this.props.address} />
 
 	     <Modal style={{"height":"90vh", "width":"100vw" , "alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={this.state.showChannelShow} closemodal={(e) => {this.setState({ showChannelShow: false }); }} type="pulse" >{this.state.channelSlider}</Modal>
 

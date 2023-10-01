@@ -98,7 +98,10 @@ this.props.play()
                     <button
                         style={{background: "#000000", color:"green", width: "20vw", height: "20vw"}}
                         onClick={(e) => { 
-                                     this.props.channelFront(this.props.account.substr(0,1));
+
+
+                                     this.props.handleFlip(e) 
+                                     this.props.band(this.props.account.substr(0,1));
                         }}
                   >band # [{this.props.account.substr(0,1)}] </button>
 
