@@ -1578,12 +1578,23 @@ src={srcImg} height="200" width="200"/></p>
       this.setState({player:myUpload});
   }
 
-band = async (band) => {
+band = async (bandOrTopic, band ) => {
     var self = this;
     const terminal = this.progressTerminal.current;
     var mplayer;
-    let bandData = await this.props.getExperiencesByBand(band);
-    let bandTopic = await this.props.getBandTopic(band);
+
+    let bandData;
+    let bandTopic; 
+
+    if(bandOrTopic == "band") {
+       bandData  = await this.props.getExperiencesByBand(band);
+       bandTopic = await this.props.getBandTopic(band);
+    }
+    else {
+       bandData = await this.props.getExperiencesByTopic(band);
+       bandTopic = await this.props.getTopic(band);
+    }
+
     let topicId = bandTopic.topicId;
     let name    = bandTopic.name;
     //let topic = await this.props.getTopic(bandTopic);
@@ -2292,7 +2303,7 @@ var playButton =
 
                     fn: async (band) => {
 
-                       var topic = await this.band(band)
+                       var topic = await this.band("band",band)
 		       //terminal.pushToStdout(`[[band-topic]]`);
 		       //terminal.pushToStdout(`<u style="color:orange;font-size:1em">band: </u> ${band}`);
 		       //terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${topic['topicId']}`);
@@ -2304,10 +2315,25 @@ var playButton =
 		 },
 
 
-
-
-
             topic: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** list experiences for a topic </p>',
+
+
+                    fn: async (band) => {
+
+                       var topic = await this.band("topic",band)
+		       //terminal.pushToStdout(`[[band-topic]]`);
+		       //terminal.pushToStdout(`<u style="color:orange;font-size:1em">band: </u> ${band}`);
+		       //terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${topic['topicId']}`);
+		       //terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${topic['name']}`);
+		       //terminal.pushToStdout(`[[/band-topic]]`);
+
+                    }
+
+		 },
+
+
+            bt: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** list topic for a band</p>',
 
 

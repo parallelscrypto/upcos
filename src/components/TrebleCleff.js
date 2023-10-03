@@ -101,7 +101,7 @@ this.props.play()
 
 
                                      this.props.handleFlip(e) 
-                                     this.props.band(this.props.account.substr(0,1));
+                                     this.props.band("band", this.props.account.substr(0,1));
                         }}
                   >band # [{this.props.account.substr(0,1)}] </button>
 

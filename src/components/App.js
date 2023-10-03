@@ -278,6 +278,15 @@ class App extends Component {
 
 
 
+  getExperiencesByTopic = async (band) => {
+    const { accounts, contract } = this.state;
+    var stakingBalance = await this.state.bandsNft.methods.getExperiencesByTopic(band).call({ from: this.state.account });
+    return stakingBalance;
+  };
+
+
+
+
 
   createTopic = async (topic) => {
     const { accounts, contract } = this.state;
@@ -1164,6 +1173,7 @@ console.log("mk addy is " + market_address);
     this.setTopic= this.setTopic.bind(this);
     this.getBandTopic= this.getBandTopic.bind(this);
     this.getExperiencesByBand= this.getExperiencesByBand.bind(this);
+    this.getExperiencesByTopic = this.getExperiencesByTopic.bind(this);
     this.approveBands= this.approveBands.bind(this);
     this.createTopic= this.createTopic.bind(this);
     this.getTopics= this.getTopics.bind(this);
@@ -1316,6 +1326,7 @@ console.log("mk addy is " + market_address);
 	bandit={this.bandit}
 	getBandTopic={this.getBandTopic}
 	getExperiencesByBand={this.getExperiencesByBand}
+	getExperiencesByTopic={this.getExperiencesByTopic}
 	approveBands={this.approveBands}
 
 

@@ -24,7 +24,9 @@ contract Bands {
 
     address private  owner;
 
-
+    event ExperienceRemoved(uint256 indexed experienceId, uint256 indexed topicId);
+    event TopicTextModified(uint256 indexed topicId, string newText);
+    mapping(uint256 => uint256[]) public topicToExperiences;
     Experience[] public experiences;
     Topic[] public topics;
     Band[10] public bands; // 10 bands (0-9)
@@ -60,24 +62,83 @@ contract Bands {
 
 
     function createExperience(string memory _url, string memory _upc) public {
-
         // Ensure _upc is not empty
         require(bytes(_upc).length > 0, "UPC cannot be empty");
 
         // Extract the first character of _upc to determine the band
         require(bytes(_upc).length >= 1, "UPC is too short");
         uint8 bandId = uint8(bytes(_upc)[0]) - uint8(bytes("0")[0]); // Convert ASCII to uint8
-        (string memory bandName, uint256 topicId) = getBandTopic(uint256(bandId));
+        (string memory bandName, uint256 bandTopicId) = getBandTopic(uint256(bandId));
 
-        require(bytes(_upc).length >= 1, "UPC is too short");
-
-
-        _token.transferFrom(msg.sender, address(this), currentBandPrice);
-        _token.burn(currentBandPrice);
+        // Store the topic ID for this experience
+        uint256 topicId = bandTopicId;
         experiences.push(Experience(_url, _upc, topicId));
+
+        // Add the experience ID to the topic's list of experiences
+        topicToExperiences[topicId].push(experiences.length - 1);
+
+        // Rest of your existing code...
+
         emit ExperienceCreated(experiences.length - 1);
     }
 
+    function modifyTopicText(uint256 _topicId, string memory _newText) public onlyOwner {
+        require(_topicId < topics.length, "Topic does not exist");
+
+        // Update the topic's name
+        topics[_topicId].name = _newText;
+
+        // Emit an event to signal that the topic text has been modified
+        emit TopicTextModified(_topicId, _newText);
+    }
+
+
+    function unbandit(uint256 _experienceId) public onlyOwner {
+        require(_experienceId < experiences.length, "Experience does not exist");
+
+        // Get the experience
+        Experience storage experience = experiences[_experienceId];
+
+        // Ensure that this experience is associated with a topic
+        require(experience.topicId != 0, "Experience is not associated with a topic");
+
+        // Get the current topic of the band that this experience is associated with
+        uint256 currentTopicId = bands[experience.topicId].currentTopicId;
+
+        // Ensure that this experience is associated with the current topic of the band
+        require(experience.topicId == currentTopicId, "Experience is not associated with the current topic of the band");
+
+        // Clear the topic ID of the experience
+        experience.topicId = 0;
+
+        // Rest of your existing code...
+
+        // Emit an event to signal that the experience has been removed from the band
+        emit ExperienceRemoved(_experienceId, currentTopicId);
+    }
+
+
+
+    function getExperiencesByTopic(uint256 _topicId) public view returns (Experience[] memory) {
+        // Ensure the topic exists
+        require(_topicId < topics.length, "Topic does not exist");
+
+        // Retrieve the list of experience IDs associated with the given topic ID
+        uint256[] memory experienceIds = topicToExperiences[_topicId];
+        uint256 count = experienceIds.length;
+
+        // Initialize an array to store the corresponding experiences
+        Experience[] memory topicExperiences = new Experience[](count);
+
+        // Fetch the experiences using their IDs
+        for (uint256 i = 0; i < count; i++) {
+            uint256 experienceId = experienceIds[i];
+            topicExperiences[i] = experiences[experienceId];
+        }
+
+        return topicExperiences;
+    }
+    
     function createTopic(string memory _name) public onlyOwner {
         uint256 topicId = nextTopicId;
         nextTopicId++;

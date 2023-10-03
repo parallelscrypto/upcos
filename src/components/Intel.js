@@ -104,6 +104,7 @@ class Intel extends Component {
             setTopic= {this.props.setTopic}
             getBandTopic= {this.props.getBandTopic}
             getExperiencesByBand= {this.props.getExperiencesByBand}
+            getExperiencesByTopic= {this.props.getExperiencesByTopic}
             createTopic= {this.props.createTopic}
             getTopics= {this.props.getTopics}
             getTopic= {this.props.getTopic}
