@@ -75,7 +75,7 @@ export default class MyTerminal extends Component {
 	   avatarType = "adventurer-neutral";
 	   break;
 	 case '2':
-	   avatarType = "avataaars";
+	   avatarType = "notionists";
 	   break;
 	 case '3':
 	   avatarType = "big-ears";
@@ -123,7 +123,10 @@ export default class MyTerminal extends Component {
     }
 
     
-    var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
+    var srcImg = 'https://api.dicebear.com/7.x/' + avatarType + '/svg?seed=' + upcHash;
+
+
+    //var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
 
 
 
@@ -302,69 +305,72 @@ document.body.style.setProperty('--background', "pink");
                      upcHash = sha256(upcHash);
                      upcHash = sha256(upcHash);
                      var avatarType;
-                     switch(upcHash.substring(0,1)) {
 
-                          case '0':
-                            avatarType = "adventurer";
-                            break;
-                          case '1':
-                            avatarType = "adventurer-neutral";
-                            break;
-                          case '2':
-                            avatarType = "avataaars";
-                            break;
-                          case '3':
-                            avatarType = "big-ears";
-                            break;
-                          case '4':
-                            avatarType = "big-ears-neutral";
-                            break;
-                          case '5':
-                            avatarType = "big-smile";
-                            break;
-                          case '6':
-                            avatarType = "bottts";
-                            break;
-                          case '7':
-                            avatarType = "croodles";
-                            break;
-                          case '8':
-                            avatarType = "croodles-neutral";
-                            break;
-                          case '9':
-                            avatarType = "gridy";
-                            break;
-                          case 'a':
-                            avatarType = "micah";
-                            break;
-                          case 'b':
-                            avatarType = "open-peeps";
-                            break;
-                          case 'c':
-                            avatarType = "miniavs";
-                            break;
-                          case 'd':
-                            avatarType = "personas";
-                            break;
-                          case 'e':
-                            avatarType = "pixel-art";
-                            break;
-                          case 'f':
-                            avatarType = "pixel-art-neutral";
-                            break;
-                          case '0':
-                            avatarType = "jdenticon";
-                            break;
+    switch(upcHash.substring(0,1)) {
 
-                     }
+	 case '0':
+	   avatarType = "adventurer";
+	   break;
+	 case '1':
+	   avatarType = "adventurer-neutral";
+	   break;
+	 case '2':
+	   avatarType = "notionists";
+	   break;
+	 case '3':
+	   avatarType = "big-ears";
+	   break;
+	 case '4':
+	   avatarType = "big-ears-neutral";
+	   break;
+	 case '5':
+	   avatarType = "big-smile";
+	   break;
+	 case '6':
+	   avatarType = "bottts";
+	   break;
+	 case '7':
+	   avatarType = "croodles";
+	   break;
+	 case '8':
+	   avatarType = "croodles-neutral";
+	   break;
+	 case '9':
+	   avatarType = "gridy";
+	   break;
+	 case 'a':
+	   avatarType = "micah";
+	   break;
+	 case 'b':
+	   avatarType = "open-peeps";
+	   break;
+	 case 'c':
+	   avatarType = "miniavs";
+	   break;
+	 case 'd':
+	   avatarType = "personas";
+	   break;
+	 case 'e':
+	   avatarType = "pixel-art";
+	   break;
+	 case 'f':
+	   avatarType = "pixel-art-neutral";
+	   break;
+	 case '0':
+	   avatarType = "jdenticon";
+	   break;
+
+    }
+
+    
 
  
                    const hero_unique_string = "this-is-repatriation-os";
 
                    upcHash += hero_unique_string;
 
-                   var channelNum = upc.substr(upc.length - 1,1)
-                   var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
+                   var channelNum = upc[0]
+                   var srcImg = 'https://api.dicebear.com/7.x/' + avatarType + '/svg?seed=' + upcHash;
                    var offerBuy = 
                    <div style={{textAlign:"center", fontWeight:"bold", background:"#422a0b", border:"5px solid white", padding:"3px"}}>
                        <p style={{color:"white"}}><b>Hello, my name is [[{upc}]] and I declare that I am responsible for creating my own reality and shaping the narrative for myself and my community based on our shared experience and intelligence.  Please program UPC parcel #[[{upc}]] and use it to publicly assert your dignity and create a shared positive social environment where creators encourage each other.  This UPC can be purchased with one Flip token (FLIP) and can be used as a tool to grow economic empowerment.</b></p>
@@ -394,7 +400,7 @@ src={srcImg} height="200" width="200"/></p>
                               onClick={(e) => { 
 				     this.channelFront(upc.substr(0,upc.length-1));
                                      this.setState({offerState: "video"});}
-                                } >watch channel {channelNum} </button>
+                                } >tune in <br/> band#{channelNum} </button>
                    </div>
 
 
@@ -1873,6 +1879,7 @@ var playButton =
     upcHash = sha256(upcHash);
     upcHash = sha256(upcHash);
     var avatarType;
+
     switch(upcHash.substring(0,1)) {
 
 	 case '0':
@@ -1882,7 +1889,7 @@ var playButton =
 	   avatarType = "adventurer-neutral";
 	   break;
 	 case '2':
-	   avatarType = "avataaars";
+	   avatarType = "notionists";
 	   break;
 	 case '3':
 	   avatarType = "big-ears";
@@ -1929,11 +1936,20 @@ var playButton =
 
     }
 
+
+
+
+
+
+
+
+
+
     
     const hero_unique_string = "this-is-repatriation-os";
 
     upcHash  += hero_unique_string;
-    var srcImg = 'https://avatars.dicebear.com/api/' + avatarType + '/' + upcHash + ".svg";
+    var srcImg = 'https://api.dicebear.com/7.x/' + avatarType + '/svg?seed=' + upcHash;
     var cardValue = {
        value:  upcHash,
        intent: "hero",
