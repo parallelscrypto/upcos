@@ -1244,7 +1244,7 @@ src={srcImg} height="200" width="200"/></p>
 
                   const terminal = this.progressTerminal.current
                   var buyForm =  <div>
-		  <Barcode value={this.state.account} format="EAN13" />
+		  <Barcode value={this.state.account} format="UPC" />
                   <form className="mb-3" onSubmit={(event) => {
                       event.preventDefault()
                       let upcId = this.state.account
@@ -1588,21 +1588,51 @@ band = async (bandOrTopic, band ) => {
     var self = this;
     const terminal = this.progressTerminal.current;
     var mplayer;
-
+    var allBands = [];
     let bandData;
     let bandTopic; 
+    let topicId;
+    let name;
 
     if(bandOrTopic == "band") {
        bandData  = await this.props.getExperiencesByBand(band);
        bandTopic = await this.props.getBandTopic(band);
     }
+    else if(bandOrTopic == "bandall") {
+       for(var i=0;i<10;i++) {
+          //bandTopic = await this.props.getBandTopic(i);
+          allBands.push(await this.props.getBandTopic(i));
+       }
+       bandData = allBands;
+       console.log("bandallllllll");
+       console.log(allBands);
+      
+    }
+
     else {
        bandData = await this.props.getExperiencesByTopic(band);
        bandTopic = await this.props.getTopic(band);
     }
 
-    let topicId = bandTopic.topicId;
-    let name    = bandTopic.name;
+
+    if (bandOrTopic == "bandall") {
+         
+       for (var index = 0; index < 10; index++) {
+          //console.log(bandTopic);
+          terminal.pushToStdout(`[[topic]]`);
+          terminal.pushToStdout(`<u style="color:orange;font-size:1em">band: </u> ${index}`);
+          terminal.pushToStdout(`<u style="color:orange;font-size:1em">topicId: </u> ${bandData[index]['topicId']}`);
+          terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${bandData[index]['name']}`);
+          terminal.pushToStdout(`[[/topic]]`);
+       }
+       return;
+    } else {
+       topicId = bandTopic.topicId;
+       name    = bandTopic.name;
+    }
+
+
+
     //let topic = await this.props.getTopic(bandTopic);
     console.log("topiccccccccccccc");
     console.log(bandTopic);
@@ -2329,6 +2359,28 @@ var playButton =
                     }
 
 		 },
+
+
+
+            bands: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** list topic for a band</p>',
+
+
+                    fn: async (band) => {
+
+                       var topic = await this.band("bandall",band)
+		       //terminal.pushToStdout(`[[band-topic]]`);
+		       //terminal.pushToStdout(`<u style="color:orange;font-size:1em">band: </u> ${band}`);
+		       //terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${topic['topicId']}`);
+		       //terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${topic['name']}`);
+		       //terminal.pushToStdout(`[[/band-topic]]`);
+
+                    }
+
+		 },
+
+
+
 
 
             topic: {
