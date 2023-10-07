@@ -20,6 +20,7 @@ contract Bands {
     struct Band {
         string name; 
         uint256 currentTopicId;
+        uint256  updatedTimestamp;
     }
 
     address private  owner;
@@ -37,7 +38,7 @@ contract Bands {
     Flip    private _token;
 
     uint256 private nextTopicId = 0;
-    uint256 currentBandPrice = 1 ether;
+    uint256 currentBandPrice = 5 ether;
 
 
     modifier onlyOwner {
@@ -62,13 +63,15 @@ contract Bands {
 
 
     function createExperience(string memory _url, string memory _upc) public {
+        _token.transferFrom(msg.sender, address(this), currentBandPrice);
+        _token.burn(currentBandPrice);
+
         // Ensure _upc is not empty
         require(bytes(_upc).length > 0, "UPC cannot be empty");
 
-        // Extract the first character of _upc to determine the band
-        require(bytes(_upc).length >= 1, "UPC is too short");
-        uint8 bandId = uint8(bytes(_upc)[0]) - uint8(bytes("0")[0]); // Convert ASCII to uint8
-        (string memory bandName, uint256 bandTopicId) = getBandTopic(uint256(bandId));
+        // Extract the last character of _upc to determine the band
+        uint8 bandId = uint8(bytes(_upc)[bytes(_upc).length - 1]) - uint8(bytes("0")[0]); // Convert ASCII to uint8
+        (string memory bandName, uint256 bandTopicId, uint256 updatedTimestamp) = getBandTopic(uint256(bandId));
 
         // Store the topic ID for this experience
         uint256 topicId = bandTopicId;
@@ -76,11 +79,13 @@ contract Bands {
 
         // Add the experience ID to the topic's list of experiences
         topicToExperiences[topicId].push(experiences.length - 1);
+        bands[bandId].updatedTimestamp = block.timestamp; // Set the band's name ;
 
         // Rest of your existing code...
 
         emit ExperienceCreated(experiences.length - 1);
     }
+
 
     function modifyTopicText(uint256 _topicId, string memory _newText) public onlyOwner {
         require(_topicId < topics.length, "Topic does not exist");
@@ -157,7 +162,7 @@ contract Bands {
         string memory topicName = topics[_topicId].name;
 
         bands[_bandId].currentTopicId = _topicId;
-        bands[_bandId].name = topicName; // Set the band's name
+        bands[_bandId].name = topicName; // Set the band's name 
 
         emit BandTopicUpdated(_bandId, _topicId);
 
@@ -183,10 +188,10 @@ contract Bands {
         return (topic.topicId, topic.name);
     }
 
-    function getBandTopic(uint256 _bandId) public view returns (string memory name, uint256 topicId) {
+    function getBandTopic(uint256 _bandId) public view returns (string memory name, uint256 topicId, uint256 updatedTimestamp) {
         require(_bandId >= 0 && _bandId <= 9, "Invalid band");
         Band memory band = bands[_bandId];
-        return (band.name, band.currentTopicId);
+        return (band.name, band.currentTopicId, band.updatedTimestamp);
     }
 
 

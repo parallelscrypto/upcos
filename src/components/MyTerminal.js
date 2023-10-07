@@ -1617,12 +1617,16 @@ band = async (bandOrTopic, band ) => {
 
     if (bandOrTopic == "bandall") {
          
+
        for (var index = 0; index < 10; index++) {
-          //console.log(bandTopic);
+          var tmpStamp = parseInt(bandData[index]['updatedTimestamp']);
+          var newDate = new Date(tmpStamp * 1000);
+          terminal.pushToStdout(`<br/>`);
           terminal.pushToStdout(`[[topic]]`);
-          terminal.pushToStdout(`<u style="color:orange;font-size:1em">band: </u> ${index}`);
-          terminal.pushToStdout(`<u style="color:orange;font-size:1em">topicId: </u> ${bandData[index]['topicId']}`);
-          terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${bandData[index]['name']}`);
+          terminal.pushToStdout(`<u style="color:orange;font-size:1em;padding-left:20px">band: </u> ${index}`);
+          terminal.pushToStdout(`<u style="color:orange;font-size:1em;padding-left:20px">topic_id: </u> ${bandData[index]['topicId']}`);
+          terminal.pushToStdout(`<u style="color:orange;font-size:1em;padding-left:20px">topic: </u> ${bandData[index]['name']}`);
+          terminal.pushToStdout(`<u style="color:orange;font-size:1em;padding-left:20px">latest_band_update: </u> ${newDate.toString()}`);
           terminal.pushToStdout(`[[/topic]]`);
        }
        return;
@@ -2408,10 +2412,10 @@ var playButton =
                     fn: async (band) => {
 
                        var topic = await this.props.getBandTopic(band)
+		       terminal.pushToStdout(`<br/>`);
 		       terminal.pushToStdout(`[[band-topic]]`);
-		       terminal.pushToStdout(`<u style="color:orange;font-size:1em">band: </u> ${band}`);
-		       terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${topic['topicId']}`);
-		       terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${topic['name']}`);
+		       terminal.pushToStdout(`<u style="color:orange;font-size:1em">   band: </u> ${band}`);
+		       terminal.pushToStdout(`<u style="color:orange;font-size:1em">   topic: </u> ${topic['topicId']}`);
 		       terminal.pushToStdout(`[[/band-topic]]`);
 
                     }
@@ -2429,6 +2433,7 @@ var playButton =
 
 		      .then(data => {
                               for(var i=0; i<data.length; i++) {
+				  terminal.pushToStdout(`<br/>`);
                                   terminal.pushToStdout(`[[topic]]`);
                                   terminal.pushToStdout(`<u style="color:orange;font-size:1em">topicId: </u> ${data[i]['topicId']}`);
                                   terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${data[i]['name']}`);

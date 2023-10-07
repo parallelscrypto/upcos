@@ -26,6 +26,37 @@
 		"type": "event"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_url",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_upc",
+				"type": "string"
+			}
+		],
+		"name": "createExperience",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_name",
+				"type": "string"
+			}
+		],
+		"name": "createTopic",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -56,6 +87,55 @@
 		],
 		"name": "ExperienceRemoved",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_topicId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_newText",
+				"type": "string"
+			}
+		],
+		"name": "modifyTopicText",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_bandId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_topicId",
+				"type": "uint256"
+			}
+		],
+		"name": "setBandTopic",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "addy",
+				"type": "address"
+			}
+		],
+		"name": "setPayToken",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -93,6 +173,19 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
+				"name": "_experienceId",
+				"type": "uint256"
+			}
+		],
+		"name": "unbandit",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
 			}
@@ -108,40 +201,14 @@
 				"internalType": "uint256",
 				"name": "currentTopicId",
 				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "updatedTimestamp",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_url",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_upc",
-				"type": "string"
-			}
-		],
-		"name": "createExperience",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_name",
-				"type": "string"
-			}
-		],
-		"name": "createTopic",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -191,6 +258,11 @@
 			{
 				"internalType": "uint256",
 				"name": "topicId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "updatedTimestamp",
 				"type": "uint256"
 			}
 		],
@@ -377,79 +449,6 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "_topicId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "_newText",
-				"type": "string"
-			}
-		],
-		"name": "modifyTopicText",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_bandId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_topicId",
-				"type": "uint256"
-			}
-		],
-		"name": "setBandTopic",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "addy",
-				"type": "address"
-			}
-		],
-		"name": "setPayToken",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "topicToExperiences",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
 			}
@@ -474,13 +473,24 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "_experienceId",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
 				"type": "uint256"
 			}
 		],
-		"name": "unbandit",
-		"outputs": [],
-		"stateMutability": "nonpayable",
+		"name": "topicToExperiences",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	}
 ],
@@ -3885,7 +3895,7 @@
     "137": {
       "events": {},
       "links": {},
-      "address": "0xC92E229A34F4582Dbc30B886Ba83A6A6DF1ef229",
+      "address": "0x2C6F3d803FA61C012A2763403772dcDD26753c30",
       "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
     },
     "250": {
