@@ -1081,22 +1081,21 @@ src={srcImg} height="200" width="200"/></p>
 
 
   prodLookup= async (upc) => {
-    var xhr = new XMLHttpRequest();
-    var self = this;
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-           var resp = xhr.responseXML.body.outerHTML;
 
-           var fullResp = '<html>' + resp + '</html>';
-           self.setState({showProductContent:fullResp});
-           self.setState({showProductModal:true});
-        }
-    }
+      var fullUrl = "https://go-upc.com/search?q=" + upc;
+      var winNum = "0";
+      var mplayer = this.getMplayer(fullUrl);
+      if(winNum == "0") {
+	 this.setState(prevState => ({ fullIpfs: mplayer }));
+	 this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+	 this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+      }
+      else if(winNum == "1") {
+	 this.setState(prevState => ({ fullIpfs2: mplayer }));
+	 this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+	 this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+      }
 
-
-    xhr.open('GET', 'https://cors-container.herokuapp.com/https://www.upcitemdb.com/upc/' + upc );
-    xhr.responseType = 'document';
-    xhr.send();
   }
 
   selectDomain(event) {
