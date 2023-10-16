@@ -101,6 +101,7 @@ class Intel extends Component {
 
 
             bandit= {this.props.bandit}
+            setBandFrequency= {this.props.setBandFrequency}
             setTopic= {this.props.setTopic}
             getBandTopic= {this.props.getBandTopic}
             getExperiencesByBand= {this.props.getExperiencesByBand}

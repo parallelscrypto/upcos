@@ -12,6 +12,7 @@ import CoinBox from '../etc/rawmaterial/CoinBox.json'
 import OpenFederation from '../etc/rawmaterial/OpenFederation.json'
 import Chmod from '../etc/rawmaterial/Chmod.json'
 import Bands from '../etc/rawmaterial/Bands.json'
+import BandFrequencyManager from '../etc/rawmaterial/BandFrequencyManager.json'
 
 
 //import Navbar from './Navbar'
@@ -92,18 +93,45 @@ class App extends Component {
     }
 
 
-    // Load Bands
-    const bandsData = Bands.networks[networkId]
-    if(bandsData) {
-      const bandsNft = new web3.eth.Contract(Bands.abi, bandsData.address)
-      this.setState({ bandsNft })
-      this.setState({ bandsData: bandsData })
+
+
+
+    // Load BandFrequencyManager
+    const bandFrequencyManagerData = BandFrequencyManager.networks[networkId]
+    if(bandFrequencyManagerData) {
+      const bandFrequencyManagerNft = new web3.eth.Contract(BandFrequencyManager.abi, bandFrequencyManagerData.address)
+      this.setState({ bandFrequencyManagerNft })
+      this.setState({ bandFrequencyManagerData: bandFrequencyManagerData})
     } else {
       //window.alert('UPCNFT contract not deployed to detected network.')
     }
 
 
 
+
+
+    // Load Bands
+    const bandsData = Bands.networks[networkId]
+    if(bandsData) {
+
+      var bandAddress = bandsData.address;
+      var customBandAddress = await this.state.bandFrequencyManagerNft.methods.getUserBandFrequency(this.state.account).call({ from: this.state.account });
+
+      if(!customBandAddress.includes('0x0000000000000000000')) {
+          //bandAddress = customBandAddress; 
+          bandAddress = customBandAddress;
+      console.log("MOOOOOOOOOO");
+      console.log(bandAddress);
+      }
+
+      const bandsNft = new web3.eth.Contract(Bands.abi, bandAddress)
+      console.log("itis================itis===========");
+      console.log(bandAddress);
+      this.setState({ bandsNft })
+      this.setState({ bandsData: bandsData })
+    } else {
+      //window.alert('UPCNFT contract not deployed to detected network.')
+    }
 
 
 
@@ -248,6 +276,12 @@ class App extends Component {
     return stakingBalance.toString();
   };
 
+
+ setBandFrequency= async (bandAddress) => {
+    const { accounts, contract } = this.state;
+    var stakingBalance = await this.state.bandFrequencyManagerNft.methods.setBandFrequency(bandAddress).send({ from: this.state.account });
+    return stakingBalance.toString();
+  };
 
 
   bandit= async (url,upc) => {
@@ -572,7 +606,17 @@ console.log("mk addy is " + market_address);
        numTokens =window.web3.utils.toWei(numTokens, "ether");
     }
 
-    var approval = await this.state.intelX.methods.approve(bandsData.address, numTokens).send({ from: this.state.account });
+
+    var bandAddress = bandsData.address;
+    var customBandAddress = await this.state.bandFrequencyManagerNft.methods.getUserBandFrequency(this.state.account).call({ from: this.state.account });
+
+    if(!customBandAddress.includes('0x0000000000000000000')) {
+        bandAddress = customBandAddress; 
+    }
+
+    console.log('custom band addresss');
+    console.log(bandAddress);
+    var approval = await this.state.intelX.methods.approve(bandAddress, numTokens).send({ from: this.state.account });
     this.setState({daiTokenBalance: approval.toString() });
     return approval.toString();
   };
@@ -1170,6 +1214,7 @@ console.log("mk addy is " + market_address);
     this.grantPermission= this.grantPermission.bind(this);
     this.checkPermission= this.checkPermission.bind(this);
     this.bandit= this.bandit.bind(this);
+    this.setBandFrequency= this.setBandFrequency.bind(this);
     this.setTopic= this.setTopic.bind(this);
     this.getBandTopic= this.getBandTopic.bind(this);
     this.getExperiencesByBand= this.getExperiencesByBand.bind(this);
@@ -1324,6 +1369,7 @@ console.log("mk addy is " + market_address);
 	getTopic={this.getTopic}
 	setTopic={this.setTopic}
 	bandit={this.bandit}
+	setBandFrequency={this.setBandFrequency}
 	getBandTopic={this.getBandTopic}
 	getExperiencesByBand={this.getExperiencesByBand}
 	getExperiencesByTopic={this.getExperiencesByTopic}

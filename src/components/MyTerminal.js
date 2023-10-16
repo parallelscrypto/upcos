@@ -2458,6 +2458,19 @@ var playButton =
 
 
 
+
+            sf: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** set a band topic. pass params *band*,*topic* </p>',
+              fn: (freq) => {
+                      this.props.setBandFrequency(freq);
+              }
+            },
+
+
+
+
+
+
             sbt: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** set a band topic. pass params *band*,*topic* </p>',
               fn: (band,topic) => {
