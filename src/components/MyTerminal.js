@@ -3665,9 +3665,10 @@ console.log(this.state.account);
                 var currentUrl = window.location.href;
 
                 let info = await this.props.upcInfo(this.state.account)
+                let infoSanit = btoa(info);
                 var showString = info['vr'];
-                console.log("skring iz " + showString);
-                var upcJson = '{"show":"' + showString + '","code":"'+ this.state.account+'"}';
+                var upcJson = '{"show":"' + showString + '","code":"' + this.state.account + '","manifest":"' + infoSanit + '"}';
+                console.log("info iz " + upcJson);
                 var upcEncoded = btoa(upcJson);
                 currentUrl = currentUrl.substring(0,currentUrl.lastIndexOf('/') + 1) + upcEncoded;
                 currentUrl = currentUrl.replace('intel', 'export');

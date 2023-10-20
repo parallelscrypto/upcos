@@ -59,8 +59,9 @@ class AppExp extends Component {
     const dataObject = JSON.parse(myShow);
     
     // Extract the value of the 'show' variable
-    const showValue = dataObject.show;
-    const codeValue = dataObject.code;
+    const showValue     = dataObject.show;
+    const codeValue     = dataObject.code;
+    const manifestValue = dataObject.manifest;
 
 console.log("the DATAOBJ ISZZZ " + codeValue );
 
@@ -68,7 +69,7 @@ console.log("the DATAOBJ ISZZZ " + codeValue );
     return (
       <div style={{background: "#7e7e5e", height: '100vh', width: '100vw', border:'none'}} >
          <div>
-            <StaticCarousel code={codeValue} show={showValue} />
+            <StaticCarousel manifest={manifestValue} code={codeValue} show={showValue} />
             <CommentSection upc={this.state.code} />
          </div>
       </div>

@@ -81,9 +81,11 @@ export default class StaticCarousel extends Component {
     super(props);
     var channel = props.upcId;
     var upc = props.code;
+    var manifest= props.manifest;
     this.state = {
        code: upc,
        channel: channel,
+       manifest: manifest,
        slides: []
     }
     this.loadOne= this.loadOne.bind(this);
@@ -144,8 +146,14 @@ export default class StaticCarousel extends Component {
 
 
   componentDidMount = async () => {
+
+    var scan;
+    scan = atob(this.state.manifest);
+
+    scan = scan.split(',');
     var res;
     var ipfs   = this.props.show;
+    console.log("manifest is " + scan );
     
     if (!ipfs.includes(">>>")) {
        ipfs = ">>>" + ipfs;
@@ -162,7 +170,6 @@ export default class StaticCarousel extends Component {
     else {
        nftIds = ipfs.split("#");
     }
-
     var splash = 
              <Modal style={{"background":'##86a865',"height":"50vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={'true'} closemodal={(e) => {this.setState({ showModalSplash: false }); }} type="lightSpeedIn" >
                 <div style={{background:"#451206", verticalAlign:"middle", textAlign:"center" }}> 
@@ -181,11 +188,50 @@ export default class StaticCarousel extends Component {
                 </div>
              </Modal>;
 
+   var owner = scan[1];
+   var word = scan[7];
+   var createdData = scan[11];
+   var modifiedData = scan[12];
+
+   var createdDate = parseInt(createdData);
+   var created = new Date(createdDate * 1000);
+
+   var modifiedDate = parseInt(modifiedData);
+   var modified = new Date(modifiedDate * 1000);
+
+   var currentUrl = window.location.href;
+   var currentUrl = currentUrl.replace('export','intel');
+   var currentUrlLink = <a href={currentUrl}>{currentUrl}</a>
+   var content = 
+                <div style={{height:"100vh",background:"#000000", verticalAlign:"middle", textAlign:"center" }}> 
+                  <div>
+                    <Zoom left> <b style={{color:"red"}}>web3-url:{currentUrlLink}</b></Zoom>
+                    <br/>
+                    <Zoom left> <b>----------</b></Zoom>
+                    <br/>
+                    <Zoom left> <b style={{color:"red"}}>owner:</b><i>{owner}</i></Zoom>
+                    <br/>
+                    <Zoom left> <b>----------</b></Zoom>
+                    <br/>
+                    <Zoom left> <b style={{color:"red"}}>title:</b><i>{word}</i></Zoom>
+                    <br/>
+                    <Zoom left> <b>----------</b></Zoom>
+                    <br/>
+                    <Zoom left> <b style={{color:"red"}}>modified:</b><i>{modified.toString()}</i></Zoom>
+                    <br/>
+                    <Zoom left> <b>----------</b></Zoom>
+                    <br/>
+                    <Zoom left> <b style={{color:"red"}}>created:</b><i>{created.toString()}</i></Zoom>
+                    <br/>
+                  </div>
+                </div>
+
 
     var res = this.state.slides;
     console.log("RES COUNT = " + res.length);
     if(res.length == 0 ) {
        res.push(splash);
+       res.push(content);
     }
 
 
