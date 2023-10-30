@@ -8,6 +8,7 @@ import IpfsUpload from './IpfsUpload'
 import TrebleCleff from './TrebleCleff'
 import StageCarousel from './StageCarousel'
 import BassCleff from './BassCleff'
+import UPCScriptGenerator from './UPCScriptGenerator'
 import PoemBot from './PoemBot'
 import CommentSection from './CommentSection'
 import go from './Mission'
@@ -2199,6 +2200,37 @@ var playButton =
  
               }
             },
+
+
+
+
+
+            batch: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** create a UPCScript for a batch of url/resources from a UI</p>',
+              fn: () => {
+
+
+                      var winNum = 0;
+                      var mplayer = <UPCScriptGenerator />
+
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
+
+
+
+
+
 
 
 

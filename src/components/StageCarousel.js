@@ -268,7 +268,6 @@ console.log(postObject.body);
                                        style={{minHeight:"100vh",width:"88vw"}}
                                        allow='camera;microphone'
                                        title='upcOS-init'
-                                       sandbox='allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                        src={vr}>
                                </iframe>
                             </div>

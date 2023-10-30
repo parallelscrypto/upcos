@@ -198,13 +198,16 @@ export default class StaticCarousel extends Component {
 
    var modifiedDate = parseInt(modifiedData);
    var modified = new Date(modifiedDate * 1000);
-
+   var upcscript = scan[6];
    var currentUrl = window.location.href;
    var currentUrl = currentUrl.replace('export','intel');
-   var currentUrlLink = <a href={currentUrl}>{currentUrl}</a>
+   var currentUrlLink = <a href={currentUrl}>link</a>
    var content = 
-                <div style={{height:"100vh",background:"#000000", verticalAlign:"middle", textAlign:"center" }}> 
+                <div style={{overflow:"scroll",wordWrap:"break-word",height:"100vh",background:"#000000", verticalAlign:"middle", textAlign:"center" }}> 
                   <div>
+                    <Zoom left> <b style={{color:"white"}}>[intel]</b></Zoom>
+                    <br/>
+                    <Zoom left> <b>----------</b></Zoom>
                     <Zoom left> <b style={{color:"red"}}>web3-url:{currentUrlLink}</b></Zoom>
                     <br/>
                     <Zoom left> <b>----------</b></Zoom>
@@ -223,6 +226,9 @@ export default class StaticCarousel extends Component {
                     <br/>
                     <Zoom left> <b style={{color:"red"}}>created:</b><i>{created.toString()}</i></Zoom>
                     <br/>
+                    <Zoom left> <b>----------</b></Zoom>
+                    <br/>
+                    <Zoom left> <b style={{color:"red"}}>UPCScript:</b><i>s {upcscript}</i></Zoom>
                   </div>
                 </div>
 
@@ -287,32 +293,69 @@ export default class StaticCarousel extends Component {
     const title = linkParts[0];
     const url = linkParts[1];
 
+
+    var postObject;
+    var postText = ""; 
+    var isPost = false;
+    if(title == "post") {
+       isPost = true;
+       postText = atob(url);
+       postObject = JSON.parse(postText);
+    }   
+
+
+
+
     var res = this.state.slides;
-    var toPush = (
+
+
+    var toPush = ( 
       <Zoom>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100vh',
-              backgroundColor: 'black',
-              color: 'white'
-            }}
-          >
-            <h3 style={{ color: 'green' }}>[user-provided-external-link]</h3>
-            <h2>[title: {title}]</h2>
-            <p>
-              [link:{' '}
-              <a href={url} target="_blank" rel="noopener noreferrer">
-                {url}
-              </a>
-              ]
-            </p>
-          </div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          backgroundColor: 'black',
+          color: 'white'
+        }}
+      >   
+        <h3 style={{ color: 'green' }}>[user-provided-external-link]</h3>
+        <h2>[key: {title}]</h2>
+        {isPost ? ( 
+
+            <div>
+               <p style={{background:"green"}}>
+               title: <br/>
+               {postObject.title}
+               </p>
+
+               <p style={{background:"green"}}>
+               body: <br/>
+               {postObject.body}
+               </p>
+            </div>
+
+        ) : (
+          <p>
+            [link:{' '}
+            <a href={url} target="_blank" rel="noopener noreferrer">
+              {url}
+            </a>
+            ]{' '}
+          </p>
+        )}
+      </div>
       </Zoom>
     );
+               
+
+
+
+
+
 
     res.push(toPush);
     this.setState({ slides: res });
