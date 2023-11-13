@@ -4,7 +4,7 @@ import Iframe from 'react-iframe'
 
 //import Navbar from './Navbar'
 import CommentSection from './CommentSection'
-import StaticCarousel from './StaticCarousel'
+import StaticCarouselExp from './StaticCarouselExp'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './App.css'
 import 'react-tabs/style/react-tabs.css';
@@ -69,7 +69,7 @@ console.log("the DATAOBJ ISZZZ " + codeValue );
     return (
       <div style={{background: "#7e7e5e", height: '100vh', width: '100vw', border:'none'}} >
          <div>
-            <StaticCarousel manifest={manifestValue} code={codeValue} show={showValue} />
+            <StaticCarouselExp manifest={manifestValue} code={codeValue} show={showValue} />
             <CommentSection upc={this.state.code} />
          </div>
       </div>

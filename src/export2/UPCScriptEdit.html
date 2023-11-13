@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPCScript Drag and Drop</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f5f5f5;
+            margin: 0;
+        }
+
+        #buttons {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 20vh;
+            background-color: black;
+            color: #28a745;
+        }
+
+        #buttons button {
+            width: 20vh;
+            height: 20vh;
+            background-color: black;
+            color: #28a745;
+            border: none;
+            border-radius: 0;
+            cursor: pointer;
+        }
+
+        #editor {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+        }
+
+        #position-box,
+        #piece-id-box {
+            display: none;
+            flex-direction: column;
+            width: 50vw;
+            margin-top: auto;
+            /* Align to the bottom of the buttons */
+        }
+
+        #position-box input,
+        #piece-id-box input {
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 1px solid orange;
+            /* Orange border around text boxes */
+        }
+
+        #stage {
+            flex: 1;
+            border: 2px dashed #007BFF;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .drag-item {
+            margin: 5px;
+            padding: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            border-radius: 4px;
+            cursor: grab;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .drag-item:active {
+            cursor: grabbing;
+        }
+
+        #input-box {
+            margin-top: 20px;
+            display: flex;
+            position: relative;
+        }
+
+        #input-box input {
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+
+        #move-button,
+        #output-button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            cursor: pointer;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+        }
+
+        #move-button:hover,
+        #output-button:hover {
+            background-color: #218838;
+        }
+
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        #modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        #error-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #dc3545;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="buttons">
+        <button onclick="openModal()">Load</button>
+        <button onclick="toggleEditing()">Edit</button>
+        <button id="move-button" onclick="moveSegment()">Move</button>
+        <button id="output-button" onclick="outputUPCScript()">Output UPCScript</button>
+    </div>
+
+    <div id="editor">
+        <div id="position-box">
+            <input type="number" id="position" placeholder="Enter position">
+        </div>
+
+        <div id="piece-id-box">
+            <input type="number" id="piece-id" placeholder="Enter piece ID">
+        </div>
+    </div>
+
+    <div id="stage" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <!-- Stage content will be dynamically added here -->
+    </div>
+
+    <div id="modal">
+        <div id="modal-content">
+            <label for="upc-input">Enter UPCScript:</label>
+            <input type="text" id="upc-input">
+            <button onclick="loadUPCScript()">Load</button>
+        </div>
+    </div>
+
+    <div id="error-toast">Invalid UPCScript. Please try again.</div>
+
+    <script>
+        let editingEnabled = false;
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function toggleEditing() {
+            editingEnabled = !editingEnabled;
+            updateEditingState();
+        }
+
+        function updateEditingState() {
+            const dragItems = document.querySelectorAll('.drag-item');
+            const positionBox = document.getElementById("position-box");
+            const pieceIdBox = document.getElementById("piece-id-box");
+
+            if (editingEnabled) {
+                dragItems.forEach(item => {
+                    item.draggable = true;
+                });
+                positionBox.style.display = "flex";
+                pieceIdBox.style.display = "flex";
+            } else {
+                dragItems.forEach(item => {
+                    item.draggable = false;
+                });
+                positionBox.style.display = "none";
+                pieceIdBox.style.display = "none";
+            }
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("text/plain", event.target.dataset.segment);
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            if (editingEnabled) {
+                const segmentNumber = event.dataTransfer.getData("text/plain");
+                const draggedElement = document.querySelector(`[data-segment="${segmentNumber}"]`);
+                const dropContainer = document.getElementById("stage");
+                dropContainer.appendChild(draggedElement);
+                updatePositions();
+                updateLocalStorage();
+            }
+        }
+
+        function moveSegment() {
+            if (editingEnabled) {
+                const newPosition = document.getElementById("position").value;
+                const segmentNumber = document.getElementById("piece-id").value;
+        
+                if (!segmentNumber || !newPosition) {
+                    alert("Please enter both segment number and new position.");
+                    return;
+                }
+        
+                const dragItem = document.querySelector(`[data-segment="${segmentNumber}"]`);
+                const dragContainer = document.getElementById("stage");
+        
+                if (newPosition <= dragContainer.children.length) {
+                    dragContainer.insertBefore(dragItem, dragContainer.children[newPosition - 1]);
+                } else {
+                    dragContainer.appendChild(dragItem);
+                }
+        
+                updatePositions();
+                updateLocalStorage();
+            }
+        }
+
+
+
+        function updatePositions() {
+            const dragItems = document.querySelectorAll('.drag-item');
+            dragItems.forEach((item, index) => {
+                const segmentNumber = item.dataset.segment;
+                const segmentLabel = item.querySelector('span:first-child');
+                const positionText = item.querySelector('span:last-child');
+        
+                segmentLabel.textContent = `Segment ${segmentNumber}: ${segmentLabel.innerHTML()}`;
+                positionText.textContent = `Position: ${index + 1}`;
+            });
+        }
+
+
+
+        function updateLocalStorage() {
+            const dragItems = document.querySelectorAll('.drag-item');
+            const order = Array.from(dragItems).map(item => item.dataset.segment);
+            localStorage.setItem('order', JSON.stringify(order));
+        }
+
+        function loadOrderFromStorage() {
+            const order = localStorage.getItem('order');
+            if (order) {
+                const dragContainer = document.getElementById("stage");
+
+                order.forEach(segment => {
+                    const dragItem = document.querySelector(`[data-segment="${segment}"]`);
+                    dragContainer.appendChild(dragItem);
+                });
+
+                updatePositions();
+            }
+        }
+
+        function outputUPCScript() {
+            const dragItems = document.querySelectorAll('.drag-item span:first-child');
+            const segments = Array.from(dragItems).map(item => item.textContent);
+            const outputText = segments.join('>');
+
+            // Clear the stage
+            const stage = document.getElementById("stage");
+            stage.innerHTML = "";
+
+            // Repopulate the stage with the resulting UPCScript
+            const dragItem = createDragItem(outputText, 1);
+            stage.appendChild(dragItem);
+
+            // Save the order to local storage
+            updateLocalStorage();
+        }
+
+        function openModal() {
+            document.getElementById("modal").style.display = "flex";
+        }
+
+        function loadUPCScript() {
+            const input = document.getElementById("upc-input").value;
+            if (validateUPCScript(input)) {
+                closeErrorToast();
+                document.getElementById("modal").style.display = "none";
+
+                // Ignore the first three characters and load the rest
+                populateStage(input.substring(3));
+            } else {
+                showErrorToast();
+            }
+        }
+
+        function validateUPCScript(upcScript) {
+            return upcScript.trim() !== "";
+        }
+
+        function showErrorToast() {
+            document.getElementById("error-toast").style.display = "block";
+            setTimeout(closeErrorToast, 3000);
+        }
+
+        function closeErrorToast() {
+            document.getElementById("error-toast").style.display = "none";
+        }
+
+        function disableEditing() {
+            editingEnabled = false;
+            updateEditingState();
+        }
+
+        function populateStage(upcScript) {
+            const stage = document.getElementById("stage");
+            stage.innerHTML = "";
+
+            const segments = upcScript.split('>');
+            segments.forEach((segment, index) => {
+                const dragItem = createDragItem(segment, index + 1);
+                stage.appendChild(dragItem);
+            });
+
+            updateLocalStorage();
+            disableEditing();
+        }
+
+        function createDragItem(segment, segmentNumber) {
+            const dragItem = document.createElement("div");
+            dragItem.classList.add("drag-item");
+            dragItem.draggable = false;
+            dragItem.dataset.segment = segmentNumber;
+
+            const segmentLabel = document.createElement("span");
+            segmentLabel.textContent = `Segment: ${segment}`;
+
+            const positionText = document.createElement("span");
+            positionText.textContent = `Position: ${segmentNumber}`;
+
+            dragItem.appendChild(segmentLabel);
+            dragItem.appendChild(positionText);
+
+            return dragItem;
+        }
+
+        loadOrderFromStorage();
+    </script>
+</body>
+
+</html>
