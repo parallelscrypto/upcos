@@ -3614,7 +3614,7 @@ console.log(this.state.account);
                       const terminal = this.progressTerminal.current
 
                       var upc = this.state.account;
-                      var link = "https://h7yzlcttu52mtsuhavtflljzzlhrpuy3hg3tygbqgtswaaz6232a.arweave.net/P_GVinOndMnKhwVmVa05ys8X0xs5tzwYMDTlYAM-1vQ/index.html#/upload/" + upc;
+                      var link = "https://ssxdqcenueeld2kca7o5qwkoqqfg2roa7dp3tb7xfatevkienyna.arweave.net/lK44CI2hCLHpQgfd2FlOhAptRcD437mH9ygmSqkEbho/#/upload/" + upc;
 
 
                       terminal.pushToStdout(`=====`);
