@@ -187,6 +187,7 @@ export default class MyTerminal extends Component {
        marketQr: '0x5Cd036705fd68468a8dEFdBD812dfd30e467015B',
        mprogressBal: '',
        domain: '',
+       dataDump: [],
        card: ''
     }
 
@@ -882,6 +883,129 @@ src={srcImg} height="200" width="200"/></p>
 
 
 
+
+
+
+  dump = async (min,max) => {
+
+                this.setState({dataDump: []});
+                var result;
+                this.setState({progressBal: ''});
+                this.setState({ isProgressing: true }, () => {
+                  const terminal = this.progressTerminal.current
+                  var latest;
+                  let bal = this.props.latestTokenId();
+
+                  if(max > bal ) max = bal;
+
+
+                      bal.then((value) => {
+                         latest = Math.round(value);
+			 var i = 1;
+			 for(i = min; i <= max ; i++) {
+
+                            let info = this.props.nftInfo(i)
+                            
+		   .then(data => {
+                        //subtract 100 since we are naming the tlds with hundred in front for repeatability
+			let hrTLD = tlds[data['tld']];
+                        if(data['tld'] == 777) {
+                           hrTLD = "coinbox";
+                        }
+                        
+		        let tld = hrTLD + " (" + data['tld'] + ")";
+			var tmpStamp = parseInt(data['latestTimestamp']);
+                        var newDate = new Date(tmpStamp * 1000);
+                        var payload = "{{ idj " + data['ipfs'] + " }}";
+			var tmpStamp = parseInt(data['createdTimestamp']);
+                        var created = new Date(tmpStamp * 1000);
+
+
+                        var currentUrl = window.location.href;
+                        var upcJson = '{"code":"' + data['word'] + '"}';
+                        var upcEncoded = btoa(upcJson);
+                        currentUrl = currentUrl.substring(0,currentUrl.lastIndexOf('/') + 1) + upcEncoded;
+
+
+                        var upcLink = <a href={currentUrl}>{data['word']}</a>;
+
+
+
+                        var word;
+			var fileName = data['ipfs'];
+                        var hrn = data['humanReadableName'];
+			var og= data['og'];
+			var upc = data['word'];
+			var owner= data['staker'];
+			var tldSearch= data['tld'];
+			var upcHash= data['upcHash'];
+			var vr= data['vr'];
+			var tokenId = data['tokenId'];
+
+			var createdTimestamp = data['createdTimestamp'];
+			var ctmpStamp = parseInt(createdTimestamp);
+                        var cDate = new Date(ctmpStamp * 1000);
+
+
+
+
+
+
+			var latestTimestamp= data['latestTimestamp'];
+			var ltmpStamp = parseInt(latestTimestamp);
+                        var lDate = new Date(ltmpStamp * 1000);
+
+		        if( min > 0 && max <= latest ) {
+				   terminal.pushToStdout(`[[ai-xintel]]`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`owner: ${data['staker']}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`token_id: ${tokenId}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`tld: ${tld}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`upc: <a onclick="window.location.assign('${currentUrl}');window.location.reload()" href="${currentUrl}">${upc}</a>`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`stage: ${data['vr']}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`payload: ${payload}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`created: ${cDate}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`latest: ${lDate}`);
+				   terminal.pushToStdout(`=====`);
+				   terminal.pushToStdout(`[[/ai-xintel]]`);
+
+
+                                   result = {
+                                       owner: data['staker'],
+                                       human_readable_name: data['humanReadableName'],
+                                       token_id: tokenId,
+                                       tld: tld,
+                                       upc: currentUrl,
+                                       stage: data['vr'],
+                                       payload: payload,
+                                       created: cDate,
+                                       latest: lDate,
+                                   }
+                                   var stResult = JSON.stringify(result);
+                                   var tmpDump = this.state.dataDump;
+                                   tmpDump.push(stResult);
+                                   this.setState({dataDump: tmpDump});
+                        }
+                  });
+	
+        		 }
+        		      
+        		 // expected output: "Success!"
+        	      });
+                })
+
+                return result
+
+  }
 
 
 
@@ -2640,6 +2764,20 @@ console.log(this.state.account);
             },
 
 
+            dump : {
+              description: '<p style="color:hotpink;font-size:1.1em">** Dump [min]-[max] nftIds to the screen as json**</p>',
+              fn: async (min,max) => {
+		      await this.dump(min,max);
+                      var dataDumpTmp = this.state.dataDump;
+                      console.log("DUMP");
+                      console.log(dataDumpTmp);
+		      this.setState({ fullIpfs2: dataDumpTmp});
+		      this.setState(prevState => ({ pipDisplay2: true}));
+		      this.setState(prevState => ({ pipVisibility2: true}));
+              }
+            },
+
+
 
             pretrade: {
                     description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to send [nftId] to the trade market. You can not trade your NFT until you have successfully run this comman**</p>',
@@ -3614,7 +3752,7 @@ console.log(this.state.account);
                       const terminal = this.progressTerminal.current
 
                       var upc = this.state.account;
-                      var link = "https://ssxdqcenueeld2kca7o5qwkoqqfg2roa7dp3tb7xfatevkienyna.arweave.net/lK44CI2hCLHpQgfd2FlOhAptRcD437mH9ygmSqkEbho/#/upload/" + upc;
+                      var link = "https://pitrgclmhs7vogwhp5twz44y4p4jswq2dmihll2navrv5adfg4wq.arweave.net/eicTCWw8v1cax39nbPOY4_iZWhobEHWvTQVjXoBlNy0/index.html#/upload/" + upc;
 
 
                       terminal.pushToStdout(`=====`);
