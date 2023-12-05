@@ -878,14 +878,6 @@ src={srcImg} height="200" width="200"/></p>
 
 
 
-
-
-
-
-
-
-
-
   dump = async (min,max) => {
 
                 this.setState({dataDump: []});
@@ -941,44 +933,14 @@ src={srcImg} height="200" width="200"/></p>
 			var upcHash= data['upcHash'];
 			var vr= data['vr'];
 			var tokenId = data['tokenId'];
-
 			var createdTimestamp = data['createdTimestamp'];
 			var ctmpStamp = parseInt(createdTimestamp);
                         var cDate = new Date(ctmpStamp * 1000);
-
-
-
-
-
-
 			var latestTimestamp= data['latestTimestamp'];
 			var ltmpStamp = parseInt(latestTimestamp);
                         var lDate = new Date(ltmpStamp * 1000);
 
 		        if( min > 0 && max <= latest ) {
-				   terminal.pushToStdout(`[[ai-xintel]]`);
-				   terminal.pushToStdout(`=====`);
-				   terminal.pushToStdout(`owner: ${data['staker']}`);
-				   terminal.pushToStdout(`=====`);
-				   terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
-				   terminal.pushToStdout(`=====`);
-				   terminal.pushToStdout(`token_id: ${tokenId}`);
-				   terminal.pushToStdout(`=====`);
-				   terminal.pushToStdout(`tld: ${tld}`);
-				   terminal.pushToStdout(`=====`);
-				   terminal.pushToStdout(`upc: <a onclick="window.location.assign('${currentUrl}');window.location.reload()" href="${currentUrl}">${upc}</a>`);
-				   terminal.pushToStdout(`=====`);
-				   terminal.pushToStdout(`stage: ${data['vr']}`);
-				   terminal.pushToStdout(`=====`);
-				   terminal.pushToStdout(`payload: ${payload}`);
-				   terminal.pushToStdout(`=====`);
-				   terminal.pushToStdout(`created: ${cDate}`);
-				   terminal.pushToStdout(`=====`);
-				   terminal.pushToStdout(`latest: ${lDate}`);
-				   terminal.pushToStdout(`=====`);
-				   terminal.pushToStdout(`[[/ai-xintel]]`);
-
-
                                    result = {
                                        owner: data['staker'],
                                        human_readable_name: data['humanReadableName'],
