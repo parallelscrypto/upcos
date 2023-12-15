@@ -113,6 +113,78 @@ export default class StaticCarouselExp extends Component {
                       } 
 
 
+		      var fullUrl = "https://ethercalc.net/" + upcHash;
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+
+            x: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** execute arbitrary upcscript starting with >>> characters delimited by > characters </p>',
+                    fn: async (upcscript) => {
+
+                      var mplayer = await this.executeUpcScript(upcscript);
+		       //terminal.pushToStdout(`[[band-topic]]`);
+		       //terminal.pushToStdout(`<u style="color:orange;font-size:1em">band: </u> ${band}`);
+		       //terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${topic['topicId']}`);
+		       //terminal.pushToStdout(`<u style="color:orange;font-size:1em">topic: </u> ${topic['name']}`);
+		       //terminal.pushToStdout(`[[/band-topic]]`);
+
+                    }
+            },
+
+
+
+
+
+            wurdup: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open codeverter.com window </p>',
+              fn: () => {
+
+
+
+		      var fullUrl = "https://codeverter.com/src/index";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+            sheeit: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open firepad.io collab suite in a window & sheeit </p>',
+              fn: (sheetNum) => {
+
+
+                      if (Number.isInteger(sheetNum) && sheetNum < 0) {
+                         sheetNum = 0;
+                      }
+
+                      var upcHash  = sha256(upc)
+                      for(var i=0; i<sheetNum; i++) {
+                          upcHash = sha256(upcHash);
+                      } 
+
+
 		      var fullUrl = "https://demo.firepad.io/#" + upcHash;
                       var winNum = "0";
 
@@ -127,6 +199,8 @@ export default class StaticCarouselExp extends Component {
                       }
               }
             },
+
+
 
 
             dj: {
@@ -295,6 +369,92 @@ export default class StaticCarouselExp extends Component {
 
 	        this.setState({slides: loader})
   }
+
+
+
+  executeUpcScript= async (upcScript) => {
+
+    var info = [];
+
+    this.setState({slides: []})
+    this.setState({fullIpfs: []})
+    this.setState({res: []})
+
+
+
+
+    var upcscript = upcScript.split('>');
+    for(var i = 0; i < upcscript.length; i++) {
+       if(!upcscript[i]) continue;
+       var vidSnippet;
+       var vid;
+
+       var tmpId = upcscript[i];
+       info[i] = { 
+          order: i,
+          data: upcscript[i]
+       }
+
+       console.log(info[i]);
+       //keep ss string clean.
+
+
+       var stagePiece = upcscript[i];
+       var containsLinkType = stagePiece.includes('[') && stagePiece.includes('|') && stagePiece.includes(']');
+       var loadYt = false;
+       var loadHtml = false;
+       if( stagePiece.includes('https:') ) {
+        console.log("LINKKKKKKK1");
+            loadHtml = true;
+       }
+
+       if( stagePiece.includes('yout') ) {
+        console.log("LINKKKKKKK2");
+            loadYt = true;
+       }
+
+       if (loadHtml && !containsLinkType && !loadYt) {
+          var entry = await this.getHTML(upcscript[i]); 
+       } else if (containsLinkType) {
+        console.log("LINKKKKKKK3");
+        var entry = this.getLink(upcscript[i]);
+       }
+       else if(tmpId.length == 11) {
+        console.log("LINKKKKKKK4");
+          var entry = await this.getYt(tmpId); 
+       }
+       else if(loadYt) {
+
+        console.log("LINKKKKKKK5");
+          var entry = await this.getYt(tmpId); 
+          //this class can not connect to web3, so it is up to the calling code to decode the nftId's content and pass that raw to this function
+          //var entry = await this.getNft(i,upcscript); 
+       }
+    }
+
+
+    var newshow = 
+    <Carousel maxTurns={'0'}>
+      {this.state.slides}
+    </Carousel>
+ 
+    this.setState({ fullIpfs: newshow});
+    this.setState(prevState => ({ pipDisplay: true}));
+    this.setState(prevState => ({ pipVisibility: true}));
+
+
+
+
+
+
+
+
+
+
+
+  }
+
+
 
 
 
