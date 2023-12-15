@@ -154,7 +154,7 @@ export default class StaticCarouselExp extends Component {
 
 
 
-		      var fullUrl = "https://codeverter.com/src/index";
+		      var fullUrl = "https://codverter.com/src/index";
                       var winNum = "0";
 
                       //this.cSearch.value = "";
@@ -185,7 +185,7 @@ export default class StaticCarouselExp extends Component {
                       } 
 
 
-		      var fullUrl = "https://demo.firepad.io/#" + upcHash;
+		      var fullUrl = "https://ethercalc.net/" + upcHash;
                       var winNum = "0";
 
                       //this.cSearch.value = "";
