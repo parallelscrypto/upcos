@@ -148,6 +148,8 @@ export default class MyTerminal extends Component {
        vrLink: '',
        mplayer: mplayer,
        showModal: false,
+       showModalExport: false,
+       exportModalContent:"",
        offerState: "offer",
        bassCleff: '',
        fullIpfs:'',
@@ -1325,7 +1327,6 @@ src={srcImg} height="200" width="200"/></p>
 
 
 
-
   ask = async (humanReadableName) => {
 
                   const terminal = this.progressTerminal.current
@@ -2136,6 +2137,7 @@ var playButton =
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModal} closemodal={() => this.setState({ showModal: false })} type="pulse" >{this.state.vrLink}</Modal>
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalBuy} closemodal={() => this.setState({ showModalBuy: false })} type="pulse" > {this.state.buyModalContent}</Modal>
+      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalExport} closemodal={() => this.setState({ showModalExport: false })} type="pulse" > {this.state.exportModalContent}</Modal>
 
 
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalBand} closemodal={() => this.setState({ showModalBand: false })} type="pulse" > {this.state.bandModalContent}</Modal>
@@ -3790,45 +3792,78 @@ console.log(this.state.account);
             export2: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display deep link for WEB2 current upc code.  This command is used to share your upc code with people who do not want to use the blockchain, but want to see your content.  this command will create a shortened url and you can specify the slug by passing as a param to this command.  the slug may only contain the characters a-z, 0-9 and underscore. if you get an undefined back instead of a url, you have tried an invalid or unavailable slug, try again or run command with no param to  get random  slug**</p>',
 
-              fn: async (slug) => {
+              fn: async () => {
+
+  const terminal = this.progressTerminal.current
+  var exportForm = <div>
+    <Barcode value={this.state.account} format="UPC" />
+    <form className="mb-3" onSubmit={async (event) => { // Make the onSubmit function async
+      event.preventDefault()
+      let upcId = this.state.account
+      let humanReadableName = this.humanReadableName.value.toString()
+
+      const terminal = this.progressTerminal.current
+      var currentUrl = window.location.href;
+
+      let info = await this.props.upcInfo(this.state.account)
+      let infoSanit = btoa(info);
+      var showString = info['vr'];
+      var upcJson = '{"show":"' + showString + '","code":"' + this.state.account + '","manifest":"' + infoSanit + '"}';
+      console.log("info iz " + upcJson);
+      var upcEncoded = btoa(upcJson);
+      currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
+      currentUrl = currentUrl.replace('intel', 'export');
+
+      currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
+      var encodedWeb2 = encodeURIComponent(currentUrl);
+      var toShorten = "https://is.gd/create.php?format=json&url=" + currentUrl;
+      if (!(humanReadableName === '' || humanReadableName === null)) {
+        toShorten += "&shorturl=" + humanReadableName;
+      }
+
+      const response = await axios.get(toShorten, {
+        params: {
+          format: 'json',
+          shorturl: humanReadableName,
+          url: currentUrl
+        }
+      })
+
+      console.log(response);
+
+      var shortUrl = response.data.shorturl;
+      terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser ` + shortUrl);
+
+      this.setState({ showModalExport: false });
+
+    }}>
+      <div className="input-group mb-4">
+        <input
+          type="text"
+          ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
+          className="form-control form-control-lg break"
+          placeholder=".upc Domain Name"
+          required />
+
+      </div>
+      <button
+        type="submit"
+        className="btn btn-primary btn-block btn-lg"
+      >
+        export2 web
+      </button>
+    </form>
 
 
-                const terminal = this.progressTerminal.current
-                var currentUrl = window.location.href;
+  </div>
 
-                let info = await this.props.upcInfo(this.state.account)
-                let infoSanit = btoa(info);
-                var showString = info['vr'];
-                var upcJson = '{"show":"' + showString + '","code":"' + this.state.account + '","manifest":"' + infoSanit + '"}';
-                console.log("info iz " + upcJson);
-                var upcEncoded = btoa(upcJson);
-                currentUrl = currentUrl.substring(0,currentUrl.lastIndexOf('/') + 1) + upcEncoded;
-                currentUrl = currentUrl.replace('intel', 'export');
-                var encodedWeb2 = encodeURIComponent(currentUrl);
-                var toShorten = "https://is.gd/create.php?format=json&url="+currentUrl;
-                //currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
-                if (! (slug === '' || slug === null) ) {
-                   toShorten += "&shorturl="+slug;
-                }
-
-                console.log("SHORTTTTTTTTTening");
-                console.log(currentUrl);
-
-                const response = await axios.get(toShorten, {
-                      params: {
-                        format: 'json',
-                        shorturl: slug,
-                        url: currentUrl
-                      }
-                    })
+   this.setState({ exportModalContent: exportForm });
 
 
-                console.log(response);
 
 
-                var shortUrl = response.data.shorturl;
-                terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser ` + shortUrl);
 
+		 this.setState({ showModalExport: true });
               }
             },
 
