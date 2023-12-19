@@ -3801,14 +3801,16 @@ console.log(this.state.account);
       event.preventDefault()
       let upcId = this.state.account
       let humanReadableName = this.humanReadableName.value.toString()
+      let exportMsg= this.exportMsg.value.toString()
 
       const terminal = this.progressTerminal.current
       var currentUrl = window.location.href;
 
       let info = await this.props.upcInfo(this.state.account)
       let infoSanit = btoa(info);
+      exportMsg = btoa(exportMsg);
       var showString = info['vr'];
-      var upcJson = '{"show":"' + showString + '","code":"' + this.state.account + '","manifest":"' + infoSanit + '"}';
+      var upcJson = '{"show":"' + showString + '","code":"' + this.state.account + '","manifest":"' + infoSanit + '","msg":"' + exportMsg + '"}';
       console.log("info iz " + upcJson);
       var upcEncoded = btoa(upcJson);
       currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
@@ -3840,9 +3842,18 @@ console.log(this.state.account);
       <div className="input-group mb-4">
         <input
           type="text"
+          style={{width:"100vw"}}
           ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
           className="form-control form-control-lg break"
-          placeholder=".upc Domain Name"
+          placeholder="shortened url (this is the format: https://is.gd/{shortenedURL})"
+          required />
+
+        <br/>
+        <textarea
+          style={{minHeight:"40vh",width:"100vw"}}
+          ref={(exportMsg) => { this.exportMsg = exportMsg}}
+          className="form-control form-control-lg break"
+          placeholder="this text will be displayed in the exported terminal welcome message"
           required />
 
       </div>

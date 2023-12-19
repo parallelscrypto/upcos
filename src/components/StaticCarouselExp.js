@@ -88,10 +88,16 @@ export default class StaticCarouselExp extends Component {
     var channel = props.upcId;
     var upc = props.code;
     var manifest= props.manifest;
+    var msg = atob(props.msg);
+
+
+    console.log("MMMMMMMMMSSSSSSSSSSSSSSSAGGGGGGGGGGGGG");
+    console.log(msg);
+    console.log(manifest);
 
     this.progressTerminal = React.createRef()
-    var promptlabel =  '[[ AWAITING COMMAND ]] => ';
-    var welcomeMsg ="_@[[" + upc + "]]";
+    var promptlabel =  '[[ AWAITING COMMAND@' + upc +' ]] => ';
+    var welcomeMsg ="[[" + msg + "]]";
     
     var myTerm = <Terminal
       style={{"minHeight":"75vh",backgroundColor: "#000",zIndex:"99"}}
@@ -747,7 +753,7 @@ mplayer = <ReactPlayer
                {postObject.title}
                </p>
 
-               <p style={{background:"green"}}>
+               <p style={{minHeight:"50vh",background:"green"}}>
                body: <br/>
                {postObject.body}
                </p>
