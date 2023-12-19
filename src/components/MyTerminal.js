@@ -3380,7 +3380,7 @@ console.log(this.state.account);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`<u style="color:orange;font-size:1em">owner:</u>  ${data['staker']}`);
                         terminal.pushToStdout(`=====`);
-                        terminal.pushToStdout(`<u style="color:orange;font-size:1em">human_readable_name:</u>   ${data['humanReadableName']}`);
+                        terminal.pushToStdout(`human_readable_name: ${data['humanReadableName']}`);
                         terminal.pushToStdout(`=====`);
                         terminal.pushToStdout(`<u style="color:orange;font-size:1em">tld:</u> ${tld}`);
                         terminal.pushToStdout(`=====`);
@@ -3794,6 +3794,21 @@ console.log(this.state.account);
 
               fn: async () => {
 
+    var addy = this.props.address;
+      let info = await this.props.upcInfo(this.state.account)
+
+      var showString = info['vr'];
+      var owner = info['staker'];
+      var allowedExport = false;
+      if( addy === owner ) {
+         allowedExport = true;
+      }
+
+      console.log("DUMPPPPING INFOOOOOOOOOOO");
+      console.log(addy);
+      console.log(owner);
+
+
   const terminal = this.progressTerminal.current
   var exportForm = <div>
     <Barcode value={this.state.account} format="UPC" />
@@ -3807,16 +3822,24 @@ console.log(this.state.account);
       var currentUrl = window.location.href;
 
       let info = await this.props.upcInfo(this.state.account)
+
       let infoSanit = btoa(info);
       exportMsg = btoa(exportMsg);
       var showString = info['vr'];
+      var owner = info['staker'];
+
+
+      console.log("DUMPPPPING INFOOOOOOOOOOO");
+      console.log(addy);
+      console.log(owner);
+
       var upcJson = '{"show":"' + showString + '","code":"' + this.state.account + '","manifest":"' + infoSanit + '","msg":"' + exportMsg + '"}';
       console.log("info iz " + upcJson);
       var upcEncoded = btoa(upcJson);
       currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
       currentUrl = currentUrl.replace('intel', 'export');
 
-      currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
+      //currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
       var encodedWeb2 = encodeURIComponent(currentUrl);
       var toShorten = "https://is.gd/create.php?format=json&url=" + currentUrl;
       if (!(humanReadableName === '' || humanReadableName === null)) {
@@ -3871,10 +3894,9 @@ console.log(this.state.account);
    this.setState({ exportModalContent: exportForm });
 
 
-
-
-
-		 this.setState({ showModalExport: true });
+		      if( allowedExport ) {
+				 this.setState({ showModalExport: true });
+		      }
               }
             },
 

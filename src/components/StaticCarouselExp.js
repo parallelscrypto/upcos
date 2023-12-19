@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
+import axios from "axios";
 import Modal from "react-animated-modal";
 import makeCarousel from 'react-reveal/makeCarousel';
 import TrebleCleffExp from './TrebleCleffExp'
 import BassCleff from './BassCleff'
 import ReactCardFlip from 'react-card-flip';
 import Terminal from 'react-console-emulator'
-
+import UPCScriptGenerator from './UPCScriptGenerator'
 // we'll need the Slide component for sliding animations
 // but you can use any other effect
 import Slide from 'react-reveal/Slide';
@@ -119,7 +120,7 @@ export default class StaticCarouselExp extends Component {
                       } 
 
 
-		      var fullUrl = "https://ethercalc.net/" + upcHash;
+		      var fullUrl = "https://demo.firepad.io/#" + upcHash;
                       var winNum = "0";
 
                       //this.cSearch.value = "";
@@ -133,6 +134,208 @@ export default class StaticCarouselExp extends Component {
                       }
               }
             },
+
+
+            batch: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** create a UPCScript for a batch of url/resources from a UI</p>',
+              fn: () => {
+
+
+                      var winNum = 0;
+                      var mplayer = <UPCScriptGenerator />
+
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
+
+
+            book: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open librivox in draggable interface</p>',
+              fn: (bookUrl) => {
+
+                          if(!bookUrl) {
+                             bookUrl = 'https://librivox.org';
+                          }
+                          var mplayer = <iframe className='video'
+                                  style={{height:"80vh",width:"96vw"}}
+		                  allow="camera; microphone"
+                                  title='6 upc dj player'
+                                  sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                                  src={bookUrl}>
+                          </iframe>
+
+	                  this.setState(prevState => ({ fullIpfs: mplayer }));
+		          this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		          this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                     }
+            },
+
+
+            k: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open kick window in draggable interface</p>',
+              fn: (user) => {
+
+		      var fullUrl = "https://kick.com/" + user;
+                      var winNum = "0";
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
+
+
+
+
+
+
+            com: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open chat client window in draggable interface</p>',
+              fn: (fullUrl,winNum) => {
+
+		      fullUrl = "https://chatcrypt.com";
+                      winNum = "0";
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
+
+
+            upcms: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Build a permanant website from client window in draggable interface</p>',
+              fn: (fullUrl,winNum) => {
+
+                      const terminal = this.progressTerminal.current
+
+                      var upc = this.state.account;
+                      var link = "https://pitrgclmhs7vogwhp5twz44y4p4jswq2dmihll2navrv5adfg4wq.arweave.net/eicTCWw8v1cax39nbPOY4_iZWhobEHWvTQVjXoBlNy0/index.html#/upload/" + upc;
+
+
+                      terminal.pushToStdout(`=====`);
+                      terminal.pushToStdout(`[now-loading-external-upc-dev-environ]`);
+                      terminal.pushToStdout(`=====`);
+                      terminal.pushToStdout(`link: ` + link);
+                      terminal.pushToStdout(`=====`);
+                      terminal.pushToStdout(`[/now-loading-external-upc-dev-environ]`);
+                      window.location.href = link;
+
+              }
+            },
+
+
+            url: {
+              description: '<p style="color:hotpink;font-size:1.1em">** create a shortened url from a given url.  takes in one param, and use as such: `url https://sample.website` , and this will return a shortened url**</p>',
+
+              fn: async (currentUrl, slug) => {
+
+
+                const terminal = this.progressTerminal.current
+
+                var toShorten = "https://is.gd/create.php?format=json&url="+currentUrl;
+                //currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
+
+                console.log("SHORTTTTTTTTTening");
+                console.log(currentUrl);
+
+                const response = await axios.get(toShorten, {
+                      params: {
+                        format: 'json',
+                        shorturl: slug,
+                        url: currentUrl
+                      }
+                    })
+
+
+                console.log(response);
+
+
+                var shortUrl = response.data.shorturl;
+                terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser ` + shortUrl);
+                var shortLink = <a href={shortUrl}>Go Now! </a>
+                terminal.pushToStdout(shortLink);
+
+              }
+            },
+
+
+
+
+
+
+            411: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC</p>',
+              fn: (upc) => {
+                      const terminal = this.progressTerminal.current
+                      terminal.pushToStdout(`Please wait... searching for data on upc # ${upc}`);
+                      this.prodLookup(upc);
+                      //this.setState({showProductModal:true});
+              }
+            },
+            x411: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display product information for X-Referenced UPC</p>',
+              fn: (upcId) => {
+                      const terminal = this.progressTerminal.current
+                      terminal.pushToStdout(`Please wait... searching for data on upc # ${upcId}`);
+                      this.prodLookup(upcId);
+                      //this.setState({showProductModal:true});
+              }
+            },
+
+
+
+
+
+
+            c: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open client window in draggable interface</p>',
+              fn: (fullUrl,winNum) => {
+
+
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
+
+
+
 
 
 
@@ -374,6 +577,25 @@ export default class StaticCarouselExp extends Component {
  
 
 	        this.setState({slides: loader})
+  }
+
+
+  prodLookup= async (upc) => {
+
+      var fullUrl = "https://go-upc.com/search?q=" + upc;
+      var winNum = "0";
+      var mplayer = this.getMplayer(fullUrl);
+      if(winNum == "0") {
+	 this.setState(prevState => ({ fullIpfs: mplayer }));
+	 this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+	 this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+      }
+      else if(winNum == "1") {
+	 this.setState(prevState => ({ fullIpfs2: mplayer }));
+	 this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+	 this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+      }
+
   }
 
 
