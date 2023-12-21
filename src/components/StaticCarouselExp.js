@@ -88,17 +88,25 @@ export default class StaticCarouselExp extends Component {
     super(props);
     var channel = props.upcId;
     var upc = props.code;
+    var missionUrl = atob(props.missionUrl);
     var manifest= props.manifest;
     var msg = atob(props.msg);
 
 
-    console.log("MMMMMMMMMSSSSSSSSSSSSSSSAGGGGGGGGGGGGG");
-    console.log(msg);
-    console.log(manifest);
 
+    var scan;
+    scan = atob(manifest);
+
+    console.log("MMMMMMMMMSSSSSSSSSSSSSSSAGGGGGGGGGGGGG");
+    scan = scan.split(',');
+    console.log(scan);
+
+    var owner = scan[1];
+    console.log(owner);
     this.progressTerminal = React.createRef()
-    var promptlabel =  '[[ AWAITING COMMAND@' + upc +' ]] => ';
-    var welcomeMsg ="[[" + msg + "]]";
+    var promptlabel =  '[[ AWAITING COMMAND@ ]] => ';
+    var welcomeMsg ="\n[[ \n you are now on upcOS privately owned property owned by \n " + owner + "\n on {polygon} \n";
+    welcomeMsg += "\n MSG from @_" + upc + " => \n " +  msg + "\n]]";
     
     var myTerm = <Terminal
       style={{"minHeight":"75vh",backgroundColor: "#000",zIndex:"99"}}
@@ -134,10 +142,64 @@ export default class StaticCarouselExp extends Component {
                       }
               }
             },
+            tio: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open tio.run collab suite in a window & sheeit </p>',
+              fn: (sheetNum) => {
+
+
+                      if (Number.isInteger(sheetNum) && sheetNum < 0) {
+                         sheetNum = 0;
+                      }
+
+                      var upcHash  = sha256(upc)
+                      for(var i=0; i<sheetNum; i++) {
+                          upcHash = sha256(upcHash);
+                      } 
+
+
+		      var fullUrl = "https://tio.run";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+
+
+
+            blank: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open blank html viewer in a window</p>',
+              fn: (sheetNum) => {
+
+
+		      var fullUrl = "https://goonlinetools.com/html-viewer/";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
 
 
             batch: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** create a UPCScript for a batch of url/resources from a UI</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** create a UPCScript for a batch of url/resources from a UI.  replace the ss with {dj} to use as a player, or {x} to create slideshow from the resulting string </p>',
               fn: () => {
 
 
@@ -181,32 +243,6 @@ export default class StaticCarouselExp extends Component {
             },
 
 
-            k: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open kick window in draggable interface</p>',
-              fn: (user) => {
-
-		      var fullUrl = "https://kick.com/" + user;
-                      var winNum = "0";
-                      var mplayer = this.getMplayer(fullUrl);
-                      if(winNum == "0") {
-		         this.setState(prevState => ({ fullIpfs: mplayer }));
-		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
-		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
-                      }
-                      else if(winNum == "1") {
-		         this.setState(prevState => ({ fullIpfs2: mplayer }));
-		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
-		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
-                      }
- 
-              }
-            },
-
-
-
-
-
-
             com: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open chat client window in draggable interface</p>',
               fn: (fullUrl,winNum) => {
@@ -230,7 +266,7 @@ export default class StaticCarouselExp extends Component {
 
 
             upcms: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Build a permanant website from client window in draggable interface</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Build a permanant website from client window in external builder interface</p>',
               fn: (fullUrl,winNum) => {
 
                       const terminal = this.progressTerminal.current
@@ -380,7 +416,7 @@ export default class StaticCarouselExp extends Component {
 
 
             sheeit: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open firepad.io collab suite in a window & sheeit </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open ethercalc collab suite in a window & sheeit </p>',
               fn: (sheetNum) => {
 
 
@@ -466,6 +502,7 @@ export default class StaticCarouselExp extends Component {
        code: upc,
        channel: channel,
        manifest: manifest,
+       missionUrl: missionUrl,
        slides: [],
        res: [],
        terminal: myTerm,
@@ -578,6 +615,48 @@ export default class StaticCarouselExp extends Component {
 
 	        this.setState({slides: loader})
   }
+
+
+  showSearch= async () => {
+
+  var vr = "https://muse.io/upcos";
+
+               var loader =
+                           <div>
+                               <iframe className='video'
+                                       style={{minHeight:"80vh",width:"90vw"}}
+                                       allow='camera;microphone'
+                                       title='upcOS-init'
+                                       sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                                       src={vr}>
+                               </iframe>
+                            </div>
+ 
+
+	        this.setState({slides: loader})
+  }
+
+
+  showMission= async () => {
+
+  var vr = this.state.missionUrl;
+
+               var loader =
+                           <div>
+                               <iframe className='video'
+                                       style={{minHeight:"80vh",width:"90vw"}}
+                                       allow='camera;microphone'
+                                       title='upcOS-init'
+                                       sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                                       src={vr}>
+                               </iframe>
+                            </div>
+ 
+
+	        this.setState({slides: loader})
+  }
+
+
 
 
   prodLookup= async (upc) => {
@@ -1075,13 +1154,13 @@ render () {
 var show =
 <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
   <div>
-    <TrebleCleffExp showHome={this.showHome} showLoad={this.showLoad} handleFlip={this.handleFlip}  showTerminal={this.handleFlip} terminal={"false"}/>
+    <TrebleCleffExp showHome={this.showHome} showSearch={this.showSearch} showLoad={this.showLoad} handleFlip={this.handleFlip} showMission={this.showMission} showTerminal={this.handleFlip} terminal={"false"}/>
     <Carousel maxTurns={'0'}>
       {this.state.slides}
     </Carousel>
   </div>
   <div>
-    <TrebleCleffExp handleFlip={this.handleFlip} showTerminal={this.showTerminal} terminal={"true"}/>
+    <TrebleCleffExp  showHome={this.handleFlip} handleFlip={this.handleFlip} showTerminal={this.showTerminal} showMission={this.showMission} terminal={"true"}/>
     {this.state.terminalSwitch}
                 <Draggable
 		  style={{zIndex:"0"}}

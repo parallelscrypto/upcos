@@ -3710,7 +3710,7 @@ console.log(this.state.account);
 
 
             upcms: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Build a permanant website from client window in draggable interface</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Build a permanant website from client window in external builder website interface</p>',
               fn: (fullUrl,winNum) => {
 
                       const terminal = this.progressTerminal.current
@@ -3789,7 +3789,7 @@ console.log(this.state.account);
             },
 
 
-            export2: {
+            drop: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display deep link for WEB2 current upc code.  This command is used to share your upc code with people who do not want to use the blockchain, but want to see your content.  this command will create a shortened url and you can specify the slug by passing as a param to this command.  the slug may only contain the characters a-z, 0-9 and underscore. if you get an undefined back instead of a url, you have tried an invalid or unavailable slug, try again or run command with no param to  get random  slug**</p>',
 
               fn: async () => {
@@ -3817,6 +3817,7 @@ console.log(this.state.account);
       let upcId = this.state.account
       let humanReadableName = this.humanReadableName.value.toString()
       let exportMsg= this.exportMsg.value.toString()
+      let missionUrl = this.missionUrl.value.toString()
 
       const terminal = this.progressTerminal.current
       var currentUrl = window.location.href;
@@ -3825,6 +3826,7 @@ console.log(this.state.account);
 
       let infoSanit = btoa(info);
       exportMsg = btoa(exportMsg);
+      missionUrl = btoa(missionUrl);
       var showString = info['vr'];
       var owner = info['staker'];
 
@@ -3833,13 +3835,13 @@ console.log(this.state.account);
       console.log(addy);
       console.log(owner);
 
-      var upcJson = '{"show":"' + showString + '","code":"' + this.state.account + '","manifest":"' + infoSanit + '","msg":"' + exportMsg + '"}';
+      var upcJson = '{"show":"' + showString + '","code":"' + this.state.account + '","manifest":"' + infoSanit + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
       console.log("info iz " + upcJson);
       var upcEncoded = btoa(upcJson);
       currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
       currentUrl = currentUrl.replace('intel', 'export');
 
-      //currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
+      currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
       var encodedWeb2 = encodeURIComponent(currentUrl);
       var toShorten = "https://is.gd/create.php?format=json&url=" + currentUrl;
       if (!(humanReadableName === '' || humanReadableName === null)) {
@@ -3871,20 +3873,29 @@ console.log(this.state.account);
           placeholder="shortened url (this is the format: https://is.gd/{shortenedURL})"
           required />
 
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(missionUrl) => { this.missionUrl= missionUrl}}
+          className="form-control form-control-lg break"
+          placeholder="mission url (this is link that will load when your user activates the mission button)"
+          required />
+
+
         <br/>
         <textarea
           style={{minHeight:"40vh",width:"100vw"}}
           ref={(exportMsg) => { this.exportMsg = exportMsg}}
           className="form-control form-control-lg break"
           placeholder="this text will be displayed in the exported terminal welcome message"
-          required />
+          />
 
       </div>
       <button
         type="submit"
         className="btn btn-primary btn-block btn-lg"
       >
-        export2 web
+        drop
       </button>
     </form>
 
@@ -3917,7 +3928,7 @@ console.log(this.state.account);
                 var upcEncoded = btoa(upcJson);
                 var encodedWeb2 = encodeURIComponent(currentUrl);
                 var toShorten = "https://is.gd/create.php?format=json&url="+currentUrl;
-                //currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
+                currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
 
                 console.log("SHORTTTTTTTTTening");
                 console.log(currentUrl);

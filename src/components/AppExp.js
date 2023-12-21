@@ -65,12 +65,13 @@ console.log(dataObject);
     const codeValue     = dataObject.code;
     const manifestValue = dataObject.manifest;
     const msg           = dataObject.msg;
+    const missionUrl    = dataObject.missionUrl;
 
 
     return (
       <div style={{background: "#7e7e5e", height: '100vh', width: '100vw', border:'none'}} >
          <div>
-            <StaticCarouselExp msg={msg} manifest={manifestValue} code={codeValue} show={showValue} />
+            <StaticCarouselExp missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} />
             <CommentSection upc={this.state.code} />
          </div>
       </div>

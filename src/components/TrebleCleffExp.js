@@ -112,14 +112,14 @@ class TrebleCleffExp extends Component {
 
                     <button
                         style={{background: "#000000", color:"green", width: "20vw", height: "20vw", fontSize: "15px"}}
-                        onClick={this.state.handleFlip}
+                        onClick={this.props.showSearch}
                   >search</button>
 
 
                     <button
-                        style={{background: "#FFFF00", fontSize:".9em", fontWeight:"bold", color:"red", width: "20vw", height: "20vw", fontSize: "15px"}}
-                        onClick={this.state.handleFlip}
-                  >mission</button>
+                        style={{background: "#FFFF00", fontSize:".9em", fontWeight:"bold", color:"red", width: "20vw", height: "20vw", fontSize: "15px", verticalAlign:"middle"}}
+                        onClick={this.props.showMission}
+                  >mission [FLIP]</button>
 
          </div>
     );
