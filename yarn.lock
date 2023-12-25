@@ -18098,7 +18098,7 @@ react-console-emulator@^5.0.1:
     react-inner-html "^1.0.1"
     react-innertext "^1.1.5"
 
-react-copy-to-clipboard@^5.0.4:
+react-copy-to-clipboard@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/react-copy-to-clipboard/-/react-copy-to-clipboard-5.1.0.tgz#09aae5ec4c62750ccb2e6421a58725eabc41255c"
   integrity sha512-k61RsNgAayIJNoy9yDsYzDe/yAZAzEbEgcz3DZMhF686LEyukcE1hzurxe85JandPUG+yTfGVFzuEw3xt8WP/A==

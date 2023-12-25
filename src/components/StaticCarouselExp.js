@@ -114,7 +114,7 @@ export default class StaticCarouselExp extends Component {
       commands={{
 
             fire: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open firepad.io collab suite in a window & sheeit </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open firepad.io collab suite in a window & sheeit  (no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -144,21 +144,53 @@ export default class StaticCarouselExp extends Component {
             },
 
 
+            ai: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** open a window powered by deepai.org (no affiliation) </p>',
+              fn: () => {
+
+		      var fullUrl = "https://deepai.org/chat";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+
+            unseal: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** unseal a sha256 sealed upcOS experience</p>',
+              fn: () => {
+
+		      var fullUrl = "https://yfp7xiovzzkpcy2rgizdrgs57wij4xq2xpt545ywbdjlgsjesdkq.arweave.net/wV_7odXOVPFjUTIyOJpd_ZCeXhq75953FgjSs0kkkNU";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+
+
 
             core: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** download core upcos zip file from 12-23-2023 </p>',
               fn: () => {
-
-
-                      if (Number.isInteger(sheetNum) && sheetNum < 0) {
-                         sheetNum = 0;
-                      }
-
-                      var upcHash  = sha256(upc)
-                      for(var i=0; i<sheetNum; i++) {
-                          upcHash = sha256(upcHash);
-                      } 
-
 
 		      var fullUrl = "https://gtixptuq3s5k35cek7h34monodq3bu2y4fbssb6mqqsmbzhsw7sq.arweave.net/NNF3zpDcuq30RFfPvjHNcOGw01jhQykHzIQkwOTyt-U/upc-os.zip";
                       var winNum = "0";
@@ -179,7 +211,7 @@ export default class StaticCarouselExp extends Component {
 
 
             tio: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open tio.run collab suite in a window & sheeit </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open tio.run collab suite in a window & sheeit  (no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -213,7 +245,7 @@ export default class StaticCarouselExp extends Component {
 
 
             blank: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open blank html viewer in a window</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open blank html viewer in a window< (no affiliation) /p>',
               fn: (sheetNum) => {
 
 
@@ -258,7 +290,7 @@ export default class StaticCarouselExp extends Component {
 
 
             book: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open librivox in draggable interface</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open librivox in draggable interface (no affiliation) </p>',
               fn: (bookUrl) => {
 
                           if(!bookUrl) {
@@ -280,7 +312,7 @@ export default class StaticCarouselExp extends Component {
 
 
             com: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open chat client window in draggable interface</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open chat client window in draggable interface (no affiliation) </p>',
               fn: (fullUrl,winNum) => {
 
 		      fullUrl = "https://chatcrypt.com";
@@ -301,24 +333,24 @@ export default class StaticCarouselExp extends Component {
             },
 
 
-            upcms: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Build a permanant website from client window in external builder interface</p>',
+            upcms : {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open chat client window in draggable interface  </p>',
               fn: (fullUrl,winNum) => {
 
-                      const terminal = this.progressTerminal.current
-
-                      var upc = this.state.account;
-                      var link = "https://pitrgclmhs7vogwhp5twz44y4p4jswq2dmihll2navrv5adfg4wq.arweave.net/eicTCWw8v1cax39nbPOY4_iZWhobEHWvTQVjXoBlNy0/index.html#/upload/" + upc;
-
-
-                      terminal.pushToStdout(`=====`);
-                      terminal.pushToStdout(`[now-loading-external-upc-dev-environ]`);
-                      terminal.pushToStdout(`=====`);
-                      terminal.pushToStdout(`link: ` + link);
-                      terminal.pushToStdout(`=====`);
-                      terminal.pushToStdout(`[/now-loading-external-upc-dev-environ]`);
-                      window.location.href = link;
-
+                      fullUrl = "https://pitrgclmhs7vogwhp5twz44y4p4jswq2dmihll2navrv5adfg4wq.arweave.net/eicTCWw8v1cax39nbPOY4_iZWhobEHWvTQVjXoBlNy0/index.html#/upload/" + upc;
+                      winNum = "0";
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
               }
             },
 
@@ -363,7 +395,7 @@ export default class StaticCarouselExp extends Component {
 
 
             411: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC from go upc  (no affiliation)  </p>',
               fn: (upc) => {
                       const terminal = this.progressTerminal.current
                       terminal.pushToStdout(`Please wait... searching for data on upc # ${upc}`);
@@ -414,6 +446,9 @@ export default class StaticCarouselExp extends Component {
             x: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** execute arbitrary upcscript starting with >>> characters delimited by > characters </p>',
                     fn: async (upcscript) => {
+                      if(!upcscript) {
+                         upcscript = this.state.upcscript;
+                      }
 
                       var mplayer = await this.executeUpcScript(upcscript);
 		       //terminal.pushToStdout(`[[band-topic]]`);
@@ -430,7 +465,7 @@ export default class StaticCarouselExp extends Component {
 
 
             wurdup: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open codeverter.com window </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open codeverter.com window  (no affiliation) </p>',
               fn: () => {
 
 
@@ -452,7 +487,7 @@ export default class StaticCarouselExp extends Component {
 
 
             sheeit: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open ethercalc collab suite in a window & sheeit </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open ethercalc collab suite in a window & sheeit  (no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -655,7 +690,7 @@ export default class StaticCarouselExp extends Component {
 
   showSearch= async () => {
 
-  var vr = "https://muse.io/upcos";
+  var vr = "https://kbin.social/m/upcscript";
 
                var loader =
                            <div>
@@ -747,7 +782,6 @@ export default class StaticCarouselExp extends Component {
        var loadYt = false;
        var loadHtml = false;
        if( stagePiece.includes('https:') ) {
-        console.log("LINKKKKKKK1");
             loadHtml = true;
        }
 
@@ -772,6 +806,10 @@ export default class StaticCarouselExp extends Component {
           var entry = await this.getYt(tmpId); 
           //this class can not connect to web3, so it is up to the calling code to decode the nftId's content and pass that raw to this function
           //var entry = await this.getNft(i,upcscript); 
+       }
+       else{
+        console.log("EEEEEEEELLLLLLLLSSSSSSSSSSEEEEEEEEE");
+          var entry = await this.getHTML(upcscript[i]); 
        }
     }
 
@@ -862,7 +900,10 @@ export default class StaticCarouselExp extends Component {
 
 
                 var toPush = <Zoom right> {mplayer} </Zoom>
-		res.push(toPush)
+		if(res) {
+
+                   res.push(toPush)
+                }
 		this.setState({slides: res})
 		this.setState({res: res})
    }
@@ -885,6 +926,10 @@ export default class StaticCarouselExp extends Component {
                               var fullUrl = "https://youtu.be/" + piece;
                               result.push(fullUrl);
                            }
+                           else {
+                              result.push(piece);
+                           }
+
                         }
                         terminal.pushToStdout(`will parse stage ${upcScript}`);
 mplayer = <ReactPlayer
@@ -953,6 +998,7 @@ mplayer = <ReactPlayer
    var modifiedDate = parseInt(modifiedData);
    var modified = new Date(modifiedDate * 1000);
    var upcscript = scan[6];
+   this.setState({ upcscript: upcscript });
    var currentUrl = window.location.href;
    var currentUrl = currentUrl.replace('export','intel');
    var currentUrlLink = <a href={currentUrl}>link</a>

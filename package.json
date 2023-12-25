@@ -50,7 +50,7 @@
     "react-card-flip": "^1.0.11",
     "react-charts": "^2.0.0-beta.7",
     "react-console-emulator": "^5.0.1",
-    "react-copy-to-clipboard": "^5.0.4",
+    "react-copy-to-clipboard": "^5.1.0",
     "react-crypto-chart": "^0.0.2",
     "react-dom": "16.8.4",
     "react-draggable": "^4.4.5",

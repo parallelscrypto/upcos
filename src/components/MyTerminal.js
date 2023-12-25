@@ -2255,7 +2255,7 @@ var playButton =
             },
 
             fire: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open firepad.io collab suite in a window & sheeit </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open firepad.io collab suite in a window & sheeit no affiliation </p>',
               fn: (sheetNum) => {
 
 
@@ -2269,7 +2269,7 @@ var playButton =
                       } 
 
 
-		      var fullUrl = "https://demo.firepad.io/#" + upcHash;
+		      var fullUrl = "https://demo.firepad.io/#" + upcHash
                       var winNum = "0";
 
                       this.cSearch2.value = "";
@@ -2288,6 +2288,44 @@ var playButton =
  
               }
             },
+
+
+            nostr: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open coracle collab suite in a window no affiliation </p>',
+              fn: (sheetNum) => {
+
+
+                      if (Number.isInteger(sheetNum) && sheetNum < 0) {
+                         sheetNum = 0;
+                      }
+
+                      var upcHash  = sha256(this.state.account)
+                      for(var i=0; i<sheetNum; i++) {
+                          upcHash = sha256(upcHash);
+                      } 
+
+
+		      var fullUrl = "https://coracle.social/";
+                      var winNum = "0";
+
+                      this.cSearch2.value = "";
+                      this.cSearch2.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
+
+
 
 
 
@@ -2323,7 +2361,7 @@ var playButton =
 
 
             sheeit: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open a spread sheet in a window & sheeit </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open a spread sheet in a window & sheeit no affiliation </p>',
               fn: (sheetNum) => {
 
 
@@ -2358,34 +2396,11 @@ var playButton =
             },
 
 
-            k: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open kick window in draggable interface</p>',
-              fn: (user) => {
-
-		      var fullUrl = "https://kick.com/" + user;
-                      var winNum = "0";
-                      var mplayer = this.getMplayer(fullUrl);
-                      if(winNum == "0") {
-		         this.setState(prevState => ({ fullIpfs: mplayer }));
-		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
-		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
-                      }
-                      else if(winNum == "1") {
-		         this.setState(prevState => ({ fullIpfs2: mplayer }));
-		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
-		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
-                      }
- 
-              }
-            },
-
-
-
 
 
 
             com: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open chat client window in draggable interface</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open chat client window in draggable interface no affiliation</p>',
               fn: (fullUrl,winNum) => {
 
 		      fullUrl = "https://chatcrypt.com";
@@ -3787,6 +3802,131 @@ console.log(this.state.account);
                       //this.setState({showProductModal:true});
               }
             },
+
+
+
+            seal: {
+              description: '<p style="color:hotpink;font-size:1.1em">** display and copy your sealed url for a particular experience.  this is how you can truly own the content of each experience due to the fact that the data is all hashed and checked client side.  nothing ever touches a server with seal/unseal.  this makes the contents of the seal yours to give to only those you want in a quantum proof way.**</p>',
+
+              fn: async () => {
+
+    var addy = this.props.address;
+      let info = await this.props.upcInfo(this.state.account)
+
+      var showString = info['vr'];
+      var owner = info['staker'];
+      var allowedExport = false;
+      if( addy === owner ) {
+         allowedExport = true;
+      }
+
+      console.log("DUMPPPPING INFOOOOOOOOOOO");
+      console.log(addy);
+      console.log(owner);
+
+
+  const terminal = this.progressTerminal.current
+  var exportForm = <div>
+    <Barcode value={this.state.account} format="UPC" />
+    <form className="mb-3" onSubmit={async (event) => { // Make the onSubmit function async
+      event.preventDefault()
+      let upcId = this.state.account
+      let exportMsg= this.exportMsg.value.toString()
+      let missionUrl = this.missionUrl.value.toString()
+
+      const terminal = this.progressTerminal.current
+      var currentUrl = window.location.href;
+
+      let info = await this.props.upcInfo(this.state.account)
+
+      let infoSanit = btoa(info);
+      exportMsg = btoa(exportMsg);
+      missionUrl = btoa(missionUrl);
+      var showString = info['vr'];
+      var owner = info['staker'];
+
+
+      console.log("DUMPPPPING INFOOOOOOOOOOO");
+      console.log(addy);
+      console.log(owner);
+
+      var upcJson = '{"show":"' + showString + '","code":"' + this.state.account + '","manifest":"' + infoSanit + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
+      console.log("info iz " + upcJson);
+      var upcEncoded = btoa(upcJson);
+      currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
+      currentUrl = currentUrl.replace('intel', 'export');
+
+      //currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
+
+      var truncated = currentUrl.substr(0,100);
+      var seal = <div style={{overflowWrap:"anywhere"}} className="input-group mb-4"> {truncated} </div>
+      var hashed = sha256(currentUrl)
+      var hashedHtml = <div style={{overflowWrap:"anywhere",color:"orange"}} className="input-group mb-4"> {hashed} </div>
+
+
+      var copyClip = 
+        <CopyToClipboard text={currentUrl}
+          onCopy={() => this.setState({copied: true})}>
+          <span>Copy bootstrap url to clipboard</span>
+        </CopyToClipboard>
+
+
+      var hashedClip = 
+        <CopyToClipboard text={hashed}
+          onCopy={() => this.setState({copied: true})}>
+          <span  style={{color:"orange"}} >Copy seal url to clipboard</span>
+        </CopyToClipboard>
+
+      var combined = <div>{copyClip}{seal}<hr/>{hashedClip}{hashedHtml}</div>
+
+      this.setState({ exportModalContent: combined });
+      console.log("seal iz " + JSON.stringify(seal));
+
+      //this.setState({ showModalExport: false });
+
+    }}>
+      <div className="input-group mb-4">
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(missionUrl) => { this.missionUrl= missionUrl}}
+          className="form-control form-control-lg break"
+          placeholder="mission url (this is link that will load when your user activates the mission button)"
+          required />
+
+
+        <br/>
+        <textarea
+          style={{minHeight:"40vh",width:"100vw"}}
+          ref={(exportMsg) => { this.exportMsg = exportMsg}}
+          className="form-control form-control-lg break"
+          placeholder="this text will be displayed in the exported terminal welcome message"
+          />
+
+      </div>
+      <button
+        type="submit"
+        className="btn btn-primary btn-block btn-lg"
+      >
+        drop
+      </button>
+    </form>
+
+
+  </div>
+
+   this.setState({ exportModalContent: exportForm });
+
+
+		      if( allowedExport ) {
+				 this.setState({ showModalExport: true });
+		      }
+              }
+            },
+
+
+
+
 
 
             drop: {
