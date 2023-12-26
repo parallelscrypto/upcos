@@ -143,6 +143,71 @@ export default class StaticCarouselExp extends Component {
               }
             },
 
+            draw: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open sketchpad in a window  (no affiliation) </p>',
+              fn: (sheetNum) => {
+
+
+		      var fullUrl = "https://sketch.io/sketchpad";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+
+            gif: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open wick suite in a window  (no affiliation) </p>',
+              fn: (sheetNum) => {
+
+
+		      var fullUrl = "https://wickeditor.com/editor";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+
+            nostr : {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open firepad.io collab suite in a window & sheeit  (no affiliation) </p>',
+              fn: (sheetNum) => {
+
+
+		      var fullUrl = "https://coracle.social";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
 
             ai: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** open a window powered by deepai.org (no affiliation) </p>',
@@ -192,7 +257,7 @@ export default class StaticCarouselExp extends Component {
 		    description: '<p style="color:hotpink;font-size:1.1em">** download core upcos zip file from 12-23-2023 </p>',
               fn: () => {
 
-		      var fullUrl = "https://gtixptuq3s5k35cek7h34monodq3bu2y4fbssb6mqqsmbzhsw7sq.arweave.net/NNF3zpDcuq30RFfPvjHNcOGw01jhQykHzIQkwOTyt-U/upc-os.zip";
+		      var fullUrl = "https://gtixptuq3s5k35cek7h34monodq3bu2y4fbssb6mqqsmbzhsw7sq.arweave.net/NNF3zpDcuq30RFfPvjHNcOGw01jhQykHzIQkwOTyt-U/upcos-flipitup.zip";
                       var winNum = "0";
 
                       //this.cSearch.value = "";

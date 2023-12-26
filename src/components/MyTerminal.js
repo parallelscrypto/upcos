@@ -3877,7 +3877,7 @@ console.log(this.state.account);
           <span  style={{color:"orange"}} >Copy seal url to clipboard</span>
         </CopyToClipboard>
 
-      var combined = <div>{copyClip}{seal}<hr/>{hashedClip}{hashedHtml}</div>
+      var combined = <div style={{background:"black"}}>{copyClip}{seal}<hr/>{hashedClip}{hashedHtml}</div>
 
       this.setState({ exportModalContent: combined });
       console.log("seal iz " + JSON.stringify(seal));
