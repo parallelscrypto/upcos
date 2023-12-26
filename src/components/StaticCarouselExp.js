@@ -144,7 +144,7 @@ export default class StaticCarouselExp extends Component {
             },
 
             draw: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open sketchpad in a window  (no affiliation) </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open sketchpad in a window  (no affiliation to any unless explicitly stated) </p>',
               fn: (sheetNum) => {
 
 
@@ -162,6 +162,73 @@ export default class StaticCarouselExp extends Component {
                       }
               }
             },
+
+
+            beats: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** get free beats for your rhymes (no affiliation) </p>',
+              fn: (sheetNum) => {
+
+
+		      var fullUrl = "https://freebeats.io";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+            vc: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open voicechanger in a window  (no affiliation) </p>',
+              fn: (sheetNum) => {
+
+
+		      var fullUrl = "https://voicechanger.io";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+            speak: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** use this command for text to speech tts tool (no affiliation)  </p>',
+              fn: (sheetNum) => {
+
+
+		      var fullUrl = "https://ttstool.com";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+
+
 
 
 
