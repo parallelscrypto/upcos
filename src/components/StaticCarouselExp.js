@@ -114,7 +114,7 @@ export default class StaticCarouselExp extends Component {
       commands={{
 
             fire: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open firepad.io collab suite in a window & sheeit  (no affiliation) </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open firepad.io collab suite in a window & sheeit  (thank you and no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -144,7 +144,7 @@ export default class StaticCarouselExp extends Component {
             },
 
             draw: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open sketchpad in a window  (no affiliation to any unless explicitly stated) </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open sketchpad in a window  (thank you and no affiliation to any unless explicitly stated) </p>',
               fn: (sheetNum) => {
 
 
@@ -165,7 +165,7 @@ export default class StaticCarouselExp extends Component {
 
 
             beats: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** get free beats for your rhymes (no affiliation) </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** get free beats for your rhymes (thank you and no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -185,8 +185,101 @@ export default class StaticCarouselExp extends Component {
             },
 
 
+
+            calc: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open graphing calculator in a window  (thank you and no affiliation) </p>',
+              fn: (sheetNum) => {
+
+
+		      var fullUrl = "https://desmos.com/calculator";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+
+
+            irc: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open web irc client in a window  (thank you and no affiliation) </p>',
+              fn: (sheetNum) => {
+
+
+		      var fullUrl = "https://thelounge.hybridirc.com";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+            ad: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** programatically create seal advertisements </p>',
+              fn: (sheetNum) => {
+
+
+		      var fullUrl = "https://tio.run/##nVhrc5vIEv3uX0G8@bBbFdsMEnLk2L4Vy4BEDLJ4DIIvWwMzNo/hEUAWaCu/PdvYcW78yObuRa6SZnqm6XO6T8@Uq7j6@vX0P1Vc7e3dbIqoTcpCiGpGWjZvc35NbtnvbxtG@CfWvxPeVqTnJaHv3t7WjLVJcfuH8NeeIAhvY1gsnAmnp6dzx7gapk7fXC5njn@tCIPt/H7qfhUnxe3ZPiv27@fupxmhj4NhnLOWCFFM6oa1Z/uuox68339hL0jOzvbvEratyrrdF6KyaFkB67cJbeMzyu6SiB3cD94JSZG0CeEHTUQ4O0OH4hN/bdJydr6poqV9evQw@MHatP2TCXjCkvYPwL8/N/D6gxuSJ7w/ET7W8LJ3QkOK5qBhdXLz4el2EmW3dbkp6EFU8rI@EX67kYfP02UVoRQoPhEkseqemr48GcXoWTCPXkf3zz9tPRxoI0nB6mcuclLfJsWJIApk05Yfntm6B2JPhPfii9heQ3f//ATd6KWHsjtoYkLL7fB@UUCwQqhvQ/K7@E749neI/vgnXNVPGJncP79ghLJnu1@DhIbPTyChF5Ae6DwIy7Yt819n9DBqyUHYFs/ioElTcQIFlhQccnYQ8jLKfsn@ePZRlcUPr/LxWmZa1rUHlEVlTYZ2cCIUZcH@AekraMKypqw@qAlNNs2JIP9vaE/i8u5FIb4GSCbiePpTj6dHTyR7evRjfzkdtPujvGlyJ0ScNM3Z/nct7D@V@2mMzpWuAiGzImLCfaMQnJKS/g04R88WV@d/fW@PX06PqhdmteS83AptzISmZVUjhOx@XApt3X/zfpeQ4Rdp2pOXLmLp3IaNggg2@P3cP06apBVOiRDX7OZsP27bqjk5OrrhSZW0m@owio7A9f75TwynR@T85@9Er79TgeZbP0CCw0LIWP9K3E@opuwZy4/cfTttXqHuCBz8JCzp9bBmZdULpKBQsEA1xJc0wrczDDQ0MA4RD/VO4Mj7PyM@Deuj87OzswactPB9P/7r8aj88mhmBX00/itko9eRXW@aeDjzmpIz4Rww1HlSEH74WsEpRVpCYTVQkA/l9eblql9Vy3caHqS6f@58r9Wi3L4ZimbvdTynR98lB0ju7wLDHeHD3jBTs3ZTFw/3hw97X/b2vkvnbH/OQCfvIEWkyIS@3MAZWwtNXG4fcOyDh8digbgkKXpPbig7lhCSwmN0TMIpYcfh5FgiVLoRxZH4ntDxhEwRIQiFaHTM3qORSKIpGkvTe2/fcvZfFjom8bsmu0km/Hic12U9KbKxNN7cdeNxyeNqxHbJWD7uNmmZfC5kSepGnw9JvWXkjh0WrD3aOPakd/Gc/znur8oDUucbt74p5lfLPwOjlEfTiR4ll2yCbqKjpKCsOxyY@O2IdcOt5oj1@o5o09EC/JO5JUZzY3LVT@OooNxfB/wqlzmdTXfuyJL9VDcsKahcF69pqs5sxVSX8@DaKSrFQuZVqKBra6ePiTLdGWo8s0cVXiTbxJemWWAvJov0485MFdlIld7cfdwa/aJZ5CgOc54Ha1McYnDWVRqJaEE0tCS5NXeQVVpYrb3MurYUt3NES7NENHfXPMAo6z2vtUMXTdx1FbDc6B0PYaZWLqxfWorSO4o1M9Xqs@eYNskb0c3wJwupk2AUL7FGx25ezYiIWitHy9CtVC@vTEMRe8cxlySrGgdTbHAV/NMlWdNR4FqqoVaKC@sJdzsvo4GBq/Y@HkXcOV5lDu/Ha24aGZ7A/sBU5NbJu2usxZWTV6mRyWs7h3izoHQyahmIt86aEkvhE4eDfwV99kecWEgvAY8KfCiOo5tYa2UHW7oB49W6glzcbgMlnrFsWkEeEkvqKl9CjZEvdsEIJ4ZYbZxLcxmq3If3xdYlHw12OoxT7BuF1QR4taXDurwLPKX67Lu@TDj33bwjRsplsHdEs2A8BX@89Xe6RzQT8Ex9Q9RLL9Xx0kWOV1QEi4HsOXoZ8KpdrnmCL9WNx2M7yM0WF1WGR7dbwDUOJWvhFjRl@VRyLnWNease53EWYoz8HHmGst0BD5mtdZXjtWNbrdpQ1W2cr3oH4082VrbYsTKy49cB5N9W3S2dmy52@MLx5DJEqx3wubbcygi8DkeS0YeanIQ4qB01HvhYM60jq50qQnxL6ALrQOtStob4JNkLlQ7i4xlGeDfkC/h3/RE1Gc92UH81U2SZQv2wTJ0MdlOZupZjJFczvY2kKFkmumdJ8YB1FmmmvEovYgvhwstRwzxj53o0NXhQ@hn1iMjnXmHGnqIWgUI95unrcI4DPKLIdnEdSKs@nJvJStQb4GZJeTXHHs0e/VO18kF/AZasxnZpQ12@gFwRV9Qv/SySSQ4ayKdg78BfbIcIcutRz@C48MX4E1GznVtcBMPYwxEa4sEFDow066BWtJBXziqvEiN1tz7YodbXsD8LvW7jYzommr6BcTL4By0Qw9PnptelUKM721XvbBQs7FRNBnygjQvmyspyNtUtLxZ9Hm2p21XmHBvE1XWPmzMiLXqoFd1WAK@ECIXaMTTgq7C2wNc4VKvLVTa1Q1UtvCwGJArk2tRBKxLk0gyQvmbzCx66QTXUXihyLdDiNAQt@znkI9fbpQPrxaDyUxNqjWv3ud6pIzs1Yb9VexynLI2vVhIqDc1arIrqmjixFFyamSF2GzfnqQHaDBQDkXzRG/MA5lUpgJ4XQfxW3qbMiWXHtXSWdRNrzQ3DlT8DHi/U9MrAVmztsq2jWjoV0WdnbZlY4eKg7UGb7tpaEmfVOa4hQi9wDKy67g6PIP@pLZq1VVSxkQPfBZ8xzVoP2gLtS34umz/UCwL8JNTMapXzoR6@8Vf2VmEaK3Gx9V2qGUoJPYtmRn77rd6MHQZtWjvQvmI@889nRDN6CloJM1QOvT30@C6CIyzkuA9n0ONzdeGmF6mtiJIzz2Tova5dmFmYyT3Uf23kuuLvLqAeKsmX4JbvDb2VL23V76G3Woa26Jk2TS1FbgIP1iuyG1xa0DsuJB/HGnVl115zDvaxo6FXewfmGMOFF2EeENvTteXlBcfrWHJUCut1H@bTEFfIFfHYVW@7SJETxqFXI4vYcKaECiZY5WOI16S5uja9lngaRT7oh2r6pbMOYrxztx6nI9CjHyptHLpcxh4a27kKve/CNVRdc7DbYRy4q0y2LW8rQf@2VxnCoG/Tuvw4XRTi2XArYFFc/qt/iXzY@/r1bw";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+
+
+
+            chat: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open mirotalk in a window  (thank you and no affiliation) </p>',
+              fn: (sheetNum) => {
+
+
+		      var fullUrl = "https://mirotalk.up.railway.app";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+
+
+
             vc: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open voicechanger in a window  (no affiliation) </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open voicechanger in a window  (thank you and no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -207,7 +300,7 @@ export default class StaticCarouselExp extends Component {
 
 
             speak: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** use this command for text to speech tts tool (no affiliation)  </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** use this command for text to speech tts tool (thank you and no affiliation)  </p>',
               fn: (sheetNum) => {
 
 
@@ -233,7 +326,7 @@ export default class StaticCarouselExp extends Component {
 
 
             gif: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open wick suite in a window  (no affiliation) </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open wick suite in a window  (thank you and no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -255,7 +348,7 @@ export default class StaticCarouselExp extends Component {
 
 
             nostr : {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open firepad.io collab suite in a window & sheeit  (no affiliation) </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open coracle nostr client in a window  (thank you and no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -277,7 +370,7 @@ export default class StaticCarouselExp extends Component {
 
 
             ai: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** open a window powered by deepai.org (no affiliation) </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** open a window powered by deepai.org (thank you and no affiliation) </p>',
               fn: () => {
 
 		      var fullUrl = "https://deepai.org/chat";
@@ -301,7 +394,7 @@ export default class StaticCarouselExp extends Component {
 		    description: '<p style="color:hotpink;font-size:1.1em">** unseal a sha256 sealed upcOS experience</p>',
               fn: () => {
 
-		      var fullUrl = "https://yfp7xiovzzkpcy2rgizdrgs57wij4xq2xpt545ywbdjlgsjesdkq.arweave.net/wV_7odXOVPFjUTIyOJpd_ZCeXhq75953FgjSs0kkkNU";
+		      var fullUrl = "https://iwt24fbqean5a4txesfxzik63m5penrfeoekwq5gdhih6pge3pra.arweave.net/RaeuFDAgG9BydySLfKFe2zryNiUjiKtDphnQfzzE2-I";
                       var winNum = "0";
 
                       //this.cSearch.value = "";
@@ -343,7 +436,7 @@ export default class StaticCarouselExp extends Component {
 
 
             tio: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open tio.run collab suite in a window & sheeit  (no affiliation) </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open tio.run collab suite in a window & sheeit  (thank you and no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -377,7 +470,7 @@ export default class StaticCarouselExp extends Component {
 
 
             blank: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open blank html viewer in a window< (no affiliation) /p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open blank html viewer in a window< (thank you and no affiliation) /p>',
               fn: (sheetNum) => {
 
 
@@ -422,7 +515,7 @@ export default class StaticCarouselExp extends Component {
 
 
             book: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open librivox in draggable interface (no affiliation) </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open librivox in draggable interface (thank you and no affiliation) </p>',
               fn: (bookUrl) => {
 
                           if(!bookUrl) {
@@ -444,7 +537,7 @@ export default class StaticCarouselExp extends Component {
 
 
             com: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open chat client window in draggable interface (no affiliation) </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open chat client window in draggable interface (thank you and no affiliation) </p>',
               fn: (fullUrl,winNum) => {
 
 		      fullUrl = "https://chatcrypt.com";
@@ -527,7 +620,7 @@ export default class StaticCarouselExp extends Component {
 
 
             411: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC from go upc  (no affiliation)  </p>',
+              description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC from go upc  (thank you and no affiliation)  </p>',
               fn: (upc) => {
                       const terminal = this.progressTerminal.current
                       terminal.pushToStdout(`Please wait... searching for data on upc # ${upc}`);
@@ -597,7 +690,7 @@ export default class StaticCarouselExp extends Component {
 
 
             wurdup: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open codeverter.com window  (no affiliation) </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open codeverter.com window  (thank you and no affiliation) </p>',
               fn: () => {
 
 
@@ -619,7 +712,7 @@ export default class StaticCarouselExp extends Component {
 
 
             sheeit: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open ethercalc collab suite in a window & sheeit  (no affiliation) </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open ethercalc collab suite in a window & sheeit  (thank you and no affiliation) </p>',
               fn: (sheetNum) => {
 
 
