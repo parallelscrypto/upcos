@@ -3981,7 +3981,7 @@ console.log(this.state.account);
       currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
       currentUrl = currentUrl.replace('intel', 'export');
 
-      currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
+      //currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
       var encodedWeb2 = encodeURIComponent(currentUrl);
       var toShorten = "https://is.gd/create.php?format=json&url=" + currentUrl;
       if (!(humanReadableName === '' || humanReadableName === null)) {

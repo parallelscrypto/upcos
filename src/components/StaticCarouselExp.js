@@ -580,6 +580,135 @@ export default class StaticCarouselExp extends Component {
             },
 
 
+            localhost: {
+              description: '<p style="color:hotpink;font-size:1.1em">** download html/css/js for this upcOS instance to run locally**</p>',
+
+              fn: async () => {
+
+                const terminal = this.progressTerminal.current
+                var currentUrl = window.location.href;
+                //terminal.pushToStdout(page);
+
+var page = window.location.href;
+
+var pageHtml = `
+  <html>
+    <head></head>
+    <body>
+      <iframe style="height: 100vh; width: 96vw;" src="${page}"></iframe>
+    </body>
+  </html>
+`;
+
+let data = new Blob([pageHtml], { type: 'text/html' });
+let htmlURL = window.URL.createObjectURL(data);
+let tempLink = document.createElement('a');
+tempLink.href = htmlURL;
+tempLink.setAttribute('download', 'upcOS.html');
+tempLink.click();
+
+
+
+              }
+            },
+
+
+
+            pop: {
+              description: '<p style="color:hotpink;font-size:1.1em">** poppin a terminal already in your terminal**</p>',
+
+              fn: async (url) => {
+
+                switch (url) {
+                  case "fire":
+		    url = "https://demo.firepad.io/";
+                    break;
+                  case "sheeit":
+		    url = "https://ethercalc.net/";
+                    break;
+                  case "tio":
+		    url = "https://tio.run";
+                    break;
+                  case "draw":
+		    url = "https://sketch.io/sketchpad";
+                    break;
+                   case "beats":
+		    url = "https://freebeats.io";
+                    break;
+                   case "calc":
+		    url = "https://desmos.com/calculator";
+                    break;
+                   case "ad":
+
+		      var fullUrl = "https://tio.run/##nVhrc5vIEv3uX0G8@bBbFdsMEnLk2L4Vy4BEDLJ4DIIvWwMzNo/hEUAWaCu/PdvYcW78yObuRa6SZnqm6XO6T8@Uq7j6@vX0P1Vc7e3dbIqoTcpCiGpGWjZvc35NbtnvbxtG@CfWvxPeVqTnJaHv3t7WjLVJcfuH8NeeIAhvY1gsnAmnp6dzx7gapk7fXC5njn@tCIPt/H7qfhUnxe3ZPiv27@fupxmhj4NhnLOWCFFM6oa1Z/uuox68339hL0jOzvbvEratyrrdF6KyaFkB67cJbeMzyu6SiB3cD94JSZG0CeEHTUQ4O0OH4hN/bdJydr6poqV9evQw@MHatP2TCXjCkvYPwL8/N/D6gxuSJ7w/ET7W8LJ3QkOK5qBhdXLz4el2EmW3dbkp6EFU8rI@EX67kYfP02UVoRQoPhEkseqemr48GcXoWTCPXkf3zz9tPRxoI0nB6mcuclLfJsWJIApk05Yfntm6B2JPhPfii9heQ3f//ATd6KWHsjtoYkLL7fB@UUCwQqhvQ/K7@E749neI/vgnXNVPGJncP79ghLJnu1@DhIbPTyChF5Ae6DwIy7Yt819n9DBqyUHYFs/ioElTcQIFlhQccnYQ8jLKfsn@ePZRlcUPr/LxWmZa1rUHlEVlTYZ2cCIUZcH@AekraMKypqw@qAlNNs2JIP9vaE/i8u5FIb4GSCbiePpTj6dHTyR7evRjfzkdtPujvGlyJ0ScNM3Z/nct7D@V@2mMzpWuAiGzImLCfaMQnJKS/g04R88WV@d/fW@PX06PqhdmteS83AptzISmZVUjhOx@XApt3X/zfpeQ4Rdp2pOXLmLp3IaNggg2@P3cP06apBVOiRDX7OZsP27bqjk5OrrhSZW0m@owio7A9f75TwynR@T85@9Er79TgeZbP0CCw0LIWP9K3E@opuwZy4/cfTttXqHuCBz8JCzp9bBmZdULpKBQsEA1xJc0wrczDDQ0MA4RD/VO4Mj7PyM@Deuj87OzswactPB9P/7r8aj88mhmBX00/itko9eRXW@aeDjzmpIz4Rww1HlSEH74WsEpRVpCYTVQkA/l9eblql9Vy3caHqS6f@58r9Wi3L4ZimbvdTynR98lB0ju7wLDHeHD3jBTs3ZTFw/3hw97X/b2vkvnbH/OQCfvIEWkyIS@3MAZWwtNXG4fcOyDh8digbgkKXpPbig7lhCSwmN0TMIpYcfh5FgiVLoRxZH4ntDxhEwRIQiFaHTM3qORSKIpGkvTe2/fcvZfFjom8bsmu0km/Hic12U9KbKxNN7cdeNxyeNqxHbJWD7uNmmZfC5kSepGnw9JvWXkjh0WrD3aOPakd/Gc/znur8oDUucbt74p5lfLPwOjlEfTiR4ll2yCbqKjpKCsOxyY@O2IdcOt5oj1@o5o09EC/JO5JUZzY3LVT@OooNxfB/wqlzmdTXfuyJL9VDcsKahcF69pqs5sxVSX8@DaKSrFQuZVqKBra6ePiTLdGWo8s0cVXiTbxJemWWAvJov0485MFdlIld7cfdwa/aJZ5CgOc54Ha1McYnDWVRqJaEE0tCS5NXeQVVpYrb3MurYUt3NES7NENHfXPMAo6z2vtUMXTdx1FbDc6B0PYaZWLqxfWorSO4o1M9Xqs@eYNskb0c3wJwupk2AUL7FGx25ezYiIWitHy9CtVC@vTEMRe8cxlySrGgdTbHAV/NMlWdNR4FqqoVaKC@sJdzsvo4GBq/Y@HkXcOV5lDu/Ha24aGZ7A/sBU5NbJu2usxZWTV6mRyWs7h3izoHQyahmIt86aEkvhE4eDfwV99kecWEgvAY8KfCiOo5tYa2UHW7oB49W6glzcbgMlnrFsWkEeEkvqKl9CjZEvdsEIJ4ZYbZxLcxmq3If3xdYlHw12OoxT7BuF1QR4taXDurwLPKX67Lu@TDj33bwjRsplsHdEs2A8BX@89Xe6RzQT8Ex9Q9RLL9Xx0kWOV1QEi4HsOXoZ8KpdrnmCL9WNx2M7yM0WF1WGR7dbwDUOJWvhFjRl@VRyLnWNease53EWYoz8HHmGst0BD5mtdZXjtWNbrdpQ1W2cr3oH4082VrbYsTKy49cB5N9W3S2dmy52@MLx5DJEqx3wubbcygi8DkeS0YeanIQ4qB01HvhYM60jq50qQnxL6ALrQOtStob4JNkLlQ7i4xlGeDfkC/h3/RE1Gc92UH81U2SZQv2wTJ0MdlOZupZjJFczvY2kKFkmumdJ8YB1FmmmvEovYgvhwstRwzxj53o0NXhQ@hn1iMjnXmHGnqIWgUI95unrcI4DPKLIdnEdSKs@nJvJStQb4GZJeTXHHs0e/VO18kF/AZasxnZpQ12@gFwRV9Qv/SySSQ4ayKdg78BfbIcIcutRz@C48MX4E1GznVtcBMPYwxEa4sEFDow066BWtJBXziqvEiN1tz7YodbXsD8LvW7jYzommr6BcTL4By0Qw9PnptelUKM721XvbBQs7FRNBnygjQvmyspyNtUtLxZ9Hm2p21XmHBvE1XWPmzMiLXqoFd1WAK@ECIXaMTTgq7C2wNc4VKvLVTa1Q1UtvCwGJArk2tRBKxLk0gyQvmbzCx66QTXUXihyLdDiNAQt@znkI9fbpQPrxaDyUxNqjWv3ud6pIzs1Yb9VexynLI2vVhIqDc1arIrqmjixFFyamSF2GzfnqQHaDBQDkXzRG/MA5lUpgJ4XQfxW3qbMiWXHtXSWdRNrzQ3DlT8DHi/U9MrAVmztsq2jWjoV0WdnbZlY4eKg7UGb7tpaEmfVOa4hQi9wDKy67g6PIP@pLZq1VVSxkQPfBZ8xzVoP2gLtS34umz/UCwL8JNTMapXzoR6@8Vf2VmEaK3Gx9V2qGUoJPYtmRn77rd6MHQZtWjvQvmI@889nRDN6CloJM1QOvT30@C6CIyzkuA9n0ONzdeGmF6mtiJIzz2Tova5dmFmYyT3Uf23kuuLvLqAeKsmX4JbvDb2VL23V76G3Woa26Jk2TS1FbgIP1iuyG1xa0DsuJB/HGnVl115zDvaxo6FXewfmGMOFF2EeENvTteXlBcfrWHJUCut1H@bTEFfIFfHYVW@7SJETxqFXI4vYcKaECiZY5WOI16S5uja9lngaRT7oh2r6pbMOYrxztx6nI9CjHyptHLpcxh4a27kKve/CNVRdc7DbYRy4q0y2LW8rQf@2VxnCoG/Tuvw4XRTi2XArYFFc/qt/iXzY@/r1bw";
+		    url = "https://thelounge.hybridirc.com";
+                    break;
+                  case "irc":
+		    url = "https://thelounge.hybridirc.com";
+                    break;
+                  case "chat":
+		    url = "https://mirotalk.up.railway.app";
+                    break;
+                   case "vc":
+		    url = "https://voicechanger.io";
+                    break;
+                   case "speak":
+		    url = "https://ttstool.com";
+                    break;
+                   case "gif":
+		    url = "https://wickeditor.com/editor";
+                    break;
+                   case "nostr":
+		    url = "https://coracle.social";
+                    break;
+                   case "ai":
+		    url = "https://deepai.org/chat";
+                    break;
+                   case "unseal":
+		    url = "https://iwt24fbqean5a4txesfxzik63m5penrfeoekwq5gdhih6pge3pra.arweave.net/RaeuFDAgG9BydySLfKFe2zryNiUjiKtDphnQfzzE2-I";
+                    break;
+                   case "blank":
+		    url = "https://goonlinetools.com/html-viewer/";
+                    break;
+                   case "book":
+                    url = 'https://librivox.org';
+                    break;
+                   case "com":
+		    url = "https://chatcrypt.com";
+                    break;
+                   case "upcms":
+                    url = "https://pitrgclmhs7vogwhp5twz44y4p4jswq2dmihll2navrv5adfg4wq.arweave.net/eicTCWw8v1cax39nbPOY4_iZWhobEHWvTQVjXoBlNy0/index.html#/upload/" + upc;
+                    break;
+                   case "wurdup":
+		    url = "https://codverter.com/src/index";
+                    break;
+ 
+
+                  default:
+                    url = url;
+                }
+
+
+
+                const terminal = this.progressTerminal.current
+                //var currentUrl = window.location.href;
+                var currentUrl = url;
+                var page = <html>
+<head></head>
+<body>
+<iframe style={{height:"100vh",width:"96vw"}} src={currentUrl} />
+</body>
+</html>
+                terminal.pushToStdout(page);
+
+              }
+            },
+
+
+
+
+
+
             url: {
               description: '<p style="color:hotpink;font-size:1.1em">** create a shortened url from a given url.  takes in one param, and use as such: `url https://sample.website` , and this will return a shortened url**</p>',
 
