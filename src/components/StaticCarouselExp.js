@@ -208,28 +208,6 @@ export default class StaticCarouselExp extends Component {
 
 
 
-
-            irc: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open web irc client in a window  (thank you and no affiliation) </p>',
-              fn: (sheetNum) => {
-
-
-		      var fullUrl = "https://thelounge.hybridirc.com";
-                      var winNum = "0";
-
-                      //this.cSearch.value = "";
-                      //this.cSearch.value = fullUrl;
-                      var mplayer = this.getMplayer(fullUrl);
-                      if(winNum == "0") {
-		         this.setState(prevState => ({ pipVisibility: "true" }));
-		         this.setState(prevState => ({ pipDisplay: "block"}));
-                         this.setState({fullIpfs: mplayer});
-		         this.setState(prevState => ({ showBigShow: true}));
-                      }
-              }
-            },
-
-
             ad: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** programatically create seal advertisements </p>',
               fn: (sheetNum) => {
@@ -639,12 +617,7 @@ tempLink.click();
 		    url = "https://desmos.com/calculator";
                     break;
                    case "ad":
-
-		      var fullUrl = "https://tio.run/##nVhrc5vIEv3uX0G8@bBbFdsMEnLk2L4Vy4BEDLJ4DIIvWwMzNo/hEUAWaCu/PdvYcW78yObuRa6SZnqm6XO6T8@Uq7j6@vX0P1Vc7e3dbIqoTcpCiGpGWjZvc35NbtnvbxtG@CfWvxPeVqTnJaHv3t7WjLVJcfuH8NeeIAhvY1gsnAmnp6dzx7gapk7fXC5njn@tCIPt/H7qfhUnxe3ZPiv27@fupxmhj4NhnLOWCFFM6oa1Z/uuox68339hL0jOzvbvEratyrrdF6KyaFkB67cJbeMzyu6SiB3cD94JSZG0CeEHTUQ4O0OH4hN/bdJydr6poqV9evQw@MHatP2TCXjCkvYPwL8/N/D6gxuSJ7w/ET7W8LJ3QkOK5qBhdXLz4el2EmW3dbkp6EFU8rI@EX67kYfP02UVoRQoPhEkseqemr48GcXoWTCPXkf3zz9tPRxoI0nB6mcuclLfJsWJIApk05Yfntm6B2JPhPfii9heQ3f//ATd6KWHsjtoYkLL7fB@UUCwQqhvQ/K7@E749neI/vgnXNVPGJncP79ghLJnu1@DhIbPTyChF5Ae6DwIy7Yt819n9DBqyUHYFs/ioElTcQIFlhQccnYQ8jLKfsn@ePZRlcUPr/LxWmZa1rUHlEVlTYZ2cCIUZcH@AekraMKypqw@qAlNNs2JIP9vaE/i8u5FIb4GSCbiePpTj6dHTyR7evRjfzkdtPujvGlyJ0ScNM3Z/nct7D@V@2mMzpWuAiGzImLCfaMQnJKS/g04R88WV@d/fW@PX06PqhdmteS83AptzISmZVUjhOx@XApt3X/zfpeQ4Rdp2pOXLmLp3IaNggg2@P3cP06apBVOiRDX7OZsP27bqjk5OrrhSZW0m@owio7A9f75TwynR@T85@9Er79TgeZbP0CCw0LIWP9K3E@opuwZy4/cfTttXqHuCBz8JCzp9bBmZdULpKBQsEA1xJc0wrczDDQ0MA4RD/VO4Mj7PyM@Deuj87OzswactPB9P/7r8aj88mhmBX00/itko9eRXW@aeDjzmpIz4Rww1HlSEH74WsEpRVpCYTVQkA/l9eblql9Vy3caHqS6f@58r9Wi3L4ZimbvdTynR98lB0ju7wLDHeHD3jBTs3ZTFw/3hw97X/b2vkvnbH/OQCfvIEWkyIS@3MAZWwtNXG4fcOyDh8digbgkKXpPbig7lhCSwmN0TMIpYcfh5FgiVLoRxZH4ntDxhEwRIQiFaHTM3qORSKIpGkvTe2/fcvZfFjom8bsmu0km/Hic12U9KbKxNN7cdeNxyeNqxHbJWD7uNmmZfC5kSepGnw9JvWXkjh0WrD3aOPakd/Gc/znur8oDUucbt74p5lfLPwOjlEfTiR4ll2yCbqKjpKCsOxyY@O2IdcOt5oj1@o5o09EC/JO5JUZzY3LVT@OooNxfB/wqlzmdTXfuyJL9VDcsKahcF69pqs5sxVSX8@DaKSrFQuZVqKBra6ePiTLdGWo8s0cVXiTbxJemWWAvJov0485MFdlIld7cfdwa/aJZ5CgOc54Ha1McYnDWVRqJaEE0tCS5NXeQVVpYrb3MurYUt3NES7NENHfXPMAo6z2vtUMXTdx1FbDc6B0PYaZWLqxfWorSO4o1M9Xqs@eYNskb0c3wJwupk2AUL7FGx25ezYiIWitHy9CtVC@vTEMRe8cxlySrGgdTbHAV/NMlWdNR4FqqoVaKC@sJdzsvo4GBq/Y@HkXcOV5lDu/Ha24aGZ7A/sBU5NbJu2usxZWTV6mRyWs7h3izoHQyahmIt86aEkvhE4eDfwV99kecWEgvAY8KfCiOo5tYa2UHW7oB49W6glzcbgMlnrFsWkEeEkvqKl9CjZEvdsEIJ4ZYbZxLcxmq3If3xdYlHw12OoxT7BuF1QR4taXDurwLPKX67Lu@TDj33bwjRsplsHdEs2A8BX@89Xe6RzQT8Ex9Q9RLL9Xx0kWOV1QEi4HsOXoZ8KpdrnmCL9WNx2M7yM0WF1WGR7dbwDUOJWvhFjRl@VRyLnWNease53EWYoz8HHmGst0BD5mtdZXjtWNbrdpQ1W2cr3oH4082VrbYsTKy49cB5N9W3S2dmy52@MLx5DJEqx3wubbcygi8DkeS0YeanIQ4qB01HvhYM60jq50qQnxL6ALrQOtStob4JNkLlQ7i4xlGeDfkC/h3/RE1Gc92UH81U2SZQv2wTJ0MdlOZupZjJFczvY2kKFkmumdJ8YB1FmmmvEovYgvhwstRwzxj53o0NXhQ@hn1iMjnXmHGnqIWgUI95unrcI4DPKLIdnEdSKs@nJvJStQb4GZJeTXHHs0e/VO18kF/AZasxnZpQ12@gFwRV9Qv/SySSQ4ayKdg78BfbIcIcutRz@C48MX4E1GznVtcBMPYwxEa4sEFDow066BWtJBXziqvEiN1tz7YodbXsD8LvW7jYzommr6BcTL4By0Qw9PnptelUKM721XvbBQs7FRNBnygjQvmyspyNtUtLxZ9Hm2p21XmHBvE1XWPmzMiLXqoFd1WAK@ECIXaMTTgq7C2wNc4VKvLVTa1Q1UtvCwGJArk2tRBKxLk0gyQvmbzCx66QTXUXihyLdDiNAQt@znkI9fbpQPrxaDyUxNqjWv3ud6pIzs1Yb9VexynLI2vVhIqDc1arIrqmjixFFyamSF2GzfnqQHaDBQDkXzRG/MA5lUpgJ4XQfxW3qbMiWXHtXSWdRNrzQ3DlT8DHi/U9MrAVmztsq2jWjoV0WdnbZlY4eKg7UGb7tpaEmfVOa4hQi9wDKy67g6PIP@pLZq1VVSxkQPfBZ8xzVoP2gLtS34umz/UCwL8JNTMapXzoR6@8Vf2VmEaK3Gx9V2qGUoJPYtmRn77rd6MHQZtWjvQvmI@889nRDN6CloJM1QOvT30@C6CIyzkuA9n0ONzdeGmF6mtiJIzz2Tova5dmFmYyT3Uf23kuuLvLqAeKsmX4JbvDb2VL23V76G3Woa26Jk2TS1FbgIP1iuyG1xa0DsuJB/HGnVl115zDvaxo6FXewfmGMOFF2EeENvTteXlBcfrWHJUCut1H@bTEFfIFfHYVW@7SJETxqFXI4vYcKaECiZY5WOI16S5uja9lngaRT7oh2r6pbMOYrxztx6nI9CjHyptHLpcxh4a27kKve/CNVRdc7DbYRy4q0y2LW8rQf@2VxnCoG/Tuvw4XRTi2XArYFFc/qt/iXzY@/r1bw";
-		    url = "https://thelounge.hybridirc.com";
-                    break;
-                  case "irc":
-		    url = "https://thelounge.hybridirc.com";
+		      var url = "https://tio.run/##nVhrc5vIEv3uX0G8@bBbFdsMEnLk2L4Vy4BEDLJ4DIIvWwMzNo/hEUAWaCu/PdvYcW78yObuRa6SZnqm6XO6T8@Uq7j6@vX0P1Vc7e3dbIqoTcpCiGpGWjZvc35NbtnvbxtG@CfWvxPeVqTnJaHv3t7WjLVJcfuH8NeeIAhvY1gsnAmnp6dzx7gapk7fXC5njn@tCIPt/H7qfhUnxe3ZPiv27@fupxmhj4NhnLOWCFFM6oa1Z/uuox68339hL0jOzvbvEratyrrdF6KyaFkB67cJbeMzyu6SiB3cD94JSZG0CeEHTUQ4O0OH4hN/bdJydr6poqV9evQw@MHatP2TCXjCkvYPwL8/N/D6gxuSJ7w/ET7W8LJ3QkOK5qBhdXLz4el2EmW3dbkp6EFU8rI@EX67kYfP02UVoRQoPhEkseqemr48GcXoWTCPXkf3zz9tPRxoI0nB6mcuclLfJsWJIApk05Yfntm6B2JPhPfii9heQ3f//ATd6KWHsjtoYkLL7fB@UUCwQqhvQ/K7@E749neI/vgnXNVPGJncP79ghLJnu1@DhIbPTyChF5Ae6DwIy7Yt819n9DBqyUHYFs/ioElTcQIFlhQccnYQ8jLKfsn@ePZRlcUPr/LxWmZa1rUHlEVlTYZ2cCIUZcH@AekraMKypqw@qAlNNs2JIP9vaE/i8u5FIb4GSCbiePpTj6dHTyR7evRjfzkdtPujvGlyJ0ScNM3Z/nct7D@V@2mMzpWuAiGzImLCfaMQnJKS/g04R88WV@d/fW@PX06PqhdmteS83AptzISmZVUjhOx@XApt3X/zfpeQ4Rdp2pOXLmLp3IaNggg2@P3cP06apBVOiRDX7OZsP27bqjk5OrrhSZW0m@owio7A9f75TwynR@T85@9Er79TgeZbP0CCw0LIWP9K3E@opuwZy4/cfTttXqHuCBz8JCzp9bBmZdULpKBQsEA1xJc0wrczDDQ0MA4RD/VO4Mj7PyM@Deuj87OzswactPB9P/7r8aj88mhmBX00/itko9eRXW@aeDjzmpIz4Rww1HlSEH74WsEpRVpCYTVQkA/l9eblql9Vy3caHqS6f@58r9Wi3L4ZimbvdTynR98lB0ju7wLDHeHD3jBTs3ZTFw/3hw97X/b2vkvnbH/OQCfvIEWkyIS@3MAZWwtNXG4fcOyDh8digbgkKXpPbig7lhCSwmN0TMIpYcfh5FgiVLoRxZH4ntDxhEwRIQiFaHTM3qORSKIpGkvTe2/fcvZfFjom8bsmu0km/Hic12U9KbKxNN7cdeNxyeNqxHbJWD7uNmmZfC5kSepGnw9JvWXkjh0WrD3aOPakd/Gc/znur8oDUucbt74p5lfLPwOjlEfTiR4ll2yCbqKjpKCsOxyY@O2IdcOt5oj1@o5o09EC/JO5JUZzY3LVT@OooNxfB/wqlzmdTXfuyJL9VDcsKahcF69pqs5sxVSX8@DaKSrFQuZVqKBra6ePiTLdGWo8s0cVXiTbxJemWWAvJov0485MFdlIld7cfdwa/aJZ5CgOc54Ha1McYnDWVRqJaEE0tCS5NXeQVVpYrb3MurYUt3NES7NENHfXPMAo6z2vtUMXTdx1FbDc6B0PYaZWLqxfWorSO4o1M9Xqs@eYNskb0c3wJwupk2AUL7FGx25ezYiIWitHy9CtVC@vTEMRe8cxlySrGgdTbHAV/NMlWdNR4FqqoVaKC@sJdzsvo4GBq/Y@HkXcOV5lDu/Ha24aGZ7A/sBU5NbJu2usxZWTV6mRyWs7h3izoHQyahmIt86aEkvhE4eDfwV99kecWEgvAY8KfCiOo5tYa2UHW7oB49W6glzcbgMlnrFsWkEeEkvqKl9CjZEvdsEIJ4ZYbZxLcxmq3If3xdYlHw12OoxT7BuF1QR4taXDurwLPKX67Lu@TDj33bwjRsplsHdEs2A8BX@89Xe6RzQT8Ex9Q9RLL9Xx0kWOV1QEi4HsOXoZ8KpdrnmCL9WNx2M7yM0WF1WGR7dbwDUOJWvhFjRl@VRyLnWNease53EWYoz8HHmGst0BD5mtdZXjtWNbrdpQ1W2cr3oH4082VrbYsTKy49cB5N9W3S2dmy52@MLx5DJEqx3wubbcygi8DkeS0YeanIQ4qB01HvhYM60jq50qQnxL6ALrQOtStob4JNkLlQ7i4xlGeDfkC/h3/RE1Gc92UH81U2SZQv2wTJ0MdlOZupZjJFczvY2kKFkmumdJ8YB1FmmmvEovYgvhwstRwzxj53o0NXhQ@hn1iMjnXmHGnqIWgUI95unrcI4DPKLIdnEdSKs@nJvJStQb4GZJeTXHHs0e/VO18kF/AZasxnZpQ12@gFwRV9Qv/SySSQ4ayKdg78BfbIcIcutRz@C48MX4E1GznVtcBMPYwxEa4sEFDow066BWtJBXziqvEiN1tz7YodbXsD8LvW7jYzommr6BcTL4By0Qw9PnptelUKM721XvbBQs7FRNBnygjQvmyspyNtUtLxZ9Hm2p21XmHBvE1XWPmzMiLXqoFd1WAK@ECIXaMTTgq7C2wNc4VKvLVTa1Q1UtvCwGJArk2tRBKxLk0gyQvmbzCx66QTXUXihyLdDiNAQt@znkI9fbpQPrxaDyUxNqjWv3ud6pIzs1Yb9VexynLI2vVhIqDc1arIrqmjixFFyamSF2GzfnqQHaDBQDkXzRG/MA5lUpgJ4XQfxW3qbMiWXHtXSWdRNrzQ3DlT8DHi/U9MrAVmztsq2jWjoV0WdnbZlY4eKg7UGb7tpaEmfVOa4hQi9wDKy67g6PIP@pLZq1VVSxkQPfBZ8xzVoP2gLtS34umz/UCwL8JNTMapXzoR6@8Vf2VmEaK3Gx9V2qGUoJPYtmRn77rd6MHQZtWjvQvmI@889nRDN6CloJM1QOvT30@C6CIyzkuA9n0ONzdeGmF6mtiJIzz2Tova5dmFmYyT3Uf23kuuLvLqAeKsmX4JbvDb2VL23V76G3Woa26Jk2TS1FbgIP1iuyG1xa0DsuJB/HGnVl115zDvaxo6FXewfmGMOFF2EeENvTteXlBcfrWHJUCut1H@bTEFfIFfHYVW@7SJETxqFXI4vYcKaECiZY5WOI16S5uja9lngaRT7oh2r6pbMOYrxztx6nI9CjHyptHLpcxh4a27kKve/CNVRdc7DbYRy4q0y2LW8rQf@2VxnCoG/Tuvw4XRTi2XArYFFc/qt/iXzY@/r1bw";
                     break;
                   case "chat":
 		    url = "https://mirotalk.up.railway.app";
@@ -660,9 +633,6 @@ tempLink.click();
                     break;
                    case "nostr":
 		    url = "https://coracle.social";
-                    break;
-                   case "ai":
-		    url = "https://deepai.org/chat";
                     break;
                    case "unseal":
 		    url = "https://iwt24fbqean5a4txesfxzik63m5penrfeoekwq5gdhih6pge3pra.arweave.net/RaeuFDAgG9BydySLfKFe2zryNiUjiKtDphnQfzzE2-I";
@@ -694,7 +664,7 @@ tempLink.click();
                 //var currentUrl = window.location.href;
                 var currentUrl = url;
                 var page = <html>
-<head></head>
+<head><title>forever upcOS hasta que terminemos!</title></head>
 <body>
 <iframe style={{height:"100vh",width:"96vw"}} src={currentUrl} />
 </body>
@@ -817,6 +787,28 @@ tempLink.click();
 
 
 
+            pops: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open POPScript interpreter </p>',
+              fn: () => {
+
+
+
+		      //var fullUrl = "https://codverter.com/src/index";
+                   var winNum = "1";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      if(winNum == "1") {
+		         this.setState(prevState => ({ pipVisibility2: "true" }));
+		         this.setState(prevState => ({ pipDisplay2: "block"}));
+		         this.setState(prevState => ({ showBigShow2: true}));
+                      }
+              }
+            },
+
+
+
+
 
             wurdup: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open codeverter.com window  (thank you and no affiliation) </p>',
@@ -913,18 +905,12 @@ tempLink.click();
 
 
 
-    this.state = {
-       pipVisibility: "false",
-       pipDisplay: "none",
-       mplayer: ""
-    }
-
-
 
 
 
     this.state = {
        code: upc,
+       mplayer: "",
        channel: channel,
        manifest: manifest,
        missionUrl: missionUrl,
@@ -932,6 +918,8 @@ tempLink.click();
        res: [],
        terminal: myTerm,
        terminalSwitch: devIframe,
+       pipVisibility2: "false",
+       pipDisplay2: "none",
        pipVisibility: "false",
        pipDisplay: "none"
     }
@@ -966,6 +954,15 @@ tempLink.click();
     this.setState({offerState: 'video'});
     this.setState(prevState => ({ player: mplayer }));
   }
+
+
+
+
+
+
+
+
+
 
   getMplayer = (fullUrl) => {
       var mplayer = <iframe className='video'
@@ -1294,6 +1291,37 @@ mplayer = <ReactPlayer
 	   self.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
   }
 
+
+
+      parsePop  = async (upcScript) => {
+            var self = this;
+            const terminal = this.progressTerminal.current
+
+ const lines = upcScript.split('\n');
+  const output = [];
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    
+    if (line.startsWith('#')) {
+      terminal.pushToStdout(`${line}`);
+    } else if (line.startsWith('pop')) {
+
+                const remainder = line.substring(4);
+                var currentUrl = remainder;
+                var page = <html>
+<head><title>forever upcOS hasta que terminemos!</title></head>
+<body>
+<iframe style={{height:"100vh",width:"96vw"}} src={currentUrl} />
+</body>
+</html>
+                terminal.pushToStdout(page);
+    }
+  }
+
+
+
+  }
 
 
 
@@ -1647,6 +1675,62 @@ var show =
                       </div>
 
                     <div>{this.state.fullIpfs}</div>
+                  </div>
+                </Draggable>
+
+                <Draggable
+		  style={{zIndex:"0"}}
+                  axis="both"
+                  handle=".handle"
+                  positionOffset={{x: '0', y: '-50%'}}
+                  defaultPosition={{x: 0, y: 0}}
+                  position={null}
+                  grid={[25, 25]}
+                  scale={1}
+                  onStart={this.handleStart}
+                  onDrag={this.handleDrag}
+                  onStop={this.handleStop}>
+                  <div style={{ opacity:"0.9", background:"#ffffff" ,color:"#000000", visibility:this.state.pipVisibility2, display: this.state.pipDisplay2, width:"98vw",border:"3px dashed", padding:"5px"}}>
+                    <div className="handle" style={{background:"orange", display:"grid"}}><span style={{textAlign:"center"}}>drag-from-here (client1)</span></div>
+                      <div style={{textAlign:"center"}}>
+                         <button
+                              style={{borderBottom: "2px solid green", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"green", height: "10vh", marginBottom:"20px"}}
+		              onClick={(event) => {
+                                   event.preventDefault()
+                                   let upcId = this.state.account
+                                   let cSearch2 = this.cSearch2.value.toString()
+                                   this.parsePop(cSearch2);
+                                   //var mplayer = this.getMplayer(cSearch2);
+                                   //this.setState({fullIpfs2: mplayer});
+		              }}
+                         >
+                           execute 
+                         </button>
+
+
+                         <button
+                              style={{borderBottom: "2px solid green", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"red", height: "10vh", marginBottom:"20px"}}
+		              onClick={() => {
+		                 this.setState(prevState => ({ pipVisibility2: "false"}));
+		                 this.setState(prevState => ({ pipDisplay2: "none" }));
+		              }}
+                         >
+                           [x]close 
+                         </button>
+                      </div>
+
+                    <div>
+                   <textarea
+                                      ref={(cSearch2) => { this.cSearch2 = cSearch2 }}
+                                      id="value"
+                                      name="value"
+                                      placeholder="paste your #!/upc/pop script here"
+                                      style={{background:"black", color:"green", border: '1px solid #ccc', borderRadius: '4px', fontFamily: 'Arial, sans-serif', width: '100vw', height: '100vh' }}
+			    />
+
+
+
+</div>
                   </div>
                 </Draggable>
 
