@@ -595,8 +595,7 @@ tempLink.click();
             pop: {
               description: '<p style="color:hotpink;font-size:1.1em">** poppin a terminal already in your terminal**</p>',
 
-              fn: async (url) => {
-
+              fn: async (url,param) => {
                 switch (url) {
                   case "fire":
 		    url = "https://demo.firepad.io/";
@@ -652,7 +651,18 @@ tempLink.click();
                    case "wurdup":
 		    url = "https://codverter.com/src/index";
                     break;
- 
+                   case "jokes":
+                    if(param) {
+		       param = "/en/search/?name=clown%5D";
+                    }
+                    else {
+                       param = "";
+                    }
+		    url = "https://www.myinstants.com" + param;
+                    break;
+                  case "links":
+		    url = "https://tio.run/#%23fVXvU9pAEP2ev@JM/YAzauSHaGsZR0FGLJ12EOhg7WSO5EKuJrnz7oJgx7/d7l0SCNKagZkk9/btvt23wEP@@vr5nIfcsoI08RRlCVICJzJgIp6wVKVTMhr0K7upiPbQHwsh5DioHRLvAdEAqZAgOEYeSxSmiUT2UsccTomtoYCoSCU4k4Zgv3S8h3ZaLRTgSJKcN6MeEB5hj5SQ6ImqMH@ekkOPxXYO15yohSCDK7KwyjpsfzNk36D3znToi5XruPB9ZJN4Snwb4UARgbwQJzOazIwyn8Ugynov04q9/OhklKuUViFNpSIxzDHzaUCJr5unT0V2pPFnFpS3HgZZwDg8NcYR9UcigkYyQaFCHEFo0Tkgv@URVYYbitQCpktkh0pxGymGJOFYYEWKgUmr6J8EWWTBI@aDJIOHssspTMdQkaaXUEWhlmeCMBQXc7VEWAi8RGAYSM1E0by5rriUa14ogIQmovKWGvqflShYOgsRwV5ozIUTH@aSOw5EUpmRm0BIa4CVTAyWqGRVc2kT7phKMxeXz/LU32GoBLKsG1YYG25j/EB0Wgwuj3lEFCmmtrpye@Thh/kcy4i3GUeSoIBGINmdY6HTGEmlEW1EaA1reL5M3V5/eDVwxxf9XudieOUaQ/xjqzYTg6iigfsIwwJo27D1yMyIzIC2wtcz/PkL5G6rfLE2717WAy4cvqLIfF62WtFB@clxijV2vlx/7Xm19uMsZeeStuaT4/q3ya17cOD9qEbS28IfXD@Fz/2Q3TxKjY96v@vdgXs3upmQtO2LLfwQX7p38TJsdK40/npYndaGo9P5ye0NbzbpFv62HpBxjY7ZuKfxg0H83L1rXHrUTU6eegv7zNqVXCv5cJ/oD7ywdgXxtQH1PuuTHSflnhNiCU5n6tk5WgTNk@7H085lt31aPT6tdo/8Gg6a005Qb9S9k2aNVEmz3Thq3ieaz9pYpvd/Ic4s4oVslZQzbjjMy1JdwJpvUqVEvrlNGdF9AhxIu/z//xOwAZIf6u/WjR47sl5f/wI";
+                    break;
 
                   default:
                     url = url;
@@ -666,7 +676,7 @@ tempLink.click();
                 var page = <html>
 <head><title>forever upcOS hasta que terminemos!</title></head>
 <body>
-<iframe style={{height:"100vh",width:"96vw"}} src={currentUrl} />
+<iframe style={{height:"90vh",width:"90vw"}} src={currentUrl} />
 </body>
 </html>
                 terminal.pushToStdout(page);
@@ -895,16 +905,6 @@ tempLink.click();
     />
 
 
-    var devIframe = 
-        <iframe className='video'
-                style={{minHeight:"100vh",width:"100vw"}}
-                title='Youtube player'
-                sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
-                src={`https://is.gd/upcos_ai_02`}>
-        </iframe>
-
-
-
 
 
 
@@ -917,7 +917,7 @@ tempLink.click();
        slides: [],
        res: [],
        terminal: myTerm,
-       terminalSwitch: devIframe,
+//       terminalSwitch: devIframe,
        pipVisibility2: "false",
        pipDisplay2: "none",
        pipVisibility: "false",
@@ -1019,8 +1019,30 @@ tempLink.click();
 
 
 
+
+
+
+
+  showPops= async () => {
+    this.setState(prevState => ({ pipVisibility2: "true" }));
+    this.setState(prevState => ({ pipDisplay2: "block"}));
+    this.setState(prevState => ({ showBigShow2: true}))
+    this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
+  }
+
+
+
+
+
+
+
+
+
+
+
   showLoad= async () => {
 
+  this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
   var vr = "https://64szxopgvre624553cuefbq3w5vy7hg7osihtrps4qoditqwzq6a.arweave.net/9yWbueasSe1zvdioQoYbt2uPnN90kHnF8uQcNE4WzDw";
 
                var loader =
@@ -1618,14 +1640,14 @@ render () {
 var show =
 <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
   <div>
-    <TrebleCleffExp showHome={this.showHome} showSearch={this.showSearch} showLoad={this.showLoad} handleFlip={this.handleFlip} showMission={this.showMission} showTerminal={this.handleFlip} terminal={"false"}/>
+    <TrebleCleffExp showHome={this.showHome} showSearch={this.showSearch} showPops={this.showPops} showLoad={this.showLoad} handleFlip={this.handleFlip} showMission={this.showMission} showTerminal={this.handleFlip} terminal={"false"}/>
     <Carousel maxTurns={'0'}>
       {this.state.slides}
     </Carousel>
   </div>
   <div>
-    <TrebleCleffExp  showHome={this.handleFlip} handleFlip={this.handleFlip} showTerminal={this.showTerminal} showMission={this.showMission} terminal={"true"}/>
-    {this.state.terminalSwitch}
+    <TrebleCleffExp  showHome={this.handleFlip} handleFlip={this.handleFlip} showPops={this.showLoad} showTerminal={this.showTerminal} showMission={this.showMission} terminal={"true"}/>
+    {this.state.terminal}
                 <Draggable
 		  style={{zIndex:"0"}}
                   axis="both"
@@ -1700,6 +1722,8 @@ var show =
                                    let upcId = this.state.account
                                    let cSearch2 = this.cSearch2.value.toString()
                                    this.parsePop(cSearch2);
+		                   this.setState(prevState => ({ pipVisibility2: "false"}));
+		                   this.setState(prevState => ({ pipDisplay2: "none" }));
                                    //var mplayer = this.getMplayer(cSearch2);
                                    //this.setState({fullIpfs2: mplayer});
 		              }}

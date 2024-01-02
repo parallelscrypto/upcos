@@ -16,6 +16,7 @@ class TrebleCleffExp extends Component {
        buttonBg: "#000000",
        buttonFg: "green",
        consoleButton: "console",
+       popsButton: "pops",
        showTerminal: showTerminal,
        handleFlip: flipFunction
     }
@@ -30,12 +31,12 @@ class TrebleCleffExp extends Component {
 
     if(this.props.terminal==='true') {
        this.setState({consoleButton: 'terminal'})
+       this.setState({popsButton: 'load'})
     }
 
 
+
     var upcNum  = this.props.account;
-
-
 
     var channelNum = upcNum.substr(-1);
     var upcInfo = this.props.upcInfo(upcNum);
@@ -104,8 +105,8 @@ class TrebleCleffExp extends Component {
 
                     <button
                         style={{background: "#000000", color:"green", width: "20vw", height: "20vw", fontSize: "15px"}}
-                        onClick={this.props.showLoad}
-                  >load</button>
+                        onClick={this.props.showPops}
+                  >{this.state.popsButton}</button>
 
 
 
