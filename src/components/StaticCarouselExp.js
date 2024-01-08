@@ -145,6 +145,32 @@ export default class StaticCarouselExp extends Component {
             },
 
 
+            push: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** push a link to the popit repository </p>',
+              fn: async (link,humanReadableName) => {
+
+		      const chainLoaded = await this.props.loadBlockchainData();
+console.log("CHAINLOAD");
+console.log(chainLoaded);
+
+              }
+            },
+
+
+            pull: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open sketchpad in a window  (thank you and no affiliation to any unless explicitly stated) </p>',
+              fn: async (humanReadableName) => {
+
+		      const pulls= await this.props.popitPull(humanReadableName);
+console.log("PULLS");
+console.log(pulls);
+
+              }
+            },
+
+
+
+
             draw: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open sketchpad in a window  (thank you and no affiliation to any unless explicitly stated) </p>',
               fn: (sheetNum) => {
@@ -817,29 +843,6 @@ tempLink.click();
                       }
               }
             },
-
-
-            popit: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** popit push or popit pull? are you getting or setting data? </p>',
-              fn: () => {
-
-
-		   //var fullUrl = "https://codverter.com/src/index";
-                   var winNum = "2";
-
-                      //this.cSearch.value = "";
-                      //this.cSearch.value = fullUrl;
-                      if(winNum == "2") {
-		         this.setState(prevState => ({ pipVisibility3: "true" }));
-		         this.setState(prevState => ({ pipDisplay3: "block"}));
-		         this.setState(prevState => ({ showBigShow3: true}));
-                      }
-              }
-            },
-
-
-
-
 
 
             wurdup: {
