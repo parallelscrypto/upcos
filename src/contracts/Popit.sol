@@ -17,36 +17,19 @@ contract Popit {
     event LinkInserted(bytes32 hash, string link, address owner, string upc, string human_readable_name);
     event PopRemoved(bytes32 hash, string link, address owner, string upc, string human_readable_name);
 
-    function checkUniqueness(string memory _human_readable_name) internal view returns (bool) {
+    function checkUniqueness(string memory _human_readable_name) public returns (bool) {
         // Check if the human_readable_name already exists in any of the mappings
 
-        // Check instanceData mapping
-        for (uint256 i = 0; i < globalCount; i++) {
-            for (uint256 j = 0; j < instanceData[globalData[_human_readable_name][j].hash].length; j++) {
-                if (keccak256(bytes(instanceData[globalData[_human_readable_name][j].hash][j].human_readable_name)) == keccak256(bytes(_human_readable_name))) {
-                    return false; // Not unique
-                }
-            }
-        }
-
-        // Check upcData mapping
-        for (uint256 i = 0; i < globalCount; i++) {
-            for (uint256 j = 0; j < upcData[globalData[_human_readable_name][j].upc].length; j++) {
-                if (keccak256(bytes(upcData[globalData[_human_readable_name][j].upc][j].human_readable_name)) == keccak256(bytes(_human_readable_name))) {
-                    return false; // Not unique
-                }
-            }
-        }
-
         // Check globalData mapping
-        for (uint256 j = 0; j < globalData[_human_readable_name].length; j++) {
-            if (keccak256(bytes(globalData[_human_readable_name][j].human_readable_name)) == keccak256(bytes(_human_readable_name))) {
+        for (uint256 i = 0; i < globalData[_human_readable_name].length; i++) {
+            if (keccak256(bytes(globalData[_human_readable_name][i].human_readable_name)) == keccak256(bytes(_human_readable_name))) {
                 return false; // Not unique
             }
         }
 
         return true; // Unique
     }
+
 
     function insertLink(string memory _link, string memory _upc, string memory _human_readable_name) public {
         require(checkUniqueness(_human_readable_name), "Human readable name must be unique");
