@@ -36,6 +36,7 @@ class AppExp extends Component {
     this.loadWeb3 = this.loadWeb3.bind(this);
     this.loadBlockchainData = this.loadBlockchainData.bind(this);
     this.popitPush = this.popitPush.bind(this);
+    this.popitPull = this.popitPull.bind(this);
   }
 
   async componentWillMount() {
@@ -73,11 +74,16 @@ class AppExp extends Component {
     const popitAddress = popitData.address;
     const popitNftContract = await new web3.eth.Contract(Popit.abi, popitAddress);
     this.setState({ popitNft: popitNftContract });
-    return [popitNftContract,accounts[0]];
+    this.setState({ address: popitAddress });
+    return popitNftContract;
   }
 
-  async popitPush(link, hash, owner, upc, humanReadableName) {
-    const pushRes = await this.state.popitNft.methods.insertLink(link, hash, owner, upc, humanReadableName).send({ from: this.state.account });
+  async popitPush(link, upc, humanReadableName) {
+
+    var loadedFull = await this.loadBlockchainData();
+    var address = this.state.account;
+
+    const pushRes = await loadedFull.methods.insertLink(link, upc, humanReadableName).send({ from: address });
     return pushRes.toString();
   };
 
@@ -85,8 +91,6 @@ class AppExp extends Component {
     const loadedFull = await this.loadBlockchainData();
     const loaded  = loadedFull[0];
     const address = loadedFull[1];
-console.log("++++++++++++++LOAdded");
-console.log(loaded);
     const pushRes = await loaded.methods.getPopByGlobalName(humanReadableName).call({ from: address });
     return pushRes.toString();
   };

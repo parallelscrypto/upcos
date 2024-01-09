@@ -19,7 +19,7 @@ import styled, { css } from 'styled-components';
 import ReactPlayer from 'react-player'
 import { TikTok } from 'react-tiktok';
 import Draggable from 'react-draggable';
-
+import InsertDataForm from './InsertDataForm'
 
 
 var sha256 = require('js-sha256');
@@ -89,6 +89,10 @@ export default class StaticCarouselExp extends Component {
     super(props);
     var channel = props.upcId;
     var upc = props.code;
+
+    console.log("^^^^^^^^^^^^^^^^^^^  COOOOOOOOOOODDDDDDDDDDDDDDEEEEEEEEEEEE$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+    console.log(upc);
+    //this.setState({upc: upc});
     var missionUrl = atob(props.missionUrl);
     var manifest= props.manifest;
     var msg = atob(props.msg);
@@ -98,19 +102,26 @@ export default class StaticCarouselExp extends Component {
     var scan;
     scan = atob(manifest);
 
-    console.log("MMMMMMMMMSSSSSSSSSSSSSSSAGGGGGGGGGGGGG");
     scan = scan.split(',');
     console.log(scan);
 
     var owner = scan[1];
-    this.setState({owner: owner});
+    //this.setState({owner: owner});
+
+    this.state = { 
+      owner: owner, 
+      upc: upc, 
+    };
+
+
+
     this.progressTerminal = React.createRef()
     var promptlabel =  '[[ AWAITING COMMAND@ ]] => ';
     var welcomeMsg ="\n[[ \n you are now on upcOS privately owned property owned by \n " + owner + "\n on {polygon} \n";
     welcomeMsg += "\n MSG from @_" + upc + " => \n " +  msg + "\n]]";
     
     var myTerm = <Terminal
-      style={{"minHeight":"75vh",backgroundColor: "#000",zIndex:"99"}}
+      style={{"minHeight":"75vh",backgroundColor: "#000",zIndex:"0",wordBreak:"break-all"}}
       ref={this.progressTerminal}
       commands={{
 
@@ -147,11 +158,14 @@ export default class StaticCarouselExp extends Component {
 
             push: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** push a link to the popit repository </p>',
-              fn: async (link,humanReadableName) => {
+              fn: async () => {
 
-		      const chainLoaded = await this.props.loadBlockchainData();
-console.log("CHAINLOAD");
-console.log(chainLoaded);
+                     const terminal = this.progressTerminal.current
+		     const pushForm = <InsertDataForm upc={this.props.code} popitPush={this.props.popitPush} /> 
+
+		     this.setState(prevState => ({ fullIpfs: pushForm }));
+		     this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		     this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
 
               }
             },
@@ -161,9 +175,14 @@ console.log(chainLoaded);
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open sketchpad in a window  (thank you and no affiliation to any unless explicitly stated) </p>',
               fn: async (humanReadableName) => {
 
-		      const pulls= await this.props.popitPull(humanReadableName);
-console.log("PULLS");
-console.log(pulls);
+
+		      const pulls= await this.props.popitPull(humanReadableName)
+
+                      var [link, hash, address, upc, hrn] = pulls.split(',');
+                      var fullPage = this.printPull(link, hash, address, upc, hrn);
+
+                      const terminal = this.progressTerminal.current
+                      terminal.pushToStdout(fullPage);
 
               }
             },
@@ -1234,6 +1253,55 @@ tempLink.click();
 
 
   }
+
+
+
+
+
+
+
+  printPull=  (link,hash,address,upc,hrn) => {
+
+            var fullPage = (
+              <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
+                <tr>
+                  <th style={{ border: '1px solid #ddd', backgroundColor: '#f2f2f2', padding: '8px', textAlign: 'left' }}>Field</th>
+                  <th style={{ border: '1px solid #ddd', backgroundColor: '#f2f2f2', padding: '8px', textAlign: 'left' }}>Value</th>
+                </tr>
+            
+                <tr>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Link</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{link}</td>
+                </tr>
+            
+                <tr>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Hash</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{hash}</td>
+                </tr>
+            
+                <tr>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Address</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{address}</td>
+                </tr>
+            
+                <tr>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>UPC</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{upc}</td>
+                </tr>
+            
+                <tr>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Human Readable Name</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{hrn}</td>
+                </tr>
+              </table>
+            );
+
+            return fullPage;
+
+  }
+
+ 
+
 
 
 
