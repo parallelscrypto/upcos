@@ -4,6 +4,7 @@ import Modal from "react-animated-modal";
 import makeCarousel from 'react-reveal/makeCarousel';
 import TrebleCleffExp from './TrebleCleffExp'
 import BassCleff from './BassCleff'
+import TableSlideshow from './TableSlideshow'
 //import Popit from './Popit'
 import ReactCardFlip from 'react-card-flip';
 import Terminal from 'react-console-emulator'
@@ -177,6 +178,7 @@ export default class StaticCarouselExp extends Component {
 
 
                       const terminal = this.progressTerminal.current
+                      let tables = [];
                   
                       switch (type) {
                         case 'ppl':
@@ -192,17 +194,22 @@ export default class StaticCarouselExp extends Component {
 
 		          let pulls2= await this.props.popitPullUpc(id)
 
-console.log("========================PULLZ 2 ++++++++++++++++++==========");
-console.log(pulls2[0]);
-
                           for(var i=0; i<pulls2.length; i++) {
                              var myPull = pulls2[i];
                              var [link, hash, address, upc, hrn] = myPull.toString().split(',');
                              var fullPage = this.printPull(link, hash, address, upc, hrn);
-
-                             terminal.pushToStdout(fullPage);
+                             tables.push(fullPage);
 
                           }
+
+
+
+                             var out = <TableSlideshow  tables={tables} ></TableSlideshow>
+
+
+                             terminal.pushToStdout(out);
+
+                        break;
                         case 'hash':
                           console.log('The string is either "name", "hash", or "upc".');
                           break;
@@ -671,7 +678,8 @@ tempLink.click();
             pop: {
               description: '<p style="color:hotpink;font-size:1.1em">** poppin a terminal already in your terminal**</p>',
 
-              fn: async (url,param) => {
+              fn: async (url,param,id) => {
+                let pullOutput;
                 switch (url) {
                   case "fire":
 		    url = "https://demo.firepad.io/";
@@ -740,11 +748,49 @@ tempLink.click();
 		    url = "https://tio.run/#%23fVXvU9pAEP2ev@JM/YAzauSHaGsZR0FGLJ12EOhg7WSO5EKuJrnz7oJgx7/d7l0SCNKagZkk9/btvt23wEP@@vr5nIfcsoI08RRlCVICJzJgIp6wVKVTMhr0K7upiPbQHwsh5DioHRLvAdEAqZAgOEYeSxSmiUT2UsccTomtoYCoSCU4k4Zgv3S8h3ZaLRTgSJKcN6MeEB5hj5SQ6ImqMH@ekkOPxXYO15yohSCDK7KwyjpsfzNk36D3znToi5XruPB9ZJN4Snwb4UARgbwQJzOazIwyn8Ugynov04q9/OhklKuUViFNpSIxzDHzaUCJr5unT0V2pPFnFpS3HgZZwDg8NcYR9UcigkYyQaFCHEFo0Tkgv@URVYYbitQCpktkh0pxGymGJOFYYEWKgUmr6J8EWWTBI@aDJIOHssspTMdQkaaXUEWhlmeCMBQXc7VEWAi8RGAYSM1E0by5rriUa14ogIQmovKWGvqflShYOgsRwV5ozIUTH@aSOw5EUpmRm0BIa4CVTAyWqGRVc2kT7phKMxeXz/LU32GoBLKsG1YYG25j/EB0Wgwuj3lEFCmmtrpye@Thh/kcy4i3GUeSoIBGINmdY6HTGEmlEW1EaA1reL5M3V5/eDVwxxf9XudieOUaQ/xjqzYTg6iigfsIwwJo27D1yMyIzIC2wtcz/PkL5G6rfLE2717WAy4cvqLIfF62WtFB@clxijV2vlx/7Xm19uMsZeeStuaT4/q3ya17cOD9qEbS28IfXD@Fz/2Q3TxKjY96v@vdgXs3upmQtO2LLfwQX7p38TJsdK40/npYndaGo9P5ye0NbzbpFv62HpBxjY7ZuKfxg0H83L1rXHrUTU6eegv7zNqVXCv5cJ/oD7ywdgXxtQH1PuuTHSflnhNiCU5n6tk5WgTNk@7H085lt31aPT6tdo/8Gg6a005Qb9S9k2aNVEmz3Thq3ieaz9pYpvd/Ic4s4oVslZQzbjjMy1JdwJpvUqVEvrlNGdF9AhxIu/z//xOwAZIf6u/WjR47sl5f/wI";
                     break;
 
+                  case "pull":
+                      const terminal = this.progressTerminal.current
+                      let tables = [];
+                  
+                      switch (param) {
+                        case 'ppl':
+		          let pulls= await this.props.popitPullPPL(id)
+
+                          var [link, hash, address, upc, hrn] = pulls.split(',');
+                          var fullPage = this.printPull(link, hash, address, upc, hrn);
+                          pullOutput = true;
+                          terminal.pushToStdout(fullPage);
+                          break;
+
+                        case 'upc':
+
+		          let pulls2= await this.props.popitPullUpc(id)
+console.log("%%%%%%%%%%%%%%%%%%%%");
+console.log(pulls2);
+                          for(var i=0; i<pulls2.length; i++) {
+                             var myPull = pulls2[i];
+                             var [link, hash, address, upc, hrn] = myPull.toString().split(',');
+                             var fullPage = this.printPull(link, hash, address, upc, hrn);
+                             tables.push(fullPage);
+
+                          }
+
+
+
+                             pullOutput = <TableSlideshow  tables={tables} ></TableSlideshow>
+
+
+                             terminal.pushToStdout(pullOutput);
+
+                     }
+                  break;
                   default:
                     url = url;
                 }
 
 
+                if(!pullOutput)
+                {
 
                 const terminal = this.progressTerminal.current
                 //var currentUrl = window.location.href;
@@ -756,6 +802,7 @@ tempLink.click();
 </body>
 </html>
                 terminal.pushToStdout(page);
+               }
 
               }
             },
