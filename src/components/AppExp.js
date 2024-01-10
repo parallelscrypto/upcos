@@ -36,7 +36,9 @@ class AppExp extends Component {
     this.loadWeb3 = this.loadWeb3.bind(this);
     this.loadBlockchainData = this.loadBlockchainData.bind(this);
     this.popitPush = this.popitPush.bind(this);
-    this.popitPull = this.popitPull.bind(this);
+    this.popitPullPPL = this.popitPullPPL.bind(this);
+    this.popitPullUpc = this.popitPullUpc.bind(this);
+    this.popitPullHash = this.popitPullHash.bind(this);
   }
 
   async componentWillMount() {
@@ -87,13 +89,31 @@ class AppExp extends Component {
     return pushRes.toString();
   };
 
-  async popitPull(humanReadableName) {
+  async popitPullPPL(humanReadableName) {
     const loadedFull = await this.loadBlockchainData();
-    const loaded  = loadedFull[0];
     const address = loadedFull[1];
-    const pushRes = await loaded.methods.getPopByGlobalName(humanReadableName).call({ from: address });
+    const pushRes = await loadedFull.methods.getPopByGlobalName(humanReadableName).call({ from: address });
     return pushRes.toString();
   };
+
+
+  async popitPullUpc(upc) {
+    const loadedFull = await this.loadBlockchainData();
+    const address = loadedFull[1];
+    const pushRes = await loadedFull.methods.getPopByUpc(upc).call({ from: address });
+    return pushRes;
+  };
+
+
+  async popitPullHash(hash) {
+    const loadedFull = await this.loadBlockchainData();
+    const address = loadedFull[1];
+    const pushRes = await loadedFull.methods.getPopByInstance(hash).call({ from: address });
+    return pushRes;
+  };
+
+
+
 
   render() {
     var currentUrl = window.location.href;
@@ -120,7 +140,7 @@ class AppExp extends Component {
     return (
       <div style={{ background: "#7e7e5e", height: '100vh', width: '100vw', border: 'none' }}>
         <div>
-          <StaticCarouselExp loadBlockchainData={this.loadBlockchainData} popitPush={this.popitPush} popitPull={this.popitPull} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} />
+          <StaticCarouselExp loadBlockchainData={this.loadBlockchainData} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} />
           <CommentSection upc={this.state.code} />
         </div>
       </div>

@@ -172,17 +172,46 @@ export default class StaticCarouselExp extends Component {
 
 
             pull: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open sketchpad in a window  (thank you and no affiliation to any unless explicitly stated) </p>',
-              fn: async (humanReadableName) => {
+		    description: '<p style="color:hotpink;font-size:1.1em">** pull from the upcOS popit repository.  here is an example: pull ACTION ID, where ACTION can be one of the follwing values: `ppl` (private protocol link), `upc` (look up a push by upc code), `hash` (lookup pushes by hash) and then the corresponding ppl, upc or hash is substituted for ID. so if you want to search for ppl king-pac://king-pac-10, the command would be `pull ppl king-pac://king-pac-10` </p>',
+              fn: async (type,id) => {
 
-
-		      const pulls= await this.props.popitPull(humanReadableName)
-
-                      var [link, hash, address, upc, hrn] = pulls.split(',');
-                      var fullPage = this.printPull(link, hash, address, upc, hrn);
 
                       const terminal = this.progressTerminal.current
-                      terminal.pushToStdout(fullPage);
+                  
+                      switch (type) {
+                        case 'ppl':
+		          let pulls= await this.props.popitPullPPL(id)
+
+                          var [link, hash, address, upc, hrn] = pulls.split(',');
+                          var fullPage = this.printPull(link, hash, address, upc, hrn);
+
+                          terminal.pushToStdout(fullPage);
+                          break;
+
+                        case 'upc':
+
+		          let pulls2= await this.props.popitPullUpc(id)
+
+console.log("========================PULLZ 2 ++++++++++++++++++==========");
+console.log(pulls2[0]);
+
+                          for(var i=0; i<pulls2.length; i++) {
+                             var myPull = pulls2[i];
+                             var [link, hash, address, upc, hrn] = myPull.toString().split(',');
+                             var fullPage = this.printPull(link, hash, address, upc, hrn);
+
+                             terminal.pushToStdout(fullPage);
+
+                          }
+                        case 'hash':
+                          console.log('The string is either "name", "hash", or "upc".');
+                          break;
+                        default:
+                          console.log('The string is not "name", "hash", or "upc".');
+                          break;
+                      }
+
+                      
 
               }
             },
@@ -438,8 +467,8 @@ export default class StaticCarouselExp extends Component {
 
 
 
-            core: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** download core upcos zip file from 12-23-2023 </p>',
+            foss: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** download core upcos zip file from 12-23-2023.  Thank you to all foss developers.</p>',
               fn: () => {
 
 		      var fullUrl = "https://gtixptuq3s5k35cek7h34monodq3bu2y4fbssb6mqqsmbzhsw7sq.arweave.net/NNF3zpDcuq30RFfPvjHNcOGw01jhQykHzIQkwOTyt-U/upcos-flipitup.zip";
@@ -843,6 +872,26 @@ tempLink.click();
 
 
 
+            wurdup: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open codeverter.com window  (thank you and no affiliation) </p>',
+              fn: () => {
+
+
+
+		      var fullUrl = "https://codverter.com/src/index";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
 
             pops: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open POPScript interpreter </p>',
@@ -864,26 +913,6 @@ tempLink.click();
             },
 
 
-            wurdup: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open codeverter.com window  (thank you and no affiliation) </p>',
-              fn: () => {
-
-
-
-		      var fullUrl = "https://codverter.com/src/index";
-                      var winNum = "0";
-
-                      //this.cSearch.value = "";
-                      //this.cSearch.value = fullUrl;
-                      var mplayer = this.getMplayer(fullUrl);
-                      if(winNum == "0") {
-		         this.setState(prevState => ({ pipVisibility: "true" }));
-		         this.setState(prevState => ({ pipDisplay: "block"}));
-                         this.setState({fullIpfs: mplayer});
-		         this.setState(prevState => ({ showBigShow: true}));
-                      }
-              }
-            },
 
 
             sheeit: {
@@ -1290,7 +1319,7 @@ tempLink.click();
                 </tr>
             
                 <tr>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Human Readable Name</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Private Protocol Link (PPL)</td>
                   <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{hrn}</td>
                 </tr>
               </table>

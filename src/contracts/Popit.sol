@@ -17,7 +17,7 @@ contract Popit {
     event LinkInserted(bytes32 hash, string link, address owner, string upc, string human_readable_name);
     event PopRemoved(bytes32 hash, string link, address owner, string upc, string human_readable_name);
 
-    function checkUniqueness(string memory _human_readable_name) public returns (bool) {
+    function checkUniqueness(string memory _human_readable_name) public view returns (bool) {
         // Check if the human_readable_name already exists in any of the mappings
 
         // Check globalData mapping
@@ -34,7 +34,7 @@ contract Popit {
     function insertLink(string memory _link, string memory _upc, string memory _human_readable_name) public {
         require(checkUniqueness(_human_readable_name), "Human readable name must be unique");
 
-        bytes32 hash = sha256(abi.encodePacked(_link));
+        bytes32 hash = sha256(abi.encodePacked(_human_readable_name));
 
         Pop memory newPop = Pop({
             link: _link,
