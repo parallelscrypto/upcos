@@ -962,16 +962,20 @@ console.log(pulls2);
 
             ppl: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open PPL (private protocol link) minibrowser </p>',
-              fn: (url) => {
+              fn: async (url) => {
 
 
 
 		      //var fullUrl = "https://codverter.com/src/index";
                    var winNum = "1";
 
-                      //this.cSearch.value = "";
+                      this.cSearch.value = "";
                       this.cSearch3.value = url;
                       if(winNum == "1") {
+                         let resolvedPage = await this.resolvePPL(url);
+                         // Rest of your code remains the same
+                         this.setState({fullIpfs3: resolvedPage});
+ 
 		         this.setState(prevState => ({ pipVisibility3: "true" }));
 		         this.setState(prevState => ({ pipDisplay3: "block"}));
 		         this.setState(prevState => ({ showBigShow3: true}));
@@ -2070,15 +2074,19 @@ var show =
                   onStop={this.handleStop}>
                   <div style={{ opacity:"0.9", background:"#000000" ,color:"#ffffff", visibility:this.state.pipVisibility3, display: this.state.pipDisplay3, width:"98vw",border:"3px dashed", padding:"5px"}}>
                     <div className="handle" style={{background:"black", color:"white", display:"grid"}}><span style={{textAlign:"center",border:"dashed"}}>drag-from-here (client2)</span></div>
-                      <div style={{textAlign:"center"}}>
+                      <div style={{textAlign:"left"}}>
                          <input
                            type="text"
                            ref={(cSearch3) => { this.cSearch3 = cSearch3 }}
                            placeholder="url"
-		           style={{borderBottom: "2px solid green",borderLeft: "2px solid green",marginBottom:"20px",height:"10vh",width:"50vw",background:"black", color:"white"}}
+		           style={{borderBottom: "2px solid green",height:"25vh",width:"100vw",background:"black", color:"green"}}
                             />
+                         <br/>
+                         <div
+                              style={{width: "100vw"}}
+                         >
                          <button
-                              style={{borderBottom: "2px solid green", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"green", height: "10vh", marginBottom:"20px"}}
+                              style={{width: "50vw", boxShadow:"none", borderRadius:"0px", background: "#000000", color:"green", height: "10vh"}}
 
 
                               onClick={async (event) => { 
@@ -2098,7 +2106,7 @@ var show =
 
 
                          <button
-                              style={{borderBottom: "2px solid green", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"red", height: "10vh", marginBottom:"20px"}}
+                              style={{width: "50vw",  boxShadow:"none", borderRadius:"0px",background: "#000000", color:"red", height: "10vh"}}
 		              onClick={() => {
 		                 this.setState(prevState => ({ pipVisibility3: "false"}));
 		                 this.setState(prevState => ({ pipDisplay3: "none" }));
@@ -2106,6 +2114,7 @@ var show =
                          >
                            [x]close 
                          </button>
+                         </div>
                       </div>
 
                     <div>
