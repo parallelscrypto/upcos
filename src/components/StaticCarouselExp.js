@@ -960,6 +960,27 @@ console.log(pulls2);
             },
 
 
+            ppl: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open PPL (private protocol link) minibrowser </p>',
+              fn: (url) => {
+
+
+
+		      //var fullUrl = "https://codverter.com/src/index";
+                   var winNum = "1";
+
+                      //this.cSearch.value = "";
+                      this.cSearch3.value = url;
+                      if(winNum == "1") {
+		         this.setState(prevState => ({ pipVisibility3: "true" }));
+		         this.setState(prevState => ({ pipDisplay3: "block"}));
+		         this.setState(prevState => ({ showBigShow3: true}));
+                      }
+              }
+            },
+
+
+
 
 
             sheeit: {
@@ -998,6 +1019,9 @@ console.log(pulls2);
             dj: {
               description: '<p style="color:hotpink;font-size:1.1em">**  instantiate the dj upc to perform a substring extraction, and play spinz for all of the resulting videos in succession</p>',
               fn: (upcScript) => {
+                      if(!upcScript) {
+                         upcScript = this.state.upcscript.substr(3);
+                      }
 		      this.djupc(upcScript);
               }
 
@@ -1420,6 +1444,23 @@ console.log(pulls2);
 		this.setState({slides: res})
 		this.setState({res: res})
    }
+
+
+
+   resolvePPL= async (id) => {
+
+               let pulls= await this.props.popitPullPPL(id)
+               var [link, hash, address, upc, hrn] = pulls.split(',');
+               var page = <html>
+                     <head><title>{hash}</title></head>
+                     <body>
+                     <iframe style={{height:"100vh",width:"96vw"}} src={link} />
+                     </body>
+                     </html>
+
+               return page; 
+   }
+
 
 
   getHTML = async (vr) => {
@@ -2030,20 +2071,29 @@ var show =
                   <div style={{ opacity:"0.9", background:"#000000" ,color:"#ffffff", visibility:this.state.pipVisibility3, display: this.state.pipDisplay3, width:"98vw",border:"3px dashed", padding:"5px"}}>
                     <div className="handle" style={{background:"black", color:"white", display:"grid"}}><span style={{textAlign:"center",border:"dashed"}}>drag-from-here (client2)</span></div>
                       <div style={{textAlign:"center"}}>
+                         <input
+                           type="text"
+                           ref={(cSearch3) => { this.cSearch3 = cSearch3 }}
+                           placeholder="url"
+		           style={{borderBottom: "2px solid green",borderLeft: "2px solid green",marginBottom:"20px",height:"10vh",width:"50vw",background:"black", color:"white"}}
+                            />
                          <button
                               style={{borderBottom: "2px solid green", boxShadow:"none", borderRadius:"0px", borderRight: "2px solid green",background: "#000000", color:"green", height: "10vh", marginBottom:"20px"}}
-		              onClick={(event) => {
-                                   event.preventDefault()
-                                   let upcId = this.state.account
-                                   let cSearch3 = this.cSearch3.value.toString()
-                                   this.parsePop(cSearch3);
-		                   this.setState(prevState => ({ pipVisibility3: "false"}));
-		                   this.setState(prevState => ({ pipDisplay3: "none" }));
-                                   //var mplayer = this.getMplayer(cSearch2);
-                                   //this.setState({fullIpfs2: mplayer});
-		              }}
+
+
+                              onClick={async (event) => { 
+                                event.preventDefault();
+                                let upcId = this.state.account;
+                                let cSearch3 = this.cSearch3.value.toString();
+                                let resolvedPage = await this.resolvePPL(cSearch3);
+                                console.log("RESSSSSSSSSSSSSSSSSSS");
+                                console.log(resolvedPage);
+                                // Rest of your code remains the same
+                                this.setState({fullIpfs3: resolvedPage});
+                              }}
+
                          >
-                           execute 
+                           resolve 
                          </button>
 
 
@@ -2059,17 +2109,8 @@ var show =
                       </div>
 
                     <div>
-                   <textarea
-                                      ref={(cSearch3) => { this.cSearch3 = cSearch3 }}
-                                      id="value"
-                                      name="value"
-                                      placeholder="paste your #!/upc/pop script here"
-                                      style={{background:"black", color:"green", border: '1px solid #ccc', borderRadius: '4px', fontFamily: 'Arial, sans-serif', width: '100vw', height: '100vh' }}
-			    />
-
-
-
-</div>
+                    <div>{this.state.fullIpfs3}</div>
+                    </div>
                   </div>
                 </Draggable>
 
