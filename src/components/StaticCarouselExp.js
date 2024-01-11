@@ -851,15 +851,22 @@ console.log(pulls2);
 
 
 
-            411: {
+            serial: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC from go upc  (thank you and no affiliation)  </p>',
-              fn: (upc) => {
+              fn: () => {
+                      var currentUrl = window.location.href;
+                      var upcHash  = sha256(currentUrl)
                       const terminal = this.progressTerminal.current
-                      terminal.pushToStdout(`Please wait... searching for data on upc # ${upc}`);
-                      this.prodLookup(upc);
+                      terminal.pushToStdout(`Please wait... calculating serial on this instance of # ${upc}`);
+                      terminal.pushToStdout(`###### BEGIN ######`);
+                      terminal.pushToStdout(`${upcHash}`);
+                      terminal.pushToStdout(`###### END #######`);
                       //this.setState({showProductModal:true});
               }
             },
+
+
+
             x411: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display product information for X-Referenced UPC</p>',
               fn: (upcId) => {
@@ -1365,6 +1372,34 @@ console.log(pulls2);
 
 
   printPull=  (link,hash,address,upc,hrn) => {
+            let hrnBare = hrn;
+            let defaultHrn = "ppl " + hrn;
+            let pullHrn = "pull name " + hrn;
+            let pullUpc = "pull upc " + upc;
+            let pullHash = "pull hash " + hash;
+
+
+            let hrnTmp = 
+    <select selected={defaultHrn} id="commands" onchange="copySelectedOption()">
+      <option value={pullHrn}>{pullHrn}</option>
+      <option value={pullUpc}>{pullUpc}</option>
+      <option value={pullHash}>{pullHash}</option>
+    </select>
+
+
+     let hrnDL = 
+       <div>
+         <input type="text" list="commands" placeholder={defaultHrn} />
+         <datalist id="commands">
+           <option value={defaultHrn}>{defaultHrn}</option>
+           <option value={pullHrn}>{pullHrn}</option>
+           <option value={pullUpc}>{pullUpc}</option>
+           <option value={pullHash}>{pullHash}</option>
+         </datalist>
+       </div>
+
+
+            hrn = hrnDL;
 
             var fullPage = (
               <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
@@ -1395,6 +1430,11 @@ console.log(pulls2);
             
                 <tr>
                   <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Private Protocol Link (PPL)</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{hrnBare}</td>
+                </tr>
+            
+                <tr>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>PPL Commands</td>
                   <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{hrn}</td>
                 </tr>
               </table>
@@ -2079,7 +2119,7 @@ var show =
                            type="text"
                            ref={(cSearch3) => { this.cSearch3 = cSearch3 }}
                            placeholder="url"
-		           style={{fontSize:"1.5em",border: "5px dashed green",height:"25vh",width:"95vw",background:"black", color:"green"}}
+		           style={{fontSize:"1.2em",border: "5px dashed green",height:"15vh",width:"95vw",background:"black", color:"green"}}
                             />
                          <br/>
                          <div
@@ -2094,8 +2134,6 @@ var show =
                                 let upcId = this.state.account;
                                 let cSearch3 = this.cSearch3.value.toString();
                                 let resolvedPage = await this.resolvePPL(cSearch3);
-                                console.log("RESSSSSSSSSSSSSSSSSSS");
-                                console.log(resolvedPage);
                                 // Rest of your code remains the same
                                 this.setState({fullIpfs3: resolvedPage});
                               }}
