@@ -2079,14 +2079,14 @@ var show =
                            type="text"
                            ref={(cSearch3) => { this.cSearch3 = cSearch3 }}
                            placeholder="url"
-		           style={{borderBottom: "2px solid green",height:"25vh",width:"100vw",background:"black", color:"green"}}
+		           style={{fontSize:"1.5em",border: "5px dashed green",height:"25vh",width:"95vw",background:"black", color:"green"}}
                             />
                          <br/>
                          <div
                               style={{width: "100vw"}}
                          >
                          <button
-                              style={{width: "50vw", boxShadow:"none", borderRadius:"0px", background: "#000000", color:"green", height: "10vh"}}
+                              style={{width: "48vw", boxShadow:"none", borderRadius:"0px", background: "#000000", color:"green", height: "10vh"}}
 
 
                               onClick={async (event) => { 
@@ -2106,7 +2106,7 @@ var show =
 
 
                          <button
-                              style={{width: "50vw",  boxShadow:"none", borderRadius:"0px",background: "#000000", color:"red", height: "10vh"}}
+                              style={{width: "48vw",  boxShadow:"none", borderRadius:"0px",background: "#000000", color:"red", height: "10vh"}}
 		              onClick={() => {
 		                 this.setState(prevState => ({ pipVisibility3: "false"}));
 		                 this.setState(prevState => ({ pipDisplay3: "none" }));
