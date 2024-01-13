@@ -39,6 +39,7 @@ class AppExp extends Component {
     this.popitPullPPL = this.popitPullPPL.bind(this);
     this.popitPullUpc = this.popitPullUpc.bind(this);
     this.popitPullHash = this.popitPullHash.bind(this);
+    this.popitPullUniversal= this.popitPullUniversal.bind(this);
   }
 
   async componentWillMount() {
@@ -88,6 +89,19 @@ class AppExp extends Component {
     const pushRes = await loadedFull.methods.insertLink(link, upc, humanReadableName).send({ from: address });
     return pushRes.toString();
   };
+
+
+
+  async popitPullUniversal(start,end) {
+    const loadedFull = await this.loadBlockchainData();
+    const address = loadedFull[1];
+    const pushRes = await loadedFull.methods.getUniversalData(start,end).call({ from: address });
+    return pushRes;
+  };
+
+
+
+
 
   async popitPullPPL(humanReadableName) {
     const loadedFull = await this.loadBlockchainData();
@@ -140,7 +154,7 @@ class AppExp extends Component {
     return (
       <div style={{ background: "#7e7e5e", height: '100vh', width: '100vw', border: 'none' }}>
         <div>
-          <StaticCarouselExp loadBlockchainData={this.loadBlockchainData} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} />
+          <StaticCarouselExp loadBlockchainData={this.loadBlockchainData} popitPullUniversal={this.popitPullUniversal} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} />
           <CommentSection upc={this.state.code} />
         </div>
       </div>

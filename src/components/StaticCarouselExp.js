@@ -174,7 +174,7 @@ export default class StaticCarouselExp extends Component {
 
             pull: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** pull from the upcOS popit repository.  here is an example: pull ACTION ID, where ACTION can be one of the follwing values: `ppl` (private protocol link), `upc` (look up a push by upc code), `hash` (lookup pushes by hash) and then the corresponding ppl, upc or hash is substituted for ID. so if you want to search for ppl king-pac://king-pac-10, the command would be `pull ppl king-pac://king-pac-10` </p>',
-              fn: async (type,id) => {
+              fn: async (type,id,end) => {
 
 
                       const terminal = this.progressTerminal.current
@@ -184,8 +184,8 @@ export default class StaticCarouselExp extends Component {
                         case 'ppl':
 		          let pulls= await this.props.popitPullPPL(id)
 
-                          var [link, hash, address, upc, hrn] = pulls.split(',');
-                          var fullPage = this.printPull(link, hash, address, upc, hrn);
+                          var [link, hash, address, upc, hrn,timestamp] = pulls.split(',');
+                          var fullPage = this.printPull(link, hash, address, upc, hrn,timestamp);
 
                           terminal.pushToStdout(fullPage);
                           break;
@@ -196,8 +196,8 @@ export default class StaticCarouselExp extends Component {
 
                           for(var i=0; i<pulls2.length; i++) {
                              var myPull = pulls2[i];
-                             var [link, hash, address, upc, hrn] = myPull.toString().split(',');
-                             var fullPage = this.printPull(link, hash, address, upc, hrn);
+                             var [link, hash, address, upc, hrn, timestamp] = myPull.toString().split(',');
+                             var fullPage = this.printPull(link, hash, address, upc, hrn,timestamp);
                              tables.push(fullPage);
 
                           }
@@ -210,8 +210,23 @@ export default class StaticCarouselExp extends Component {
                              terminal.pushToStdout(out);
 
                         break;
-                        case 'hash':
-                          console.log('The string is either "name", "hash", or "upc".');
+                        case 'all':
+
+
+		          let pulls3= await this.props.popitPullUniversal(id,end);
+
+                          for(var i=0; i<pulls3.length; i++) {
+                             var myPull = pulls3[i];
+                             var [link, hash, address, upc, hrn, timestamp] = myPull.toString().split(',');
+                             var fullPage = this.printPull(link, hash, address, upc, hrn, timestamp);
+                             tables.push(fullPage);
+
+                          }
+
+                          var out = <TableSlideshow  tables={tables} ></TableSlideshow>
+                          terminal.pushToStdout(out);
+
+
                           break;
                         default:
                           console.log('The string is not "name", "hash", or "upc".');
@@ -756,8 +771,8 @@ tempLink.click();
                         case 'ppl':
 		          let pulls= await this.props.popitPullPPL(id)
 
-                          var [link, hash, address, upc, hrn] = pulls.split(',');
-                          var fullPage = this.printPull(link, hash, address, upc, hrn);
+                          var [link, hash, address, upc, hrn,timestamp] = pulls.split(',');
+                          var fullPage = this.printPull(link, hash, address, upc, hrn, timestamp);
                           pullOutput = true;
                           terminal.pushToStdout(fullPage);
                           break;
@@ -769,8 +784,8 @@ console.log("%%%%%%%%%%%%%%%%%%%%");
 console.log(pulls2);
                           for(var i=0; i<pulls2.length; i++) {
                              var myPull = pulls2[i];
-                             var [link, hash, address, upc, hrn] = myPull.toString().split(',');
-                             var fullPage = this.printPull(link, hash, address, upc, hrn);
+                             var [link, hash, address, upc, hrn,timestamp] = myPull.toString().split(',');
+                             var fullPage = this.printPull(link, hash, address, upc, hrn,timestamp);
                              tables.push(fullPage);
 
                           }
@@ -1371,31 +1386,34 @@ console.log(pulls2);
 
 
 
-  printPull=  (link,hash,address,upc,hrn) => {
+  printPull=  (link,hash,address,upc,hrn,timestamp) => {
+
+
+
+	    var tmpStamp = parseInt(timestamp);
+	    var timestamp = new Date(tmpStamp * 1000);
+
             let hrnBare = hrn;
             let defaultHrn = "ppl " + hrn;
-            let pullHrn = "pull name " + hrn;
+            let pullHrn = "pull ppl " + hrn;
             let pullUpc = "pull upc " + upc;
-            let pullHash = "pull hash " + hash;
+            //let pullHash = "pull hash " + hash;
 
 
             let hrnTmp = 
     <select selected={defaultHrn} id="commands" onchange="copySelectedOption()">
       <option value={pullHrn}>{pullHrn}</option>
       <option value={pullUpc}>{pullUpc}</option>
-      <option value={pullHash}>{pullHash}</option>
     </select>
 
 
      let hrnDL = 
        <div>
-         <input type="text" list="commands" placeholder={defaultHrn} />
-         <datalist id="commands">
-           <option value={defaultHrn}>{defaultHrn}</option>
-           <option value={pullHrn}>{pullHrn}</option>
-           <option value={pullUpc}>{pullUpc}</option>
-           <option value={pullHash}>{pullHash}</option>
-         </datalist>
+         <pre style={{color:"black", background:"green"}}>
+           {defaultHrn} <br/>
+           {pullHrn}  <br/>
+           {pullUpc}  <br/>
+         </pre>
        </div>
 
 
@@ -1433,10 +1451,15 @@ console.log(pulls2);
                   <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{hrnBare}</td>
                 </tr>
             
-                <tr>
+                <tr style={{color:"black", background:"green"}}>
                   <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>PPL Commands</td>
                   <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{hrn}</td>
                 </tr>
+                <tr>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Timestamp</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>${timestamp.toString()}</td>
+                </tr>
+
               </table>
             );
 
@@ -2115,15 +2138,8 @@ var show =
                   <div style={{ opacity:"0.9", background:"#000000" ,color:"#ffffff", visibility:this.state.pipVisibility3, display: this.state.pipDisplay3, width:"98vw",border:"3px dashed", padding:"5px"}}>
                     <div className="handle" style={{background:"black", color:"white", display:"grid"}}><span style={{textAlign:"center",border:"dashed"}}>drag-from-here (client2)</span></div>
                       <div style={{textAlign:"left"}}>
-                         <input
-                           type="text"
-                           ref={(cSearch3) => { this.cSearch3 = cSearch3 }}
-                           placeholder="url"
-		           style={{fontSize:"1.2em",border: "5px dashed green",height:"15vh",width:"95vw",background:"black", color:"green"}}
-                            />
-                         <br/>
                          <div
-                              style={{width: "100vw"}}
+                              style={{width: "96vw", marginLeft:"1px dashed white", marginRight:"1px dashed white"}}
                          >
                          <button
                               style={{width: "48vw", boxShadow:"none", borderRadius:"0px", background: "#000000", color:"green", height: "10vh"}}
@@ -2153,6 +2169,15 @@ var show =
                            [x]close 
                          </button>
                          </div>
+
+                         <input
+                           type="text"
+                           ref={(cSearch3) => { this.cSearch3 = cSearch3 }}
+                           placeholder="url"
+		           style={{textAlign:"center",fontSize:"1.2em",border: "5px dashed green",height:"15vh",width:"95vw",background:"black", color:"white"}}
+                            />
+                         <br/>
+
                       </div>
 
                     <div>
