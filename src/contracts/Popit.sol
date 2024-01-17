@@ -62,12 +62,14 @@ contract Popit {
     }
 
 
-
     function deleteLink(string memory _human_readable_name) public {
         // Find and delete the Pop with the given human_readable_name
         for (uint256 i = 0; i < globalCount; i++) {
             for (uint256 j = 0; j < globalData[_human_readable_name].length; j++) {
                 if (keccak256(bytes(globalData[_human_readable_name][j].human_readable_name)) == keccak256(bytes(_human_readable_name))) {
+                    // Check if the sender is the owner of the Pop
+                    require(msg.sender == globalData[_human_readable_name][j].owner, "Only the owner can delete this Pop");
+
                     // Remove the Pop from all mappings
                     bytes32 hash = globalData[_human_readable_name][j].hash;
                     delete instanceData[hash];
@@ -110,13 +112,6 @@ contract Popit {
             }
         }
     }
-
-
-
-
-
-
-
 
 
     function getPopByInstance(bytes32 _hash) public view returns (Pop[] memory) {
