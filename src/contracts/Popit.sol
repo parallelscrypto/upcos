@@ -1,7 +1,23 @@
 pragma solidity ^0.8.0;
 
-contract Popit {
+pragma experimental ABIEncoderV2;
+
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
+
+
+import "./Flip.sol";
+
+
+
+contract Popit is ERC721, Ownable{
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIds;
+
+
     struct Pop {
+        uint256 id;
         string link;
         bytes32 hash;
         address owner;
@@ -14,13 +30,27 @@ contract Popit {
     mapping(string => Pop[]) private upcData;
     mapping(string => Pop[]) private globalData; // Changed to key on human_readable_name
     mapping(uint256 => Pop[]) private universalData; // New mapping
-    uint256 private globalCount;
+    Flip    private _token;
+    uint256  public latestTokenId;
+    uint256  public price = 100000000000000000;
+
+
 
     event LinkInserted(bytes32 hash, string link, address owner, string upc, string human_readable_name);
     event PopRemoved(bytes32 hash, string link, address owner, string upc, string human_readable_name);
+    
 
-    function getGlobalCount() public view returns (uint256) {
-        return globalCount;
+    constructor() ERC721("PrivateProtocolLink", "PPL") Ownable()  {
+        _token = Flip(0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118);
+    }
+
+    function setPrice(uint256  _price) external onlyOwner {
+        price = _price;
+    }
+
+
+    function setPayToken(address  addy) external onlyOwner {
+        _token = Flip(addy);
     }
 
 
@@ -41,9 +71,20 @@ contract Popit {
     function insertLink(string memory _link, string memory _upc, string memory _human_readable_name) public {
         require(checkUniqueness(_human_readable_name), "Human readable name must be unique");
 
+        _token.transferFrom(msg.sender, address(this), price);
+        _token.burn(price);
+
         bytes32 hash = sha256(abi.encodePacked(_human_readable_name));
 
+
+        _tokenIds.increment();
+        uint256 newNftTokenId = _tokenIds.current();
+        latestTokenId = newNftTokenId;
+
+
+
         Pop memory newPop = Pop({
+            id: latestTokenId,
             link: _link,
             hash: hash,
             owner: msg.sender,
@@ -55,8 +96,13 @@ contract Popit {
         instanceData[hash].push(newPop);
         upcData[_upc].push(newPop);
         globalData[_human_readable_name].push(newPop); // Updated to key on human_readable_name
-        universalData[globalCount + 1].push(newPop); // Increment and push to universalData
-        globalCount++;
+        universalData[latestTokenId + 1].push(newPop); // Increment and push to universalData
+
+        
+        _safeMint(msg.sender, latestTokenId);
+
+
+        latestTokenId++;
 
         emit LinkInserted(hash, _link, msg.sender, _upc, _human_readable_name);
     }
@@ -64,7 +110,7 @@ contract Popit {
 
     function deleteLink(string memory _human_readable_name) public {
         // Find and delete the Pop with the given human_readable_name
-        for (uint256 i = 0; i < globalCount; i++) {
+        for (uint256 i = 0; i < latestTokenId; i++) {
             for (uint256 j = 0; j < globalData[_human_readable_name].length; j++) {
                 if (keccak256(bytes(globalData[_human_readable_name][j].human_readable_name)) == keccak256(bytes(_human_readable_name))) {
                     // Check if the sender is the owner of the Pop
@@ -94,7 +140,7 @@ contract Popit {
                     globalData[_human_readable_name].pop();
 
                     // Remove the Pop from universalData
-                    Pop[] storage universalArray = universalData[globalCount];
+                    Pop[] storage universalArray = universalData[latestTokenId];
                     for (uint256 m = 0; m < universalArray.length; m++) {
                         if (universalArray[m].hash == hash) {
                             // Shift elements after the deleted one to fill the gap
@@ -127,9 +173,9 @@ contract Popit {
     }
 
     function getUniversalData(uint256 start, uint256 end) public view returns (Pop[] memory) {
-        // Check if the end parameter is less than or equal to the globalCount
-        if (end > globalCount) {
-            end = globalCount;
+        // Check if the end parameter is less than or equal to the latestTokenId
+        if (end > latestTokenId) {
+            end = latestTokenId;
         }
 
         Pop[] memory result = new Pop[](end - start + 1);

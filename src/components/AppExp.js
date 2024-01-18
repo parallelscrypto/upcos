@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Iframe from 'react-iframe'
 import Popit from '../etc/rawmaterial/Popit.json'
+import NostRadioToken from '../etc/rawmaterial/Flip.json'
 import Web3 from 'web3'
 //import Navbar from './Navbar'
 import CommentSection from './CommentSection'
@@ -78,6 +79,26 @@ class AppExp extends Component {
     const popitNftContract = await new web3.eth.Contract(Popit.abi, popitAddress);
     this.setState({ popitNft: popitNftContract });
     this.setState({ address: popitAddress });
+
+
+
+    // Load PAY currency
+    const intelXData = NostRadioToken.networks[networkId]
+    if(intelXData) {
+      const MYDATA = new web3.eth.Contract(NostRadioToken.abi, intelXData.address)
+      this.setState({ intelX: MYDATA })
+      this.setState({ intelXData: intelXData })
+    } else {
+      //window.alert('UPCGoldBank contract not deployed to detected network.')
+    }
+
+
+
+
+
+
+
+
     return popitNftContract;
   }
 
@@ -92,6 +113,17 @@ class AppExp extends Component {
 
 
 
+  async latestTokenId() { 
+    const loadedFull = await this.loadBlockchainData();
+    const address = loadedFull[1];
+    const pushRes = await loadedFull.methods.latestTokenId().call({ from: address });
+    return pushRes.toString();
+  };
+
+
+
+
+
   async popitPullUniversal(start,end) {
     const loadedFull = await this.loadBlockchainData();
     const address = loadedFull[1];
@@ -100,6 +132,21 @@ class AppExp extends Component {
   };
 
 
+
+  async approvePPL(numTokens) {
+    const loadedFull = await this.loadBlockchainData();
+    const address = loadedFull[1];
+    //const pushRes = await loadedFull.methods.getPopByInstance(hash).call({ from: address });
+
+    if(!numTokens) {
+       numTokens = "100000000000000000";
+    }
+
+    var approval = await this.state.intelX.methods.approve(address, numTokens).send({ from: this.state.account });
+
+
+    return approval.toString();
+  };
 
 
 
@@ -154,7 +201,7 @@ class AppExp extends Component {
     return (
       <div style={{ background: "#7e7e5e", height: '100vh', width: '100vw', border: 'none' }}>
         <div>
-          <StaticCarouselExp loadBlockchainData={this.loadBlockchainData} popitPullUniversal={this.popitPullUniversal} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} />
+          <StaticCarouselExp loadBlockchainData={this.loadBlockchainData} latestTokenId={this.latestTokenId} popitPullUniversal={this.popitPullUniversal} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} />
           <CommentSection upc={this.state.code} />
         </div>
       </div>

@@ -184,8 +184,8 @@ export default class StaticCarouselExp extends Component {
                         case 'ppl':
 		          let pulls= await this.props.popitPullPPL(id)
 
-                          var [link, hash, address, upc, hrn,timestamp] = pulls.split(',');
-                          var fullPage = this.printPull(link, hash, address, upc, hrn,timestamp);
+                          var [id, link, hash, address, upc, hrn,timestamp] = pulls.split(',');
+                          var fullPage = this.printPull(id, link, hash, address, upc, hrn,timestamp);
 
                           terminal.pushToStdout(fullPage);
                           break;
@@ -196,8 +196,8 @@ export default class StaticCarouselExp extends Component {
 
                           for(var i=0; i<pulls2.length; i++) {
                              var myPull = pulls2[i];
-                             var [link, hash, address, upc, hrn, timestamp] = myPull.toString().split(',');
-                             var fullPage = this.printPull(link, hash, address, upc, hrn,timestamp);
+                             var [id, link, hash, address, upc, hrn, timestamp] = myPull.toString().split(',');
+                             var fullPage = this.printPull(id, link, hash, address, upc, hrn,timestamp);
                              tables.push(fullPage);
 
                           }
@@ -211,14 +211,15 @@ export default class StaticCarouselExp extends Component {
 
                         break;
                         case 'all':
-
-
+                          //the index starts at zero, so add one to get proper range
+                          id++;
+                          end++;
 		          let pulls3= await this.props.popitPullUniversal(id,end);
 
                           for(var i=0; i<pulls3.length; i++) {
                              var myPull = pulls3[i];
-                             var [link, hash, address, upc, hrn, timestamp] = myPull.toString().split(',');
-                             var fullPage = this.printPull(link, hash, address, upc, hrn, timestamp);
+                             var [id, link, hash, address, upc, hrn, timestamp] = myPull.toString().split(',');
+                             var fullPage = this.printPull(id,link, hash, address, upc, hrn, timestamp);
                              tables.push(fullPage);
 
                           }
@@ -982,6 +983,45 @@ console.log(pulls2);
             },
 
 
+
+            pplast: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** display the highest ppl id </p>',
+              fn: async () => {
+
+
+                      const terminal = this.progressTerminal.current
+                      let latest = await this.props.latestTokenId() - 1;  
+                      terminal.pushToStdout(`Please wait... fetching latest PPL id`);
+                      terminal.pushToStdout(`###### BEGIN ######`);
+                      terminal.pushToStdout( `latest_ppl_id: ` + `${latest}`);
+                      terminal.pushToStdout(`###### END #######`);
+
+              }
+            },
+
+
+            pops: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open POPScript interpreter </p>',
+              fn: () => {
+
+
+
+		      //var fullUrl = "https://codverter.com/src/index";
+                   var winNum = "1";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      if(winNum == "1") {
+		         this.setState(prevState => ({ pipVisibility2: "true" }));
+		         this.setState(prevState => ({ pipDisplay2: "block"}));
+		         this.setState(prevState => ({ showBigShow2: true}));
+                      }
+              }
+            },
+
+
+
+
             ppl: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open PPL (private protocol link) minibrowser </p>',
               fn: async (url) => {
@@ -1386,7 +1426,7 @@ console.log(pulls2);
 
 
 
-  printPull=  (link,hash,address,upc,hrn,timestamp) => {
+  printPull=  (id,link,hash,address,upc,hrn,timestamp) => {
 
 
 
@@ -1397,6 +1437,7 @@ console.log(pulls2);
             let defaultHrn = "ppl " + hrn;
             let pullHrn = "pull ppl " + hrn;
             let pullUpc = "pull upc " + upc;
+            let pullAll = "pull all " + id + " " + id;
             //let pullHash = "pull hash " + hash;
 
 
@@ -1412,6 +1453,7 @@ console.log(pulls2);
          <pre style={{color:"black", background:"green"}}>
            {defaultHrn} <br/>
            {pullHrn}  <br/>
+           {pullAll}  <br/>
            {pullUpc}  <br/>
          </pre>
        </div>
@@ -1426,6 +1468,13 @@ console.log(pulls2);
                   <th style={{ border: '1px solid #ddd', backgroundColor: '#f2f2f2', padding: '8px', textAlign: 'left' }}>Value</th>
                 </tr>
             
+
+                <tr>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>ID</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{id}</td>
+                </tr>
+
+
                 <tr>
                   <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Link</td>
                   <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{link}</td>
@@ -1437,7 +1486,7 @@ console.log(pulls2);
                 </tr>
             
                 <tr>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Address</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Owner</td>
                   <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{address}</td>
                 </tr>
             
@@ -1544,7 +1593,7 @@ console.log(pulls2);
                                        style={{minHeight:"80vh",width:"90vw"}}
                                        allow='camera;microphone'
                                        title='upcOS-init'
-                                       sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                                       sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popuAllallow-scripts allow-presentation'
                                        src={vr}>
                                </iframe>
                             </div>
