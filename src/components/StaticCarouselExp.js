@@ -772,8 +772,8 @@ tempLink.click();
                         case 'ppl':
 		          let pulls= await this.props.popitPullPPL(id)
 
-                          var [link, hash, address, upc, hrn,timestamp] = pulls.split(',');
-                          var fullPage = this.printPull(link, hash, address, upc, hrn, timestamp);
+                          var [id, link, hash, address, upc, hrn,timestamp] = pulls.split(',');
+                          var fullPage = this.printPull(id, link, hash, address, upc, hrn, timestamp);
                           pullOutput = true;
                           terminal.pushToStdout(fullPage);
                           break;
@@ -785,8 +785,8 @@ console.log("%%%%%%%%%%%%%%%%%%%%");
 console.log(pulls2);
                           for(var i=0; i<pulls2.length; i++) {
                              var myPull = pulls2[i];
-                             var [link, hash, address, upc, hrn,timestamp] = myPull.toString().split(',');
-                             var fullPage = this.printPull(link, hash, address, upc, hrn,timestamp);
+                             var [id, link, hash, address, upc, hrn,timestamp] = myPull.toString().split(',');
+                             var fullPage = this.printPull(id, link, hash, address, upc, hrn,timestamp);
                              tables.push(fullPage);
 
                           }
@@ -1584,7 +1584,7 @@ console.log(pulls2);
    resolvePPL= async (id) => {
 
                let pulls= await this.props.popitPullPPL(id)
-               var [link, hash, address, upc, hrn] = pulls.split(',');
+               var [id, link, hash, address, upc, hrn] = pulls.split(',');
                var page = <html>
                      <head><title>{hash}</title></head>
                      <body>
@@ -2203,7 +2203,7 @@ var show =
                   onDrag={this.handleDrag}
                   onStop={this.handleStop}>
                   <div style={{ opacity:"0.9", background:"#000000" ,color:"#ffffff", visibility:this.state.pipVisibility3, display: this.state.pipDisplay3, width:"98vw",border:"3px dashed", padding:"5px"}}>
-                    <div className="handle" style={{background:"black", color:"white", display:"grid"}}><span style={{textAlign:"center",border:"dashed"}}>drag-from-here (client2)</span></div>
+                    <div className="handle" style={{background:"black", color:"white", display:"grid"}}><span style={{textAlign:"center",border:"dashed"}}>drag-from-here (ppl-mini-brwsr)</span></div>
                       <div style={{textAlign:"left"}}>
                          <div
                               style={{width: "96vw", marginLeft:"1px dashed white", marginRight:"1px dashed white"}}
