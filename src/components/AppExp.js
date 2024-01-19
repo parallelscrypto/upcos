@@ -28,6 +28,7 @@ class AppExp extends Component {
       marketInfo: marketInfo,
       code: "",
       popitNft: null,
+      intelX: null,
       popitData: null
     }
 
@@ -41,6 +42,7 @@ class AppExp extends Component {
     this.popitPullUpc = this.popitPullUpc.bind(this);
     this.popitPullHash = this.popitPullHash.bind(this);
     this.popitPullUniversal= this.popitPullUniversal.bind(this);
+    this.approvePPL= this.approvePPL.bind(this);
   }
 
   async componentWillMount() {
@@ -79,18 +81,6 @@ class AppExp extends Component {
     const popitNftContract = await new web3.eth.Contract(Popit.abi, popitAddress);
     this.setState({ popitNft: popitNftContract });
     this.setState({ address: popitAddress });
-
-
-
-    // Load PAY currency
-    const intelXData = NostRadioToken.networks[networkId]
-    if(intelXData) {
-      const MYDATA = new web3.eth.Contract(NostRadioToken.abi, intelXData.address)
-      this.setState({ intelX: MYDATA })
-      this.setState({ intelXData: intelXData })
-    } else {
-      //window.alert('UPCGoldBank contract not deployed to detected network.')
-    }
 
 
 
@@ -134,17 +124,48 @@ class AppExp extends Component {
 
 
   async approvePPL(numTokens) {
-    const loadedFull = await this.loadBlockchainData();
-    const address = loadedFull[1];
-    //const pushRes = await loadedFull.methods.getPopByInstance(hash).call({ from: address });
+//    const loadedFull = await this.loadBlockchainData();
+//    const address = loadedFull[1];
+
+
+
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum)
+      await window.ethereum.enable()
+    } else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider)
+    } else {
+      window.web3 = new Web3(window.web3.currentProvider)
+      //window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+    }
+
+    const web3 = window.web3
+    console.log("######################### its ###################");
+    const networkId = await web3.eth.net.getId()
+
+    const popitData = Popit.networks[networkId]
+    const address = popitData.address;
+
+    console.log(address);
+
+    let MYDATA;
+
+    // Load PAY currency
+    const intelXData = NostRadioToken.networks[networkId]
+    if(intelXData) {
+
+      MYDATA = new web3.eth.Contract(NostRadioToken.abi, intelXData.address)
+    }
+
 
     if(!numTokens) {
        numTokens = "100000000000000000";
     }
 
-    var approval = await this.state.intelX.methods.approve(address, numTokens).send({ from: this.state.account });
-
-
+    const accounts = await web3.eth.getAccounts();
+    
+    let account = accounts[0];
+    let approval = await MYDATA.methods.approve(address, numTokens).send({ from: account });
     return approval.toString();
   };
 
@@ -201,7 +222,7 @@ class AppExp extends Component {
     return (
       <div style={{ background: "#7e7e5e", height: '100vh', width: '100vw', border: 'none' }}>
         <div>
-          <StaticCarouselExp loadBlockchainData={this.loadBlockchainData} latestTokenId={this.latestTokenId} popitPullUniversal={this.popitPullUniversal} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} />
+          <StaticCarouselExp approvePPL={this.approvePPL} loadBlockchainData={this.loadBlockchainData} latestTokenId={this.latestTokenId} popitPullUniversal={this.popitPullUniversal} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} />
           <CommentSection upc={this.state.code} />
         </div>
       </div>

@@ -984,6 +984,24 @@ console.log(pulls2);
 
 
 
+            reconppl: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** approve your flip token to be spent for a PPL</p>',
+              fn: async () => {
+
+
+                      const terminal = this.progressTerminal.current
+                      terminal.pushToStdout(`Please wait... approving tokens so that you can buy your PPL!`);
+                      let latest = await this.props.approvePPL("100000000000000000");  
+                      terminal.pushToStdout(`###### BEGIN ######`);
+                      terminal.pushToStdout( `approve_status: ` + `${latest}`);
+                      terminal.pushToStdout(`###### END #######`);
+
+              }
+            },
+
+
+
+
             pplast: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** display the highest ppl id </p>',
               fn: async () => {
