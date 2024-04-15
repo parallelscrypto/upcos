@@ -174,7 +174,7 @@ export default class StaticCarouselExp extends Component {
 
             pull: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** pull from the upcOS popit repository.  here is an example: pull ACTION ID, where ACTION can be one of the follwing values: `ppl` (private protocol link), `upc` (look up a push by upc code), `hash` (lookup pushes by hash) and then the corresponding ppl, upc or hash is substituted for ID. so if you want to search for ppl king-pac://king-pac-10, the command would be `pull ppl king-pac://king-pac-10` </p>',
-              fn: async (type,id,end) => {
+              fn: async (type,id,end,grep) => {
 
 
                       const terminal = this.progressTerminal.current
@@ -221,6 +221,43 @@ export default class StaticCarouselExp extends Component {
                              terminal.pushToStdout(out);
 
                         break;
+                        case 'grep':
+
+
+                          //the second param will be the search param, so reassign
+                          grep = id;
+                          //the index starts at zero, so add one to get proper range
+                          var grepCount=1;
+                          var fullPage;
+
+                          let latest = await this.props.latestTokenId() - 1;  
+		          let pulls4= await this.props.popitPullUniversal(grepCount,latest);
+
+                          for(var i=0; i<pulls4.length; i++) {
+                             var myPull = pulls4[i];
+                             var [id, link, hash, address, upc, hrn, timestamp] = myPull.toString().split(',');
+
+                             console.log("BIGTEST");
+                             console.log(hrn + " =~= " + grep )
+                             if(!hrn.includes(grep)) {
+                                continue;
+                             }
+                             else {
+                                fullPage = this.printPull(id,link, hash, address, upc, hrn, timestamp);
+                                tables.push(fullPage);
+                             }
+
+
+                          }
+
+                          var out = <TableSlideshow  tables={tables} ></TableSlideshow>
+                          terminal.pushToStdout(out);
+
+
+                          break;
+ 
+
+
                         case 'all':
                           //the index starts at zero, so add one to get proper range
                           id++;
