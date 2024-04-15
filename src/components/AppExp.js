@@ -10,6 +10,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './App.css'
 import 'react-tabs/style/react-tabs.css';
 import { TickerTape } from "react-ts-tradingview-widgets";
+var sha256 = require('js-sha256');
 
 class AppExp extends Component {
   constructor(props) {
@@ -209,13 +210,16 @@ class AppExp extends Component {
     // Parse the string as JSON
     const dataObject = JSON.parse(myShow);
 
-    console.log("data obj is ");
-    console.log(dataObject);
 
     // Extract the value of the 'show' variable
     const showValue = dataObject.show;
     const codeValue = dataObject.code;
     const manifestValue = dataObject.manifest;
+
+    var manHash  = sha256(manifestValue)
+
+    console.log("############## manifest obj is ");
+    console.log(manHash);
     const msg = dataObject.msg;
     const missionUrl = dataObject.missionUrl;
 
@@ -223,7 +227,7 @@ class AppExp extends Component {
       <div style={{ background: "#7e7e5e", height: '100vh', width: '100vw', border: 'none' }}>
         <div>
           <StaticCarouselExp approvePPL={this.approvePPL} loadBlockchainData={this.loadBlockchainData} latestTokenId={this.latestTokenId} popitPullUniversal={this.popitPullUniversal} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} />
-          <CommentSection upc={this.state.code} />
+          <CommentSection upc={manHash} />
         </div>
       </div>
     );

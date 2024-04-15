@@ -190,6 +190,17 @@ export default class StaticCarouselExp extends Component {
                           terminal.pushToStdout(fullPage);
                           break;
 
+
+                        case 'branch':
+		          let pulls1= await this.props.popitPullHash(id)
+
+                          var [id, link, hash, address, upc, hrn,timestamp] = pulls1.split(',');
+                          var fullPage = this.printPull(id, link, hash, address, upc, hrn,timestamp);
+
+                          terminal.pushToStdout(fullPage);
+                          break;
+
+
                         case 'upc':
 
 		          let pulls2= await this.props.popitPullUpc(id)
@@ -600,7 +611,7 @@ export default class StaticCarouselExp extends Component {
                           }
                           var mplayer = <iframe className='video'
                                   style={{height:"80vh",width:"96vw"}}
-		                  allow="camera; microphone"
+		                  allow="camera; microphone; fullscreen"
                                   title='6 upc dj player'
                                   sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                   src={bookUrl}>
@@ -751,6 +762,19 @@ tempLink.click();
                    case "wurdup":
 		    url = "https://codverter.com/src/index";
                     break;
+
+                   case "ppl":
+
+console.log("555555999999");
+                     let pulls= await this.props.popitPullPPL(param)
+                     var [id, link, hash, address, upc, hrn] = pulls.split(',');
+                     url = link;
+
+console.log(url);
+                    break;
+
+
+
                    case "jokes":
                     if(param) {
 		       param = "/en/search/?name="+param;
@@ -1197,10 +1221,10 @@ console.log(pulls2);
   getMplayer = (fullUrl) => {
       var mplayer = <iframe className='video'
               style={{height:"100vh",width:"96vw"}}
-	      allow="camera; microphone"
+	      allow="camera; microphone; fullscreen"
               title='2 upc dj player'
               sandbox='allow-downloads allow-fullscreen allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
-              src={fullUrl} allowfullscreen>
+              src={fullUrl} >
       </iframe>
 
       if(fullUrl.includes('tiktok')) {
@@ -1213,10 +1237,10 @@ console.log(pulls2);
          mplayer =
          <iframe className='video'
                  style={{minHeight:"100vh",width:"100vw"}}
-		 allow="camera; microphone"
+		 allow="camera; microphone; fullscreen"
                  title='Youtube player'
                  sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-fullscreen allow-popups allow-scripts allow-presentation'
-                 src={`https://youtube.com/embed/${youtubeID}?autoplay=0`} allowfullscreen>
+                 src={`https://youtube.com/embed/${youtubeID}?autoplay=0`} >
          </iframe>
       }
 
@@ -1226,7 +1250,7 @@ console.log(pulls2);
          && !fullUrl.includes('dailymotion') && !fullUrl.includes('twitch')) {
             mplayer = <iframe className='video'
                     style={{height:"100vh",width:"96vw"}}
-		    allow="camera; microphone"
+		    allow="camera; microphone; fullscreen"
                     title='3 upc dj player'
                     sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                     src={fullUrl}>
@@ -1279,7 +1303,7 @@ console.log(pulls2);
                            <div>
                                <iframe className='video'
                                        style={{minHeight:"80vh",width:"90vw"}}
-                                       allow='camera;microphone'
+                                       allow='camera;microphone;fullscreen'
                                        title='upcOS-init'
                                        sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                        src={vr}>
@@ -1291,16 +1315,16 @@ console.log(pulls2);
   }
 
 
-  showSearch= async () => {
+  showPost= async () => {
 
-  var vr = "https://kbin.social/m/upcscript";
+  var vr = "https://zyco4irrphuhtypaqxhcglrw6be4gx7q5vpsmzlninjdw7bfbwjq.arweave.net/zgTuIjF56Hnh4IXOIy428EnDX_DtXyZlbUNSO3wlDZM";
 
                var loader =
                            <div>
                                <iframe className='video'
                                        style={{minHeight:"80vh",width:"90vw"}}
-                                       allow='camera;microphone'
-                                       title='upcOS-init'
+                                       allow='camera;microphone;fullscreen'
+                                       title='upcOS-post'
                                        sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                        src={vr}>
                                </iframe>
@@ -1319,7 +1343,7 @@ console.log(pulls2);
                            <div>
                                <iframe className='video'
                                        style={{minHeight:"80vh",width:"90vw"}}
-                                       allow='camera;microphone'
+                                       allow='camera;microphone;fullscreen'
                                        title='upcOS-init'
                                        sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                        src={vr}>
@@ -1456,14 +1480,7 @@ console.log(pulls2);
             let pullHrn = "pull ppl " + hrn;
             let pullUpc = "pull upc " + upc;
             let pullAll = "pull all " + id + " " + id;
-            //let pullHash = "pull hash " + hash;
-
-
-            let hrnTmp = 
-    <select selected={defaultHrn} id="commands" onchange="copySelectedOption()">
-      <option value={pullHrn}>{pullHrn}</option>
-      <option value={pullUpc}>{pullUpc}</option>
-    </select>
+            let pullHash = "pull hash " + hash;
 
 
      let hrnDL = 
@@ -1473,6 +1490,7 @@ console.log(pulls2);
            {pullHrn}  <br/>
            {pullAll}  <br/>
            {pullUpc}  <br/>
+           {pullHash}  <br/>
          </pre>
        </div>
 
@@ -1609,7 +1627,7 @@ console.log(pulls2);
                            <div>
                                <iframe className='video'
                                        style={{minHeight:"80vh",width:"90vw"}}
-                                       allow='camera;microphone'
+                                       allow='camera;microphone;fullscreen'
                                        title='upcOS-init'
                                        sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popuAllallow-scripts allow-presentation'
                                        src={vr}>
@@ -1638,7 +1656,10 @@ console.log(pulls2);
 
                         for(var i=0; i< pieces.length; i++) {
                            var piece = pieces[i];
-		           if(piece.includes('yout')) {
+                           if(!piece) {
+                              continue;
+                           }
+		           else if(piece.includes('yout')) {
                               result.push(piece);
                            }
                            else if(piece.length ==11) {
@@ -1650,8 +1671,9 @@ console.log(pulls2);
                            }
 
                         }
-                        terminal.pushToStdout(`will parse stage ${upcScript}`);
+                        terminal.pushToStdout(`will parse stage ${result}`);
 mplayer = <ReactPlayer
+width="95vw"
   url={result}
 />
  	   self.setState(prevState => ({ fullIpfs: mplayer }));
@@ -1737,9 +1759,6 @@ console.log(remainder);
 		    remainder = "https://codverter.com/src/index";
                     break;
                    case "jokes":
-
-
-
                    var param = "";
                    // Check if there are at least 2 words
                    if (words.length >= 2) {
@@ -1749,6 +1768,21 @@ console.log(remainder);
   
 		    remainder = "https://www.myinstants.com" + param;
                     break;
+
+                   case "ppl":
+                   var param = "";
+                   // Check if there are at least 2 words
+                   var resolvedPage;
+                   if (words.length >= 2) {
+		     param =  words[1];
+                     resolvedPage = await this.resolvePPL(param);
+
+                     // Return the second word
+                   }
+  
+		    remainder = resolvedPage;
+                    break;
+
                   case "links":
 		    remainder = "https://tio.run/#%23fVXvU9pAEP2ev@JM/YAzauSHaGsZR0FGLJ12EOhg7WSO5EKuJrnz7oJgx7/d7l0SCNKagZkk9/btvt23wEP@@vr5nIfcsoI08RRlCVICJzJgIp6wVKVTMhr0K7upiPbQHwsh5DioHRLvAdEAqZAgOEYeSxSmiUT2UsccTomtoYCoSCU4k4Zgv3S8h3ZaLRTgSJKcN6MeEB5hj5SQ6ImqMH@ekkOPxXYO15yohSCDK7KwyjpsfzNk36D3znToi5XruPB9ZJN4Snwb4UARgbwQJzOazIwyn8Ugynov04q9/OhklKuUViFNpSIxzDHzaUCJr5unT0V2pPFnFpS3HgZZwDg8NcYR9UcigkYyQaFCHEFo0Tkgv@URVYYbitQCpktkh0pxGymGJOFYYEWKgUmr6J8EWWTBI@aDJIOHssspTMdQkaaXUEWhlmeCMBQXc7VEWAi8RGAYSM1E0by5rriUa14ogIQmovKWGvqflShYOgsRwV5ozIUTH@aSOw5EUpmRm0BIa4CVTAyWqGRVc2kT7phKMxeXz/LU32GoBLKsG1YYG25j/EB0Wgwuj3lEFCmmtrpye@Thh/kcy4i3GUeSoIBGINmdY6HTGEmlEW1EaA1reL5M3V5/eDVwxxf9XudieOUaQ/xjqzYTg6iigfsIwwJo27D1yMyIzIC2wtcz/PkL5G6rfLE2717WAy4cvqLIfF62WtFB@clxijV2vlx/7Xm19uMsZeeStuaT4/q3ya17cOD9qEbS28IfXD@Fz/2Q3TxKjY96v@vdgXs3upmQtO2LLfwQX7p38TJsdK40/npYndaGo9P5ye0NbzbpFv62HpBxjY7ZuKfxg0H83L1rXHrUTU6eegv7zNqVXCv5cJ/oD7ywdgXxtQH1PuuTHSflnhNiCU5n6tk5WgTNk@7H085lt31aPT6tdo/8Gg6a005Qb9S9k2aNVEmz3Thq3ieaz9pYpvd/Ic4s4oVslZQzbjjMy1JdwJpvUqVEvrlNGdF9AhxIu/z//xOwAZIf6u/WjR47sl5f/wI";
                     break;
@@ -1763,7 +1797,7 @@ console.log(remainder);
                 var page = <html>
 <head><title>forever upcOS hasta que terminemos!</title></head>
 <body>
-<iframe style={{height:"100vh",width:"96vw"}} src={currentUrl} />
+<iframe allow="fullscreen;" style={{height:"95vh",width:"96vw"}} src={currentUrl} />
 </body>
 </html>
                 terminal.pushToStdout(page);
@@ -1785,7 +1819,6 @@ console.log(remainder);
     scan = scan.split(',');
     var res;
     var ipfs   = this.props.show;
-    console.log("manifest is " + scan );
     
     if (!ipfs.includes(">>>")) {
        ipfs = ">>>" + ipfs;
@@ -2025,7 +2058,7 @@ console.log(remainder);
                 <div>
                    <iframe className='video'
                            style={{minHeight:"100vh",width:"100vw"}}
-                           allow="camera; microphone"
+                           allow="camera; microphone;fullscreen"
                            title='Youtube player'
                            sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                            src={`https://youtube.com/embed/${youtubeID}?autoplay=0`}>
@@ -2042,7 +2075,7 @@ console.log(remainder);
                <div>
                    <iframe className='video'
                            style={{minHeight:"100vh",width:"100vw"}}
-                           allow='camera;microphone'
+                           allow='camera;microphone;fullscreen'
                            title='upcOS-init'
                            sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                            src={fullUrl}>
@@ -2069,7 +2102,7 @@ render () {
 var show =
 <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
   <div>
-    <TrebleCleffExp showHome={this.showHome} showSearch={this.showSearch} showPops={this.showPops} showLoad={this.showLoad} handleFlip={this.handleFlip} showMission={this.showMission} showTerminal={this.handleFlip} terminal={"false"}/>
+    <TrebleCleffExp showHome={this.showHome} showPost={this.showPost} showPops={this.showPops} showLoad={this.showLoad} handleFlip={this.handleFlip} showMission={this.showMission} showTerminal={this.handleFlip} terminal={"false"}/>
     <Carousel maxTurns={'0'}>
       {this.state.slides}
     </Carousel>

@@ -29,7 +29,8 @@ export default class CommentSection extends React.Component {
     }
 
     render() {
-       
+console.log("commentbos state!!!!!!!!!!!!!");       
+console.log(this.state.upc);       
          return (
             <div className="commentbox" id={this.state.upc}
             />
