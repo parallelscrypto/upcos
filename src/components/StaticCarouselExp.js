@@ -102,16 +102,18 @@ export default class StaticCarouselExp extends Component {
 
     var scan;
     scan = atob(manifest);
+    var payload = scan[5];
 
     scan = scan.split(',');
     console.log(scan);
 
     var owner = scan[1];
     //this.setState({owner: owner});
-
+    
     this.state = { 
       owner: owner, 
-      upc: upc, 
+      upc: upc,
+      payload: payload,
     };
 
 
@@ -155,6 +157,22 @@ export default class StaticCarouselExp extends Component {
                       }
               }
             },
+
+
+
+
+            etc: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open /etcVerse attached to current instance  </p>',
+              fn: () => {
+                      var pay = scan[5];
+                      const terminal = this.progressTerminal.current
+                      var mplayer = this.getMplayer(pay);
+                      terminal.pushToStdout(mplayer);
+              }
+            },
+
+
+
 
 
 
