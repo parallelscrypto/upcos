@@ -2075,7 +2075,8 @@ var playButton =
     var cardValue = {
        value:  upcHash,
        intent: "hero",
-       hv: this.props.address
+       hv: this.props.address,
+       upc: this.state.account
     }
     var cardValueStr = JSON.stringify(cardValue);
     var myCard = 
@@ -2083,6 +2084,7 @@ var playButton =
 	<p><b>Say hello to the hero of this UPC!</b></p>
         <p><img src={srcImg} height="200" width="200"/></p>
 	<p><QRCode size={128} value={cardValueStr} onClick={() => { this.setState({qIsOpen: true})}}/></p>
+	<p><Barcode value={this.state.account} format="UPC" /></p>
     </div>
 
 
