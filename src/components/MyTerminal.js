@@ -2071,12 +2071,13 @@ var playButton =
     const hero_unique_string = "this-is-repatriation-os";
 
     upcHash  += hero_unique_string;
-    var srcImg = 'https://api.dicebear.com/7.x/' + avatarType + '/svg?seed=' + upcHash;
+    var srcImg = 'https://api.dicebear.com/9.x/' + avatarType + '/svg?seed=' + upcHash;
     var cardValue = {
        value:  upcHash,
        intent: "hero",
        hv: this.props.address,
-       upc: this.state.account
+       upc: this.state.account,
+       timestamp: Date.now()
     }
     var cardValueStr = JSON.stringify(cardValue);
     var myCard = 
