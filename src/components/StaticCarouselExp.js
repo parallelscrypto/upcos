@@ -180,16 +180,7 @@ export default class StaticCarouselExp extends Component {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open a scanner to scan a upc code</p>',
               fn: async () => {
 
-                     const terminal = this.progressTerminal.current
-
-
-                     
-		     const scanForm = <ScanWizard firstLookup={this.firstLookup} setAccount={this.setAccount} />
-
-		     this.setState(prevState => ({ fullIpfs: scanForm }));
-		     this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
-		     this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
-
+                 this.heroScan();
               }
             },
 
@@ -1621,7 +1612,18 @@ src={srcImg} height="200" width="200"/></p>
 
 
 
+  heroScan = async () => {
 
+       const terminal = this.progressTerminal.current
+       
+       const scanForm = <ScanWizard firstLookup={this.firstLookup} setAccount={this.setAccount} />
+
+       this.setState(prevState => ({ fullIpfs: scanForm }));
+       this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+       this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+
+
+  } 
 
 
 
@@ -1647,6 +1649,21 @@ src={srcImg} height="200" width="200"/></p>
 
 	        this.setState({slides: loader})
   }
+
+
+
+
+  showPostTerminal= async () => {
+
+                var vr = "https://zyco4irrphuhtypaqxhcglrw6be4gx7q5vpsmzlninjdw7bfbwjq.arweave.net/zgTuIjF56Hnh4IXOIy428EnDX_DtXyZlbUNSO3wlDZM";
+                const terminal = this.progressTerminal.current
+                var fullUrl = vr ;
+                var mplayer = this.getMplayer(fullUrl);
+                terminal.pushToStdout(mplayer);
+  }
+
+
+
 
 
   showPost= async () => {
@@ -2433,7 +2450,7 @@ var show =
     </Carousel>
   </div>
   <div>
-    <TrebleCleffExp  showHome={this.handleFlip} handleFlip={this.handleFlip} showPops={this.showLoad} showTerminal={this.showTerminal} showMission={this.handleFlip} terminal={"true"}/>
+    <TrebleCleffExp showPostTerminal={this.showPostTerminal}  showHome={this.handleFlip} handleFlip={this.handleFlip} heroScan={this.heroScan} showTerminal={this.showTerminal} showMission={this.handleFlip} terminal={"true"}/>
     {this.state.terminal}
                 <Draggable
 		  style={{zIndex:"0"}}

@@ -28,10 +28,15 @@ class TrebleCleffExp extends Component {
     console.log("terminal props is");
     console.log(this.props);
 
+    var middleButton = this.props.showPops
+    var showPost = this.props.showPost
 
     if(this.props.terminal==='true') {
        this.setState({consoleButton: 'terminal'})
-       this.setState({popsButton: 'load'})
+       this.setState({popsButton: 'hero'})
+       this.setState({middleButton: this.props.heroScan})
+       this.setState({showPost: this.props.showPostTerminal})
+
     }
 
 
@@ -47,7 +52,8 @@ class TrebleCleffExp extends Component {
     this.state = {
        account: this.props.account,
        upcStatus: upcStatus,
-       channelNum: channelNum
+       channelNum: channelNum,
+       middleButton: middleButton
     }
 
 
@@ -105,7 +111,7 @@ class TrebleCleffExp extends Component {
 
                     <button
                         style={{background: "#000000", color:"green", width: "20vw", height: "20vw", fontSize: "15px"}}
-                        onClick={this.props.showPops}
+                        onClick={this.state.middleButton}
                   >{this.state.popsButton}</button>
 
 
@@ -113,7 +119,7 @@ class TrebleCleffExp extends Component {
 
                     <button
                         style={{background: "#000000", color:"green", width: "20vw", height: "20vw", fontSize: "15px"}}
-                        onClick={this.props.showPost}
+                        onClick={this.state.showPost}
                   >post</button>
 
 
