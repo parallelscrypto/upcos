@@ -1449,7 +1449,7 @@ console.log(pulls2);
 	   avatarType = "croodles-neutral";
 	   break;
 	 case '9':
-	   avatarType = "gridy";
+	   avatarType = "pixel-art";
 	   break;
 	 case 'a':
 	   avatarType = "micah";
@@ -1470,7 +1470,7 @@ console.log(pulls2);
 	   avatarType = "pixel-art-neutral";
 	   break;
 	 case '0':
-	   avatarType = "jdenticon";
+	   avatarType = "pixel-art";
 	   break;
 
     }
