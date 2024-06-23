@@ -44,6 +44,7 @@ class AppExp extends Component {
     this.popitPullHash = this.popitPullHash.bind(this);
     this.popitPullUniversal= this.popitPullUniversal.bind(this);
     this.approvePPL= this.approvePPL.bind(this);
+    this.getMyAddress= this.getMyAddress.bind(this);
   }
 
   async componentWillMount() {
@@ -109,6 +110,16 @@ class AppExp extends Component {
     const address = loadedFull[1];
     const pushRes = await loadedFull.methods.latestTokenId().call({ from: address });
     return pushRes.toString();
+  };
+
+
+
+
+  async getMyAddress() { 
+    const loadedFull = await this.loadBlockchainData();
+
+    console.log("##############  addy is $$$$$$$$$$$$$$" + this.state.account);
+    return this.state.account;
   };
 
 
@@ -226,7 +237,7 @@ class AppExp extends Component {
     return (
       <div style={{ background: "#7e7e5e", height: '100vh', width: '100vw', border: 'none' }}>
         <div>
-          <StaticCarouselExp approvePPL={this.approvePPL} loadBlockchainData={this.loadBlockchainData} latestTokenId={this.latestTokenId} popitPullUniversal={this.popitPullUniversal} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} />
+          <StaticCarouselExp approvePPL={this.approvePPL} loadBlockchainData={this.loadBlockchainData} latestTokenId={this.latestTokenId} popitPullUniversal={this.popitPullUniversal} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} getMyAddress={this.getMyAddress} />
           <CommentSection upc={manHash} />
         </div>
       </div>

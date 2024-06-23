@@ -22,7 +22,8 @@ import { TikTok } from 'react-tiktok';
 import Draggable from 'react-draggable';
 import InsertDataForm from './InsertDataForm';
 import ScanWizard from './ScanWizard';
-
+import QRCode from "react-qr-code";
+import Web3 from 'web3'
 
 var sha256 = require('js-sha256');
 var Barcode = require('react-barcode');
@@ -175,11 +176,13 @@ export default class StaticCarouselExp extends Component {
 
 
 
-            scan: {
+            hero: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open a scanner to scan a upc code</p>',
               fn: async () => {
 
                      const terminal = this.progressTerminal.current
+
+
                      
 		     const scanForm = <ScanWizard firstLookup={this.firstLookup} setAccount={this.setAccount} />
 
@@ -1415,6 +1418,7 @@ console.log(pulls2);
   firstLookup= async (upc) => {
           var self = this;
 
+
           if(!upc) {
              upc = this.state.account
           }
@@ -1489,6 +1493,29 @@ console.log(pulls2);
 
                    var channelNum = upc[0]
                    var srcImg = 'https://api.dicebear.com/7.x/' + avatarType + '/svg?seed=' + upcHash;
+
+                   const address = await this.props.getMyAddress();
+
+console.log("!!!!!!!!! addy is !!!!!!!!!!!" + address);
+
+                   var cardValue = {
+                      value:  upcHash,
+                      intent: "hero",
+                      hv: address,
+                      upc: this.state.code,
+                      timestamp: Date.now()
+                   }
+                   var cardValueStr = JSON.stringify(cardValue);
+                   var myCard =
+                   <div>
+                       <p><b>Say hello to the hero of this UPC!</b></p>
+                       <p><img src={srcImg} height="200" width="200"/></p>
+                       <p><QRCode size={128} value={cardValueStr} onClick={() => { this.setState({qIsOpen: true})}}/></p>
+                       <p><Barcode value={this.state.account} format="UPC" /></p>
+                   </div>
+
+
+
                    var offerBuy = 
                    <div style={{textAlign:"center", fontWeight:"bold", background:"#422a0b", border:"5px solid white", padding:"3px"}}>
                        <p style={{textAlign:"center"}}><img 
@@ -1500,18 +1527,18 @@ console.log(pulls2);
 src={srcImg} height="200" width="200"/></p>
 
 
+                       <p><QRCode size={128} value={cardValueStr} onClick={() => { this.setState({qIsOpen: true})}}/></p>
 
                        <p onClick={()=> { this.prodLookup(this.state.account) } }><Barcode value={upc} format="UPC" /></p>
                    </div>
 
                    const terminal = this.progressTerminal.current
+
+		   this.setState(prevState => ({ fullIpfs: false }));
+
+		   this.setState(prevState => ({ pipVisibility: false }));
+		   this.setState(prevState => ({ pipDisplay: false }));
                    terminal.pushToStdout(offerBuy);
-
-		   this.setState(prevState => ({ fullIpfs: !prevState.fullIpfs }));
-
-		   this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
-		   this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
-
                    //self.setState({player: offerBuy});
                    //self.setState({offerState: "offer"});
                     //this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
