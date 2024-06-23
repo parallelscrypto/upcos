@@ -175,7 +175,7 @@ export default class MyTerminal extends Component {
        showProductContent: '',
        showTutorialContent: '',
        showModalTutorial: false,
-       showModalSplash: true,
+       showModalSplash: false,
        showQrModal: false,
        showBigShow: false,
        channelSlider: '',
@@ -1072,7 +1072,7 @@ src={srcImg} height="200" width="200"/></p>
 
 
   splash = async (upcId) => {
-                      this.setState({showModalSplash:true});
+                      this.setState({showModalSplash:false});
   }
 
 
@@ -3749,6 +3749,17 @@ console.log(this.state.account);
               }
             },
 
+
+
+            open: {
+              description: '<p style="color:hotpink;font-size:1.1em">** open the link that is passed through cli</p>',
+              fn: async (link) => {
+                        window.location.href = link;
+              }
+            },
+
+
+
             goto: {
               description: '<p style="color:hotpink;font-size:1.1em">** go to a federation given the id. if id is invalid or not passed, command will fail</p>',
               fn: async (fedId) => {
@@ -4003,7 +4014,10 @@ console.log(this.state.account);
       console.log(response);
 
       var shortUrl = response.data.shorturl;
+      var urlLink = <a href={shortUrl} >{shortUrl}</a>
       terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser ` + shortUrl);
+      terminal.pushToStdout(urlLink);
+
 
       this.setState({ showModalExport: false });
 

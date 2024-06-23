@@ -31,6 +31,11 @@ class TrebleCleffExp extends Component {
     var middleButton = this.props.showPops
     var showPost = this.props.showPost
 
+
+    this.setState({middleButton: this.props.showPops})
+    this.setState({showPost: this.props.showPost})
+
+
     if(this.props.terminal==='true') {
        this.setState({consoleButton: 'terminal'})
        this.setState({popsButton: 'hero'})
