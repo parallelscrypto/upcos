@@ -20,7 +20,8 @@ import styled, { css } from 'styled-components';
 import ReactPlayer from 'react-player'
 import { TikTok } from 'react-tiktok';
 import Draggable from 'react-draggable';
-import InsertDataForm from './InsertDataForm'
+import InsertDataForm from './InsertDataForm';
+import ScanWizard from './ScanWizard';
 
 
 var sha256 = require('js-sha256');
@@ -168,6 +169,24 @@ export default class StaticCarouselExp extends Component {
                       const terminal = this.progressTerminal.current
                       var mplayer = this.getMplayer(pay);
                       terminal.pushToStdout(mplayer);
+              }
+            },
+
+
+
+
+            scan: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open a scanner to scan a upc code</p>',
+              fn: async () => {
+
+                     const terminal = this.progressTerminal.current
+                     
+		     const scanForm = <ScanWizard firstLookup={this.firstLookup} setAccount={this.setAccount} />
+
+		     this.setState(prevState => ({ fullIpfs: scanForm }));
+		     this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		     this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+
               }
             },
 
@@ -1361,6 +1380,8 @@ console.log(pulls2);
     this.showTerminal= this.showTerminal.bind(this);
     this.handleFlip= this.handleFlip.bind(this);
     this.getLink= this.getLink.bind(this);
+    this.setAccount= this.setAccount.bind(this);
+    this.firstLookup= this.firstLookup.bind(this);
   }
 
 
@@ -1382,6 +1403,120 @@ console.log(pulls2);
   }
 
 
+
+
+
+  setAccount = async (code) => { 
+      this.setState({account: code});
+  //    this.props.handleUpdateUpc(code);
+  }
+
+
+  firstLookup= async (upc) => {
+          var self = this;
+
+          if(!upc) {
+             upc = this.state.account
+          }
+          var upcHash  = sha256(upc)
+          upcHash = sha256(upcHash);
+          upcHash = sha256(upcHash);
+          upcHash = sha256(upcHash);
+          var avatarType;
+
+    switch(upcHash.substring(0,1)) {
+
+	 case '0':
+	   avatarType = "adventurer";
+	   break;
+	 case '1':
+	   avatarType = "adventurer-neutral";
+	   break;
+	 case '2':
+	   avatarType = "notionists";
+	   break;
+	 case '3':
+	   avatarType = "big-ears";
+	   break;
+	 case '4':
+	   avatarType = "big-ears-neutral";
+	   break;
+	 case '5':
+	   avatarType = "big-smile";
+	   break;
+	 case '6':
+	   avatarType = "bottts";
+	   break;
+	 case '7':
+	   avatarType = "croodles";
+	   break;
+	 case '8':
+	   avatarType = "croodles-neutral";
+	   break;
+	 case '9':
+	   avatarType = "gridy";
+	   break;
+	 case 'a':
+	   avatarType = "micah";
+	   break;
+	 case 'b':
+	   avatarType = "open-peeps";
+	   break;
+	 case 'c':
+	   avatarType = "miniavs";
+	   break;
+	 case 'd':
+	   avatarType = "personas";
+	   break;
+	 case 'e':
+	   avatarType = "pixel-art";
+	   break;
+	 case 'f':
+	   avatarType = "pixel-art-neutral";
+	   break;
+	 case '0':
+	   avatarType = "jdenticon";
+	   break;
+
+    }
+
+    
+
+ 
+                   const hero_unique_string = "this-is-repatriation-os";
+
+                   upcHash += hero_unique_string;
+
+                   var channelNum = upc[0]
+                   var srcImg = 'https://api.dicebear.com/7.x/' + avatarType + '/svg?seed=' + upcHash;
+                   var offerBuy = 
+                   <div style={{textAlign:"center", fontWeight:"bold", background:"#422a0b", border:"5px solid white", padding:"3px"}}>
+                       <p style={{textAlign:"center"}}><img 
+                               onClick={() => {
+                                  this.sing();
+                                 }
+                               }
+
+src={srcImg} height="200" width="200"/></p>
+
+
+
+                       <p onClick={()=> { this.prodLookup(this.state.account) } }><Barcode value={upc} format="UPC" /></p>
+                   </div>
+
+                   const terminal = this.progressTerminal.current
+                   terminal.pushToStdout(offerBuy);
+
+		   this.setState(prevState => ({ fullIpfs: !prevState.fullIpfs }));
+
+		   this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		   this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+
+                   //self.setState({player: offerBuy});
+                   //self.setState({offerState: "offer"});
+                    //this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
+		    //this.offer();
+  }
 
 
 

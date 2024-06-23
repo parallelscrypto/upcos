@@ -4731,3 +4731,7 @@ console.log(this.state.account);
     )
   }
 }
+
+
+
+export { MyTerminal }
