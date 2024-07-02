@@ -1238,27 +1238,6 @@ console.log(pulls2);
             },
 
 
-            pops: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open POPScript interpreter </p>',
-              fn: () => {
-
-
-
-		      //var fullUrl = "https://codverter.com/src/index";
-                   var winNum = "1";
-
-                      //this.cSearch.value = "";
-                      //this.cSearch.value = fullUrl;
-                      if(winNum == "1") {
-		         this.setState(prevState => ({ pipVisibility2: "true" }));
-		         this.setState(prevState => ({ pipDisplay2: "block"}));
-		         this.setState(prevState => ({ showBigShow2: true}));
-                      }
-              }
-            },
-
-
-
 
             ppl: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open PPL (private protocol link) minibrowser </p>',
@@ -2003,12 +1982,24 @@ src={srcImg} height="200" width="200"/></p>
 		this.setState({res: res})
    }
 
+   resolvePPLLink= async (id) => {
+
+               let pulls= await this.props.popitPullPPL(id)
+               var [id, link, hash, address, upc, hrn] = pulls.split(',');
+               return link; 
+   }
+
+
 
 
    resolvePPL= async (id) => {
 
                let pulls= await this.props.popitPullPPL(id)
                var [id, link, hash, address, upc, hrn] = pulls.split(',');
+
+console.log("PULLLLLZZZ ARE .......... ");
+console.log(link);
+console.log(hrn);
                var page = <html>
                      <head><title>{hash}</title></head>
                      <body>
@@ -2181,7 +2172,7 @@ console.log(remainder);
                    var resolvedPage;
                    if (words.length >= 2) {
 		     param =  words[1];
-                     resolvedPage = await this.resolvePPL(param);
+                     resolvedPage = await this.resolvePPLLink(param);
 
                      // Return the second word
                    }
