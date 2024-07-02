@@ -1,20 +1,15 @@
 pragma solidity ^0.8.0;
-
 pragma experimental ABIEncoderV2;
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 
-
 import "./Flip.sol";
 
-
-
-contract Popit is ERC721, Ownable{
+contract Popit is ERC721, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
-
 
     struct Pop {
         uint256 id;
@@ -30,41 +25,34 @@ contract Popit is ERC721, Ownable{
     mapping(string => Pop[]) private upcData;
     mapping(string => Pop[]) private globalData; // Changed to key on human_readable_name
     mapping(uint256 => Pop[]) private universalData; // New mapping
-    Flip    private _token;
-    uint256  public latestTokenId;
-    uint256  public price = 100000000000000000;
-
-
+    Flip private _token;
+    uint256 public latestTokenId;
+    uint256 public price = 100000000000000000;
 
     event LinkInserted(bytes32 hash, string link, address owner, string upc, string human_readable_name);
     event PopRemoved(bytes32 hash, string link, address owner, string upc, string human_readable_name);
-    
+    event LinkUpdated(uint256 hash, string newLink, address owner, string upc, string human_readable_name);
 
-    constructor() ERC721("PrivateProtocolLink", "PPL") Ownable()  {
+    constructor() ERC721("PrivateProtocolLink", "PPL") Ownable() {
         _token = Flip(0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118);
     }
 
-    function setPrice(uint256  _price) external onlyOwner {
+    function setPrice(uint256 _price) external onlyOwner {
         price = _price;
     }
 
-
-    function setPayToken(address  addy) external onlyOwner {
+    function setPayToken(address addy) external onlyOwner {
         _token = Flip(addy);
     }
 
-
-
     function checkUniqueness(string memory _human_readable_name) public view returns (bool) {
         // Check if the human_readable_name already exists in any of the mappings
-
         // Check globalData mapping
         for (uint256 i = 0; i < globalData[_human_readable_name].length; i++) {
             if (keccak256(bytes(globalData[_human_readable_name][i].human_readable_name)) == keccak256(bytes(_human_readable_name))) {
                 return false; // Not unique
             }
         }
-
         return true; // Unique
     }
 
@@ -76,12 +64,9 @@ contract Popit is ERC721, Ownable{
 
         bytes32 hash = sha256(abi.encodePacked(_human_readable_name));
 
-
         _tokenIds.increment();
         uint256 newNftTokenId = _tokenIds.current();
         latestTokenId = newNftTokenId;
-
-
 
         Pop memory newPop = Pop({
             id: latestTokenId,
@@ -98,15 +83,12 @@ contract Popit is ERC721, Ownable{
         globalData[_human_readable_name].push(newPop); // Updated to key on human_readable_name
         universalData[latestTokenId + 1].push(newPop); // Increment and push to universalData
 
-        
         _safeMint(msg.sender, latestTokenId);
-
 
         latestTokenId++;
 
         emit LinkInserted(hash, _link, msg.sender, _upc, _human_readable_name);
     }
-
 
     function deleteLink(string memory _human_readable_name) public {
         // Find and delete the Pop with the given human_readable_name
@@ -159,7 +141,6 @@ contract Popit is ERC721, Ownable{
         }
     }
 
-
     function getPopByInstance(bytes32 _hash) public view returns (Pop[] memory) {
         return instanceData[_hash];
     }
@@ -190,4 +171,68 @@ contract Popit is ERC721, Ownable{
 
         return result;
     }
+
+    function getOwnerOfNFT(uint256 nftId) public view returns (address) {
+        require(nftId <= latestTokenId, "Invalid NFT ID");
+
+        // Iterate through universalData to find the NFT with the given ID
+        for (uint256 i = 1; i <= latestTokenId; i++) {
+            Pop[] memory currentData = universalData[i];
+            for (uint256 j = 0; j < currentData.length; j++) {
+                if (currentData[j].id == nftId) {
+                    return currentData[j].owner;
+                }
+            }
+        }
+
+        revert("NFT not found");
+    }
+
+
+    function updateLink(uint256 nftId, string memory newLink) public {
+        // Check if the sender is the owner of the NFT
+        address owner = getOwnerOfNFT(nftId);
+        require(owner == msg.sender, "Only the owner can update the link");
+
+        // Find the NFT with the given ID
+        bool found = false;
+        bytes32 hash;
+
+        for (uint256 i = 1; i <= latestTokenId; i++) {
+            Pop[] storage nftArray = universalData[i];
+            for (uint256 j = 0; j < nftArray.length; j++) {
+                if (nftArray[j].id == nftId) {
+                    hash = nftArray[j].hash;
+                    nftArray[j].link = newLink;
+                    
+                    // Update the link in globalData array
+                    string memory upKey = nftArray[j].human_readable_name;
+                    Pop[] storage globalArray = globalData[upKey];
+
+                    for (uint256 k = 0; k < globalArray.length; k++) {
+                        if (globalArray[k].id == nftId) {
+                            globalArray[k].link = newLink;
+                            break;
+                        }
+                    }
+
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                break;
+            }
+        }
+
+        require(found, "NFT with the given ID not found");
+
+        //emit LinkUpdated(hash, newLink, owner, "", ""); // Update with relevant parameters
+    }
+
+
+
+
+
 }
+
