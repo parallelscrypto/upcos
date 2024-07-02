@@ -116,6 +116,7 @@ export default class StaticCarouselExp extends Component {
       owner: owner, 
       upc: upc,
       payload: payload,
+      scan: scan,
     };
 
 
@@ -166,10 +167,7 @@ export default class StaticCarouselExp extends Component {
             etc: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open /etcVerse attached to current instance  </p>',
               fn: () => {
-                      var pay = scan[5];
-                      const terminal = this.progressTerminal.current
-                      var mplayer = this.getMplayer(pay);
-                      terminal.pushToStdout(mplayer);
+                      this.doEtc(scan);
               }
             },
 
@@ -1322,7 +1320,7 @@ console.log(pulls2);
 
 
 
-            dj: {
+            djx: {
               description: '<p style="color:hotpink;font-size:1.1em">**  instantiate the dj upc to perform a substring extraction, and play spinz for all of the resulting videos in succession</p>',
               fn: (upcScript) => {
                       if(!upcScript) {
@@ -1333,6 +1331,43 @@ console.log(pulls2);
 
 
             },
+
+
+            dj: {
+              description: '<p style="color:hotpink;font-size:1.1em">**  instantiate the dj upc to perform a substring extraction, and play spinz for all of the resulting videos in succession</p>',
+              fn: async (command, arg)  => {
+
+                      if( !arg && !command ) {
+                          var upcScript = this.state.upcscript.substr(3);
+		          this.djupc(upcScript);
+                      }
+                      else if(!arg) {
+		          this.djupc(command);
+                      }
+                      else {
+
+                         switch(command) {
+                         
+                           case 'ppl':
+                             const terminal = this.progressTerminal.current
+		             let pulls= await this.props.popitPullPPL(arg)
+
+                             var [id, link, hash, address, upc, hrn,updated,timestamp] = pulls.split(',');
+                             var fullPage = this.printPull(id, link, hash, address, upc, hrn,updated,timestamp);
+
+		             this.djupc(link);
+                             terminal.pushToStdout(fullPage);
+
+                             break;
+
+                         }
+
+                      }
+              }
+
+
+            },
+
 
 
 
@@ -1364,6 +1399,7 @@ console.log(pulls2);
        channel: channel,
        manifest: manifest,
        missionUrl: missionUrl,
+       payload: scan[5],
        slides: [],
        res: [],
        terminal: myTerm,
@@ -1410,6 +1446,14 @@ console.log(pulls2);
   }
 
 
+
+
+  doEtc = async () => { 
+                      var pay = this.state.payload;
+                      const terminal = this.progressTerminal.current
+                      var mplayer = this.getMplayer(pay);
+                      terminal.pushToStdout(mplayer);
+  }
 
 
 
@@ -2470,7 +2514,7 @@ var show =
     </Carousel>
   </div>
   <div>
-    <TrebleCleffExp showPostTerminal={this.showPostTerminal}  showHome={this.handleFlip} handleFlip={this.handleFlip} heroScan={this.heroScan} showTerminal={this.showTerminal} showMission={this.handleFlip} terminal={"true"}/>
+    <TrebleCleffExp doEtc={this.doEtc} showPostTerminal={this.showPostTerminal}  showHome={this.handleFlip} handleFlip={this.handleFlip} heroScan={this.heroScan} showTerminal={this.showTerminal} showMission={this.handleFlip} terminal={"true"}/>
     {this.state.terminal}
                 <Draggable
 		  style={{zIndex:"0"}}
