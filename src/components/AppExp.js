@@ -39,6 +39,7 @@ class AppExp extends Component {
     this.loadWeb3 = this.loadWeb3.bind(this);
     this.loadBlockchainData = this.loadBlockchainData.bind(this);
     this.popitPush = this.popitPush.bind(this);
+    this.popitUpdate = this.popitUpdate.bind(this);
     this.popitPullPPL = this.popitPullPPL.bind(this);
     this.popitPullUpc = this.popitPullUpc.bind(this);
     this.popitPullHash = this.popitPullHash.bind(this);
@@ -100,6 +101,16 @@ class AppExp extends Component {
     var address = this.state.account;
 
     const pushRes = await loadedFull.methods.insertLink(link, upc, humanReadableName).send({ from: address });
+    return pushRes.toString();
+  };
+
+
+  async popitUpdate(upcId,link) {
+
+    var loadedFull = await this.loadBlockchainData();
+    var address = this.state.account;
+
+    const pushRes = await loadedFull.methods.updateLink(upcId,link).send({ from: address });
     return pushRes.toString();
   };
 
@@ -237,7 +248,7 @@ class AppExp extends Component {
     return (
       <div style={{ background: "#7e7e5e", height: '100vh', width: '100vw', border: 'none' }}>
         <div>
-          <StaticCarouselExp approvePPL={this.approvePPL} loadBlockchainData={this.loadBlockchainData} latestTokenId={this.latestTokenId} popitPullUniversal={this.popitPullUniversal} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} getMyAddress={this.getMyAddress} />
+          <StaticCarouselExp approvePPL={this.approvePPL} loadBlockchainData={this.loadBlockchainData} latestTokenId={this.latestTokenId} popitPullUniversal={this.popitPullUniversal} popitUpdate={this.popitUpdate} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} getMyAddress={this.getMyAddress} />
           <CommentSection upc={manHash} />
         </div>
       </div>

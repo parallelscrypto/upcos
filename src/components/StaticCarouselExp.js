@@ -186,6 +186,19 @@ export default class StaticCarouselExp extends Component {
 
 
 
+            xppl: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** update a ppll that you own. only original owner can update, and they can only update the link field </p>',
+              fn: async (id,link) => {
+
+                     const terminal = this.progressTerminal.current
+		     const response = await this.props.popitUpdate(id,link);
+
+                     terminal.pushToStdout(response);
+
+              }
+            },
+
+
 
 
 
@@ -216,8 +229,8 @@ export default class StaticCarouselExp extends Component {
                         case 'ppl':
 		          let pulls= await this.props.popitPullPPL(id)
 
-                          var [id, link, hash, address, upc, hrn,timestamp] = pulls.split(',');
-                          var fullPage = this.printPull(id, link, hash, address, upc, hrn,timestamp);
+                          var [id, link, hash, address, upc, hrn,updated,timestamp] = pulls.split(',');
+                          var fullPage = this.printPull(id, link, hash, address, upc, hrn,updated,timestamp);
 
                           terminal.pushToStdout(fullPage);
                           break;
@@ -226,8 +239,8 @@ export default class StaticCarouselExp extends Component {
                         case 'branch':
 		          let pulls1= await this.props.popitPullHash(id)
 
-                          var [id, link, hash, address, upc, hrn,timestamp] = pulls1.split(',');
-                          var fullPage = this.printPull(id, link, hash, address, upc, hrn,timestamp);
+                          var [id, link, hash, address, upc, hrn,updated,timestamp] = pulls1.split(',');
+                          var fullPage = this.printPull(id, link, hash, address, upc, hrn,updated,timestamp);
 
                           terminal.pushToStdout(fullPage);
                           break;
@@ -240,7 +253,7 @@ export default class StaticCarouselExp extends Component {
                           for(var i=0; i<pulls2.length; i++) {
                              var myPull = pulls2[i];
                              var [id, link, hash, address, upc, hrn, timestamp] = myPull.toString().split(',');
-                             var fullPage = this.printPull(id, link, hash, address, upc, hrn,timestamp);
+                             var fullPage = this.printPull(id, link, hash, address, upc, hrn,updated,timestamp);
                              tables.push(fullPage);
 
                           }
@@ -298,8 +311,8 @@ export default class StaticCarouselExp extends Component {
 
                           for(var i=0; i<pulls3.length; i++) {
                              var myPull = pulls3[i];
-                             var [id, link, hash, address, upc, hrn, timestamp] = myPull.toString().split(',');
-                             var fullPage = this.printPull(id,link, hash, address, upc, hrn, timestamp);
+                             var [id, link, hash, address, upc, hrn, updated, timestamp] = myPull.toString().split(',');
+                             var fullPage = this.printPull(id,link, hash, address, upc, hrn, updated, timestamp);
                              tables.push(fullPage);
 
                           }
@@ -888,8 +901,8 @@ console.log(url);
                         case 'ppl':
 		          let pulls= await this.props.popitPullPPL(id)
 
-                          var [id, link, hash, address, upc, hrn,timestamp] = pulls.split(',');
-                          var fullPage = this.printPull(id, link, hash, address, upc, hrn, timestamp);
+                          var [id, link, hash, address, upc, hrn,updated,timestamp] = pulls.split(',');
+                          var fullPage = this.printPull(id, link, hash, address, upc, hrn,updated, timestamp);
                           pullOutput = true;
                           terminal.pushToStdout(fullPage);
                           break;
@@ -901,8 +914,8 @@ console.log("%%%%%%%%%%%%%%%%%%%%");
 console.log(pulls2);
                           for(var i=0; i<pulls2.length; i++) {
                              var myPull = pulls2[i];
-                             var [id, link, hash, address, upc, hrn,timestamp] = myPull.toString().split(',');
-                             var fullPage = this.printPull(id, link, hash, address, upc, hrn,timestamp);
+                             var [id, link, hash, address, upc, hrn,updated,timestamp] = myPull.toString().split(',');
+                             var fullPage = this.printPull(id, link, hash, address, upc, hrn,updated,timestamp);
                              tables.push(fullPage);
 
                           }
@@ -1810,9 +1823,11 @@ src={srcImg} height="200" width="200"/></p>
 
 
 
-  printPull=  (id,link,hash,address,upc,hrn,timestamp) => {
+  printPull=  (id,link,hash,address,upc,hrn,updated,timestamp) => {
 
 
+	    var tmpUp = parseInt(updated);
+	    var updated = new Date(tmpUp * 1000);
 
 	    var tmpStamp = parseInt(timestamp);
 	    var timestamp = new Date(tmpStamp * 1000);
@@ -1883,9 +1898,14 @@ src={srcImg} height="200" width="200"/></p>
                   <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{hrn}</td>
                 </tr>
                 <tr>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Timestamp</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Updated</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>${updated.toString()}</td>
+                </tr>
+                <tr>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Created</td>
                   <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>${timestamp.toString()}</td>
                 </tr>
+
 
               </table>
             );
