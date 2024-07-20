@@ -115,7 +115,7 @@ export default class StaticCarouselExp extends Component {
     this.state = { 
       owner: owner, 
       upc: upc,
-      pwd: upc,
+      pwd: "",
       payload: payload,
       showModalExport: false,
       scan: scan,
@@ -169,175 +169,7 @@ export default class StaticCarouselExp extends Component {
               description: '<p style="color:hotpink;font-size:1.1em">** Display deep link for WEB2 current upc code.  This command is used to share your upc code with people who do not want to use the blockchain, but want to see your content.  this command will create a shortened url and you can specify the slug by passing as a param to this command.  the slug may only contain the characters a-z, 0-9 and underscore. if you get an undefined back instead of a url, you have tried an invalid or unavailable slug, try again or run command with no param to  get random  slug**</p>',
 
               fn: async (upc) => {
-
-	    const terminal = this.progressTerminal.current
-            var pwd = this.state.pwd;
-            if( !pwd ) {
-	       terminal.pushToStdout("You must cd or scan into a hackable upc code. A hackable UPC code is a upc that no one owns.  You can check upcs with the xupc command.  For example, to check ownership info 000000000000 type 'xupc 000000000000'");
-            }
-            if(!upc) {
-               upc = this.state.pwd
-            }
-      let info = await this.props.upcInfo(this.state.pwd)
-
-  var exportForm = <div>
-    <Barcode value={this.state.pwd} format="UPC" />
-    <form className="mb-3" onSubmit={async (event) => { // Make the onSubmit function async
-      event.preventDefault()
-      let upcId = pwd
-      let humanReadableName = this.humanReadableName.value.toString()
-      let exportMsg= this.exportMsg.value.toString()
-      let popscript= this.popscript.value.toString()
-      let payload = this.payload.value.toString()
-      let missionUrl = this.missionUrl.value.toString()
-
-      const terminal = this.progressTerminal.current
-      var currentUrl = window.location.href;
-
-      //let info = await this.props.upcInfo(this.state.pwd)
-      let info = await this.props.upcInfo('000000000000')
-      console.log("info iz " + info);
-      console.log("type");
-      console.log(typeof info);
-
-      let infoSanit = btoa(info);
-      var showString = popscript;
-
-
-      const owner = await this.props.getMyAddress();
-      const currTime = Date.now()
-      const hrn = "hacked-" + this.state.pwd + "-" + owner;
-
-/*
-      const manifestJson = {
-          "tokenId"   : "1337", 
-          "staker"   : owner, 
-          "og" : owner,
-          "upcHash"   :"1337", 
-          "word"   : this.state.pwd, 
-          "ipfs"   : payload, 
-          "vr"   : popscript, 
-          "humanReadableName" : hrn, 
-          "minted"   : false, 
-          "bought"   : false, 
-          "tld"   : "0", 
-          "createdTimestamp"   : currTime, 
-          "latestTimestamp"   :currTime, 
-      }
-*/
-
-
-      var hackerAddress = "0x0000000000000000000000000000000000000000";
-      var manifestAr = [hackerAddress,owner,0,0,0,payload,popscript,hrn,0,0,0,currTime,currTime];
-
-
-      //var manifestAr = Object.entries(manifestJson);
-
-
-      var manifestEncoded = btoa(manifestAr);
-
-      console.log("manifestEncoded ar ");
-      console.log(manifestAr);
-
-
-      exportMsg = btoa(exportMsg);
-      missionUrl = btoa(missionUrl);
-
-
-
-      var upcJson = '{"show":"' + popscript + '","code":"' + this.state.pwd + '","manifest":"' + manifestEncoded + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
-      var upcEncoded = btoa(upcJson);
-      currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
-      currentUrl = currentUrl.replace('intel', 'export');
-
-      currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
-      var encodedWeb2 = encodeURIComponent(currentUrl);
-      var toShorten = "https://is.gd/create.php?format=json&url=" + currentUrl;
-      if (!(humanReadableName === '' || humanReadableName === null)) {
-        toShorten += "&shorturl=" + humanReadableName;
-      }
-
-      const response = await axios.get(toShorten, {
-        params: {
-          format: 'json',
-          shorturl: humanReadableName,
-          url: currentUrl
-        }
-      })
-
-      console.log("CURRENT URL");
-      console.log(currentUrl);
-      console.log("RESPONSE");
-      console.log(response);
-
-      var shortUrl = response.data.shorturl;
-      var urlLink = <a href={shortUrl} >{shortUrl}</a>
-      terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser ` + shortUrl);
-      terminal.pushToStdout(urlLink);
-
-      //this.setState({ showModalExport: false });
-
-    }}>
-      <div className="input-group mb-4">
-        <input
-          type="text"
-          style={{width:"100vw"}}
-          ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
-          className="form-control form-control-lg break"
-          placeholder="shortened url (this is the format: https://is.gd/{shortenedURL})"
-          required />
-
-        <input
-          type="text"
-          style={{width:"100vw"}}
-          ref={(missionUrl) => { this.missionUrl= missionUrl}}
-          className="form-control form-control-lg break"
-          placeholder="mission url (this is link that will load when your user activates the mission button)"
-          required />
-
-        <input
-          type="text"
-          style={{width:"100vw"}}
-          ref={(popscript) => { this.popscript=popscript}}
-          className="form-control form-control-lg break"
-          placeholder="popscript"
-          required />
-
-
-        <input
-          type="text"
-          style={{width:"100vw"}}
-          ref={(payload) => { this.payload=payload}}
-          className="form-control form-control-lg break"
-          placeholder="payload (etc button)"
-          required />
-
-
-
-        <br/>
-        <textarea
-          style={{minHeight:"40vh",width:"100vw"}}
-          ref={(exportMsg) => { this.exportMsg = exportMsg}}
-          className="form-control form-control-lg break"
-          placeholder="this text will be displayed in the exported terminal welcome message"
-          />
-
-      </div>
-      <button
-        type="submit"
-        className="btn btn-primary btn-block btn-lg"
-      >
-        drop
-      </button>
-    </form>
-
-
-  </div>
-
-   this.setState({ exportModalContent: exportForm });
-
-   this.setState({ showModalExport: true });
-
+                  this.doHack(upc);
               }
             },
 
@@ -1708,6 +1540,196 @@ console.log(pulls2);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+  doHack = async (upc) => { 
+
+
+
+	    const terminal = this.progressTerminal.current
+
+
+            var pwd = this.state.pwd;
+            if( !pwd ) {
+	       terminal.pushToStdout("You must cd or scan into a hackable upc code. A hackable UPC code is a upc that no one owns.  You can check upcs with the xupc command.  For example, to check ownership info 000000000000 type 'xupc 000000000000'");
+            }
+            if(!upc) {
+               upc = this.state.pwd
+            }
+      let info = await this.props.upcInfo(this.state.pwd)
+
+  var exportForm = <div>
+    <Barcode value={this.state.pwd} format="UPC" />
+    <form className="mb-3" onSubmit={async (event) => { // Make the onSubmit function async
+      event.preventDefault()
+      let upcId = pwd
+      let humanReadableName = this.humanReadableName.value.toString()
+      let exportMsg= this.exportMsg.value.toString()
+      let popscript= this.popscript.value.toString()
+      let payload = this.payload.value.toString()
+      let missionUrl = this.missionUrl.value.toString()
+
+      const terminal = this.progressTerminal.current
+      var currentUrl = window.location.href;
+
+      //let info = await this.props.upcInfo(this.state.pwd)
+      let info = await this.props.upcInfo('000000000000')
+      console.log("info iz " + info);
+      console.log("type");
+      console.log(typeof info);
+
+      let infoSanit = btoa(info);
+      var showString = popscript;
+
+
+      const owner = await this.props.getMyAddress();
+      const currTime = Date.now()
+      const hrn = "hacked-" + this.state.pwd + "-" + owner;
+
+/*
+      const manifestJson = {
+          "tokenId"   : "1337", 
+          "staker"   : owner, 
+          "og" : owner,
+          "upcHash"   :"1337", 
+          "word"   : this.state.pwd, 
+          "ipfs"   : payload, 
+          "vr"   : popscript, 
+          "humanReadableName" : hrn, 
+          "minted"   : false, 
+          "bought"   : false, 
+          "tld"   : "0", 
+          "createdTimestamp"   : currTime, 
+          "latestTimestamp"   :currTime, 
+      }
+*/
+
+
+      var hackerAddress = "0x0000000000000000000000000000000000000000";
+      var manifestAr = [hackerAddress,owner,0,0,0,payload,popscript,hrn,0,0,0,currTime,currTime];
+
+
+      //var manifestAr = Object.entries(manifestJson);
+
+
+      var manifestEncoded = btoa(manifestAr);
+
+      console.log("manifestEncoded ar ");
+      console.log(manifestAr);
+
+
+      exportMsg = btoa(exportMsg);
+      missionUrl = btoa(missionUrl);
+
+
+
+      var upcJson = '{"show":"' + popscript + '","code":"' + this.state.pwd + '","manifest":"' + manifestEncoded + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
+      var upcEncoded = btoa(upcJson);
+      currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
+      currentUrl = currentUrl.replace('intel', 'export');
+
+      //currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
+      var encodedWeb2 = encodeURIComponent(currentUrl);
+      var toShorten = "https://is.gd/create.php?format=json&url=" + currentUrl;
+      if (!(humanReadableName === '' || humanReadableName === null)) {
+        toShorten += "&shorturl=" + humanReadableName;
+      }
+
+      const response = await axios.get(toShorten, {
+        params: {
+          format: 'json',
+          shorturl: humanReadableName,
+          url: currentUrl
+        }
+      })
+
+      console.log("CURRENT URL");
+      console.log(currentUrl);
+      console.log("RESPONSE");
+      console.log(response);
+
+      var shortUrl = response.data.shorturl;
+      var urlLink = <a href={shortUrl} >{shortUrl}</a>
+      terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser ` + shortUrl);
+      terminal.pushToStdout(urlLink);
+
+      //this.setState({ showModalExport: false });
+
+    }}>
+      <div className="input-group mb-4">
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
+          className="form-control form-control-lg break"
+          placeholder="shortened url (this is the format: https://is.gd/{shortenedURL})"
+          required />
+
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(missionUrl) => { this.missionUrl= missionUrl}}
+          className="form-control form-control-lg break"
+          placeholder="mission url (this is link that will load when your user activates the mission button)"
+          required />
+
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(popscript) => { this.popscript=popscript}}
+          className="form-control form-control-lg break"
+          placeholder="popscript"
+          required />
+
+
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(payload) => { this.payload=payload}}
+          className="form-control form-control-lg break"
+          placeholder="payload (etc button)"
+          required />
+
+
+
+        <br/>
+        <textarea
+          style={{minHeight:"40vh",width:"100vw"}}
+          ref={(exportMsg) => { this.exportMsg = exportMsg}}
+          className="form-control form-control-lg break"
+          placeholder="this text will be displayed in the exported terminal welcome message"
+          />
+
+      </div>
+      <button
+        type="submit"
+        className="btn btn-primary btn-block btn-lg"
+      >
+        drop
+      </button>
+    </form>
+
+
+  </div>
+
+   this.setState({ exportModalContent: exportForm });
+
+   this.setState({ showModalExport: true });
+
+
+   }
+
+
+
   doEtc = async () => { 
                       var pay = this.state.payload;
                       const terminal = this.progressTerminal.current
@@ -2049,7 +2071,9 @@ src={srcImg} height="200" width="200"/></p>
              const response = "Sorry, you can not cd into OR hack @" + upc;
 
              terminal.pushToStdout(response);
+             return false;
          }
+         return true;
   }
 
 
@@ -2587,6 +2611,12 @@ console.log(scan);
    var createdData = scan[11];
    var modifiedData = scan[12];
 
+
+   console.log("============= DATEZZZZZZ ================");
+   console.log(createdData);
+   console.log(modifiedData);
+
+
    var createdDate = parseInt(createdData);
    var created = new Date(createdDate * 1000);
 
@@ -2845,7 +2875,7 @@ var show =
     </Carousel>
   </div>
   <div>
-    <TrebleCleffExp doEtc={this.doEtc} showPostTerminal={this.showPostTerminal}  showHome={this.handleFlip} handleFlip={this.handleFlip} heroScan={this.heroScan} showTerminal={this.showTerminal} showMission={this.handleFlip} terminal={"true"}/>
+    <TrebleCleffExp upc={this.state.account} doEtc={this.doEtc} showPostTerminal={this.showPostTerminal} doHack={this.doHack}  showHome={this.handleFlip} handleFlip={this.handleFlip} heroScan={this.heroScan} showTerminal={this.showTerminal} showMission={this.handleFlip} terminal={"true"}/>
     {this.state.terminal}
 
 

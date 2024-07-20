@@ -19,6 +19,7 @@ class TrebleCleffExp extends Component {
        missionButton: "mission",
        popsButton: "pops",
        showTerminal: showTerminal,
+       upc: "",
        handleFlip: flipFunction
     }
   }
@@ -33,15 +34,17 @@ class TrebleCleffExp extends Component {
     var showPost = this.props.showPost
 
 
+    this.setState({upc: this.props.upc})
     this.setState({middleButton: this.props.showPops})
     this.setState({showPost: this.props.showPost})
-
+    this.setState({hackButton: this.props.showMission})
 
     if(this.props.terminal==='true') {
        this.setState({consoleButton: 'etc'})
        this.setState({missionButton: 'hack'})
        this.setState({popsButton: 'hero'})
        this.setState({showTerminal: this.props.doEtc})
+       this.setState({hackButton: this.hackIt})
        this.setState({middleButton: this.props.heroScan})
        this.setState({showPost: this.props.showPostTerminal})
 
@@ -102,6 +105,11 @@ class TrebleCleffExp extends Component {
   }
 
 
+  hackIt = async () => {
+     this.props.doHack(this.state.upcc);
+  }
+
+
   render() {
 
     return (
@@ -133,7 +141,7 @@ class TrebleCleffExp extends Component {
 
                     <button
                         style={{background: "#FFFF00", fontSize:".9em", fontWeight:"bold", color:"red", width: "20vw", height: "20vw", fontSize: "15px", verticalAlign:"middle"}}
-                        onClick={this.props.showMission}
+                        onClick={this.state.hackButton}
                   >{this.state.missionButton} [FLIP]</button>
 
          </div>
