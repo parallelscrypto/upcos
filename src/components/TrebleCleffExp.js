@@ -16,6 +16,7 @@ class TrebleCleffExp extends Component {
        buttonBg: "#000000",
        buttonFg: "green",
        consoleButton: "console",
+       missionButton: "mission",
        popsButton: "pops",
        showTerminal: showTerminal,
        handleFlip: flipFunction
@@ -38,6 +39,7 @@ class TrebleCleffExp extends Component {
 
     if(this.props.terminal==='true') {
        this.setState({consoleButton: 'etc'})
+       this.setState({missionButton: 'hack'})
        this.setState({popsButton: 'hero'})
        this.setState({showTerminal: this.props.doEtc})
        this.setState({middleButton: this.props.heroScan})
@@ -132,7 +134,7 @@ class TrebleCleffExp extends Component {
                     <button
                         style={{background: "#FFFF00", fontSize:".9em", fontWeight:"bold", color:"red", width: "20vw", height: "20vw", fontSize: "15px", verticalAlign:"middle"}}
                         onClick={this.props.showMission}
-                  >mission [FLIP]</button>
+                  >{this.state.missionButton} [FLIP]</button>
 
          </div>
     );

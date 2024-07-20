@@ -93,13 +93,13 @@ export default class StaticCarouselExp extends Component {
     var channel = props.upcId;
     var upc = props.code;
 
-    console.log("^^^^^^^^^^^^^^^^^^^  COOOOOOOOOOODDDDDDDDDDDDDDEEEEEEEEEEEE$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-    console.log(upc);
     //this.setState({upc: upc});
     var missionUrl = atob(props.missionUrl);
     var manifest= props.manifest;
     var msg = atob(props.msg);
 
+    console.log("^^^^^^^^^^^^^^^^^^^  manifest");
+    console.log(JSON.stringify(manifest));
 
 
     var scan;
@@ -187,28 +187,70 @@ export default class StaticCarouselExp extends Component {
       let upcId = pwd
       let humanReadableName = this.humanReadableName.value.toString()
       let exportMsg= this.exportMsg.value.toString()
+      let popscript= this.popscript.value.toString()
+      let payload = this.payload.value.toString()
       let missionUrl = this.missionUrl.value.toString()
 
       const terminal = this.progressTerminal.current
       var currentUrl = window.location.href;
 
-      let info = await this.props.upcInfo(this.state.account)
+      //let info = await this.props.upcInfo(this.state.pwd)
+      let info = await this.props.upcInfo('000000000000')
+      console.log("info iz " + info);
+      console.log("type");
+      console.log(typeof info);
 
       let infoSanit = btoa(info);
+      var showString = popscript;
+
+
+      const owner = await this.props.getMyAddress();
+      const currTime = Date.now()
+      const hrn = "hacked-" + this.state.pwd + "-" + owner;
+
+/*
+      const manifestJson = {
+          "tokenId"   : "1337", 
+          "staker"   : owner, 
+          "og" : owner,
+          "upcHash"   :"1337", 
+          "word"   : this.state.pwd, 
+          "ipfs"   : payload, 
+          "vr"   : popscript, 
+          "humanReadableName" : hrn, 
+          "minted"   : false, 
+          "bought"   : false, 
+          "tld"   : "0", 
+          "createdTimestamp"   : currTime, 
+          "latestTimestamp"   :currTime, 
+      }
+*/
+
+
+      var hackerAddress = "0x0000000000000000000000000000000000000000";
+      var manifestAr = [hackerAddress,owner,0,0,0,payload,popscript,hrn,0,0,0,currTime,currTime];
+
+
+      //var manifestAr = Object.entries(manifestJson);
+
+
+      var manifestEncoded = btoa(manifestAr);
+
+      console.log("manifestEncoded ar ");
+      console.log(manifestAr);
+
+
       exportMsg = btoa(exportMsg);
       missionUrl = btoa(missionUrl);
-      var showString = info['vr'];
-      var owner = info['staker'];
 
 
 
-      var upcJson = '{"show":"' + showString + '","code":"' + this.state.account + '","manifest":"' + infoSanit + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
-      console.log("info iz " + upcJson);
+      var upcJson = '{"show":"' + popscript + '","code":"' + this.state.pwd + '","manifest":"' + manifestEncoded + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
       var upcEncoded = btoa(upcJson);
       currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
       currentUrl = currentUrl.replace('intel', 'export');
 
-      //currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
+      currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
       var encodedWeb2 = encodeURIComponent(currentUrl);
       var toShorten = "https://is.gd/create.php?format=json&url=" + currentUrl;
       if (!(humanReadableName === '' || humanReadableName === null)) {
@@ -223,6 +265,9 @@ export default class StaticCarouselExp extends Component {
         }
       })
 
+      console.log("CURRENT URL");
+      console.log(currentUrl);
+      console.log("RESPONSE");
       console.log(response);
 
       var shortUrl = response.data.shorturl;
@@ -249,6 +294,24 @@ export default class StaticCarouselExp extends Component {
           className="form-control form-control-lg break"
           placeholder="mission url (this is link that will load when your user activates the mission button)"
           required />
+
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(popscript) => { this.popscript=popscript}}
+          className="form-control form-control-lg break"
+          placeholder="popscript"
+          required />
+
+
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(payload) => { this.payload=payload}}
+          className="form-control form-control-lg break"
+          placeholder="payload (etc button)"
+          required />
+
 
 
         <br/>
@@ -348,17 +411,9 @@ export default class StaticCarouselExp extends Component {
             cd: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** change to new upc code if the upc code is unowned.  this is the precursor to hacking a upc</p>',
               fn: async (upc) => {
-                 var response = await this.getUpc(upc);
-                 const nftID = response[0];
-                 if(nftID == 0 ) {
-                     this.setState({pwd: upc});
-                 }
-                 else {
-                     const terminal = this.progressTerminal.current
-		     const response = "Sorry, you can not cd into OR hack @" + upc;
 
-                     terminal.pushToStdout(response);
-                 }
+                   var didCd = await this.cd(upc);
+
 
               }
             },
@@ -1428,6 +1483,24 @@ console.log(pulls2);
 
 
 
+            i: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** display the highest ppl id </p>',
+              fn: async () => {
+
+
+                      const terminal = this.progressTerminal.current
+                      let latest = await this.props.latestTokenId() - 1;  
+                      var intel = this.state.intel;
+                      terminal.pushToStdout(`Please wait... fetching intel`);
+                      terminal.pushToStdout(`###### BEGIN ######`);
+                      terminal.pushToStdout(intel);
+                      terminal.pushToStdout(`###### END #######`);
+
+              }
+            },
+
+
+
 
             pplast: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** display the highest ppl id </p>',
@@ -1585,6 +1658,7 @@ console.log(pulls2);
        channel: channel,
        manifest: manifest,
        missionUrl: missionUrl,
+       popscript: "",
        payload: scan[5],
        slides: [],
        res: [],
@@ -1961,6 +2035,22 @@ src={srcImg} height="200" width="200"/></p>
       terminal.pushToStdout(mplayer);
   }
 
+
+
+
+  cd= async (upc) => {
+         var response = await this.getUpc(upc);
+         const nftID = response[0];
+         if(nftID == 0 ) {
+             this.setState({pwd: upc});
+         }
+         else {
+             const terminal = this.progressTerminal.current
+             const response = "Sorry, you can not cd into OR hack @" + upc;
+
+             terminal.pushToStdout(response);
+         }
+  }
 
 
   executeUpcScript= async (upcScript) => {
@@ -2437,6 +2527,10 @@ console.log(remainder);
 
     var scan;
     scan = atob(this.state.manifest);
+    //scanOb = scan;
+
+console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$");
+console.log(scan);
 
     scan = scan.split(',');
     var res;
@@ -2475,7 +2569,20 @@ console.log(remainder);
                 </div>
              </Modal>;
 
+
+
+   var hacker = scan[0];
+   var isHacker = false;
    var owner = scan[1];
+   var title = "owner";
+
+   if(hacker.includes("0x000000000000000") ) {
+      isHacker = true;
+      owner = scan[1];
+      title = "hacker";
+   }
+
+
    var word = scan[7];
    var createdData = scan[11];
    var modifiedData = scan[12];
@@ -2490,7 +2597,11 @@ console.log(remainder);
    var currentUrl = window.location.href;
    var currentUrl = currentUrl.replace('export','intel');
    var currentUrlLink = <a href={currentUrl}>link</a>
-   var content = 
+
+
+   var content;
+
+   content = 
                 <div style={{overflow:"scroll",wordWrap:"break-word",height:"100vh",background:"#000000", verticalAlign:"middle", textAlign:"center" }}> 
                   <div>
                     <Zoom left> <b style={{color:"white"}}>[intel]</b></Zoom>
@@ -2500,7 +2611,7 @@ console.log(remainder);
                     <br/>
                     <Zoom left> <b>----------</b></Zoom>
                     <br/>
-                    <Zoom left> <b style={{color:"red"}}>owner:</b><i>{owner}</i></Zoom>
+                    <Zoom left> <b style={{color:"red"}}>{title}:</b><i>{owner}</i></Zoom>
                     <br/>
                     <Zoom left> <b>----------</b></Zoom>
                     <br/>
@@ -2520,10 +2631,14 @@ console.log(remainder);
                   </div>
                 </div>
 
-
+   this.setState({ intel: content });
     var res = this.state.slides;
     console.log("RES COUNT = " + res.length);
-    if(res.length == 0 ) {
+    console.log("owner = " + owner);
+
+
+   
+    if(res.length == 0 && isHacker ) {
        res.push(splash);
        res.push(content);
     }
