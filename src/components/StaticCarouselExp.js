@@ -115,7 +115,9 @@ export default class StaticCarouselExp extends Component {
     this.state = { 
       owner: owner, 
       upc: upc,
+      pwd: upc,
       payload: payload,
+      showModalExport: false,
       scan: scan,
     };
 
@@ -163,6 +165,126 @@ export default class StaticCarouselExp extends Component {
 
 
 
+            hack: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display deep link for WEB2 current upc code.  This command is used to share your upc code with people who do not want to use the blockchain, but want to see your content.  this command will create a shortened url and you can specify the slug by passing as a param to this command.  the slug may only contain the characters a-z, 0-9 and underscore. if you get an undefined back instead of a url, you have tried an invalid or unavailable slug, try again or run command with no param to  get random  slug**</p>',
+
+              fn: async (upc) => {
+
+	    const terminal = this.progressTerminal.current
+            var pwd = this.state.pwd;
+            if( !pwd ) {
+	       terminal.pushToStdout("You must cd or scan into a hackable upc code. A hackable UPC code is a upc that no one owns.  You can check upcs with the xupc command.  For example, to check ownership info 000000000000 type 'xupc 000000000000'");
+            }
+            if(!upc) {
+               upc = this.state.pwd
+            }
+      let info = await this.props.upcInfo(this.state.pwd)
+
+  var exportForm = <div>
+    <Barcode value={this.state.pwd} format="UPC" />
+    <form className="mb-3" onSubmit={async (event) => { // Make the onSubmit function async
+      event.preventDefault()
+      let upcId = pwd
+      let humanReadableName = this.humanReadableName.value.toString()
+      let exportMsg= this.exportMsg.value.toString()
+      let missionUrl = this.missionUrl.value.toString()
+
+      const terminal = this.progressTerminal.current
+      var currentUrl = window.location.href;
+
+      let info = await this.props.upcInfo(this.state.account)
+
+      let infoSanit = btoa(info);
+      exportMsg = btoa(exportMsg);
+      missionUrl = btoa(missionUrl);
+      var showString = info['vr'];
+      var owner = info['staker'];
+
+
+
+      var upcJson = '{"show":"' + showString + '","code":"' + this.state.account + '","manifest":"' + infoSanit + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
+      console.log("info iz " + upcJson);
+      var upcEncoded = btoa(upcJson);
+      currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
+      currentUrl = currentUrl.replace('intel', 'export');
+
+      //currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
+      var encodedWeb2 = encodeURIComponent(currentUrl);
+      var toShorten = "https://is.gd/create.php?format=json&url=" + currentUrl;
+      if (!(humanReadableName === '' || humanReadableName === null)) {
+        toShorten += "&shorturl=" + humanReadableName;
+      }
+
+      const response = await axios.get(toShorten, {
+        params: {
+          format: 'json',
+          shorturl: humanReadableName,
+          url: currentUrl
+        }
+      })
+
+      console.log(response);
+
+      var shortUrl = response.data.shorturl;
+      var urlLink = <a href={shortUrl} >{shortUrl}</a>
+      terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser ` + shortUrl);
+      terminal.pushToStdout(urlLink);
+
+      //this.setState({ showModalExport: false });
+
+    }}>
+      <div className="input-group mb-4">
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
+          className="form-control form-control-lg break"
+          placeholder="shortened url (this is the format: https://is.gd/{shortenedURL})"
+          required />
+
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(missionUrl) => { this.missionUrl= missionUrl}}
+          className="form-control form-control-lg break"
+          placeholder="mission url (this is link that will load when your user activates the mission button)"
+          required />
+
+
+        <br/>
+        <textarea
+          style={{minHeight:"40vh",width:"100vw"}}
+          ref={(exportMsg) => { this.exportMsg = exportMsg}}
+          className="form-control form-control-lg break"
+          placeholder="this text will be displayed in the exported terminal welcome message"
+          />
+
+      </div>
+      <button
+        type="submit"
+        className="btn btn-primary btn-block btn-lg"
+      >
+        drop
+      </button>
+    </form>
+
+
+  </div>
+
+   this.setState({ exportModalContent: exportForm });
+
+   this.setState({ showModalExport: true });
+
+              }
+            },
+
+
+
+
+
+
+
+
 
             etc: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open /etcVerse attached to current instance  </p>',
@@ -170,6 +292,91 @@ export default class StaticCarouselExp extends Component {
                       this.doEtc(scan);
               }
             },
+
+
+
+
+            xupc: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** change to new upc code if the upc code is unowned.  this is the precursor to hacking a upc</p>',
+              fn: async (upc) => {
+                 var data = await this.getUpc(upc);
+
+
+		  var tmpStamp = parseInt(data[11]);
+                  var newDate = new Date(tmpStamp * 1000);
+
+		  var tmpStampMod = parseInt(data[12]);
+                  var newDateMod = new Date(tmpStampMod * 1000);
+
+                  const terminal = this.progressTerminal.current
+                  terminal.pushToStdout(`[[intel]]`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">token_id:</u>`);
+                  terminal.pushToStdout(`${data[0]}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">og_owner:</u>`);
+                  terminal.pushToStdout(`${data[1]}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">owner:</u>`);
+                  terminal.pushToStdout(`${data[2]}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">human_readable_name:</u>`);
+                  terminal.pushToStdout(`${data[7]}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">upc:</u>`);
+                  terminal.pushToStdout(`${upc}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">stage:</u>`);
+                  terminal.pushToStdout(`${data[6]}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">payload:</u>`);
+                  terminal.pushToStdout(`${data[5]}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">created:</u>`);
+                  terminal.pushToStdout(`${newDate.toString()}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">updated:</u>`);
+                  terminal.pushToStdout(`${newDateMod.toString()}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`[[/intel]]`);
+		
+
+              }
+            },
+
+
+
+            cd: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** change to new upc code if the upc code is unowned.  this is the precursor to hacking a upc</p>',
+              fn: async (upc) => {
+                 var response = await this.getUpc(upc);
+                 const nftID = response[0];
+                 if(nftID == 0 ) {
+                     this.setState({pwd: upc});
+                 }
+                 else {
+                     const terminal = this.progressTerminal.current
+		     const response = "Sorry, you can not cd into OR hack @" + upc;
+
+                     terminal.pushToStdout(response);
+                 }
+
+              }
+            },
+
+
+
+            pwd: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** display the upc that you are currently on. use this command before hacking a upc to make sure you are where you think you are</p>',
+              fn: async (upc) => {
+                     const terminal = this.progressTerminal.current
+		     const response = "currently @" + this.state.pwd;
+
+                     terminal.pushToStdout(response);
+
+              }
+            },
+
+
 
 
 
@@ -276,7 +483,7 @@ export default class StaticCarouselExp extends Component {
                           let latest = await this.props.latestTokenId() - 1;  
 		          let pulls4= await this.props.popitPullUniversal(grepCount,latest);
 
-                          for(var i=0; i<pulls4.length; i++) {
+                          for(var i=0; i<latest; i++) {
                              var myPull = pulls4[i];
                              var [id, link, hash, address, upc, hrn, timestamp] = myPull.toString().split(',');
 
@@ -1514,22 +1721,23 @@ console.log(pulls2);
     
 
  
-                   const hero_unique_string = "this-is-repatriation-os";
-
-                   upcHash += hero_unique_string;
-
                    var channelNum = upc[0]
-                   var srcImg = 'https://api.dicebear.com/7.x/' + avatarType + '/svg?seed=' + upcHash;
+                   var srcImg = 'https://api.dicebear.com/9.x/' + avatarType + '/svg?seed=' + upcHash;
 
                    const address = await this.props.getMyAddress();
 
 console.log("!!!!!!!!! addy is !!!!!!!!!!!" + address);
+                   var currentUrl = window.location.href;
+                   var upcSerial  = sha256(currentUrl)
+
 
                    var cardValue = {
                       value:  upcHash,
-                      intent: "hero",
-                      hv: address,
-                      upc: this.state.code,
+                      intent: "mine",
+                      player: address,
+                      home: this.state.code,
+                      away: upc,
+                      serial: upcSerial,
                       timestamp: Date.now()
                    }
                    var cardValueStr = JSON.stringify(cardValue);
@@ -1877,61 +2085,72 @@ src={srcImg} height="200" width="200"/></p>
 
             hrn = hrnDL;
 
-            var fullPage = (
-              <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
-                <tr>
-                  <th style={{ border: '1px solid #ddd', backgroundColor: '#f2f2f2', padding: '8px', textAlign: 'left' }}>Field</th>
-                  <th style={{ border: '1px solid #ddd', backgroundColor: '#f2f2f2', padding: '8px', textAlign: 'left' }}>Value</th>
-                </tr>
-            
-
-                <tr>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>ID</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{id}</td>
-                </tr>
 
 
-                <tr>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Link</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{link}</td>
-                </tr>
-            
-                <tr>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Hash</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{hash}</td>
-                </tr>
-            
-                <tr>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Owner</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{address}</td>
-                </tr>
-            
-                <tr>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>UPC</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{upc}</td>
-                </tr>
-            
-                <tr>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Private Protocol Link (PPL)</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{hrnBare}</td>
-                </tr>
-            
-                <tr style={{color:"black", background:"green"}}>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>PPL Commands</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{hrn}</td>
-                </tr>
-                <tr>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Updated</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>${updated.toString()}</td>
-                </tr>
-                <tr>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Created</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>${timestamp.toString()}</td>
-                </tr>
+
+const fullPage = (
+  <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
+    <thead>
+      <tr>
+        <th colSpan={2} style={{ border: '1px solid #ddd', backgroundColor: '#f2f2f2', padding: '8px', textAlign: 'left', color: 'orange' }}>Field - Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style={{ backgroundColor: 'black', color: 'white' }}>
+        <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
+          ID:<br />
+          {id}
+        </td>
+      </tr>
+      <tr style={{ backgroundColor: 'white', color: 'black' }}>
+        <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
+          Link:<br />
+          {link}
+        </td>
+      </tr>
+      <tr style={{ backgroundColor: 'black', color: 'white' }}>
+        <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
+          Owner:<br />
+          {address}
+        </td>
+      </tr>
+      <tr style={{ backgroundColor: 'white', color: 'black' }}>
+        <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
+          UPC:<br />
+          {upc}
+        </td>
+      </tr>
+      <tr style={{ backgroundColor: 'black', color: 'white' }}>
+        <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
+          Private Protocol Link (PPL):<br />
+          {hrnBare}
+        </td>
+      </tr>
+      <tr style={{ backgroundColor: 'white', color: 'black' }}>
+        <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
+          PPL Commands:<br />
+          {hrn}
+        </td>
+      </tr>
+      <tr style={{ backgroundColor: 'black', color: 'white' }}>
+        <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
+          Updated:<br />
+          ${updated.toString()}
+        </td>
+      </tr>
+      <tr style={{ backgroundColor: 'white', color: 'black' }}>
+        <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
+          Created:<br />
+          ${timestamp.toString()}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+);
 
 
-              </table>
-            );
+
+
 
             return fullPage;
 
@@ -1969,6 +2188,12 @@ src={srcImg} height="200" width="200"/></p>
 	        this.setState({res: res})
 
   }
+
+  getUpc = async (upc) => {
+                let infoOwned = await this.props.upcInfo(upc)
+                return infoOwned;
+   }
+
 
 
   getNft = async (i, nftIds) => {
@@ -2507,6 +2732,10 @@ var show =
   <div>
     <TrebleCleffExp doEtc={this.doEtc} showPostTerminal={this.showPostTerminal}  showHome={this.handleFlip} handleFlip={this.handleFlip} heroScan={this.heroScan} showTerminal={this.showTerminal} showMission={this.handleFlip} terminal={"true"}/>
     {this.state.terminal}
+
+
+      <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalExport} closemodal={() => this.setState({ showModalExport: false })} type="pulse" > {this.state.exportModalContent}</Modal>
+
                 <Draggable
 		  style={{zIndex:"0"}}
                   axis="both"

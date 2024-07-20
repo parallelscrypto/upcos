@@ -74,11 +74,11 @@ console.log("channelNum is ==== " + channelNum);
 
 
   render() {
-    var bcfg = {background: this.state.buttonBg, color: this.state.buttonFg, width: "20vw", height: "20vw"}
+    var bcfg = {background: this.state.buttonBg, color: 'red' , width: "20vw", height: "20vw"}
     return (
 	    <div>
                     <button
-                        style={{background: "#000000", color:"green", width: "20vw", height: "20vw"}}
+                        style={{background: "#000000", color:"red", width: "20vw", height: "20vw"}}
                         onClick={(e) => { 
 this.props.play()
 }}
@@ -96,7 +96,7 @@ this.props.play()
 
 
                     <button
-                        style={{background: "#000000", color:"green", width: "20vw", height: "20vw"}}
+                        style={{background: "#000000", color:"red", width: "20vw", height: "20vw"}}
                         onClick={(e) => { 
 
 
@@ -109,7 +109,7 @@ this.props.play()
 
 
                     <button
-                        style={{background: "#000000", color:"green", width: "20vw", height: "20vw"}}
+                        style={{background: "#000000", color:"red", width: "20vw", height: "20vw"}}
                         onClick={(e) => { 
                                      //this.props.handleFlip(e)
                                      this.props.search();
