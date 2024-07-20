@@ -1592,8 +1592,8 @@ console.log(pulls2);
 
 
       const owner = await this.props.getMyAddress();
-      const currTime = Date.now()
-      const hrn = "hacked-" + this.state.pwd + "-" + owner;
+      const currTime = Math.floor(Date.now() / 1000);
+      const hrn = "hacked-" + this.state.pwd + "-" + currTime;
 
 /*
       const manifestJson = {
@@ -2631,10 +2631,13 @@ console.log(scan);
 
    var content;
 
+   if(!isHacker) {
    content = 
                 <div style={{overflow:"scroll",wordWrap:"break-word",height:"100vh",background:"#000000", verticalAlign:"middle", textAlign:"center" }}> 
                   <div>
                     <Zoom left> <b style={{color:"white"}}>[intel]</b></Zoom>
+                    <br/>
+                    <Zoom left> <b><Barcode value={this.state.code} format="UPC" /></b></Zoom>
                     <br/>
                     <Zoom left> <b>----------</b></Zoom>
                     <Zoom left> <b style={{color:"red"}}>web3-url:{currentUrlLink}</b></Zoom>
@@ -2660,6 +2663,38 @@ console.log(scan);
                     <Zoom left> <b style={{color:"red"}}>UPCScript:</b><i>s {upcscript}</i></Zoom>
                   </div>
                 </div>
+   } else {
+
+
+
+         var hackedData = scan[11];
+         var hacked = new Date(hackedData * 1000);
+
+         content = 
+                <div style={{overflow:"scroll",wordWrap:"break-word",height:"100vh",background:"#000000", verticalAlign:"middle", textAlign:"center" }}> 
+                  <div>
+                    <br/>
+                    <br/>
+                    <Zoom left> <b style={{color:"white"}}>[intel]</b></Zoom>
+                    <br/>
+                    <Zoom left> <b style={{color:"red"}}>{title}:</b><i>{owner}</i></Zoom>
+                    <br/>
+                    <Zoom left> <b>----------</b></Zoom>
+                    <br/>
+                    <Zoom left> <b style={{color:"red"}}>title:</b><i>{word}</i></Zoom>
+                    <br/>
+                    <Zoom left> <b>----------</b></Zoom>
+                    <br/>
+                    <Zoom left> <b style={{color:"red"}}>hack_date:</b><i>{hacked.toString()}</i></Zoom>
+                    <br/>
+                    <Zoom left> <b>----------</b></Zoom>
+                    <br/>
+                    <Zoom left> <b style={{color:"red"}}>UPCScript:</b><i>s {upcscript}</i></Zoom>
+                  </div>
+                </div>
+
+   }     
+
 
    this.setState({ intel: content });
     var res = this.state.slides;
