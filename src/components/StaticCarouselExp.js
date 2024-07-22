@@ -98,8 +98,8 @@ export default class StaticCarouselExp extends Component {
     var manifest= props.manifest;
     var msg = atob(props.msg);
 
-    console.log("^^^^^^^^^^^^^^^^^^^  manifest");
-    console.log(JSON.stringify(manifest));
+    console.log("^^^^^^^^^^^^^^^^^^^  UPC");
+    console.log(upc);
 
 
     var scan;
@@ -115,7 +115,7 @@ export default class StaticCarouselExp extends Component {
     this.state = { 
       owner: owner, 
       upc: upc,
-      pwd: "",
+      pwd: upc,
       payload: payload,
       showModalExport: false,
       scan: scan,
@@ -1486,6 +1486,7 @@ console.log(pulls2);
 
     this.state = {
        code: upc,
+       pwd: upc,
        mplayer: "",
        channel: channel,
        manifest: manifest,
@@ -1557,21 +1558,25 @@ console.log(pulls2);
 
 	    const terminal = this.progressTerminal.current
 
+            let info = await this.props.upcInfo(this.state.pwd)
+            let assistInfo = await this.props.upcInfo(this.state.code)
+            var qOwner = info['og'];
 
-            var pwd = this.state.pwd;
-            if( !pwd ) {
+            if( !qOwner.includes("0x00000000000000000000") ) {
 	       terminal.pushToStdout("You must cd or scan into a hackable upc code. A hackable UPC code is a upc that no one owns.  You can check upcs with the xupc command.  For example, to check ownership info 000000000000 type 'xupc 000000000000'");
+               return false;
             }
             if(!upc) {
                upc = this.state.pwd
             }
-      let info = await this.props.upcInfo(this.state.pwd)
+
+      console.log("========== ASSIST INFO ==========");
 
   var exportForm = <div>
     <Barcode value={this.state.pwd} format="UPC" />
     <form className="mb-3" onSubmit={async (event) => { // Make the onSubmit function async
       event.preventDefault()
-      let upcId = pwd
+      let upcId = this.state.pwd
       let humanReadableName = this.humanReadableName.value.toString()
       let exportMsg= this.exportMsg.value.toString()
       let popscript= this.popscript.value.toString()
@@ -1582,16 +1587,12 @@ console.log(pulls2);
       var currentUrl = window.location.href;
 
       //let info = await this.props.upcInfo(this.state.pwd)
-      let info = await this.props.upcInfo('000000000000')
-      console.log("info iz " + info);
-      console.log("type");
-      console.log(typeof info);
 
       let infoSanit = btoa(info);
       var showString = popscript;
 
 
-      const owner = await this.props.getMyAddress();
+      const hackerAddress = await this.props.getMyAddress();
       const currTime = Math.floor(Date.now() / 1000);
       const hrn = "hacked-" + this.state.pwd + "-" + currTime;
 
@@ -1614,8 +1615,7 @@ console.log(pulls2);
 */
 
 
-      var hackerAddress = "0x0000000000000000000000000000000000000000";
-      var manifestAr = [hackerAddress,owner,0,0,0,payload,popscript,hrn,0,0,0,currTime,currTime];
+      var manifestAr = [hackerAddress,qOwner,0,0,0,payload,popscript,hrn,0,0,0,currTime,currTime];
 
 
       //var manifestAr = Object.entries(manifestJson);
@@ -1632,7 +1632,7 @@ console.log(pulls2);
 
 
 
-      var upcJson = '{"show":"' + popscript + '","code":"' + this.state.pwd + '","manifest":"' + manifestEncoded + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
+      var upcJson = '{"show":"' + popscript + '","code":"' + this.state.pwd + '","assist":"' + this.state.code + '","manifest":"' + manifestEncoded + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
       var upcEncoded = btoa(upcJson);
       currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
       currentUrl = currentUrl.replace('intel', 'export');
@@ -1652,6 +1652,7 @@ console.log(pulls2);
         }
       })
 
+      this.setState({ showModalExport: false });
       console.log("CURRENT URL");
       console.log(currentUrl);
       console.log("RESPONSE");
@@ -2551,10 +2552,6 @@ console.log(remainder);
 
     var scan;
     scan = atob(this.state.manifest);
-    //scanOb = scan;
-
-console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$");
-console.log(scan);
 
     scan = scan.split(',');
     var res;
@@ -2595,26 +2592,24 @@ console.log(scan);
 
 
 
-   var hacker = scan[0];
    var isHacker = false;
+   var hacker  = scan[0];
+   var ogOwner = scan[1];
    var owner = scan[1];
    var title = "owner";
 
-   if(hacker.includes("0x000000000000000") ) {
+   let infoAssist = await this.props.upcInfo(this.state.pwd)
+   let qAddy = infoAssist['og'];
+   if(qAddy.includes("0x00000000000000000000")) {
       isHacker = true;
-      owner = scan[1];
       title = "hacker";
+      owner = scan[0];
    }
 
 
    var word = scan[7];
    var createdData = scan[11];
    var modifiedData = scan[12];
-
-
-   console.log("============= DATEZZZZZZ ================");
-   console.log(createdData);
-   console.log(modifiedData);
 
 
    var createdDate = parseInt(createdData);
@@ -2669,6 +2664,7 @@ console.log(scan);
 
          var hackedData = scan[11];
          var hacked = new Date(hackedData * 1000);
+         var assist;
 
          content = 
                 <div style={{overflow:"scroll",wordWrap:"break-word",height:"100vh",background:"#000000", verticalAlign:"middle", textAlign:"center" }}> 
