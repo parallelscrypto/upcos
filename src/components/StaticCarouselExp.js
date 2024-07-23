@@ -92,8 +92,13 @@ export default class StaticCarouselExp extends Component {
     super(props);
     var channel = props.upcId;
     var upc = props.code;
+    var assist = props.assist;
 
-    //this.setState({upc: upc});
+    console.log("assist is " );
+    console.log(assist);
+
+
+    this.setState({assist: assist});
     var missionUrl = atob(props.missionUrl);
     var manifest= props.manifest;
     var msg = atob(props.msg);
@@ -113,7 +118,8 @@ export default class StaticCarouselExp extends Component {
     //this.setState({owner: owner});
     
     this.state = { 
-      owner: owner, 
+      owner: owner,
+      assist: assist,
       upc: upc,
       pwd: upc,
       payload: payload,
@@ -166,7 +172,7 @@ export default class StaticCarouselExp extends Component {
 
 
             hack: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display deep link for WEB2 current upc code.  This command is used to share your upc code with people who do not want to use the blockchain, but want to see your content.  this command will create a shortened url and you can specify the slug by passing as a param to this command.  the slug may only contain the characters a-z, 0-9 and underscore. if you get an undefined back instead of a url, you have tried an invalid or unavailable slug, try again or run command with no param to  get random  slug**</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">**  attempt to hack the current upc.  you must cd into an unowned upc code, and then you can run this command.  to see if a upc is unowned, run the xupc command.  </p>',
 
               fn: async (upc) => {
                   this.doHack(upc);
@@ -192,7 +198,7 @@ export default class StaticCarouselExp extends Component {
 
 
             xupc: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** change to new upc code if the upc code is unowned.  this is the precursor to hacking a upc</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** check the information on a upc number.  see if it is owned before trying to hack it</p>',
               fn: async (upc) => {
                  var data = await this.getUpc(upc);
 
@@ -839,7 +845,7 @@ export default class StaticCarouselExp extends Component {
 
 
             upcms : {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open chat client window in draggable interface  </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open upcms window in draggable interface (deprecated)  </p>',
               fn: (fullUrl,winNum) => {
 
                       fullUrl = "https://pitrgclmhs7vogwhp5twz44y4p4jswq2dmihll2navrv5adfg4wq.arweave.net/eicTCWw8v1cax39nbPOY4_iZWhobEHWvTQVjXoBlNy0/index.html#/upload/" + upc;
@@ -1080,6 +1086,36 @@ console.log(pulls2);
                 var shortLink = <a href={shortUrl}>Go Now! </a>
                 terminal.pushToStdout(shortLink);
 
+              }
+            },
+
+
+
+            post: {
+              description: '<p style="color:hotpink;font-size:1.1em">** open a post lookup dialog.  enter the key of the conversation that you wish to load</p>',
+              fn: (key) => {
+
+                      var currentUrl = window.location.href;
+                      const terminal = this.progressTerminal.current
+                      terminal.pushToStdout(`Please wait... looking up converaation id  ${key}`);
+                      terminal.pushToStdout(`###### BEGIN ######`);
+                      this.postLookup(key);
+                      terminal.pushToStdout(`###### END #######`);
+                      //this.setState({showProductModal:true});
+              }
+            },
+
+            share: {
+              description: '<p style="color:hotpink;font-size:1.1em">** share this upc instance with a friend </p>',
+              fn: (key) => {
+
+                      var currentUrl = window.location.href;
+                      const terminal = this.progressTerminal.current
+                      terminal.pushToStdout(`Please wait... looking up converaation id  ${key}`);
+                      terminal.pushToStdout(`###### BEGIN ######`);
+                      this.sharePage();
+                      terminal.pushToStdout(`###### END #######`);
+                      //this.setState({showProductModal:true});
               }
             },
 
@@ -1485,6 +1521,7 @@ console.log(pulls2);
 
 
     this.state = {
+       assist: assist,
        code: upc,
        pwd: upc,
        mplayer: "",
@@ -1615,7 +1652,7 @@ console.log(pulls2);
 */
 
 
-      var manifestAr = [hackerAddress,qOwner,0,0,0,payload,popscript,hrn,0,0,0,currTime,currTime];
+      var manifestAr = [hackerAddress,qOwner,0,0,0,payload,popscript,hrn,0,0,0,currTime,currTime,this.state.code];
 
 
       //var manifestAr = Object.entries(manifestJson);
@@ -1995,8 +2032,10 @@ src={srcImg} height="200" width="200"/></p>
 
 
   showPostTerminal= async () => {
-
-                var vr = "https://zyco4irrphuhtypaqxhcglrw6be4gx7q5vpsmzlninjdw7bfbwjq.arweave.net/zgTuIjF56Hnh4IXOIy428EnDX_DtXyZlbUNSO3wlDZM";
+                var currentUrl = window.location.href;
+                var upcHash  = sha256(currentUrl)
+                var vr = "https://kn4bs5nn5dttso2ixfk5bi3j3n4f3c4teqodgxv5bmkenrrr4kya.arweave.net/U3gZda3o5zk7SLlV0KNp23hdi5MkHDNevQsURsYx4rA?board=" + upcHash;
+                //var vr = "https://zyco4irrphuhtypaqxhcglrw6be4gx7q5vpsmzlninjdw7bfbwjq.arweave.net/zgTuIjF56Hnh4IXOIy428EnDX_DtXyZlbUNSO3wlDZM";
                 const terminal = this.progressTerminal.current
                 var fullUrl = vr ;
                 var mplayer = this.getMplayer(fullUrl);
@@ -2008,8 +2047,10 @@ src={srcImg} height="200" width="200"/></p>
 
 
   showPost= async () => {
-
-  var vr = "https://zyco4irrphuhtypaqxhcglrw6be4gx7q5vpsmzlninjdw7bfbwjq.arweave.net/zgTuIjF56Hnh4IXOIy428EnDX_DtXyZlbUNSO3wlDZM";
+                var currentUrl = window.location.href;
+                var upcHash  = sha256(currentUrl)
+                var vr = "https://kn4bs5nn5dttso2ixfk5bi3j3n4f3c4teqodgxv5bmkenrrr4kya.arweave.net/U3gZda3o5zk7SLlV0KNp23hdi5MkHDNevQsURsYx4rA?board=" + upcHash;
+               //var vr = "https://zyco4irrphuhtypaqxhcglrw6be4gx7q5vpsmzlninjdw7bfbwjq.arweave.net/zgTuIjF56Hnh4IXOIy428EnDX_DtXyZlbUNSO3wlDZM";
 
                var loader =
                            <div>
@@ -2057,6 +2098,34 @@ src={srcImg} height="200" width="200"/></p>
       var mplayer = this.getMplayer(fullUrl);
       terminal.pushToStdout(mplayer);
   }
+
+
+  postLookup= async (board) => {
+
+      var upcHash  = sha256(board)
+      const terminal = this.progressTerminal.current
+      var fullUrl = "https://kn4bs5nn5dttso2ixfk5bi3j3n4f3c4teqodgxv5bmkenrrr4kya.arweave.net/U3gZda3o5zk7SLlV0KNp23hdi5MkHDNevQsURsYx4rA?board=" + upcHash;
+      var winNum = "0";
+      var mplayer = this.getMplayer(fullUrl);
+      terminal.pushToStdout(mplayer);
+  }
+
+  sharePage = () => {
+    var titleG = "INCOMING!! A UPC Hackergram payload has landed in your inbox";
+    if (navigator.share) {
+      navigator.share({
+        title: titleG,
+        url: window.location.href
+      })
+      .then(() => console.log('Shared successfully'))
+      .catch((error) => console.error('Error sharing:', error));
+    } else {
+      const shareUrl = encodeURIComponent(window.location.href);
+      const shareTitle = encodeURIComponent(titleG);
+      const shareLink = `mailto:?subject=${shareTitle}&body=${shareUrl}`;
+      window.open(shareLink, '_blank');
+    }
+  };
 
 
 
@@ -2556,6 +2625,9 @@ console.log(remainder);
     scan = scan.split(',');
     var res;
     var ipfs   = this.props.show;
+    var assist = this.state.assist;
+    //console.log("assist is " );
+    //console.log(assist);
     
     if (!ipfs.includes(">>>")) {
        ipfs = ">>>" + ipfs;
@@ -2584,8 +2656,8 @@ console.log(remainder);
                      <Flip right> <Barcode value={this.state.code} format="UPC" /> </Flip>
     
                      <br/>
-                     <i  style={{color:"red"}}>[[{this.state.code}]]</i>
-                     <b style={{color:"white"}}>powered by upcOS </b>
+                     <i  style={{color:"red"}}>[[{this.state.code}]]</i><br/>
+                     <b style={{color:"white"}}>powered by arweave </b>
                   </div>
                 </div>
              </Modal>;
@@ -2598,13 +2670,23 @@ console.log(remainder);
    var owner = scan[1];
    var title = "owner";
 
-   let infoAssist = await this.props.upcInfo(this.state.pwd)
-   let qAddy = infoAssist['og'];
-   if(qAddy.includes("0x00000000000000000000")) {
+   if(scan[13] != undefined) {
+      console.log("trying to get assist");
+      assist = scan[13];     
+      console.log(assist);
       isHacker = true;
       title = "hacker";
       owner = scan[0];
    }
+
+
+/*
+   let infoHacker = await this.props.upcInfo(this.state.pwd)
+   let qAddy = infoHacker['og'];
+   if(qAddy.includes("0x00000000000000000000")) {
+   }
+*/
+
 
 
    var word = scan[7];
@@ -2664,12 +2746,10 @@ console.log(remainder);
 
          var hackedData = scan[11];
          var hacked = new Date(hackedData * 1000);
-         var assist;
 
          content = 
                 <div style={{overflow:"scroll",wordWrap:"break-word",height:"100vh",background:"#000000", verticalAlign:"middle", textAlign:"center" }}> 
                   <div>
-                    <br/>
                     <br/>
                     <Zoom left> <b style={{color:"white"}}>[intel]</b></Zoom>
                     <br/>
@@ -2682,6 +2762,8 @@ console.log(remainder);
                     <Zoom left> <b>----------</b></Zoom>
                     <br/>
                     <Zoom left> <b style={{color:"red"}}>hack_date:</b><i>{hacked.toString()}</i></Zoom>
+                    <br/>
+                    <Zoom left> <b style={{color:"red"}}>assist:</b><Barcode value={assist} format="UPC" /></Zoom>
                     <br/>
                     <Zoom left> <b>----------</b></Zoom>
                     <br/>
