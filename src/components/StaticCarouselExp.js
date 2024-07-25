@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import {CopyToClipboard} from 'react-copy-to-clipboard';
 import axios from "axios";
 import Modal from "react-animated-modal";
 import makeCarousel from 'react-reveal/makeCarousel';
@@ -1464,6 +1465,7 @@ console.log(pulls2);
               description: '<p style="color:hotpink;font-size:1.1em">**  instantiate the dj upc to perform a substring extraction, and play spinz for all of the resulting videos in succession</p>',
               fn: async (command, arg)  => {
 
+                      const terminal = this.progressTerminal.current
                       if( !arg && !command ) {
                           var upcScript = this.state.upcscript.substr(3);
 		          this.djupc(upcScript);
@@ -1476,7 +1478,6 @@ console.log(pulls2);
                          switch(command) {
                          
                            case 'ppl':
-                             const terminal = this.progressTerminal.current
 		             let pulls= await this.props.popitPullPPL(arg)
 
                              var [id, link, hash, address, upc, hrn,updated,timestamp] = pulls.split(',');
@@ -1486,6 +1487,28 @@ console.log(pulls2);
                              terminal.pushToStdout(fullPage);
 
                              break;
+                           case 'upc':
+
+                             var slidesTmp = this.state.slides;
+
+                             this.setState({ slides: [] });
+
+                             var stageShow = await this.loadUpc(arg);
+
+                             var caro =
+                             <Carousel maxTurns={'0'}>
+                               {stageShow}
+                             </Carousel>
+
+
+
+                             terminal.pushToStdout(caro);
+                             this.setState({ slides: slidesTmp });
+
+                             break;
+
+
+
 
                          }
 
@@ -1652,7 +1675,7 @@ console.log(pulls2);
 */
 
 
-      var manifestAr = [hackerAddress,qOwner,0,0,0,payload,popscript,hrn,0,0,0,currTime,currTime,this.state.code];
+      var manifestAr = [hackerAddress,qOwner,0,0,0,payload,popscript,hrn,0,0,0,currTime,currTime,this.state.code,currentUrl];
 
 
       //var manifestAr = Object.entries(manifestJson);
@@ -1689,6 +1712,16 @@ console.log(pulls2);
         }
       })
 
+
+
+      var clipboard = 
+      <CopyToClipboard text={currentUrl}>
+        <button>Copy Raw URL</button>
+      </CopyToClipboard>
+
+
+
+
       this.setState({ showModalExport: false });
       console.log("CURRENT URL");
       console.log(currentUrl);
@@ -1700,6 +1733,8 @@ console.log(pulls2);
       terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser ` + shortUrl);
       terminal.pushToStdout(urlLink);
 
+      terminal.pushToStdout(`copy full link to your clipboard `);
+      terminal.pushToStdout(clipboard);
       //this.setState({ showModalExport: false });
 
     }}>
@@ -1765,6 +1800,89 @@ console.log(pulls2);
 
 
    }
+
+
+
+
+
+
+
+
+
+
+  loadUpc = async (upc) => {
+
+    let info = await this.props.upcInfo(upc)
+    var nftIds = info['vr'];
+
+    const containsGreaterThan = nftIds.includes('>');
+
+
+    if(containsGreaterThan) {
+       nftIds = nftIds.split(">");
+    }
+    else {
+       return this.loadOne('77777',nftIds);
+    }
+
+
+   console.log("))))))))))))nft show(((((((((");
+   console.log(nftIds);
+
+
+
+    var slideshow = [];
+    for(var i = 0; i < nftIds.length; i++) {
+       if(!nftIds[i]) continue;
+       var vidSnippet;
+       var vid;
+
+       var tmpId = nftIds[i];
+       //keep ss string clean.
+
+
+       var stagePiece = nftIds[i];
+       var containsLinkType = stagePiece.includes('[') && stagePiece.includes('|') && stagePiece.includes(']');
+       var loadYt = false;
+       var loadHtml = false;
+       if( stagePiece.includes('https:') ) {
+        console.log("LINKKKKKKK1");
+            loadHtml = true;
+       }
+
+       if( stagePiece.includes('yout') ) {
+        console.log("LINKKKKKKK2");
+            loadYt = true;
+       }
+
+       if (containsGreaterThan && loadHtml && !containsLinkType && !loadYt) {
+          var entry = await this.getHTML(nftIds[i]); 
+          slideshow.push(entry);
+       } else if (containsLinkType) {
+        console.log("LINKKKKKKK3");
+        var entry = this.getLink(nftIds[i]);
+         slideshow.push(entry);
+       }
+       else if(tmpId.length == 11) {
+        console.log("LINKKKKKKK4");
+          var entry = await this.getYt(tmpId); 
+          slideshow.push(entry);
+       }
+       else if(loadYt) {
+
+        console.log("LINKKKKKKK5");
+          var entry = await this.getYt(tmpId); 
+          slideshow.push(entry);
+          //this class can not connect to web3, so it is up to the calling code to decode the nftId's content and pass that raw to this function
+          //var entry = await this.getNft(i,nftIds); 
+       }
+    }
+    return slideshow;
+
+  }
+
+
+
 
 
 
@@ -2370,6 +2488,7 @@ const fullPage = (
 	        res.push(oneVid)
 	        this.setState({slides: res})
 	        this.setState({res: res})
+                return res;
 
   }
 
@@ -2449,6 +2568,7 @@ console.log(hrn);
                 }
 		this.setState({slides: res})
 		this.setState({res: res})
+                return res;
    }
 
   djupc = async (upcScript) => {
@@ -2622,6 +2742,9 @@ console.log(remainder);
     var scan;
     scan = atob(this.state.manifest);
 
+    console.log("GOOOOOOOD MANIFEST");
+    console.log(scan);
+
     scan = scan.split(',');
     var res;
     var ipfs   = this.props.show;
@@ -2669,11 +2792,13 @@ console.log(remainder);
    var ogOwner = scan[1];
    var owner = scan[1];
    var title = "owner";
+   var assistUrl;
 
    if(scan[13] != undefined) {
       console.log("trying to get assist");
       assist = scan[13];     
-      console.log(assist);
+      assistUrl = scan[14];     
+      console.log(assistUrl);
       isHacker = true;
       title = "hacker";
       owner = scan[0];
@@ -2765,6 +2890,7 @@ console.log(remainder);
                     <br/>
                     <Zoom left> <b style={{color:"red"}}>assist:</b><Barcode value={assist} format="UPC" /></Zoom>
                     <br/>
+                    <Zoom left> <b style={{color:"red"}}>assistUrl:</b><a href={assistUrl}>Access OG UPC</a> (refresh page after clicking link)</Zoom>
                     <Zoom left> <b>----------</b></Zoom>
                     <br/>
                     <Zoom left> <b style={{color:"red"}}>UPCScript:</b><i>s {upcscript}</i></Zoom>
@@ -2910,6 +3036,7 @@ console.log(remainder);
     res.push(toPush);
     this.setState({ slides: res });
     this.setState({ res: res });
+    return res;
   };
 
 
