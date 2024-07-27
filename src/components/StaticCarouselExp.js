@@ -1369,6 +1369,22 @@ console.log(pulls2);
             },
 
 
+            last: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** display the highest raw material nft id </p>',
+              fn: async () => {
+
+
+                      const terminal = this.progressTerminal.current
+                      let latest = await this.props.latestRawId() - 1;  
+                      terminal.pushToStdout(`Please wait... fetching latest RAW MATERIAL NFT id`);
+                      terminal.pushToStdout(`###### BEGIN ######`);
+                      terminal.pushToStdout( `latest_ppl_id: ` + `${latest}`);
+                      terminal.pushToStdout(`###### END #######`);
+
+              }
+            },
+
+
 
 
             pplast: {
@@ -1491,9 +1507,10 @@ console.log(pulls2);
 
                              var slidesTmp = this.state.slides;
 
+                             //doing this state setting because otherwise the slideshow will be polluted with previous slides
                              this.setState({ slides: [] });
 
-                             var stageShow = await this.loadUpc(arg);
+                             var stageShow = await this.loadUpc(true,arg);
 
                              var caro =
                              <Carousel maxTurns={'0'}>
@@ -1503,9 +1520,33 @@ console.log(pulls2);
 
 
                              terminal.pushToStdout(caro);
+                             //doing this state setting because otherwise the slideshow will be polluted with previous slides
                              this.setState({ slides: slidesTmp });
 
                              break;
+
+                           case 'nft':
+
+                             var slidesTmp = this.state.slides;
+
+                             //doing this state setting because otherwise the slideshow will be polluted with previous slides
+                             this.setState({ slides: [] });
+
+                             var stageShow = await this.loadUpc(false,arg);
+
+                             var caro =
+                             <Carousel maxTurns={'0'}>
+                               {stageShow}
+                             </Carousel>
+
+
+
+                             terminal.pushToStdout(caro);
+                             //doing this state setting because otherwise the slideshow will be polluted with previous slides
+                             this.setState({ slides: slidesTmp });
+
+                             break;
+
 
 
 
@@ -1810,9 +1851,19 @@ console.log(pulls2);
 
 
 
-  loadUpc = async (upc) => {
+  loadUpc = async (isUpc,id) => {
 
-    let info = await this.props.upcInfo(upc)
+
+    let info;
+
+    if(isUpc) {
+       info = await this.props.upcInfo(id)
+    }
+    else{
+       info = await this.props.nftInfo(id)
+    }
+
+
     var nftIds = info['vr'];
 
     const containsGreaterThan = nftIds.includes('>');

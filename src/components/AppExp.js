@@ -41,6 +41,8 @@ class AppExp extends Component {
     this.loadBlockchainData = this.loadBlockchainData.bind(this);
     this.popitPush = this.popitPush.bind(this);
     this.upcInfo= this.upcInfo.bind(this);
+    this.nftInfo= this.nftInfo.bind(this);
+    this.latestTokenId= this.latestTokenId.bind(this);
     this.popitUpdate = this.popitUpdate.bind(this);
     this.popitPullPPL = this.popitPullPPL.bind(this);
     this.popitPullUpc = this.popitPullUpc.bind(this);
@@ -117,6 +119,34 @@ class AppExp extends Component {
     const pushRes = await loadedFull.methods.insertLink(link, upc, humanReadableName).send({ from: address });
     return pushRes.toString();
   };
+
+
+
+
+  latestRawId = async (upcId) => {
+    const { accounts, contract } = this.state;
+
+    var loadedFull = await this.loadBlockchainData();
+    var address = this.state.account;
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.upcNft.methods.latestTokenId().call({ from: address });
+  };
+
+
+
+
+  nftInfo = async (nftId) => {
+
+    var loadedFull = await this.loadBlockchainData();
+    var address = this.state.account;
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.upcNft.methods.nftInfo(nftId).call({ from: address });
+  };
+
+
+
 
 
 
@@ -276,7 +306,7 @@ class AppExp extends Component {
     return (
       <div style={{ background: "#7e7e5e", height: '100vh', width: '100vw', border: 'none' }}>
         <div>
-          <StaticCarouselExp upcInfo={this.upcInfo} approvePPL={this.approvePPL} loadBlockchainData={this.loadBlockchainData} latestTokenId={this.latestTokenId} popitPullUniversal={this.popitPullUniversal} popitUpdate={this.popitUpdate} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} getMyAddress={this.getMyAddress} />
+          <StaticCarouselExp nftInfo={this.nftInfo} latestRawId={this.latestRawId} upcInfo={this.upcInfo} approvePPL={this.approvePPL} loadBlockchainData={this.loadBlockchainData} latestTokenId={this.latestTokenId} popitPullUniversal={this.popitPullUniversal} popitUpdate={this.popitUpdate} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} getMyAddress={this.getMyAddress} />
           <CommentSection upc={manHash} />
         </div>
       </div>
