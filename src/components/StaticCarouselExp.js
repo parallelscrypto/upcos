@@ -198,6 +198,63 @@ export default class StaticCarouselExp extends Component {
 
 
 
+
+
+
+
+            xi : {
+		    description: '<p style="color:hotpink;font-size:1.1em">** check the information on a raw material nft number.</p>',
+              fn: async (id) => {
+                 var data = await this.getNft(id);
+
+
+		  var tmpStamp = parseInt(data[11]);
+                  var newDate = new Date(tmpStamp * 1000);
+
+		  var tmpStampMod = parseInt(data[12]);
+                  var newDateMod = new Date(tmpStampMod * 1000);
+
+                  const terminal = this.progressTerminal.current
+                  terminal.pushToStdout(`[[intel]]`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">token_id:</u>`);
+                  terminal.pushToStdout(`${data[0]}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">og_owner:</u>`);
+                  terminal.pushToStdout(`${data[1]}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">owner:</u>`);
+                  terminal.pushToStdout(`${data[2]}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">human_readable_name:</u>`);
+                  terminal.pushToStdout(`${data[7]}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">upc:</u>`);
+                  terminal.pushToStdout(`${data[4]}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">stage:</u>`);
+                  terminal.pushToStdout(`${data[6]}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">payload:</u>`);
+                  terminal.pushToStdout(`${data[5]}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">created:</u>`);
+                  terminal.pushToStdout(`${newDate.toString()}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`<u style="color:orange;font-size:1em">updated:</u>`);
+                  terminal.pushToStdout(`${newDateMod.toString()}`);
+                  terminal.pushToStdout(`=====`);
+                  terminal.pushToStdout(`[[/intel]]`);
+		
+
+              }
+            },
+
+
+
+
+
+
+
             xupc: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** check the information on a upc number.  see if it is owned before trying to hack it</p>',
               fn: async (upc) => {
@@ -905,6 +962,13 @@ tempLink.click();
               description: '<p style="color:hotpink;font-size:1.1em">** poppin a terminal already in your terminal**</p>',
 
               fn: async (url,param,id) => {
+
+
+                if(url.includes('https://youtu.be')) {
+                   //https://youtu.be/uxRIuKVh5u4?si=KzSVl4tsPzMas_C9
+                   url = url.replace('.be/','be.com/embed/');
+                }
+
                 let pullOutput;
                 switch (url) {
                   case "fire":
@@ -1114,7 +1178,12 @@ console.log(pulls2);
                       const terminal = this.progressTerminal.current
                       terminal.pushToStdout(`Please wait... looking up converaation id  ${key}`);
                       terminal.pushToStdout(`###### BEGIN ######`);
-                      this.sharePage();
+                      if(key) {
+			 this.sharePage(key);
+                      }
+                      else {
+                         this.sharePage();
+                      }
                       terminal.pushToStdout(`###### END #######`);
                       //this.setState({showProductModal:true});
               }
@@ -1763,19 +1832,41 @@ console.log(pulls2);
 
 
 
+
+
       this.setState({ showModalExport: false });
-      console.log("CURRENT URL");
-      console.log(currentUrl);
-      console.log("RESPONSE");
-      console.log(response);
 
       var shortUrl = response.data.shorturl;
+
+
+
+      var clipboardShort = 
+      <CopyToClipboard text={shortUrl}>
+        <button>Copy Short URL</button>
+      </CopyToClipboard>
+
+
+
       var urlLink = <a href={shortUrl} >{shortUrl}</a>
       terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser ` + shortUrl);
       terminal.pushToStdout(urlLink);
 
       terminal.pushToStdout(`copy full link to your clipboard `);
       terminal.pushToStdout(clipboard);
+
+
+
+      terminal.pushToStdout("=================================");
+      terminal.pushToStdout("=================================");
+      terminal.pushToStdout("=================================");
+  
+
+
+      terminal.pushToStdout(`copy SHORT LINK to your clipboard `);
+      terminal.pushToStdout(clipboardShort);
+
+
+      this.sharePage(shortUrl);
       //this.setState({ showModalExport: false });
 
     }}>
@@ -2241,6 +2332,12 @@ src={srcImg} height="200" width="200"/></p>
 
   var vr = this.state.missionUrl;
 
+  if(vr.includes('https://youtu.be')) {
+     vr = vr.replace('.be/','be.com/embed/');
+  }
+
+
+
                var loader =
                            <div>
                                <iframe className='video'
@@ -2279,17 +2376,24 @@ src={srcImg} height="200" width="200"/></p>
       terminal.pushToStdout(mplayer);
   }
 
-  sharePage = () => {
+  sharePage = (urlG) => {
+      const terminal = this.progressTerminal.current
     var titleG = "INCOMING!! A UPC Hackergram payload has landed in your inbox";
+
+    if(!urlG) {
+       urlG = window.location.href;
+    }
+
+    console.log("URLG IS " + urlG);
     if (navigator.share) {
       navigator.share({
         title: titleG,
-        url: window.location.href
+        url: urlG
       })
-      .then(() => console.log('Shared successfully'))
+      .then(() => { terminal.pushToStdout("Link is being shared...."); })
       .catch((error) => console.error('Error sharing:', error));
     } else {
-      const shareUrl = encodeURIComponent(window.location.href);
+      const shareUrl = encodeURIComponent(urlG);
       const shareTitle = encodeURIComponent(titleG);
       const shareLink = `mailto:?subject=${shareTitle}&body=${shareUrl}`;
       window.open(shareLink, '_blank');
@@ -2550,15 +2654,9 @@ const fullPage = (
 
 
 
-  getNft = async (i, nftIds) => {
-                let infoOwned = await this.props.nftInfo(nftIds[i])
-                let vid = infoOwned['vr'];
-                var id  = infoOwned['tokenId'];
-                var oneVid = await this.loadOne(id,vid);
-		var res = this.state.slides;
-		res.push(oneVid)
-		this.setState({slides: res})
-		this.setState({res: res})
+  getNft = async (nft) => {
+                let infoOwned = await this.props.nftInfo(nft)
+                return infoOwned;
    }
 
    resolvePPLLink= async (id) => {
