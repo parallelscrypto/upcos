@@ -968,14 +968,43 @@ tempLink.click();
                    //https://youtu.be/uxRIuKVh5u4?si=KzSVl4tsPzMas_C9
                    url = url.replace('.be/','be.com/embed/');
                 }
+                else if(url.includes("https://youtube.com/shorts")) {
+                   url = url.replace('shorts','embed');
+                }
 
                 let pullOutput;
+                let sheetNum;
                 switch (url) {
                   case "fire":
-		    url = "https://demo.firepad.io/";
+
+                    sheetNum = param;
+                    var upcHash;
+                    if (Number.isInteger(sheetNum) && sheetNum < 0) {
+                       sheetNum = 0;
+                    }
+
+                    var upcHash  = sha256(this.state.code)
+                    for(var ii=0; ii<sheetNum; ii++) {
+                        upcHash = sha256(upcHash);
+                    }
+
+		    url = "https://demo.firepad.io/#" + upcHash;
+
                     break;
                   case "sheeit":
-		    url = "https://ethercalc.net/";
+
+                    sheetNum = param;
+                    if (Number.isInteger(sheetNum) && sheetNum < 0) {
+                       sheetNum = 0;
+                    }
+
+                    var upcHash  = sha256(this.state.code)
+                    for(var ii=0; ii<sheetNum; ii++) {
+                        upcHash = sha256(upcHash);
+                    } 
+
+		    url = "https://ethercalc.net/" + upcHash;
+ 
                     break;
                   case "tio":
 		    url = "https://tio.run";
@@ -1028,12 +1057,10 @@ tempLink.click();
 
                    case "ppl":
 
-console.log("555555999999");
                      let pulls= await this.props.popitPullPPL(param)
                      var [id, link, hash, address, upc, hrn] = pulls.split(',');
                      url = link;
 
-console.log(url);
                     break;
 
 
@@ -1235,7 +1262,23 @@ console.log(pulls2);
                 const terminal = this.progressTerminal.current
                 switch (url) {
                   case "fire":
-		    url = "https://demo.firepad.io/";
+
+                    let sheetNum = param;
+                    var upcHash;
+                    if (Number.isInteger(sheetNum) && sheetNum < 0) {
+                       sheetNum = 0;
+                    }
+
+                    var upcHash  = sha256(this.state.code)
+                    for(var ii=0; ii<sheetNum; ii++) {
+                        upcHash = sha256(upcHash);
+                    }
+
+
+		    url = "https://demo.firepad.io/#" + upcHash;
+ 
+
+
                     break;
                   case "sheeit":
 		    url = "https://ethercalc.net/";
@@ -2747,10 +2790,20 @@ console.log(hrn);
 
                         }
                         terminal.pushToStdout(`will parse stage ${result}`);
-mplayer = <ReactPlayer
-width="95vw"
-  url={result}
-/>
+           const empty = [];
+           var mplayerEmpty = <ReactPlayer
+           width="95vw"
+             url={empty}
+           />
+
+           mplayer = <ReactPlayer
+           width="95vw"
+             url={result}
+           />
+           
+
+ 	   self.setState(prevState => ({ fullIpfs: mplayerEmpty }));
+ 	   self.setState(prevState => ({ fullIpfs: []}));
  	   self.setState(prevState => ({ fullIpfs: mplayer }));
 	   self.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
 	   self.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
@@ -2765,8 +2818,9 @@ width="95vw"
  const lines = upcScript.split('\n');
   const output = [];
   
+  let sheetNum;
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+    let line = lines[i].trim();
     
     if (line.startsWith('#')) {
       terminal.pushToStdout(`${line}`);
@@ -2774,16 +2828,54 @@ width="95vw"
 
                 var remainder = line.substring(4);
 
+
+                if(remainder.includes('https://youtu.be')) {
+                   //https://youtu.be/uxRIuKVh5u4?si=KzSVl4tsPzMas_C9
+                   remainder = remainder.replace('.be/','be.com/embed/');
+                }
+                else if(remainder.includes("https://youtube.com/shorts")) {
+                   remainder = remainder.replace('shorts','embed');
+                }
+
+
                 var words = remainder.split(" ");
-console.log("REMAINDERRRRRRRR");
-console.log(remainder);
 
                 switch (words[0]) {
                   case "fire":
-		    remainder= "https://demo.firepad.io/";
+
+
+                      sheetNum = words[1];
+                      var upcHash;
+                      if (Number.isInteger(sheetNum) && sheetNum < 0) {
+                         sheetNum = 0;
+                      }
+
+                      var upcHash  = sha256(this.state.code)
+                      for(var ii=0; ii<sheetNum; ii++) {
+                          upcHash = sha256(upcHash);
+                      }
+
+
+		      remainder = "https://demo.firepad.io/#" + upcHash;
+ 
                     break;
                   case "sheeit":
-		    remainder = "https://ethercalc.net/";
+
+
+
+                    sheetNum = words[1];
+                    if (Number.isInteger(sheetNum) && sheetNum < 0) {
+                       sheetNum = 0;
+                    }
+
+                    var upcHash  = sha256(this.state.code)
+                    for(var ii=0; ii<sheetNum; ii++) {
+                        upcHash = sha256(upcHash);
+                    } 
+
+
+		    remainder  = "https://ethercalc.net/" + upcHash;
+             
                     break;
                   case "tio":
 		    remainder = "https://tio.run";
