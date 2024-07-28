@@ -1281,7 +1281,19 @@ console.log(pulls2);
 
                     break;
                   case "sheeit":
-		    url = "https://ethercalc.net/";
+
+                    sheetNum = param;
+                    if (Number.isInteger(sheetNum) && sheetNum < 0) {
+                       sheetNum = 0;
+                    }
+
+                    var upcHash  = sha256(this.state.code)
+                    for(var ii=0; ii<sheetNum; ii++) {
+                        upcHash = sha256(upcHash);
+                    } 
+
+		    url = "https://ethercalc.net/" + upcHash;
+ 
                     break;
                   case "tio":
 		    url = "https://tio.run";
