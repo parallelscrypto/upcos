@@ -173,10 +173,10 @@ export default class StaticCarouselExp extends Component {
 
 
             hack: {
-              description: '<p style="color:hotpink;font-size:1.1em">**  attempt to hack the current upc.  you must cd into an unowned upc code, and then you can run this command.  to see if a upc is unowned, run the xupc command.  </p>',
+              description: '<p style="color:hotpink;font-size:1.1em">**  attempt to hack the current upc. you can pass the upc as a param, and if the upc is available, the hack interface will appear.  you must hack into an unowned upc code.  to see if a upc is unowned, run the xupc command.  </p>',
 
               fn: async (upc) => {
-                  this.doHack(upc);
+                  this.hackScan(upc);
               }
             },
 
@@ -1779,8 +1779,6 @@ console.log(pulls2);
 
   doHack = async (upc) => { 
 
-
-
 	    const terminal = this.progressTerminal.current
 
             let info = await this.props.upcInfo(this.state.pwd)
@@ -1974,7 +1972,7 @@ console.log(pulls2);
         type="submit"
         className="btn btn-primary btn-block btn-lg"
       >
-        drop
+       hack 
       </button>
     </form>
 
@@ -2291,7 +2289,9 @@ src={srcImg} height="200" width="200"/></p>
 
 
 
-
+  cdScan= async () => {
+    var didCd = await this.cd(this.state.account);
+  }
 
 
 
@@ -2304,22 +2304,32 @@ src={srcImg} height="200" width="200"/></p>
 
 
 
-
   heroScan = async () => {
-
        const terminal = this.progressTerminal.current
-       
        const scanForm = <ScanWizard firstLookup={this.firstLookup} setAccount={this.setAccount} />
-
        this.setState(prevState => ({ fullIpfs: scanForm }));
        this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
        this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+  }
 
 
-  } 
+  hackScan = async (upc) => {
 
+       var didCd;
+       if(upc) {
+          didCd = await this.cd(upc);
+          if(didCd) {
+             this.doHack(upc);
+          }
+          return;
+       }
 
-
+       const terminal = this.progressTerminal.current
+       const scanForm = <ScanWizard firstLookup={this.cdScan} setAccount={this.setAccount} />
+       this.setState(prevState => ({ fullIpfs: scanForm }));
+       this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+       this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+  }
 
 
 
