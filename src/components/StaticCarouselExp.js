@@ -136,7 +136,7 @@ export default class StaticCarouselExp extends Component {
     welcomeMsg += "\n MSG from @_" + upc + " => \n " +  msg + "\n]]";
     
     var myTerm = <Terminal
-      style={{"minHeight":"75vh",backgroundColor: "#000",zIndex:"0",wordBreak:"break-all"}}
+      style={{"minHeight":"75vh",backgroundColor: "#000",zIndex:"0",wordBreak:"break-word"}}
       ref={this.progressTerminal}
       commands={{
 
@@ -334,9 +334,27 @@ export default class StaticCarouselExp extends Component {
 
             hero: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open a scanner to scan a upc code</p>',
-              fn: async () => {
+              fn: async (upc) => {
 
-                 this.heroScan();
+                 if(upc) {
+                    this.firstLookup(upc);
+
+		    //this.setState({ pipVisibility: false });
+		    //this.setState({ pipDisplay: false });
+                    //this.setState({ exportModalContent: '' })
+                    //this.setState({ showModalExport: false })
+                    return;
+                 }
+                 else {
+                    this.heroScan();
+		   //this.setState({ fullIpfs: false });
+		   //this.setState({ showModalExport: false });
+		   //this.setState({ exportModalContent: false });
+		   //this.setState({ pipVisibility: false });
+		   //this.setState({ pipDisplay: false });
+
+                    this.setState({ showModalExport: false })
+                 }
               }
             },
 
@@ -1795,7 +1813,11 @@ console.log(pulls2);
 
       console.log("========== ASSIST INFO ==========");
 
+
+  let heroImg = await this.getHero(upc);
+
   var exportForm = <div>
+    {heroImg}
     <Barcode value={this.state.pwd} format="UPC" />
     <form className="mb-3" onSubmit={async (event) => { // Make the onSubmit function async
       event.preventDefault()
@@ -2096,6 +2118,86 @@ console.log(pulls2);
   }
 
 
+  getHero= async (upc) => { 
+
+          var self = this;
+
+          if(!upc) {
+             upc = this.state.account
+          }
+          var upcHash  = sha256(upc)
+          upcHash = sha256(upcHash);
+          upcHash = sha256(upcHash);
+          upcHash = sha256(upcHash);
+          var avatarType;
+
+          switch(upcHash.substring(0,1)) {
+
+               case '0':
+                 avatarType = "adventurer";
+                 break;
+               case '1':
+                 avatarType = "adventurer-neutral";
+                 break;
+               case '2':
+                 avatarType = "notionists";
+                 break;
+               case '3':
+                 avatarType = "big-ears";
+                 break;
+               case '4':
+                 avatarType = "big-ears-neutral";
+                 break;
+               case '5':
+                 avatarType = "big-smile";
+                 break;
+               case '6':
+                 avatarType = "bottts";
+                 break;
+               case '7':
+                 avatarType = "croodles";
+                 break;
+               case '8':
+                 avatarType = "croodles-neutral";
+                 break;
+               case '9':
+                 avatarType = "pixel-art";
+                 break;
+               case 'a':
+                 avatarType = "micah";
+                 break;
+               case 'b':
+                 avatarType = "open-peeps";
+                 break;
+               case 'c':
+                 avatarType = "miniavs";
+                 break;
+               case 'd':
+                 avatarType = "personas";
+                 break;
+               case 'e':
+                 avatarType = "pixel-art";
+                 break;
+               case 'f':
+                 avatarType = "pixel-art-neutral";
+                 break;
+               case '0':
+                 avatarType = "pixel-art";
+                 break;
+
+          }
+ 
+          var srcImg = 'https://api.dicebear.com/9.x/' + avatarType + '/svg?seed=' + upcHash;
+
+          var myCard = <img src={srcImg} height="200" width="200"/>
+          return myCard;
+
+  }
+
+
+
+  
+
   firstLookup= async (upc) => {
           var self = this;
 
@@ -2216,10 +2318,11 @@ src={srcImg} height="200" width="200"/></p>
 
                    const terminal = this.progressTerminal.current
 
-		   this.setState(prevState => ({ fullIpfs: false }));
-
-		   this.setState(prevState => ({ pipVisibility: false }));
-		   this.setState(prevState => ({ pipDisplay: false }));
+		   //this.setState({ fullIpfs: false });
+		   //this.setState({ showModalExport: false });
+		   //this.setState({ exportModalContent: false });
+		   //this.setState({ pipVisibility: false });
+		   //this.setState({ pipDisplay: false });
                    terminal.pushToStdout(offerBuy);
                    //self.setState({player: offerBuy});
                    //self.setState({offerState: "offer"});
@@ -2315,6 +2418,7 @@ src={srcImg} height="200" width="200"/></p>
 
   hackScan = async (upc) => {
 
+       const terminal = this.progressTerminal.current
        var didCd;
        if(upc) {
           didCd = await this.cd(upc);
@@ -2323,12 +2427,14 @@ src={srcImg} height="200" width="200"/></p>
           }
           return;
        }
-
-       const terminal = this.progressTerminal.current
-       const scanForm = <ScanWizard firstLookup={this.cdScan} setAccount={this.setAccount} />
-       this.setState(prevState => ({ fullIpfs: scanForm }));
-       this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
-       this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+       else {
+          terminal.pushToStdout("You must specify a upc code that you want to hack.  for example, to hack upc 121212121212, type 'hack 121212121212'");
+          //const terminal = this.progressTerminal.current
+          //const scanForm = <ScanWizard firstLookup={this.cdScan} setAccount={this.setAccount} />
+          //this.setState(prevState => ({ fullIpfs: scanForm }));
+          //this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+          //this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+       }
   }
 
 
@@ -2400,6 +2506,10 @@ src={srcImg} height="200" width="200"/></p>
   if(vr.includes('https://youtu.be')) {
      vr = vr.replace('.be/','be.com/embed/');
   }
+  else if(vr.includes("shorts")) {
+     vr = vr.replace('shorts','embed');
+  }
+
 
 
 
