@@ -307,7 +307,6 @@ class AppExp extends Component {
       <div style={{ background: "#7e7e5e", height: '100vh', width: '100vw', border: 'none' }}>
         <div>
           <StaticCarouselExp nftInfo={this.nftInfo} latestRawId={this.latestRawId} upcInfo={this.upcInfo} approvePPL={this.approvePPL} loadBlockchainData={this.loadBlockchainData} latestTokenId={this.latestTokenId} popitPullUniversal={this.popitPullUniversal} popitUpdate={this.popitUpdate} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} getMyAddress={this.getMyAddress} />
-          <CommentSection upc={manHash} />
         </div>
       </div>
     );

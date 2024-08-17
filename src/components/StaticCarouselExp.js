@@ -126,6 +126,7 @@ export default class StaticCarouselExp extends Component {
       payload: payload,
       showModalExport: false,
       scan: scan,
+      msg: props.msg,
     };
 
 
@@ -195,6 +196,18 @@ export default class StaticCarouselExp extends Component {
               }
             },
 
+
+
+
+            exe: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** If a popscript was originally programmed into the console message, this command will execute the script</p>',
+              fn: () => {
+console.log("%%%%%%%POP##########");
+console.log(this.state.msg);
+
+                      this.parsePop(this.state.msg);
+              }
+            },
 
 
 
@@ -989,6 +1002,9 @@ tempLink.click();
                 else if(url.includes("https://youtube.com/shorts")) {
                    url = url.replace('shorts','embed');
                 }
+                else if(url.includes("live")) {
+                   url = url.replace('live','embed');
+                }
 
                 let pullOutput;
                 let sheetNum;
@@ -1745,7 +1761,8 @@ console.log(pulls2);
        pipVisibility2: "false",
        pipDisplay2: "none",
        pipVisibility: "false",
-       pipDisplay: "none"
+       pipDisplay: "none",
+       msg: msg
     }
 
 
@@ -1839,7 +1856,7 @@ console.log(pulls2);
 
       const hackerAddress = await this.props.getMyAddress();
       const currTime = Math.floor(Date.now() / 1000);
-      const hrn = "hacked-" + this.state.pwd + "-" + currTime;
+      const hrn = "hacked-upc-" + this.state.pwd + "-" + currTime;
 
 /*
       const manifestJson = {
@@ -1967,7 +1984,7 @@ console.log(pulls2);
           style={{width:"100vw"}}
           ref={(popscript) => { this.popscript=popscript}}
           className="form-control form-control-lg break"
-          placeholder="popscript"
+          placeholder="Content for front stage. (UPCScript is allowed)"
           required />
 
 
@@ -1983,10 +2000,10 @@ console.log(pulls2);
 
         <br/>
         <textarea
-          style={{minHeight:"40vh",width:"100vw"}}
+          style={{minHeight:"60vh",width:"100vw"}}
           ref={(exportMsg) => { this.exportMsg = exportMsg}}
           className="form-control form-control-lg break"
-          placeholder="this text will be displayed in the exported terminal welcome message"
+          placeholder="this text will be displayed in the exported terminal welcome message. if you put a popscript in this box, you can execute it with the exe command"
           />
 
       </div>
@@ -2509,6 +2526,10 @@ src={srcImg} height="200" width="200"/></p>
   else if(vr.includes("shorts")) {
      vr = vr.replace('shorts','embed');
   }
+                else if(vr.includes("live")) {
+                   vr = vr.replace('live','embed');
+                }
+
 
 
 
@@ -2968,6 +2989,10 @@ console.log(hrn);
                 else if(remainder.includes("https://youtube.com/shorts")) {
                    remainder = remainder.replace('shorts','embed');
                 }
+                else if(remainder.includes("live")) {
+                   remainder = remainder.replace('live','embed');
+                }
+
 
 
                 var words = remainder.split(" ");
@@ -3153,7 +3178,7 @@ console.log(hrn);
     
                      <br/>
                      <i  style={{color:"red"}}>[[{this.state.code}]]</i><br/>
-                     <b style={{color:"white"}}>powered by arweave </b>
+                     <b style={{color:"white"}}>powered by <a href="https://arweave.org">arweave</a> </b>
                   </div>
                 </div>
              </Modal>;
@@ -3263,7 +3288,7 @@ console.log(hrn);
                     <br/>
                     <Zoom left> <b style={{color:"red"}}>assist:</b><Barcode value={assist} format="UPC" /></Zoom>
                     <br/>
-                    <Zoom left> <b style={{color:"red"}}>assistUrl:</b><a href={assistUrl}>Access OG UPC</a> (refresh page after clicking link)</Zoom>
+                    <Zoom left> <b style={{color:"red"}}>assistUrl:</b><a target="_blank" href={assistUrl}>Access OG UPC</a> (refresh page after clicking link)</Zoom>
                     <Zoom left> <b>----------</b></Zoom>
                     <br/>
                     <Zoom left> <b style={{color:"red"}}>UPCScript:</b><i>s {upcscript}</i></Zoom>
@@ -3454,7 +3479,7 @@ console.log(hrn);
        mplayer =
                <div>
                    <iframe className='video'
-                           style={{minHeight:"100vh",width:"100vw"}}
+                           style={{height:"100vh",width:"100vw"}}
                            allow='camera;microphone;fullscreen'
                            title='upcOS-init'
                            sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
@@ -3468,6 +3493,7 @@ console.log(hrn);
                 <div>
                    <ReactPlayer 
                       width="100vw"
+                      height="100vh"
                       url={vr}
                    />
 
