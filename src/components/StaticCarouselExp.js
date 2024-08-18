@@ -202,9 +202,6 @@ export default class StaticCarouselExp extends Component {
             exe: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** If a popscript was originally programmed into the console message, this command will execute the script</p>',
               fn: () => {
-console.log("%%%%%%%POP##########");
-console.log(this.state.msg);
-
                       this.parsePop(this.state.msg);
               }
             },
@@ -2685,9 +2682,15 @@ src={srcImg} height="200" width="200"/></p>
       {this.state.slides}
     </Carousel>
  
-    this.setState({ fullIpfs: newshow});
-    this.setState(prevState => ({ pipDisplay: true}));
-    this.setState(prevState => ({ pipVisibility: true}));
+
+      const terminal = this.progressTerminal.current
+      terminal.pushToStdout(newshow);
+        
+
+
+    //this.setState({ fullIpfs: newshow});
+    //this.setState(prevState => ({ pipDisplay: true}));
+    //this.setState(prevState => ({ pipVisibility: true}));
 
 
 
@@ -2955,11 +2958,13 @@ console.log(hrn);
            />
            
 
- 	   self.setState(prevState => ({ fullIpfs: mplayerEmpty }));
- 	   self.setState(prevState => ({ fullIpfs: []}));
- 	   self.setState(prevState => ({ fullIpfs: mplayer }));
-	   self.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
-	   self.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+           terminal.pushToStdout(mplayer);
+
+ 	   //self.setState(prevState => ({ fullIpfs: mplayerEmpty }));
+ 	   //self.setState(prevState => ({ fullIpfs: []}));
+ 	   //self.setState(prevState => ({ fullIpfs: mplayer }));
+	   //self.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+	   //self.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
   }
 
 
@@ -2980,6 +2985,14 @@ console.log(hrn);
     } else if (line.startsWith('pop')) {
 
                 var remainder = line.substring(4);
+
+                    console.log("POPPING RAW >>>");
+                    console.log(remainder);
+                if(remainder.includes('>>>')) {
+                    var mplayer = await this.executeUpcScript(remainder);
+                    continue;
+                }
+
 
 
                 if(remainder.includes('https://youtu.be')) {
@@ -3100,6 +3113,11 @@ console.log(hrn);
                    if (words.length >= 2) {
 		     param =  words[1];
                      resolvedPage = await this.resolvePPLLink(param);
+                     //print ppl playlist to the console
+                     if(resolvedPage.includes('>>>')) {
+                         var mplayer = await this.executeUpcScript(resolvedPage);
+                         continue;
+                     }
 
                      // Return the second word
                    }
