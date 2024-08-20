@@ -136,7 +136,7 @@ class TrebleCleffExp extends Component {
                     <button
                         style={{background: "#000000", color:"green", width: "20vw", height: "20vw", fontSize: "15px"}}
                         onClick={this.state.showPost}
-                  >post</button>
+                  >discuss</button>
 
 
                     <button

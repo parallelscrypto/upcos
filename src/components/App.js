@@ -1457,7 +1457,7 @@ console.log("mk addy is " + market_address);
       </div>
     } 
     return (
-      <div style={{background: "#7e7e5e", height: '100vh', width: '100vw', border:'none'}} >
+      <div style={{background: "#000000", height: '100vh', width: '100vw', border:'none'}} >
 			       {deposit}
       </div>
     );

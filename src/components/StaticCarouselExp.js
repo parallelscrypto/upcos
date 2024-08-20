@@ -876,6 +876,8 @@ export default class StaticCarouselExp extends Component {
                              bookUrl = 'https://librivox.org';
                           }
                           var mplayer = <iframe className='video'
+                                  allowFullScreen="allowfullscreen"
+                                  frameBorder="0"
                                   style={{height:"80vh",width:"96vw"}}
 		                  allow="camera; microphone; fullscreen"
                                   title='6 upc dj player'
@@ -1158,13 +1160,17 @@ console.log(pulls2);
                 if(!pullOutput)
                 {
 
+console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>2");
                 const terminal = this.progressTerminal.current
                 //var currentUrl = window.location.href;
                 var currentUrl = url;
                 var page = <html>
 <head><title>forever upcOS hasta que terminemos!</title></head>
 <body>
-<iframe style={{height:"90vh",width:"90vw"}} src={currentUrl} />
+<iframe 
+allowFullScreen="allowfullscreen"
+frameBorder="0"
+style={{height:"90vh",width:"90vw"}} src={currentUrl} />
 </body>
 </html>
                 terminal.pushToStdout(page);
@@ -2352,13 +2358,21 @@ src={srcImg} height="200" width="200"/></p>
 
 
   getMplayer = (fullUrl) => {
-      var mplayer = <iframe className='video'
-              style={{height:"100vh",width:"96vw"}}
-	      allow="camera; microphone; fullscreen"
-              title='2 upc dj player'
-              sandbox='allow-downloads allow-fullscreen allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
-              src={fullUrl} >
+console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>1");
+
+      var mplayer = 
+      <iframe className='video'
+
+              allowFullScreen="allowfullscreen"
+              frameBorder="0"
+              style={{height:"80vh",width:"90vw"}}
+              allow='camera;microphone;fullscreen'
+              title='upcOS-init'
+              sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+              src={fullUrl}>
       </iframe>
+
+
 
       if(fullUrl.includes('tiktok')) {
          mplayer = <TikTok url={fullUrl} />
@@ -2369,7 +2383,10 @@ src={srcImg} height="200" width="200"/></p>
          const youtubeID = fullUrl
          mplayer =
          <iframe className='video'
-                 style={{minHeight:"100vh",width:"100vw"}}
+
+                 allowFullScreen="allowfullscreen"
+                 frameBorder="0"
+                 style={{height:"100vh",width:"100vw"}}
 		 allow="camera; microphone; fullscreen"
                  title='Youtube player'
                  sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-fullscreen allow-popups allow-scripts allow-presentation'
@@ -2382,6 +2399,9 @@ src={srcImg} height="200" width="200"/></p>
          && !fullUrl.includes('whistia') && !fullUrl.includes('mixcloud') 
          && !fullUrl.includes('dailymotion') && !fullUrl.includes('twitch')) {
             mplayer = <iframe className='video'
+
+                    allowFullScreen="allowfullscreen"
+                    frameBorder="0"
                     style={{height:"100vh",width:"96vw"}}
 		    allow="camera; microphone; fullscreen"
                     title='3 upc dj player'
@@ -2394,11 +2414,32 @@ src={srcImg} height="200" width="200"/></p>
 
 
       else {
-         mplayer = <ReactPlayer 
-                      width="100vw"
-                      url={fullUrl} 
-                  />
+console.log(">>>>>>>>>>>>5");
 
+     if(fullUrl.includes('https://youtu.be')) {
+        //https://youtu.be/uxRIuKVh5u4?si=KzSVl4tsPzMas_C9
+        fullUrl = fullUrl.replace('.be/','be.com/embed/');
+     }
+     else if(fullUrl.includes("https://youtube.com/shorts")) {
+        fullUrl = fullUrl.replace('shorts','embed');
+     }
+     else if(fullUrl.includes("live")) {
+        fullUrl = fullUrl.replace('live','embed');
+     }
+
+
+
+      mplayer = 
+      <iframe className='video'
+
+              allowFullScreen="allowfullscreen"
+              frameBorder="0"
+              style={{height:"80vh",width:"90vw"}}
+              allow='camera;microphone;fullscreen'
+              title='upcOS-init'
+              sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+              src={fullUrl}>
+      </iframe>
       }
 
       return mplayer;
@@ -2461,7 +2502,10 @@ src={srcImg} height="200" width="200"/></p>
                var loader =
                            <div>
                                <iframe className='video'
-                                       style={{minHeight:"80vh",width:"90vw"}}
+
+                                       allowFullScreen="allowfullscreen"
+                                       frameBorder="0"
+                                       style={{height:"80vh",width:"90vw"}}
                                        allow='camera;microphone;fullscreen'
                                        title='upcOS-init'
                                        sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
@@ -2473,7 +2517,11 @@ src={srcImg} height="200" width="200"/></p>
 	        this.setState({slides: loader})
   }
 
-
+  escapeHTML = (unsafeText) => {
+    let div = document.createElement('div');
+    div.innerText = unsafeText;
+    return div.innerHTML;
+  }
 
 
   showPostTerminal= async () => {
@@ -2481,10 +2529,42 @@ src={srcImg} height="200" width="200"/></p>
                 var upcHash  = sha256(currentUrl)
                 var vr = "https://kn4bs5nn5dttso2ixfk5bi3j3n4f3c4teqodgxv5bmkenrrr4kya.arweave.net/U3gZda3o5zk7SLlV0KNp23hdi5MkHDNevQsURsYx4rA?board=" + upcHash;
                 //var vr = "https://zyco4irrphuhtypaqxhcglrw6be4gx7q5vpsmzlninjdw7bfbwjq.arweave.net/zgTuIjF56Hnh4IXOIy428EnDX_DtXyZlbUNSO3wlDZM";
+                var message = this.escapeHTML(this.state.msg);
+               var topicText =  <p style={{background:"white",color:"black"}}>{message}</p>
+               var loader =
+                           <div>
+
+                               <iframe className='video'
+
+                                       allowFullScreen="allowfullscreen"
+                                       frameBorder="0"
+                                       style={{height:"80vh",width:"90vw"}}
+                                       allow='camera;microphone;fullscreen'
+                                       title='upcOS-post'
+                                       sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                                       src={vr}>
+                               </iframe>
+                            </div>
+ 
+
+
+
                 const terminal = this.progressTerminal.current
-                var fullUrl = vr ;
-                var mplayer = this.getMplayer(fullUrl);
-                terminal.pushToStdout(mplayer);
+               // var fullUrl = vr ;
+               // var mplayer = this.getMplayer(fullUrl);
+                terminal.pushToStdout(".");
+                terminal.pushToStdout(".");
+                terminal.pushToStdout(".");
+                terminal.pushToStdout("======================");
+                terminal.pushToStdout("======================");
+                terminal.pushToStdout("[start-topic]");
+                terminal.pushToStdout(topicText);
+                terminal.pushToStdout("[end-topic]");
+                terminal.pushToStdout("======================");
+                terminal.pushToStdout("======================");
+                terminal.pushToStdout("[start-discussion]");
+                terminal.pushToStdout(loader);
+                terminal.pushToStdout("[/end-discussion]");
   }
 
 
@@ -2498,9 +2578,22 @@ src={srcImg} height="200" width="200"/></p>
                //var vr = "https://zyco4irrphuhtypaqxhcglrw6be4gx7q5vpsmzlninjdw7bfbwjq.arweave.net/zgTuIjF56Hnh4IXOIy428EnDX_DtXyZlbUNSO3wlDZM";
 
                var loader =
-                           <div>
+                           <div style={{textAlign:"left",color:"white"}}>
+                               <br/>
+                               <b style={{textAlign:"middle",color:"green"}}> =========================</b>
+                               <br/>
+                               <b> Topic: </b>
+                               <br/>
+                               <br/>
+                               <b>{this.state.msg}</b>
+                               <br/>
+                               <b style={{textAlign:"center",color:"green"}}> =========================</b>
+                               <br/>
                                <iframe className='video'
-                                       style={{minHeight:"80vh",width:"90vw"}}
+
+                                       allowFullScreen="allowfullscreen"
+                                       frameBorder="0"
+                                       style={{height:"80vh",width:"90vw"}}
                                        allow='camera;microphone;fullscreen'
                                        title='upcOS-post'
                                        sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
@@ -2534,7 +2627,10 @@ src={srcImg} height="200" width="200"/></p>
                var loader =
                            <div>
                                <iframe className='video'
-                                       style={{minHeight:"80vh",width:"90vw"}}
+
+                                       allowFullScreen="allowfullscreen"
+                                       frameBorder="0"
+                                       style={{height:"80vh",width:"90vw"}}
                                        allow='camera;microphone;fullscreen'
                                        title='upcOS-init'
                                        sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
@@ -2879,7 +2975,11 @@ console.log(hrn);
                var page = <html>
                      <head><title>{hash}</title></head>
                      <body>
-                     <iframe style={{height:"100vh",width:"96vw"}} src={link} />
+                     <iframe 
+
+                         allowFullScreen="allowfullscreen"
+                         frameBorder="0"
+                         style={{height:"100vh",width:"96vw"}} src={link} />
                      </body>
                      </html>
 
@@ -2891,6 +2991,7 @@ console.log(hrn);
   getHTML = async (vr) => {
                 //arbitrary url video
 
+console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>3");
                 var mplayer = "";
 		var res = this.state.slides;
 
@@ -2899,7 +3000,10 @@ console.log(hrn);
                    mplayer =
                            <div>
                                <iframe className='video'
-                                       style={{minHeight:"80vh",width:"90vw"}}
+
+                                       allowFullScreen="allowfullscreen"
+                                       frameBorder="0"
+                                       style={{height:"80vh",width:"90vw"}}
                                        allow='camera;microphone;fullscreen'
                                        title='upcOS-init'
                                        sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popuAllallow-scripts allow-presentation'
@@ -3139,7 +3243,11 @@ console.log(hrn);
                 var page = <html>
 <head><title>forever upcOS hasta que terminemos!</title></head>
 <body>
-<iframe allow="fullscreen;" style={{height:"95vh",width:"96vw"}} src={currentUrl} />
+<iframe 
+
+          allowFullScreen="allowfullscreen"
+          frameBorder="0"
+          allow="fullscreen;" style={{height:"95vh",width:"96vw"}} src={currentUrl} />
 </body>
 </html>
                 terminal.pushToStdout(page);
@@ -3462,6 +3570,7 @@ console.log(hrn);
   loadOne = async (id,vr) => {
     var mplayer;
 
+console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>0");
     if(vr.includes('tiktok')) {
 
        mplayer = 
@@ -3480,7 +3589,9 @@ console.log(hrn);
        mplayer =
                 <div>
                    <iframe className='video'
-                           style={{minHeight:"100vh",width:"100vw"}}
+                           allowFullScreen="allowfullscreen"
+                           frameBorder="0"
+                           style={{height:"100vh",width:"100vw"}}
                            allow="camera; microphone;fullscreen"
                            title='Youtube player'
                            sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
@@ -3497,6 +3608,8 @@ console.log(hrn);
        mplayer =
                <div>
                    <iframe className='video'
+                           allowFullScreen="allowfullscreen"
+                           frameBorder="0"
                            style={{height:"100vh",width:"100vw"}}
                            allow='camera;microphone;fullscreen'
                            title='upcOS-init'
@@ -3507,14 +3620,30 @@ console.log(hrn);
     }
 
     else {
+
+       if(vr.includes('https://youtu.be')) {
+          //https://youtu.be/uxRIuKVh5u4?si=KzSVl4tsPzMas_C9
+          vr = vr.replace('.be/','be.com/embed/');
+       }
+       else if(vr.includes("https://youtube.com/shorts")) {
+          vr = vr.replace('shorts','embed');
+       }
+       else if(vr.includes("live")) {
+          vr = vr.replace('live','embed');
+       }
+
+
        mplayer = 
                 <div>
-                   <ReactPlayer 
-                      width="100vw"
-                      height="100vh"
-                      url={vr}
-                   />
-
+                   <iframe className='video'
+                           allowFullScreen="allowfullscreen"
+                           frameBorder="0"
+                           style={{height:"100vh",width:"100vw"}}
+                           allow='camera;microphone;fullscreen'
+                           title='upcOS-init'
+                           sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                           src={vr}>
+                   </iframe>
                 </div>
     }
 
