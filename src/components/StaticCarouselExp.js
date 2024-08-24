@@ -209,7 +209,7 @@ export default class StaticCarouselExp extends Component {
 
             feed: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open /etcVerse attached to current instance  </p>',
-              fn: (onOff) => {
+              fn: async (onOff,newFeed) => {
 
                       const terminal = this.progressTerminal.current
 
@@ -222,9 +222,90 @@ export default class StaticCarouselExp extends Component {
                             terminal.pushToStdout("There is no feed programmed into this unit.  You must include a upcrss entity in the popscript textarea when you drop or hack a upc");
                          }
                       }
-                      else {
+                      else if( onOff == 'off') {
                          window.removeEventListener('scroll', this.handleScroll);
                       }
+                      else if( onOff == 'reset') {
+                         let parser = new Parser({
+                           customFields: {
+                             item: [
+                               ['media:content', 'media:content', {keepArray: true}],
+                             ]
+                           }
+                         })
+
+                         var feedVal;
+                         if(newFeed) {
+                            feedVal = newFeed;
+                         }
+                         else {
+                            feedVal = this.state.upcrss;
+                         }
+                         const url = 'https://corsproxy.io/?' + encodeURIComponent(feedVal);
+                         const feed = await parser.parseURL(url)
+                         let cards = [];
+                         feed.items.forEach((item) => { 
+ //                            console.log(item);
+  
+                             // Extract the URL of the first image from media:content
+                             const images = [];
+                             if (item['media:content']) {
+                                 // Check if media:content is an array or an object
+                                 const mediaContents = Array.isArray(item['media:content']) ? item['media:content'] : [item['media:content']];
+                                 if (mediaContents.length > 0) {
+                                     const firstImage = mediaContents[0]['$'];
+                                     if (firstImage && firstImage.url) {
+                                         images.push(firstImage.url);
+                                     }
+                                 }
+                             }
+  
+                             const cardItem = {
+                                 title: item.title || 'No Title Available',
+                                 link: item.link,
+                                 description: item.contentSnippet || 'No Description Available',
+                                 images: images
+                             };
+  
+                             const card = this.createCardHTML(cardItem);
+
+                             cards.push(card);
+                         });
+
+                         this.setState({ feed: feed });
+                         this.setState({ feedCards: cards });
+
+                      }
+
+
+
+
+
+
+
+                      else if (!onOff) {
+                      
+                          // Get the feedCards from the state
+                          const { feedCards } = this.state;
+                      
+                          if (feedCards.length > 0) { 
+                              // Get the terminal reference
+                              const terminal = this.progressTerminal.current;
+                      
+                              // Loop through all items in feedCards
+                              feedCards.forEach((itemToDisplay, index) => {
+                                  terminal.pushToStdout(itemToDisplay);
+                                  console.log(itemToDisplay);
+                              });
+                      
+                              // Remove all items from the feedCards array
+                              this.setState({ feedCards: [] });
+                          }
+                      
+                          window.removeEventListener('scroll', this.handleScroll);
+                      }
+
+                    
   
               }
             },
@@ -3380,8 +3461,10 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>3");
          return;
       }
       // Calculate the scroll position and check if it's at the bottom
+      const range = 50;
       const scrolledTo = window.scrollY + window.innerHeight;
-      const isReachBottom = document.body.scrollHeight === scrolledTo;
+      const isReachBottom = Math.abs(document.body.scrollHeight - scrolledTo) <= range;
+
   
       // Get the feedCards from the state
       const { feedCards } = this.state;
