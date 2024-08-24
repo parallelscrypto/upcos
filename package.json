@@ -77,6 +77,7 @@
     "react-ts-tradingview-widgets": "^1.0.10",
     "react-typewriter-effect": "^1.1.0",
     "react-uuid": "^1.0.2",
+    "rss-parser": "^3.13.0",
     "styled-components": "^5.3.6",
     "tone": "14.7.39",
     "trianglify": "^4.1.1",

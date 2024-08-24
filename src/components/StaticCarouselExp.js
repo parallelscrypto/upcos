@@ -25,6 +25,8 @@ import InsertDataForm from './InsertDataForm';
 import ScanWizard from './ScanWizard';
 import QRCode from "react-qr-code";
 import Web3 from 'web3'
+import Parser from 'rss-parser'
+
 
 var sha256 = require('js-sha256');
 var Barcode = require('react-barcode');
@@ -104,6 +106,28 @@ export default class StaticCarouselExp extends Component {
     var manifest= props.manifest;
     var msg = atob(props.msg);
 
+    console.log(msg);
+
+    const regex = /upcrss\s+(https?:\/\/[^\s]+)/;
+    
+    // Test the regular expression against the input string
+    const match = msg.match(regex);
+    let upcrss; 
+    if (match) {
+      // If there's a match, `match[1]` contains the URL
+      upcrss = match[1];
+      console.log('URL found:', upcrss);
+    } else {
+      console.log('No URL found for upcrss.');
+    }
+
+
+//    var upcrss = false;
+//    if(msg.includes('upcrss')) {
+//       upcrss = true;
+//       rssUrl = upcScript = this.state.upcscript.substr(3);
+//    }
+
     console.log("^^^^^^^^^^^^^^^^^^^  UPC");
     console.log(upc);
 
@@ -127,6 +151,7 @@ export default class StaticCarouselExp extends Component {
       showModalExport: false,
       scan: scan,
       msg: props.msg,
+      upcrss: upcrss,
     };
 
 
@@ -178,6 +203,29 @@ export default class StaticCarouselExp extends Component {
 
               fn: async (upc) => {
                   this.hackScan(upc);
+              }
+            },
+
+
+            feed: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open /etcVerse attached to current instance  </p>',
+              fn: (onOff) => {
+
+                      const terminal = this.progressTerminal.current
+
+                      if( onOff == 'on') {
+                         const upcrss = this.state.upcrss;
+                         if( upcrss ) {
+                            window.addEventListener('scroll', this.handleScroll);
+                         }
+                         else {
+                            terminal.pushToStdout("There is no feed programmed into this unit.  You must include a upcrss entity in the popscript textarea when you drop or hack a upc");
+                         }
+                      }
+                      else {
+                         window.removeEventListener('scroll', this.handleScroll);
+                      }
+  
               }
             },
 
@@ -1782,7 +1830,8 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>2");
        pipDisplay2: "none",
        pipVisibility: "false",
        pipDisplay: "none",
-       msg: msg
+       msg: msg,
+       upcrss: upcrss
     }
 
 
@@ -3269,26 +3318,138 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>3");
 
   }
 
-  handleScroll = (e) => {
 
-       const scrolledTo = window.scrollY + window.innerHeight
-       const isReachBottom = document.body.scrollHeight === scrolledTo
+  createCardHTML = (item) => {
+      // Extract title, description, and image URL
+      const title = item.title || 'No Title Available';
+      const description = item.description || item.contentSnippet || 'No Description Available';
+      const imageUrl = item.images.length > 0 ? item.images[0] : '';
+      const link = item.link || 'No Link Available';
+  
+      // Create HTML string for the card
+      let cardHTML = `
+          <div style="margin-bottom:20px; border-bottom:5px dashed white;">
+              ${imageUrl ? `<img src="${imageUrl}" alt="${title}" style="max-width: 100%; height: auto;"  />` : ''}
+              <h3 class="card-title">${title}</h3>
+              <p class="card-description">${description}</p>
+              <a href=${link} target="_blank">Read More...</a>
+          </div>
+      `;
+  
+      return cardHTML;
+  };
 
-       if(isReachBottom) {
+  // Function to create an HTML card for each RSS item
+  createCard = (item) => {
+      // Create card container
+      const card = document.createElement('div');
+      card.className = 'card';
+  
+      // Extract title, description, and image URL
+      const title = item.title || 'No Title Available';
+      const link = item.link || 'No Link Available';
+      const description = item.description || item.contentSnippet || 'No Description Available';
+      const imageUrl = item.images.length > 0 ? item.images[0] : '';
+  
+      // Create card content
+      let cardContent = `
+          <h3 class="card-title">${title}</h3>
+          <a href=${link}>Read More...</h3>
+          <p class="card-description">${description}</p>
+      `;
+  
+      // Add image if available
+      if (imageUrl) {
+          cardContent = `
+              <img src="${imageUrl}" alt="${title}" class="card-image"/>
+              ${cardContent}
+          `;
+      }
+  
+      // Set card content
+      card.innerHTML = cardContent;
+  
+      return card;
+  };
 
-          console.log("scrollH = " + window.innerHeight);
-          console.log("current = " + window.scrollY);
-          console.log(isReachBottom);
+
+  handleScroll = async (e) => { 
+
+      let isFlipped = this.state.isFlipped;
+      if(!isFlipped) {
+         return;
+      }
+      // Calculate the scroll position and check if it's at the bottom
+      const scrolledTo = window.scrollY + window.innerHeight;
+      const isReachBottom = document.body.scrollHeight === scrolledTo;
+  
+      // Get the feedCards from the state
+      const { feedCards } = this.state;
+  
+      if (isReachBottom && feedCards.length > 0) {
+          // Get the terminal reference
+          const terminal = this.progressTerminal.current;
+  
+          // Display the first item from feedCards
+          const itemToDisplay = feedCards[0];
+          terminal.pushToStdout(itemToDisplay);
+          console.log(itemToDisplay);
+  
+          // Remove the first item from the feedCards array
+          this.setState((prevState) => ({
+              feedCards: prevState.feedCards.slice(1)
+          }));
+      }
+  };
 
 
-       }
 
-  }
-
-
+  
   componentDidMount = async () => {
 
-    window.addEventListener('scroll', this.handleScroll);
+
+    let parser = new Parser({
+      customFields: {
+        item: [
+          ['media:content', 'media:content', {keepArray: true}],
+        ]
+      }
+    })
+
+    const url = 'https://corsproxy.io/?' + encodeURIComponent(this.state.upcrss);
+    const feed = await parser.parseURL(url)
+    let cards = [];
+    feed.items.forEach((item) => { 
+ //       console.log(item);
+  
+        // Extract the URL of the first image from media:content
+        const images = [];
+        if (item['media:content']) {
+            // Check if media:content is an array or an object
+            const mediaContents = Array.isArray(item['media:content']) ? item['media:content'] : [item['media:content']];
+            if (mediaContents.length > 0) {
+                const firstImage = mediaContents[0]['$'];
+                if (firstImage && firstImage.url) {
+                    images.push(firstImage.url);
+                }
+            }
+        }
+  
+        const cardItem = {
+            title: item.title || 'No Title Available',
+            link: item.link,
+            description: item.contentSnippet || 'No Description Available',
+            images: images
+        };
+  
+        const card = this.createCardHTML(cardItem);
+
+        cards.push(card);
+    });
+
+   this.setState({ feed: feed });
+   this.setState({ feedCards: cards });
+
 
     var scan;
     scan = atob(this.state.manifest);
