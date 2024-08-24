@@ -119,6 +119,8 @@ export default class StaticCarouselExp extends Component {
       console.log('URL found:', upcrss);
     } else {
       console.log('No URL found for upcrss.');
+      var milliseconds = new Date().getTime();
+      upcrss = "https://rebrand.ly/upcrss?defaultdate=" + milliseconds;
     }
 
 
@@ -241,6 +243,17 @@ export default class StaticCarouselExp extends Component {
                          else {
                             feedVal = this.state.upcrss;
                          }
+
+                         if(this.state.upcrss.includes('defaultdate')) {
+                            console.log("********resetting a blank**********");
+                            var milliseconds = new Date().getTime();
+                            feedVal = "https://rebrand.ly/upcrss?defaultdate=" + milliseconds;
+                         }
+                         else {
+
+                            console.log("********resetting a FILLED**********" + this.state.upcrss);
+                         }
+
                          const url = 'https://corsproxy.io/?' + encodeURIComponent(feedVal);
                          const feed = await parser.parseURL(url)
                          let cards = [];
