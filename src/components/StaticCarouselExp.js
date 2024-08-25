@@ -237,14 +237,16 @@ export default class StaticCarouselExp extends Component {
                          })
 
                          var feedVal;
+                         var setNewFeed = false;
                          if(newFeed) {
                             feedVal = newFeed;
+                            setNewFeed = true;
                          }
                          else {
                             feedVal = this.state.upcrss;
                          }
 
-                         if(this.state.upcrss.includes('defaultdate')) {
+                         if(!setNewFeed && this.state.upcrss.includes('defaultdate')) {
                             console.log("********resetting a blank**********");
                             var milliseconds = new Date().getTime();
                             feedVal = "https://rebrand.ly/upcrss?defaultdate=" + milliseconds;
@@ -372,10 +374,10 @@ export default class StaticCarouselExp extends Component {
                   terminal.pushToStdout(`${data[0]}`);
                   terminal.pushToStdout(`=====`);
                   terminal.pushToStdout(`<u style="color:orange;font-size:1em">og_owner:</u>`);
-                  terminal.pushToStdout(`${data[1]}`);
+                  terminal.pushToStdout(`${data[2]}`);
                   terminal.pushToStdout(`=====`);
                   terminal.pushToStdout(`<u style="color:orange;font-size:1em">owner:</u>`);
-                  terminal.pushToStdout(`${data[2]}`);
+                  terminal.pushToStdout(`${data[1]}`);
                   terminal.pushToStdout(`=====`);
                   terminal.pushToStdout(`<u style="color:orange;font-size:1em">human_readable_name:</u>`);
                   terminal.pushToStdout(`${data[7]}`);
@@ -425,10 +427,10 @@ export default class StaticCarouselExp extends Component {
                   terminal.pushToStdout(`${data[0]}`);
                   terminal.pushToStdout(`=====`);
                   terminal.pushToStdout(`<u style="color:orange;font-size:1em">og_owner:</u>`);
-                  terminal.pushToStdout(`${data[1]}`);
+                  terminal.pushToStdout(`${data[2]}`);
                   terminal.pushToStdout(`=====`);
                   terminal.pushToStdout(`<u style="color:orange;font-size:1em">owner:</u>`);
-                  terminal.pushToStdout(`${data[2]}`);
+                  terminal.pushToStdout(`${data[1]}`);
                   terminal.pushToStdout(`=====`);
                   terminal.pushToStdout(`<u style="color:orange;font-size:1em">human_readable_name:</u>`);
                   terminal.pushToStdout(`${data[7]}`);
@@ -1905,6 +1907,7 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>2");
 
 
     this.state = {
+       wallet: owner,
        assist: assist,
        code: upc,
        pwd: upc,
@@ -1975,9 +1978,9 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>2");
 
             let info = await this.props.upcInfo(this.state.pwd)
             let assistInfo = await this.props.upcInfo(this.state.code)
-            var qOwner = info['og'];
+            var qOwner = info['staker'];
 
-            if( !qOwner.includes("0x00000000000000000000") ) {
+            if( (!qOwner.includes("0x00000000000000000000")) && (qOwner != this.state.wallet)  ) {
 	       terminal.pushToStdout("You must cd or scan into a hackable upc code. A hackable UPC code is a upc that no one owns.  You can check upcs with the xupc command.  For example, to check ownership info 000000000000 type 'xupc 000000000000'");
                return false;
             }
@@ -2848,8 +2851,17 @@ console.log(">>>>>>>>>>>>5");
 
   cd= async (upc) => {
          var response = await this.getUpc(upc);
+         const currentOwner  = response['staker'];
+         const currentWallet = this.state.wallet;
+
+         console.log("current owner");
+         console.log(currentOwner);
+
+         console.log("current wallet");
+         console.log(currentWallet);
+
          const nftID = response[0];
-         if(nftID == 0 ) {
+         if( (nftID == 0) || (currentOwner == currentWallet) ) {
              this.setState({pwd: upc});
          }
          else {
