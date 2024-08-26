@@ -1976,14 +1976,22 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>2");
 
 	    const terminal = this.progressTerminal.current
 
+            const wallet = await this.props.getMyAddress();
             let info = await this.props.upcInfo(this.state.pwd)
             let assistInfo = await this.props.upcInfo(this.state.code)
             var qOwner = info['staker'];
+            var tokenId= info['tokenId'];
+            console.log(info);
 
-            if( (!qOwner.includes("0x00000000000000000000")) && (qOwner != this.state.wallet)  ) {
-	       terminal.pushToStdout("You must cd or scan into a hackable upc code. A hackable UPC code is a upc that no one owns.  You can check upcs with the xupc command.  For example, to check ownership info 000000000000 type 'xupc 000000000000'");
-               return false;
+            if(tokenId != 0) {
+
+               if( (qOwner != wallet) ) {
+	          terminal.pushToStdout("You must cd or scan into a hackable upc code. A hackable UPC code is a upc that no one owns.  You can check upcs with the xupc command.  For example, to check ownership info 000000000000 type 'xupc 000000000000'");
+                  return false;
+               }
             }
+
+
             if(!upc) {
                upc = this.state.pwd
             }
