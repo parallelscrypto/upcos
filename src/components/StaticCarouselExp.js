@@ -2860,7 +2860,9 @@ console.log(">>>>>>>>>>>>5");
   cd= async (upc) => {
          var response = await this.getUpc(upc);
          const currentOwner  = response['staker'];
-         const currentWallet = this.state.wallet;
+
+         const currentWallet = await this.props.getMyAddress();
+
 
          console.log("current owner");
          console.log(currentOwner);
