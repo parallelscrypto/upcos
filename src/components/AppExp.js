@@ -74,13 +74,10 @@ class AppExp extends Component {
 
     const web3 = window.web3
 
-    console.log("==============POPPPPPPPPP=================");
     const accounts = await web3.eth.getAccounts()
     this.setState({ account: accounts[0] })
 
   
-    console.log(accounts);
-    console.log("==============44444444444=================");
     const networkId = await web3.eth.net.getId()
     const popitData = Popit.networks[networkId]
     const popitAddress = popitData.address;
@@ -187,7 +184,6 @@ class AppExp extends Component {
   async getMyAddress() { 
     const loadedFull = await this.loadBlockchainData();
 
-    console.log("##############  addy is $$$$$$$$$$$$$$" + this.state.account);
     return this.state.account;
   };
 
@@ -221,13 +217,11 @@ class AppExp extends Component {
     }
 
     const web3 = window.web3
-    console.log("######################### its ###################");
     const networkId = await web3.eth.net.getId()
 
     const popitData = Popit.networks[networkId]
     const address = popitData.address;
 
-    console.log(address);
 
     let MYDATA;
 
@@ -298,8 +292,6 @@ class AppExp extends Component {
 
     var manHash  = sha256(manifestValue)
 
-    console.log("############## manifest obj is ");
-    console.log(manHash);
     const msg = dataObject.msg;
     const missionUrl = dataObject.missionUrl;
 

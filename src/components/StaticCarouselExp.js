@@ -1601,80 +1601,7 @@ tempLink.click();
             dj: {
               description: '<p style="color:hotpink;font-size:1.1em">**  instantiate the dj upc to perform a substring extraction, and play spinz for all of the resulting videos in succession</p>',
               fn: async (command, arg)  => {
-
-                      const terminal = this.progressTerminal.current
-                      if( !arg && !command ) {
-                          var upcScript = this.state.upcscript.substr(3);
-		          this.djupc(upcScript);
-                      }
-                      else if(!arg) {
-		          this.djupc(command);
-                      }
-                      else {
-
-                         switch(command) {
-                         
-                           case 'ppl':
-		             let pulls= await this.props.popitPullPPL(arg)
-
-                             var [id, link, hash, address, upc, hrn,updated,timestamp] = pulls.split(',');
-                             var fullPage = this.printPull(id, link, hash, address, upc, hrn,updated,timestamp);
-
-		             this.djupc(link);
-                             terminal.pushToStdout(fullPage);
-
-                             break;
-                           case 'upc':
-
-                             var slidesTmp = this.state.slides;
-
-                             //doing this state setting because otherwise the slideshow will be polluted with previous slides
-                             this.setState({ slides: [] });
-
-                             var stageShow = await this.loadUpc(true,arg);
-
-                             var caro =
-                             <Carousel maxTurns={'0'}>
-                               {stageShow}
-                             </Carousel>
-
-
-
-                             terminal.pushToStdout(caro);
-                             //doing this state setting because otherwise the slideshow will be polluted with previous slides
-                             this.setState({ slides: slidesTmp });
-
-                             break;
-
-                           case 'nft':
-
-                             var slidesTmp = this.state.slides;
-
-                             //doing this state setting because otherwise the slideshow will be polluted with previous slides
-                             this.setState({ slides: [] });
-
-                             var stageShow = await this.loadUpc(false,arg);
-
-                             var caro =
-                             <Carousel maxTurns={'0'}>
-                               {stageShow}
-                             </Carousel>
-
-
-
-                             terminal.pushToStdout(caro);
-                             //doing this state setting because otherwise the slideshow will be polluted with previous slides
-                             this.setState({ slides: slidesTmp });
-
-                             break;
-
-
-
-
-
-                         }
-
-                      }
+                 let response = await this.doDj(command,arg);
               }
 
 
@@ -1697,8 +1624,10 @@ tempLink.click();
       welcomeMessage={welcomeMsg}
       promptLabel={promptlabel}
       dangerMode={true}
-      autoFocus={true}
+      ignoreCommandCase={true}
+      noAutoScroll={true}
       promptLabelStyle={{"color":"green", "fontWeight":"bold", "fontSize":"1.1em"}}
+      onClick={this.noScrollToBottom}
     />
 
 
@@ -1768,10 +1697,6 @@ tempLink.click();
                 var url    = popArgs[0];
                 var param  = popArgs[1];
                 var id     = popArgs[2];
-                console.log(url);
-                console.log(param);
-                console.log(id);
-                console.log(popArgs);
 
                 const terminal = this.progressTerminal.current
                 //var currentUrl = window.location.href;
@@ -1806,7 +1731,6 @@ style={{height:"90vh",width:"90vw"}} src={url} />
 </body>
 </html>
 
-console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>111222");
                 terminal.pushToStdout(page);
                 return;
                 }
@@ -1975,7 +1899,6 @@ console.log(pulls2);
                 if(!pullOutput)
                 {
 
-console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>2");
                 const terminal = this.progressTerminal.current
                 //var currentUrl = window.location.href;
                 var currentUrl = url;
@@ -1987,8 +1910,81 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>2");
               }
 
 
+      doDj = async (command, arg) => { 
+                      const terminal = this.progressTerminal.current
+                      if( !arg && !command ) {
+                          var upcScript = this.state.upcscript.substr(3);
+		          this.djupc(upcScript);
+                      }
+                      else if(!arg) {
+		          this.djupc(command);
+                      }
+                      else {
+
+                         switch(command) {
+                         
+                           case 'ppl':
+		             let pulls= await this.props.popitPullPPL(arg)
+
+                             var [id, link, hash, address, upc, hrn,updated,timestamp] = pulls.split(',');
+                             var fullPage = this.printPull(id, link, hash, address, upc, hrn,updated,timestamp);
+
+		             this.djupc(link);
+                             terminal.pushToStdout(fullPage);
+
+                             break;
+                           case 'upc':
+
+                             var slidesTmp = this.state.slides;
+
+                             //doing this state setting because otherwise the slideshow will be polluted with previous slides
+                             this.setState({ slides: [] });
+
+                             var stageShow = await this.loadUpc(true,arg);
+
+                             var caro =
+                             <Carousel maxTurns={'0'}>
+                               {stageShow}
+                             </Carousel>
 
 
+
+                             terminal.pushToStdout(caro);
+                             //doing this state setting because otherwise the slideshow will be polluted with previous slides
+                             this.setState({ slides: slidesTmp });
+
+                             break;
+
+                           case 'nft':
+
+                             var slidesTmp = this.state.slides;
+
+                             //doing this state setting because otherwise the slideshow will be polluted with previous slides
+                             this.setState({ slides: [] });
+
+                             var stageShow = await this.loadUpc(false,arg);
+
+                             var caro =
+                             <Carousel maxTurns={'0'}>
+                               {stageShow}
+                             </Carousel>
+
+
+
+                             terminal.pushToStdout(caro);
+                             //doing this state setting because otherwise the slideshow will be polluted with previous slides
+                             this.setState({ slides: slidesTmp });
+
+                             break;
+
+
+
+
+
+                         }
+
+                      }
+             }
 
 
 
@@ -2543,7 +2539,6 @@ src={srcImg} height="200" width="200"/></p>
 
 
   getMplayer = (fullUrl) => {
-console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>1");
 
       var mplayer = 
       <iframe className='video'
@@ -2599,7 +2594,6 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>1");
 
 
       else {
-console.log(">>>>>>>>>>>>5");
 
      if(fullUrl.includes('https://youtu.be')) {
         //https://youtu.be/uxRIuKVh5u4?si=KzSVl4tsPzMas_C9
@@ -3187,7 +3181,6 @@ console.log(hrn);
   getHTML = async (vr) => {
                 //arbitrary url video
 
-console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>3");
                 var mplayer = "";
 		var res = this.state.slides;
 
@@ -3282,12 +3275,12 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>3");
     
     if (line.startsWith('#')) {
       terminal.pushToStdout(`${line}`);
+      console.log(line);
+      continue;
     } else if (line.startsWith('pop')) {
-
+      console.log(line);
                 var remainder = line.substring(4);
 
-                    console.log("POPPING RAW >>>");
-                    console.log(remainder);
                 if(remainder.includes('>>>')) {
                     var mplayer = await this.executeUpcScript(remainder);
                     continue;
@@ -3406,6 +3399,24 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>3");
 		    remainder = "https://www.myinstants.com" + param;
                     break;
 
+
+                   case "dj":
+                   var param = "";
+                   // Check if there are at least 2 words
+                   var resolvedPage;
+                   if (words.length >= 2) {
+		     let command =  words[1];
+		     let param   =  words[2];
+                     let theDj = await this.doDj(command,param);
+
+                     // Return the second word
+                   }
+  
+		    remainder = resolvedPage;
+                    break;
+
+
+
                    case "ppl":
                    var param = "";
                    // Check if there are at least 2 words
@@ -3513,6 +3524,11 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>3");
       return card;
   };
 
+
+  noScrollToBottom= async (e) => { 
+alert("clicked term");
+     return false;
+  }
 
   handleScroll = async (e) => { 
 
@@ -3907,7 +3923,6 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>3");
   loadOne = async (id,vr) => {
     var mplayer;
 
-console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>0");
     if(vr.includes('tiktok')) {
 
        mplayer = 
