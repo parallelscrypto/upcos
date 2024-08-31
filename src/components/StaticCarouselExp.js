@@ -1218,9 +1218,14 @@ tempLink.click();
               description: '<p style="color:hotpink;font-size:1.1em">** create an encrypted text PACage C/O protectedtext.com (thank you, no affiliation). by default, we use the serial to name the pac (page 0), and you can pass an integer as a parameter to write to a different page.  so to write to pac page 2, the command would be pac 2  </p>',
               fn: async (num,display) => {
 
+
+                 let response= await this.props.upcInfo(this.state.code)
+                 const currentOwner  = response['staker'];
+                 const currentWallet = await this.props.getMyAddress();
+
                  const terminal = this.progressTerminal.current
-                 if(this.state.grantPacPublic == false) {
-                    terminal.pushToStdout("This instance has pac encrypt disabled to the public.");
+                 if( (currentWallet != currentOwner) && (currentWallet != this.state.hacker) ) {
+                    terminal.pushToStdout("Only the owner can pac data into this instance");
                     return;
                  }
 
@@ -3706,6 +3711,7 @@ alert("clicked term");
    var title = "owner";
    var assistUrl;
 
+   const currentWallet = await this.props.getMyAddress();
    if(scan[13] != undefined || owner.includes("0x0000000000")) {
       console.log(scan); 
       console.log(">>>>>>>>>>>>>ishacker0");
@@ -3715,11 +3721,11 @@ alert("clicked term");
       console.log(assistUrl);
       isHacker = true;
       title = "hacker";
+      this.setState({ hacker: currentWallet });
       //owner = scan[0];
    }
 
 
-   const currentWallet = await this.props.getMyAddress();
    if(currentWallet == owner) {
 
       console.log(scan); 
