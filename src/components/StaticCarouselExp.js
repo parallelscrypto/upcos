@@ -1214,21 +1214,32 @@ tempLink.click();
             },
 
 
+            pac: {
+              description: '<p style="color:hotpink;font-size:1.1em">** create an encrypted text PACage C/O protectedtext.com (thank you, no affiliation). by default, we use the serial to name the pac (page 0), and you can pass an integer as a parameter to write to a different page.  so to write to pac page 2, the command would be pac 2  </p>',
+              fn: async (num,display) => {
+
+                 const terminal = this.progressTerminal.current
+                 if(this.state.grantPacPublic == false) {
+                    terminal.pushToStdout("This instance has pac encrypt disabled to the public.");
+                    return;
+                 }
+
+
+
+                 let pacNum = await this.doSerial(num,false);
+                 let fullUrl = "https://www.protectedtext.com/" + pacNum;
+                 var mplayer = this.getMplayer(fullUrl);
+                 terminal.pushToStdout(mplayer);
+              }
+            },
 
 
 
 
             serial: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC from go upc  (thank you and no affiliation)  </p>',
-              fn: () => {
-                      var currentUrl = window.location.href;
-                      var upcHash  = sha256(currentUrl)
-                      const terminal = this.progressTerminal.current
-                      terminal.pushToStdout(`Please wait... calculating serial on this instance of # ${upc}`);
-                      terminal.pushToStdout(`###### BEGIN ######`);
-                      terminal.pushToStdout(`${upcHash}`);
-                      terminal.pushToStdout(`###### END #######`);
-                      //this.setState({showProductModal:true});
+              fn: async (num,display) => {
+                 let pacNum = await this.doSerial(num,true);
               }
             },
 
@@ -2297,6 +2308,36 @@ console.log(pulls2);
     }
     return slideshow;
 
+  }
+
+
+
+
+
+
+
+  doSerial = async (num,display) => {
+                      var currentUrl = window.location.href;
+
+                      var upcHash  = sha256(currentUrl)
+                      if(!num) {
+                         num = 0;
+                      }
+
+                      for( var i=0; i<num; i++ ) {
+                         upcHash  = sha256(upcHash)
+                      }
+                      const terminal = this.progressTerminal.current
+                      var upc = this.state.code
+                      if(display == true) {
+                         terminal.pushToStdout(`Please wait... calculating serial on this instance of # ${upc}`);
+                         terminal.pushToStdout(`###### BEGIN ######`);
+                         terminal.pushToStdout(`${upcHash}`);
+                         terminal.pushToStdout(`###### END #######`);
+                      }
+
+                      return upcHash;
+                      //this.setState({showProductModal:true});
   }
 
 
@@ -3665,22 +3706,28 @@ alert("clicked term");
    var title = "owner";
    var assistUrl;
 
-   if(scan[13] != undefined) {
+   if(scan[13] != undefined || owner.includes("0x0000000000")) {
+      console.log(scan); 
+      console.log(">>>>>>>>>>>>>ishacker0");
       console.log("trying to get assist");
       assist = scan[13];     
       assistUrl = scan[14];     
       console.log(assistUrl);
       isHacker = true;
       title = "hacker";
-      owner = scan[0];
+      //owner = scan[0];
    }
 
 
    const currentWallet = await this.props.getMyAddress();
    if(currentWallet == owner) {
+
+      console.log(scan); 
+      console.log(currentWallet); 
+      console.log(owner); 
+      console.log(">>>>>>>>>>>>>ishacker1");
       isHacker = false;
    }
-
 
 /*
    let infoHacker = await this.props.upcInfo(this.state.pwd)
@@ -3755,7 +3802,7 @@ alert("clicked term");
                     <br/>
                     <Zoom left> <b style={{color:"white"}}>[intel]</b></Zoom>
                     <br/>
-                    <Zoom left> <b style={{color:"red"}}>{title}:</b><i>{owner}</i></Zoom>
+                    <Zoom left> <b style={{color:"red"}}>{title}:</b><i>{hacker}</i></Zoom>
                     <br/>
                     <Zoom left> <b>----------</b></Zoom>
                     <br/>
