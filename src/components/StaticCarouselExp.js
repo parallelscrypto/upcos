@@ -201,8 +201,8 @@ export default class StaticCarouselExp extends Component {
 
 
 
-            hack: {
-              description: '<p style="color:hotpink;font-size:1.1em">**  attempt to hack the current upc. you can pass the upc as a param, and if the upc is available, the hack interface will appear.  you must hack into an unowned upc code.  to see if a upc is unowned, run the xupc command.  </p>',
+            flex: {
+              description: '<p style="color:hotpink;font-size:1.1em">**  attempt to flex on the current upc. you can pass the upc as a param, and if the upc is available, the flex interface will appear.  you must flex upon an unowned upc code.  to see if a upc is unowned, run the xupc command.  </p>',
 
               fn: async (upc) => {
                   this.hackScan(upc);
@@ -2018,7 +2018,7 @@ console.log(pulls2);
             if(tokenId != 0) {
 
                if( (qOwner != wallet) ) {
-	          terminal.pushToStdout("You must cd or scan into a hackable upc code. A hackable UPC code is a upc that no one owns.  You can check upcs with the xupc command.  For example, to check ownership info 000000000000 type 'xupc 000000000000'");
+	          terminal.pushToStdout("You must cd or scan into a flex-able upc code. A flex-able UPC code is a upc that no one owns.  You can check upcs with the xupc command.  For example, to check ownership info 000000000000 type 'xupc 000000000000'");
                   return false;
                }
             }
@@ -2056,7 +2056,7 @@ console.log(pulls2);
 
       const hackerAddress = await this.props.getMyAddress();
       const currTime = Math.floor(Date.now() / 1000);
-      const hrn = "hacked-upc-" + this.state.pwd + "-" + currTime;
+      const hrn = "flexed-upc-" + this.state.pwd + "-" + currTime;
 
 /*
       const manifestJson = {
@@ -2168,7 +2168,7 @@ console.log(pulls2);
           style={{width:"100vw"}}
           ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
           className="form-control form-control-lg break"
-          placeholder="shortened url (this is the format: https://is.gd/{shortenedURL})"
+          placeholder="https://is.gd/[your-shortlink])"
           required />
 
         <input
@@ -2176,7 +2176,7 @@ console.log(pulls2);
           style={{width:"100vw"}}
           ref={(missionUrl) => { this.missionUrl= missionUrl}}
           className="form-control form-control-lg break"
-          placeholder="mission url (this is link that will load when your user activates the mission button)"
+          placeholder="link for mission button"
           required />
 
         <input
@@ -3721,7 +3721,9 @@ alert("clicked term");
       console.log(assistUrl);
       isHacker = true;
       title = "hacker";
-      this.setState({ hacker: currentWallet });
+
+
+      this.setState({ hacker: hacker});
       //owner = scan[0];
    }
 

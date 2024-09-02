@@ -40,8 +40,8 @@ class TrebleCleffExp extends Component {
     this.setState({hackButton: this.props.showMission})
 
     if(this.props.terminal==='true') {
-       this.setState({consoleButton: 'etc'})
-       this.setState({missionButton: 'hack'})
+       this.setState({consoleButton: 'exe'})
+       this.setState({missionButton: 'flex'})
        this.setState({popsButton: 'hero'})
        this.setState({showTerminal: this.props.doEtc})
        this.setState({hackButton: this.hackIt})
