@@ -4068,7 +4068,7 @@ var show =
     </Carousel>
   </div>
   <div>
-    <TrebleCleffExp upc={this.state.account} doEtc={this.doEtc} showPostTerminal={this.showPostTerminal} doHack={this.doHack}  showHome={this.handleFlip} handleFlip={this.handleFlip} heroScan={this.heroScan} showTerminal={this.showTerminal} showMission={this.handleFlip} terminal={"true"}/>
+    <TrebleCleffExp upc={this.state.account} doEtc={this.doEtc} showPostTerminal={this.showPostTerminal} doHack={this.doHack}  showHome={this.handleFlip} handleFlip={this.handleFlip} heroScan={this.heroScan} showTerminal={this.showTerminal}  execute={this.parsePop} showMission={this.handleFlip} msg={this.state.msg} terminal={"true"}/>
     {this.state.terminal}
 
 

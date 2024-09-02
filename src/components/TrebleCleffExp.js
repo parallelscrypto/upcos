@@ -24,6 +24,11 @@ class TrebleCleffExp extends Component {
     }
   }
 
+  execute= async () => {
+     console.log("in terminal");
+     console.log(this.props.msg);
+     this.props.execute(this.props.msg);
+  }
 
   componentDidMount = async () => {
     var consoleButton;
@@ -43,7 +48,7 @@ class TrebleCleffExp extends Component {
        this.setState({consoleButton: 'exe'})
        this.setState({missionButton: 'flex'})
        this.setState({popsButton: 'hero'})
-       this.setState({showTerminal: this.props.doEtc})
+       this.setState({showTerminal: this.execute})
        this.setState({hackButton: this.hackIt})
        this.setState({middleButton: this.props.heroScan})
        this.setState({showPost: this.props.showPostTerminal})
