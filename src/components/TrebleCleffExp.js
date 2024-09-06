@@ -17,9 +17,10 @@ class TrebleCleffExp extends Component {
        buttonFg: "green",
        consoleButton: "console",
        missionButton: "mission",
-       popsButton: "pops",
+       popsButton: "hero",
        showTerminal: showTerminal,
        upc: "",
+       msg: props.msg,
        handleFlip: flipFunction
     }
   }
@@ -27,7 +28,7 @@ class TrebleCleffExp extends Component {
   execute= async () => {
      console.log("in terminal");
      console.log(this.props.msg);
-     this.props.execute(this.props.msg);
+     this.props.execute(this.state.msg);
   }
 
   componentDidMount = async () => {
@@ -35,27 +36,36 @@ class TrebleCleffExp extends Component {
     console.log("terminal props is");
     console.log(this.props);
 
+
     var middleButton = this.props.showPops
     var showPost = this.props.showPost
 
+    this.state = {
+       account: this.props.account,
+       upcStatus: upcStatus,
+       channelNum: channelNum,
+       middleButton: middleButton
+    }
+
 
     this.setState({upc: this.props.upc})
-    this.setState({middleButton: this.props.showPops})
+    this.setState({middleButton: this.props.middleButton})
     this.setState({showPost: this.props.showPost})
     this.setState({hackButton: this.props.showMission})
 
     if(this.props.terminal==='true') {
        this.setState({consoleButton: 'exe'})
        this.setState({missionButton: 'flex'})
-       this.setState({popsButton: 'hero'})
-       this.setState({showTerminal: this.execute})
+       this.setState({popsButton: 'etc'})
+       this.setState({showTerminal: this.props.showPopsWithCode})
        this.setState({hackButton: this.hackIt})
-       this.setState({middleButton: this.props.heroScan})
        this.setState({showPost: this.props.showPostTerminal})
 
     }
 
 
+console.log("STATE");
+console.log(this.state);
 
     var upcNum  = this.props.account;
 
@@ -64,13 +74,6 @@ class TrebleCleffExp extends Component {
     var myAddress = this.props.address;
     var upcStatus = "";
     var self = this;
-
-    this.state = {
-       account: this.props.account,
-       upcStatus: upcStatus,
-       channelNum: channelNum,
-       middleButton: middleButton
-    }
 
 
 
@@ -116,7 +119,6 @@ class TrebleCleffExp extends Component {
 
 
   render() {
-
     return (
 	    <div>
                     <button

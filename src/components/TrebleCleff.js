@@ -42,7 +42,7 @@ console.log("channelNum is ==== " + channelNum);
         var staker  = value['staker'];
         //not colonized, not minted
         if( staker.includes('000000') && og.includes('000000') ) {
-           upcStatus = "buy";
+           upcStatus = "console";
         }
         //colonized, not minted
         else if( !staker.includes('000000') && og.includes('000000') ) {

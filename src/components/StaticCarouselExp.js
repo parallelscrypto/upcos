@@ -153,6 +153,7 @@ export default class StaticCarouselExp extends Component {
       showModalExport: false,
       scan: scan,
       msg: props.msg,
+      upcscript: msg,
       upcrss: upcrss,
     };
 
@@ -161,7 +162,7 @@ export default class StaticCarouselExp extends Component {
     this.progressTerminal = React.createRef()
     var promptlabel =  '[[ AWAITING COMMAND@ ]] => ';
     var welcomeMsg ="\n[[ \n you are now on upcOS privately owned property owned by \n " + owner + "\n on {polygon} \n";
-    welcomeMsg += "\n MSG from @_" + upc + " => \n " +  msg + "\n]]";
+    welcomeMsg += "\n Welcome to @_" + upc;
     var popArgs = [];
 
     var myTerm = <Terminal
@@ -222,7 +223,7 @@ export default class StaticCarouselExp extends Component {
                             window.addEventListener('scroll', this.handleScroll);
                          }
                          else {
-                            terminal.pushToStdout("There is no feed programmed into this unit.  You must include a upcrss entity in the popscript textarea when you drop or hack a upc");
+                            terminal.pushToStdout("There is no feed programmed into this unit.  You must include a upcrss entity in the upcscript textarea when you drop or hack a upc");
                          }
                       }
                       else if( onOff == 'off') {
@@ -345,7 +346,7 @@ export default class StaticCarouselExp extends Component {
 
 
             exe: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** If a popscript was originally programmed into the console message, this command will execute the script</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** If a upcscript was originally programmed into the console message, this command will execute the script</p>',
               fn: () => {
                       this.parsePop(this.state.msg);
               }
@@ -1133,7 +1134,7 @@ tempLink.click();
 
 
 
-            pop: {
+            upc: {
               description: '<p style="color:hotpink;font-size:1.1em">** poppin a terminal already in your terminal**</p>',
               //fn: async (url,param,id) => {
               //fn: async (popArgs) => {
@@ -1451,17 +1452,18 @@ tempLink.click();
               }
             },
 
-            pops: {
+            upcs: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open POPScript interpreter </p>',
               fn: () => {
 
 
+                   this.setState({executable: ""})
 
 		      //var fullUrl = "https://codverter.com/src/index";
                    var winNum = "1";
 
                       //this.cSearch.value = "";
-                      //this.cSearch.value = fullUrl;
+                      this.cSearch2.value = this.state.upcscript;
                       if(winNum == "1") {
 		         this.setState(prevState => ({ pipVisibility2: "true" }));
 		         this.setState(prevState => ({ pipDisplay2: "block"}));
@@ -1659,7 +1661,8 @@ tempLink.click();
        channel: channel,
        manifest: manifest,
        missionUrl: missionUrl,
-       popscript: "",
+       upcscript: "",
+       executable: msg,
        payload: scan[5],
        slides: [],
        res: [],
@@ -2041,7 +2044,7 @@ console.log(pulls2);
       let upcId = this.state.pwd
       let humanReadableName = this.humanReadableName.value.toString()
       let exportMsg= this.exportMsg.value.toString()
-      let popscript= this.popscript.value.toString()
+      let upcscript= this.upcscript.value.toString()
       let payload = this.payload.value.toString()
       let missionUrl = this.missionUrl.value.toString()
 
@@ -2051,7 +2054,7 @@ console.log(pulls2);
       //let info = await this.props.upcInfo(this.state.pwd)
 
       let infoSanit = btoa(info);
-      var showString = popscript;
+      var showString = upcscript;
 
 
       const hackerAddress = await this.props.getMyAddress();
@@ -2066,7 +2069,7 @@ console.log(pulls2);
           "upcHash"   :"1337", 
           "word"   : this.state.pwd, 
           "ipfs"   : payload, 
-          "vr"   : popscript, 
+          "vr"   : upcscript, 
           "humanReadableName" : hrn, 
           "minted"   : false, 
           "bought"   : false, 
@@ -2077,7 +2080,7 @@ console.log(pulls2);
 */
 
 
-      var manifestAr = [hackerAddress,qOwner,0,0,0,payload,popscript,hrn,0,0,0,currTime,currTime,this.state.code,currentUrl];
+      var manifestAr = [hackerAddress,qOwner,0,0,0,payload,upcscript,hrn,0,0,0,currTime,currTime,this.state.code,currentUrl];
 
 
       //var manifestAr = Object.entries(manifestJson);
@@ -2094,7 +2097,7 @@ console.log(pulls2);
 
 
 
-      var upcJson = '{"show":"' + popscript + '","code":"' + this.state.pwd + '","assist":"' + this.state.code + '","manifest":"' + manifestEncoded + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
+      var upcJson = '{"show":"' + upcscript + '","code":"' + this.state.pwd + '","assist":"' + this.state.code + '","manifest":"' + manifestEncoded + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
       var upcEncoded = btoa(upcJson);
       currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
       currentUrl = currentUrl.replace('intel', 'export');
@@ -2182,7 +2185,7 @@ console.log(pulls2);
         <input
           type="text"
           style={{width:"100vw"}}
-          ref={(popscript) => { this.popscript=popscript}}
+          ref={(upcscript) => { this.upcscript=upcscript}}
           className="form-control form-control-lg break"
           placeholder="Content for front stage. (UPCScript is allowed)"
           required />
@@ -2203,7 +2206,7 @@ console.log(pulls2);
           style={{minHeight:"60vh",width:"100vw"}}
           ref={(exportMsg) => { this.exportMsg = exportMsg}}
           className="form-control form-control-lg break"
-          placeholder="this text will be displayed in the exported terminal welcome message. if you put a popscript in this box, you can execute it with the exe command"
+          placeholder="this text will be displayed in the exported terminal welcome message. if you put a upcscript in this box, you can execute it with the exe command"
           />
 
       </div>
@@ -2211,7 +2214,7 @@ console.log(pulls2);
         type="submit"
         className="btn btn-primary btn-block btn-lg"
       >
-       hack 
+       flex
       </button>
     </form>
 
@@ -2591,7 +2594,7 @@ src={srcImg} height="200" width="200"/></p>
 
               allowFullScreen="allowfullscreen"
               frameBorder="0"
-              style={{height:"80vh",width:"90vw"}}
+              style={{height:"80vh",width:"100vw"}}
               allow='camera;microphone;fullscreen'
               title='upcOS-init'
               sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
@@ -2659,7 +2662,7 @@ src={srcImg} height="200" width="200"/></p>
 
               allowFullScreen="allowfullscreen"
               frameBorder="0"
-              style={{height:"80vh",width:"90vw"}}
+              style={{height:"80vh",width:"100vw"}}
               allow='camera;microphone;fullscreen'
               title='upcOS-init'
               sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
@@ -2678,21 +2681,38 @@ src={srcImg} height="200" width="200"/></p>
 
 
 
-  showPops= async () => {
+  showPopsWithCode= async () => {
+    console.log("EXECUTABLEE");
+    this.setState({executable: this.state.msg})
     this.setState(prevState => ({ pipVisibility2: "true" }));
     this.setState(prevState => ({ pipDisplay2: "block"}));
     this.setState(prevState => ({ showBigShow2: true}))
-    this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
+    console.log(this.state.executable);
+  }
+
+
+
+  showPops= async () => {
+    
+    console.log("EXECUTABLEE BLANK");
+    this.setState({executable: ""})
+    this.setState(prevState => ({ pipVisibility2: "true" }));
+    this.setState(prevState => ({ pipDisplay2: "block"}));
+    this.setState(prevState => ({ showBigShow2: true}))
+    console.log(this.state.executable);
   }
 
 
 
   heroScan = async () => {
+console.log("in heroscan");
        const terminal = this.progressTerminal.current
        const scanForm = <ScanWizard firstLookup={this.firstLookup} setAccount={this.setAccount} />
-       this.setState(prevState => ({ fullIpfs: scanForm }));
-       this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
-       this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+
+       this.setState({slides: scanForm})
+       //this.setState(prevState => ({ fullIpfs: scanForm }));
+       //this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+       //this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
   }
 
 
@@ -3323,7 +3343,7 @@ console.log(hrn);
       terminal.pushToStdout(`${line}`);
       console.log(line);
       continue;
-    } else if (line.startsWith('pop')) {
+    } else if (line.startsWith('upc')) {
       console.log(line);
                 var remainder = line.substring(4);
 
@@ -3688,11 +3708,13 @@ alert("clicked term");
              <Modal style={{"background":'##86a865',"height":"50vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={'true'} closemodal={(e) => {this.setState({ showModalSplash: false }); }} type="lightSpeedIn" >
                 <div style={{background:"#451206", verticalAlign:"middle", textAlign:"center" }}> 
                   <div>
-                    <Zoom left> <i  style={{color:"red"}}>Now Playing:</i></Zoom>
+                    <Zoom left> <i  style={{color:"red"}}>Welcome to</i></Zoom>
                     <br/>
-                    <Zoom left> <b>Raw Material Property ID#</b></Zoom>
+                    <Zoom left> <b>Flexnesium </b></Zoom>
                      <br/>
-
+                     <b style={{color:"white"}}>Click right arrow twice for info</b>
+                     <br/>
+                     <b style={{color:"white"}}>Click mission to start</b>
                      <Flip right> <Barcode value={this.state.code} format="UPC" /> </Flip>
     
                      <br/>
@@ -3711,7 +3733,6 @@ alert("clicked term");
    var title = "owner";
    var assistUrl;
 
-   const currentWallet = await this.props.getMyAddress();
    if(scan[13] != undefined || owner.includes("0x0000000000")) {
       console.log(scan); 
       console.log(">>>>>>>>>>>>>ishacker0");
@@ -3720,22 +3741,13 @@ alert("clicked term");
       assistUrl = scan[14];     
       console.log(assistUrl);
       isHacker = true;
-      title = "hacker";
+      title = "flexer";
 
 
       this.setState({ hacker: hacker});
       //owner = scan[0];
    }
 
-
-   if(currentWallet == owner) {
-
-      console.log(scan); 
-      console.log(currentWallet); 
-      console.log(owner); 
-      console.log(">>>>>>>>>>>>>ishacker1");
-      isHacker = false;
-   }
 
 /*
    let infoHacker = await this.props.upcInfo(this.state.pwd)
@@ -3757,7 +3769,6 @@ alert("clicked term");
    var modifiedDate = parseInt(modifiedData);
    var modified = new Date(modifiedDate * 1000);
    var upcscript = scan[6];
-   this.setState({ upcscript: upcscript });
    var currentUrl = window.location.href;
    var currentUrl = currentUrl.replace('export','intel');
    var currentUrlLink = <a href={currentUrl}>link</a>
@@ -3818,7 +3829,7 @@ alert("clicked term");
                     <br/>
                     <Zoom left> <b>----------</b></Zoom>
                     <br/>
-                    <Zoom left> <b style={{color:"red"}}>hack_date:</b><i>{hacked.toString()}</i></Zoom>
+                    <Zoom left> <b style={{color:"red"}}>flex_date:</b><i>{hacked.toString()}</i></Zoom>
                     <br/>
                     <Zoom left> <b style={{color:"red"}}>assist:</b><Barcode value={assist} format="UPC" /></Zoom>
                     <br/>
@@ -3834,12 +3845,11 @@ alert("clicked term");
 
    this.setState({ intel: content });
     var res = this.state.slides;
-    console.log("RES COUNT = " + res.length);
-    console.log("owner = " + owner);
 
 
+    const isHacked = owner.includes("0x000000000000000000");
    
-    if(res.length == 0 && isHacker ) {
+    if(res.length == 0 && isHacked ) {
        res.push(splash);
        res.push(content);
     }
@@ -3958,11 +3968,10 @@ alert("clicked term");
       </div>
       </Zoom>
     );
-               
 
 
-
-
+    console.log("****************SLIDEZZZZZZZZZZ******************");
+    console.log(res);
 
 
     res.push(toPush);
@@ -4059,16 +4068,18 @@ alert("clicked term");
 
 
 render () { 
+
+
 var show =
 <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
   <div>
-    <TrebleCleffExp showHome={this.showHome} showPost={this.showPost} showPops={this.showPops} showLoad={this.showLoad} handleFlip={this.handleFlip} showMission={this.showMission} showTerminal={this.handleFlip} terminal={"false"}/>
+    <TrebleCleffExp showHome={this.showHome} showPost={this.showPost} middleButton={this.heroScan} showLoad={this.showLoad} handleFlip={this.handleFlip} showMission={this.showMission} showTerminal={this.handleFlip} terminal={"false"}/>
     <Carousel maxTurns={'0'}>
       {this.state.slides}
     </Carousel>
   </div>
   <div>
-    <TrebleCleffExp upc={this.state.account} doEtc={this.doEtc} showPostTerminal={this.showPostTerminal} doHack={this.doHack}  showHome={this.handleFlip} handleFlip={this.handleFlip} heroScan={this.heroScan} showTerminal={this.showTerminal}  execute={this.parsePop} showMission={this.handleFlip} msg={this.state.msg} terminal={"true"}/>
+    <TrebleCleffExp upc={this.state.account} doEtc={this.doEtc} showPostTerminal={this.showPostTerminal} doHack={this.doHack}  showHome={this.handleFlip} handleFlip={this.handleFlip} middleButton={this.doEtc} showPopsWithCode={this.showPopsWithCode}  showTerminal={this.showPopsWithCode}  execute={this.parsePop} showMission={this.handleFlip} msg={this.state.msg} terminal={"true"}/>
     {this.state.terminal}
 
 
@@ -4172,8 +4183,9 @@ var show =
                    <textarea
                                       ref={(cSearch2) => { this.cSearch2 = cSearch2 }}
                                       id="value"
+                                      value={this.state.executable}         
                                       name="value"
-                                      placeholder="paste your #!/upc/pop script here"
+                                      placeholder="paste your #!/bin/upc script here"
                                       style={{background:"black", color:"green", border: '1px solid #ccc', borderRadius: '4px', fontFamily: 'Arial, sans-serif', width: '100vw', height: '100vh' }}
 			    />
 

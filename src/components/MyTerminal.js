@@ -36,7 +36,7 @@ var Barcode = require('react-barcode');
 var Barcode = require('react-barcode');
 var sha256 = require('js-sha256');
 
-var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Flip\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your Flip to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`ask`</i> to buy the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with ask " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
+var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n *Mission: Build strong NFT based entertainment economy for the homeless` \n *Amaze the world with your unique gift! \n *Record a video or take a pic and upload it to a UPC and flip the UPC! \n *Keep ya head up! \n *Put your crown back on! \n *Former homeless helping homeless \n *Together in unity with humanity! \n *92111* \n Type <i style='color:hotpink'>`help`</i> to see available commands \n  <a href='upc://000000000011'>[[000000000011]]</a> Type <i style='color:hotpink'>`swap`</i> to get some Flip\n <a href='upc://000000000012'>[[000000000012]]</a> Type <i style='color:hotpink'>`i`</i> to check the [[intel]] encoded \n  <a href='upc://000000000013'>[[000000000013]]</a> Type <i style='color:hotpink'>`approve`</i> to approve 50 of your Flip to be spent. \n <a href='upc://000000000014'>[[000000000014]]</a> Type <i style='color:hotpink'>`ask`</i> to hack the UPC " + "\n <a href='upc://000000000015'>[[000000000015]]</a> Type <i style='color:hotpink'>`own`</i> to mint if successful with ask " + "\n  <a href='upc://000000000016'>[[000000000016]]</a> <i style='color:hotpink'>Type `flip` to sell renovated UPC unit " + " </i> " +  "\n Type <i style='color:hotpink'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:hotpink'>`clear`</i> to clear screen";
 
 //var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.oneafrika', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-DEVIL','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.coinbox']
 
@@ -398,7 +398,7 @@ src={srcImg} height="200" width="200"/></p>
                                this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
                                this.ask();
                        }
-                       	} >buy station [[{upc}]]</button>
+                       	} >hack station [[{upc}]]</button>
                        <button 
                               style={{background: "#000000", color:"blue", width: "45vw", height: "20vw"}}
                               onClick={(e) => { 
@@ -1984,7 +1984,7 @@ mplayer = <ReactPlayer
     var addy = this.props.address;
     addy  = addy.substr(0,15);
 
-    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV </i>\n <i>wake.tf.up</i> \n <b style='color:red'> [always.ask.questions]</b> \n <i style='color:#d66900'>Powered by Flip Crypto</i> \n <i style='color:white'> <b style='color:red'>1.</b> Type <i style='color:red'>`help`</i> to see available commands \n <b style='color:red'> 2. </b> Type <i style='color:red'>`claim`</i> to get some Flip Token.  You must pay a access determined by the upc owner plus the infrastructure fee, and you recieve .25 Flip token each time you `claim`.  To check the price of tokens in a particular coinbox, type the `price` command.  To recap, in order to get the 1 token that you need to buy a UPC NFT, you must run the claim command 4 times. A user only needs one token to buy a UPC NFT, so no need to sit around typing claim a bunch of times trying to accumulate tokens. \n <b style='color:red'> 3. </b> Type <i style='color:red'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <b style='color:red'> 4. </b> Type <i style='color:red'>`recon`</i> to allow your wallet to spend your Flip token in our smart contract.  You will not be able to buy {{buy}} a upc until you have run this command \n Type <i style='color:red'>`buy`</i> to buy the UPC [[" + this.state.account + "]]" + "\n  Type <i style='color:red'>`own`</i> to mint if successful with program {buy} [[" + this.state.account + "]]" + "\n  <i style='color:red'>Type `sell` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:red'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:red'>`clear`</i> to clear screen" + " \n Type <i style='color:red'>`ch [0-9]` to to watch the corresponding channel.  For example, type `ch 0` to watch channel 0, and type `ch 9` to watch channel 9.  Channel values 0-9 are valid";
+    var tutorial = "Welcome to \n <i style='color:#0057b7'> UPC Band Radio/TV </i>\n <i>wake.tf.up</i> \n <b style='color:red'> [always.ask.questions]</b> \n <i style='color:#d66900'>Powered by Flip Crypto</i> \n <i style='color:white'> <b style='color:red'>1.</b> Type <i style='color:red'>`help`</i> to see available commands \n <b style='color:red'> 2. </b> Type <i style='color:red'>`claim`</i> to get some Flip Token.  You must pay a access determined by the upc owner plus the infrastructure fee, and you recieve .25 Flip token each time you `claim`.  To check the price of tokens in a particular coinbox, type the `price` command.  To recap, in order to get the 1 token that you need to hack a UPC NFT, you must run the claim command 4 times. A user only needs one token to hack a UPC NFT, so no need to sit around typing claim a bunch of times trying to accumulate tokens. \n <b style='color:red'> 3. </b> Type <i style='color:red'>`i`</i> to check the [[intel]] encoded into [["+ this.state.account+"]]  \n  <b style='color:red'> 4. </b> Type <i style='color:red'>`recon`</i> to allow your wallet to spend your Flip token in our smart contract.  You will not be able to hack {{hack}} a upc until you have run this command \n Type <i style='color:red'>`hack`</i> to hack the UPC [[" + this.state.account + "]]" + "\n  Type <i style='color:red'>`own`</i> to mint if successful with program {hack} [[" + this.state.account + "]]" + "\n  <i style='color:red'>Type `sell` to sell renovated UPC unit [[" + this.state.account + "]]" + " </i> " +  "\n Type <i style='color:red'>`x`</i> view the UNIQUE NFT Creature for this UPC" + " \n Type <i style='color:red'>`clear`</i> to clear screen" + " \n Type <i style='color:red'>`ch [0-9]` to to watch the corresponding channel.  For example, type `ch 0` to watch channel 0, and type `ch 9` to watch channel 9.  Channel values 0-9 are valid";
     var promptlabel =  '[[ AWAITING COMMAND ]] => ';
 
           
@@ -2217,8 +2217,8 @@ var playButton =
 
 
 
-            buy: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Please enrich this UPC by programming something into its metadata. type the command `buy` and possibly scroll around to find the modal window that will allow you to name your potential UPC Nft.  the name that you choose cannot be undone so please choose accordingly. *</p>',
+            hack: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Please enrich this UPC by programming something into its metadata. type the command `hack` and possibly scroll around to find the modal window that will allow you to name your potential UPC Nft.  the name that you choose cannot be undone so please choose accordingly. *</p>',
               fn: (humanReadableName) => {
 		      this.ask(humanReadableName);
               }
@@ -2449,8 +2449,8 @@ var playButton =
 
 
 
-            xbuy: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Buy a UPC NFT without the GUI popup.  Example: If you are currently scanned into UPC #222222222222 and you would like to buy the upc foo.watch-this, you would type the following `xbuy foo 0`.  The `0` after `foo` corresponds to the domain ending that you are purchasing.**</p>',
+            xhack: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Buy a UPC NFT without the GUI popup.  Example: If you are currently scanned into UPC #222222222222 and you would like to hack the upc foo.watch-this, you would type the following `xhack foo 0`.  The `0` after `foo` corresponds to the domain ending that you are purchasing.**</p>',
               fn: (humanReadableName,domain) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -2666,7 +2666,7 @@ console.log(this.state.account);
 
 
             own: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `buy` command</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `hack` command</p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -2698,7 +2698,7 @@ console.log(this.state.account);
 
 
             pwn: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `buy` command</p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** Mint an NFT for which you have successfully executed the `hack` command</p>',
               fn: (upcId) => {
                 this.setState({progressBal: ''});
                 this.setState({ isProgressing: true }, () => {
@@ -2805,7 +2805,7 @@ console.log(this.state.account);
 
 
             recon: {
-                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 1 of your Flip.  Each time you program a UPC, you must run `recon` again.    You MUST run this command FIRST or all of your `buy` and `own` commands will fail.**</p>',
+                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 1 of your Flip.  Each time you program a UPC, you must run `recon` again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail.**</p>',
               fn: (numTokens) => {
                   
                 var progress = 0;
@@ -2813,7 +2813,7 @@ console.log(this.state.account);
                 this.setState({ isProgressing: true }, () => {
                   let approval = this.props.approve(numTokens);
                   approval.then((value) => {
-                    terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Flip from your wallet when you buy an NFT.  This approval is good for 1 NFT, and you must run this command each time before buying an NFT, or your 'buy' and 'own' commands will fail`)
+                    terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Flip from your wallet when you hack an NFT.  This approval is good for 1 NFT, and you must run this command each time before hacking an NFT, or your 'hack' and 'own' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
@@ -2828,7 +2828,7 @@ console.log(this.state.account);
 
 
             preband: {
-                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 1 of your Flip.  Each time you program a UPC, you must run `recon` again.    You MUST run this command FIRST or all of your `buy` and `own` commands will fail.**</p>',
+                    description: '<p style="color:hotpink;font-size:1.1em">** Approve UPC Band Radio to spend 1 of your Flip.  Each time you program a UPC, you must run `recon` again.    You MUST run this command FIRST or all of your `hack` and `own` commands will fail.**</p>',
               fn: (numTokens) => {
                   
                 var progress = 0;
@@ -2836,7 +2836,7 @@ console.log(this.state.account);
                 this.setState({ isProgressing: true }, () => {
                   let approval = this.props.approveBands(numTokens);
                   approval.then((value) => {
-                    terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Flip from your wallet when you buy an NFT.  This approval is good for 1 NFT, and you must run this command each time before buying an NFT, or your 'buy' and 'own' commands will fail`)
+                    terminal.pushToStdout(`You have approved UPC Band Radio to transfer sufficient Flip from your wallet when you hack an NFT.  This approval is good for 1 NFT, and you must run this command each time before hacking an NFT, or your 'hack' and 'own' commands will fail`)
                      // expected output: "Success!"
                   });
                 })
@@ -2886,7 +2886,7 @@ console.log(this.state.account);
         
                
              swap: {
-                     description: '<p style="color:hotpink;font-size:1.1em">** Flip is the token used to write [[intel]] to UPC codes.  In order to acquire Flip, you must run the `swap` command. This will `swap` Polygon that you have purchased likely from an exchange for Flip from our Decentralized Mint.  Specify the amount of Flip that you would like to exchange for the Polygon in your wallet in wei.  This will trigger a transaction that will mint equiv. Flip for Polygon 1:1.  Example: to buy 5 Flip type `swap 5000000000000000000`. In other words, this would send 5 Polygon from your wallet for 5 Flip from the Flip mint. </p>',
+                     description: '<p style="color:hotpink;font-size:1.1em">** Flip is the token used to write [[intel]] to UPC codes.  In order to acquire Flip, you must run the `swap` command. This will `swap` Polygon that you have purchased likely from an exchange for Flip from our Decentralized Mint.  Specify the amount of Flip that you would like to exchange for the Polygon in your wallet in wei.  This will trigger a transaction that will mint equiv. Flip for Polygon 1:1.  Example: to hack 5 Flip type `swap 5000000000000000000`. In other words, this would send 5 Polygon from your wallet for 5 Flip from the Flip mint. </p>',
                fn: (amount) => {
                  this.setState({progressBal: ''});
                  this.setState({ isProgressing: true }, () => {
@@ -3944,7 +3944,7 @@ console.log(this.state.account);
 
 
 
-            drop: {
+            flex: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display deep link for WEB2 current upc code.  This command is used to share your upc code with people who do not want to use the blockchain, but want to see your content.  this command will create a shortened url and you can specify the slug by passing as a param to this command.  the slug may only contain the characters a-z, 0-9 and underscore. if you get an undefined back instead of a url, you have tried an invalid or unavailable slug, try again or run command with no param to  get random  slug**</p>',
 
               fn: async () => {
@@ -4573,6 +4573,7 @@ console.log(this.state.account);
             },
           }}
         welcomeMessage={welcomeMsg}
+        ignoreCommandCase={true}
         promptLabel={promptlabel}
         dangerMode={true}
         autoFocus={true}
