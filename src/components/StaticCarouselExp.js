@@ -1949,7 +1949,7 @@ console.log(pulls2);
                              var fullPage = this.printPull(id, link, hash, address, upc, hrn,updated,timestamp);
 
 		             this.djupc(link);
-                             terminal.pushToStdout(fullPage);
+                             //terminal.pushToStdout(fullPage);
 
                              break;
                            case 'upc':
@@ -2573,7 +2573,8 @@ src={srcImg} height="200" width="200"/></p>
 		   //this.setState({ exportModalContent: false });
 		   //this.setState({ pipVisibility: false });
 		   //this.setState({ pipDisplay: false });
-                   terminal.pushToStdout(offerBuy);
+                   //terminal.pushToStdout(offerBuy);
+	           this.setState({slides: offerBuy})
                    //self.setState({player: offerBuy});
                    //self.setState({offerState: "offer"});
                     //this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
@@ -2896,7 +2897,7 @@ console.log("in heroscan");
       var fullUrl = "https://go-upc.com/search?q=" + upc;
       var winNum = "0";
       var mplayer = this.getMplayer(fullUrl);
-      terminal.pushToStdout(mplayer);
+      this.setState({slides: mplayer})
   }
 
 
@@ -3006,31 +3007,33 @@ console.log("in heroscan");
        }
 
        if (loadHtml && !containsLinkType && !loadYt) {
-          var entry = await this.getHTML(upcscript[i]); 
+          var entry = await this.getHTMLConsole(upcscript[i]); 
        } else if (containsLinkType) {
         console.log("LINKKKKKKK3");
-        var entry = this.getLink(upcscript[i]);
+        var entry = this.getLinkConsole(upcscript[i]);
        }
        else if(tmpId.length == 11) {
         console.log("LINKKKKKKK4");
-          var entry = await this.getYt(tmpId); 
+          var entry = await this.getYtConsole(tmpId); 
        }
        else if(loadYt) {
 
         console.log("LINKKKKKKK5");
-          var entry = await this.getYt(tmpId); 
+          var entry = await this.getYtConsole(tmpId); 
           //this class can not connect to web3, so it is up to the calling code to decode the nftId's content and pass that raw to this function
           //var entry = await this.getNft(i,upcscript); 
        }
        else{
         console.log("EEEEEEEELLLLLLLLSSSSSSSSSSEEEEEEEEE");
-          var entry = await this.getHTML(upcscript[i]); 
+          var entry = await this.getHTMLConsole(upcscript[i]); 
        }
     }
 
 
     var newshow = 
-    <Carousel maxTurns={'0'}>
+    <Carousel 
+    id="consoleShow"
+    maxTurns={'0'}>
       {this.state.slides}
     </Carousel>
  
@@ -3043,15 +3046,6 @@ console.log("in heroscan");
     //this.setState({ fullIpfs: newshow});
     //this.setState(prevState => ({ pipDisplay: true}));
     //this.setState(prevState => ({ pipVisibility: true}));
-
-
-
-
-
-
-
-
-
 
 
   }
@@ -3185,6 +3179,18 @@ const fullPage = (
   }
 
 
+  getYtConsole = async (tmpId) => {
+                var res;
+                var oneVid = await this.loadOne(7777777,tmpId);
+	        res = this.state.slides;
+	        res.push(oneVid)
+	        this.setState({slides: res})
+	        this.setState({res: res})
+                return res;
+
+  }
+
+
 
 
   getYt = async (tmpId) => {
@@ -3193,6 +3199,7 @@ const fullPage = (
 	        res = this.state.slides;
 	        res.push(oneVid)
 	        this.setState({slides: res})
+	        this.setState({slidesOG: res})
 	        this.setState({res: res})
                 return res;
 
@@ -3244,6 +3251,44 @@ console.log(hrn);
 
 
 
+  getHTMLConsole = async (vr) => {
+                //arbitrary url video
+
+                var mplayer = "";
+		var res = this.state.slides;
+
+                if(vr.includes('https:') ) {
+                   const fullUrl = vr
+                   mplayer =
+                           <div>
+                               <iframe className='video'
+
+                                       allowFullScreen="allowfullscreen"
+                                       frameBorder="0"
+                                       style={{height:"80vh",width:"90vw"}}
+                                       allow='camera;microphone;fullscreen'
+                                       title='upcOS-init'
+                                       sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popuAllallow-scripts allow-presentation'
+                                       src={vr}>
+                               </iframe>
+                            </div>
+                }
+
+
+                var toPush = <Zoom right> {mplayer} </Zoom>
+		if(res) {
+
+                   res.push(toPush)
+                }
+		this.setState({slides: res})
+	        this.setState({res: res})
+                return res;
+   }
+
+
+
+
+
   getHTML = async (vr) => {
                 //arbitrary url video
 
@@ -3274,6 +3319,7 @@ console.log(hrn);
                    res.push(toPush)
                 }
 		this.setState({slides: res})
+		this.setState({slidesOG: res})
 		this.setState({res: res})
                 return res;
    }
@@ -3334,7 +3380,11 @@ console.log(hrn);
 
  const lines = upcScript.split('\n');
   const output = [];
-  
+  if(lines[0].trim() != '#!/bin/upcscript') {
+     var errorMsg = "An executable upcscript must start with the shebang on the first line. In other words, the first line of your script MUST be '#!/bin/upcscript'";
+      terminal.pushToStdout(`${errorMsg}`);
+      return false;
+  }
   let sheetNum;
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i].trim();
@@ -3906,6 +3956,87 @@ alert("clicked term");
   }
 
 
+
+
+  getLinkConsole = linkEntity => {
+    const linkParts = linkEntity.slice(1, -1).split('|');
+    const title = linkParts[0];
+    const url = linkParts[1];
+
+
+    var postObject;
+    var postText = ""; 
+    var isPost = false;
+    if(title == "post") {
+       isPost = true;
+       postText = atob(url);
+       postObject = JSON.parse(postText);
+    }   
+
+
+
+
+    var res = this.state.slides;
+
+
+    var toPush = ( 
+      <Zoom>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          backgroundColor: 'black',
+          color: 'white'
+        }}
+      >   
+        <h3 style={{ color: 'green' }}>[user-provided-external-link]</h3>
+        <h2>[key: {title}]</h2>
+        {isPost ? ( 
+
+            <div>
+               <p style={{background:"green"}}>
+               title: <br/>
+               {postObject.title}
+               </p>
+
+               <p style={{minHeight:"50vh",background:"green"}}>
+               body: <br/>
+               {postObject.body}
+               </p>
+            </div>
+
+        ) : (
+          <p>
+            [link:{' '}
+            <a href={url} target="_blank" rel="noopener noreferrer">
+              {url}
+            </a>
+            ]{' '}
+          </p>
+        )}
+      </div>
+      </Zoom>
+    );
+
+
+    console.log("****************SLIDEZZZZZZZZZZ******************");
+    console.log(res);
+
+
+    res.push(toPush);
+
+    this.setState({ slides: res });
+    return res;
+  };
+
+
+
+
+
+
   getLink = linkEntity => {
     const linkParts = linkEntity.slice(1, -1).split('|');
     const title = linkParts[0];
@@ -3975,7 +4106,10 @@ alert("clicked term");
 
 
     res.push(toPush);
+
     this.setState({ slides: res });
+    this.setState({ slidesOG: res });
+    this.setState({ consoleslides: res });
     this.setState({ res: res });
     return res;
   };
@@ -4075,7 +4209,7 @@ var show =
   <div>
     <TrebleCleffExp showHome={this.showHome} showPost={this.showPost} middleButton={this.heroScan} showLoad={this.showLoad} handleFlip={this.handleFlip} showMission={this.showMission} showTerminal={this.handleFlip} terminal={"false"}/>
     <Carousel maxTurns={'0'}>
-      {this.state.slides}
+      {this.state.slidesOG}
     </Carousel>
   </div>
   <div>
@@ -4086,7 +4220,7 @@ var show =
       <Modal style={{"display":"table-cell", "textAlign":"center", "verticalAlign":"middle"}} visible={this.state.showModalExport} closemodal={() => this.setState({ showModalExport: false })} type="pulse" > {this.state.exportModalContent}</Modal>
 
                 <Draggable
-		  style={{zIndex:"0"}}
+		  style={{zIndex:"20"}}
                   axis="both"
                   handle=".handle"
                   positionOffset={{x: '0', y: '-50%'}}
@@ -4097,7 +4231,7 @@ var show =
                   onStart={this.handleStart}
                   onDrag={this.handleDrag}
                   onStop={this.handleStop}>
-                  <div style={{ opacity:"0.9", background:"#000000" ,color:"#ffffff", visibility:this.state.pipVisibility, display: this.state.pipDisplay, width:"98vw",border:"3px dashed", padding:"5px"}}>
+                  <div style={{ opacity:"0.9", background:"#000000" ,color:"#ffffff", visibility:this.state.pipVisibility, display: this.state.pipDisplay, width:"98vw",border:"3px dashed", padding:"5px", position:"absolute", zIndex:"20"}}>
                     <div className="handle" style={{background:"black", display:"grid"}}><span style={{textAlign:"center"}}>drag-from-here (client0)</span></div>
                       <div style={{textAlign:"center"}}>
                          <input
@@ -4138,7 +4272,7 @@ var show =
                 </Draggable>
 
                 <Draggable
-		  style={{zIndex:"0"}}
+		  style={{zIndex:""}}
                   axis="both"
                   handle=".handle"
                   positionOffset={{x: '0', y: '-50%'}}
@@ -4148,7 +4282,7 @@ var show =
                   onStart={this.handleStart}
                   onDrag={this.handleDrag}
                   onStop={this.handleStop}>
-                  <div style={{ opacity:"0.9", background:"#000000" ,color:"#ffffff", visibility:this.state.pipVisibility2, display: this.state.pipDisplay2, width:"98vw",border:"3px dashed", padding:"5px"}}>
+                  <div style={{ opacity:"0.9", background:"#000000" ,color:"#ffffff", visibility:this.state.pipVisibility2, display: this.state.pipDisplay2, width:"98vw",border:"3px dashed", padding:"5px", position:"absolute", zIndex:"20"}}>
                     <div className="handle" style={{background:"black", display:"grid"}}><span style={{textAlign:"center",border:"dashed", borderColor:"red",color:"white" }}>drag-from-here (client1)</span></div>
                       <div style={{textAlign:"center"}}>
                          <button
@@ -4183,9 +4317,9 @@ var show =
                    <textarea
                                       ref={(cSearch2) => { this.cSearch2 = cSearch2 }}
                                       id="value"
-                                      value={this.state.executable}         
+                                      defaultValue={this.state.executable}         
                                       name="value"
-                                      placeholder="paste your #!/bin/upc script here"
+                                      placeholder="paste your #!/bin/upcscript here"
                                       style={{background:"black", color:"green", border: '1px solid #ccc', borderRadius: '4px', fontFamily: 'Arial, sans-serif', width: '100vw', height: '100vh' }}
 			    />
 
@@ -4200,7 +4334,7 @@ var show =
 
 
                 <Draggable
-		  style={{zIndex:"0"}}
+		  style={{zIndex:"20"}}
                   axis="both"
                   handle=".handle"
                   positionOffset={{x: '0', y: '-50%'}}
@@ -4211,7 +4345,7 @@ var show =
                   onStart={this.handleStart}
                   onDrag={this.handleDrag}
                   onStop={this.handleStop}>
-                  <div style={{ opacity:"0.9", background:"#000000" ,color:"#ffffff", visibility:this.state.pipVisibility3, display: this.state.pipDisplay3, width:"98vw",border:"3px dashed", padding:"5px"}}>
+                  <div style={{ opacity:"0.9", background:"#000000" ,color:"#ffffff", visibility:this.state.pipVisibility3, display: this.state.pipDisplay3, width:"98vw",border:"3px dashed", padding:"5px", position:"absolute", zIndex:"20"}}>
                     <div className="handle" style={{background:"black", color:"white", display:"grid"}}><span style={{textAlign:"center",border:"dashed"}}>drag-from-here (ppl-mini-brwsr)</span></div>
                       <div style={{textAlign:"left"}}>
                          <div
