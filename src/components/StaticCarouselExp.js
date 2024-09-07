@@ -1251,16 +1251,11 @@ tempLink.click();
 
 
 
-            411: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display product information for X-Referenced UPC</p>',
-              fn: (upcId) => {
-                      var tmpUPC = upc;
-                      if( typeof upcId !== 'undefined' ) {
-                         tmpUPC = upcId;
-                      }
+            showscript: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display embeded upcscript </p>',
+              fn: () => {
                       const terminal = this.progressTerminal.current
-                      terminal.pushToStdout(`Please wait... searching for data on upc # ${tmpUPC}`);
-                      this.prodLookup(tmpUPC);
+                      terminal.pushToStdout(this.state.msg);
                       //this.setState({showProductModal:true});
               }
             },
@@ -1755,6 +1750,7 @@ style={{height:"90vh",width:"90vw"}} src={url} />
                 }
                 let pullOutput;
                 let sheetNum;
+                let didOutput = false;
                 switch (url) {
                   case "fire":
 
@@ -1838,6 +1834,7 @@ style={{height:"90vh",width:"90vw"}} src={url} />
 
                    case "ppl":
 
+console.log("PPPPPPPPPPPPPPPPPPPPPPLLLLLLLLLLLLLLLL");
                       var queryParams = [];
                       for (var i = 2; i < popArgs.length; i++) {
                           // Construct the query parameter string
@@ -1849,9 +1846,13 @@ style={{height:"90vh",width:"90vw"}} src={url} />
 
                       let pulls2= await this.props.popitPullPPL(param)
                       var [id, link, hash, address, upc, hrn] = pulls2.split(',');
-
-                      var url = link + queryString;
-
+                      var url;
+                      if(link.includes('>>>')){
+                         didOutput = this.executeUpcScript(link);
+                      }
+                      else{
+                         url = link + queryString;
+                      }
                     break;
 
 
@@ -1923,7 +1924,9 @@ console.log(pulls2);
                 var currentUrl = url;
 
                 var page = this.getMplayer(currentUrl);
-                terminal.pushToStdout(page);
+                if(!didOutput) {
+                   terminal.pushToStdout(page);
+                }
                }
 
               }
@@ -2574,7 +2577,7 @@ src={srcImg} height="200" width="200"/></p>
 		   //this.setState({ pipVisibility: false });
 		   //this.setState({ pipDisplay: false });
                    //terminal.pushToStdout(offerBuy);
-	           this.setState({slides: offerBuy})
+	           this.setState({slidesOG: offerBuy})
                    //self.setState({player: offerBuy});
                    //self.setState({offerState: "offer"});
                     //this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
@@ -2710,7 +2713,7 @@ console.log("in heroscan");
        const terminal = this.progressTerminal.current
        const scanForm = <ScanWizard firstLookup={this.firstLookup} setAccount={this.setAccount} />
 
-       this.setState({slides: scanForm})
+       this.setState({slidesOG: scanForm})
        //this.setState(prevState => ({ fullIpfs: scanForm }));
        //this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
        //this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
@@ -2848,7 +2851,7 @@ console.log("in heroscan");
                             </div>
  
 
-	        this.setState({slides: loader})
+	        this.setState({slidesOG: loader})
   }
 
 
@@ -2885,7 +2888,7 @@ console.log("in heroscan");
                             </div>
  
 
-	        this.setState({slides: loader})
+	        this.setState({slidesOG: loader})
   }
 
 
@@ -3042,7 +3045,7 @@ console.log("in heroscan");
       terminal.pushToStdout(newshow);
         
 
-
+    return true;
     //this.setState({ fullIpfs: newshow});
     //this.setState(prevState => ({ pipDisplay: true}));
     //this.setState(prevState => ({ pipVisibility: true}));
@@ -3167,7 +3170,7 @@ const fullPage = (
 
   showHome= async () => {
 
-	        this.setState({slides: this.state.res})
+	        this.setState({slidesOG: this.state.res})
   }
 
 
@@ -4029,6 +4032,7 @@ alert("clicked term");
     res.push(toPush);
 
     this.setState({ slides: res });
+    this.setState({ res: res });
     return res;
   };
 
