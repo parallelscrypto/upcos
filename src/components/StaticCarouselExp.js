@@ -121,6 +121,7 @@ export default class StaticCarouselExp extends Component {
       console.log('No URL found for upcrss.');
       var milliseconds = new Date().getTime();
       upcrss = "https://rebrand.ly/upcrss?defaultdate=" + milliseconds;
+      this.setState({upcrss: upcrss});
     }
 
 
@@ -154,7 +155,6 @@ export default class StaticCarouselExp extends Component {
       scan: scan,
       msg: props.msg,
       upcscript: msg,
-      upcrss: upcrss,
     };
 
 
@@ -214,116 +214,7 @@ export default class StaticCarouselExp extends Component {
             feed: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open /etcVerse attached to current instance  </p>',
               fn: async (onOff,newFeed) => {
-
-                      const terminal = this.progressTerminal.current
-
-                      if( onOff == 'on') {
-                         const upcrss = this.state.upcrss;
-                         if( upcrss ) {
-                            window.addEventListener('scroll', this.handleScroll);
-                         }
-                         else {
-                            terminal.pushToStdout("There is no feed programmed into this unit.  You must include a upcrss entity in the upcscript textarea when you drop or hack a upc");
-                         }
-                      }
-                      else if( onOff == 'off') {
-                         window.removeEventListener('scroll', this.handleScroll);
-                      }
-                      else if( onOff == 'reset') {
-                         let parser = new Parser({
-                           customFields: {
-                             item: [
-                               ['media:content', 'media:content', {keepArray: true}],
-                             ]
-                           }
-                         })
-
-                         var feedVal;
-                         var setNewFeed = false;
-                         if(newFeed) {
-                            feedVal = newFeed;
-                            setNewFeed = true;
-                         }
-                         else {
-                            feedVal = this.state.upcrss;
-                         }
-
-                         if(!setNewFeed && this.state.upcrss.includes('defaultdate')) {
-                            console.log("********resetting a blank**********");
-                            var milliseconds = new Date().getTime();
-                            feedVal = "https://rebrand.ly/upcrss?defaultdate=" + milliseconds;
-                         }
-                         else {
-
-                            console.log("********resetting a FILLED**********" + this.state.upcrss);
-                         }
-
-                         const url = 'https://corsproxy.io/?' + encodeURIComponent(feedVal);
-                         const feed = await parser.parseURL(url)
-                         let cards = [];
-                         feed.items.forEach((item) => { 
- //                            console.log(item);
-  
-                             // Extract the URL of the first image from media:content
-                             const images = [];
-                             if (item['media:content']) {
-                                 // Check if media:content is an array or an object
-                                 const mediaContents = Array.isArray(item['media:content']) ? item['media:content'] : [item['media:content']];
-                                 if (mediaContents.length > 0) {
-                                     const firstImage = mediaContents[0]['$'];
-                                     if (firstImage && firstImage.url) {
-                                         images.push(firstImage.url);
-                                     }
-                                 }
-                             }
-  
-                             const cardItem = {
-                                 title: item.title || 'No Title Available',
-                                 link: item.link,
-                                 description: item.contentSnippet || 'No Description Available',
-                                 images: images
-                             };
-  
-                             const card = this.createCardHTML(cardItem);
-
-                             cards.push(card);
-                         });
-
-                         this.setState({ feed: feed });
-                         this.setState({ feedCards: cards });
-
-                      }
-
-
-
-
-
-
-
-                      else if (!onOff) {
-                      
-                          // Get the feedCards from the state
-                          const { feedCards } = this.state;
-                      
-                          if (feedCards.length > 0) { 
-                              // Get the terminal reference
-                              const terminal = this.progressTerminal.current;
-                      
-                              // Loop through all items in feedCards
-                              feedCards.forEach((itemToDisplay, index) => {
-                                  terminal.pushToStdout(itemToDisplay);
-                                  console.log(itemToDisplay);
-                              });
-                      
-                              // Remove all items from the feedCards array
-                              this.setState({ feedCards: [] });
-                          }
-                      
-                          window.removeEventListener('scroll', this.handleScroll);
-                      }
-
-                    
-  
+                 let feedman = await this.feedManager(onOff, newFeed);
               }
             },
 
@@ -1831,6 +1722,11 @@ style={{height:"90vh",width:"90vw"}} src={url} />
                    case "wurdup":
 		    url = "https://codverter.com/src/index";
                     break;
+                   case "feed":
+                       let feedManage = await this.feedManager(param, id);
+                       return;
+                    break;
+
 
                    case "ppl":
 
@@ -3380,7 +3276,7 @@ console.log(hrn);
       parsePop  = async (upcScript) => {
             var self = this;
             const terminal = this.progressTerminal.current
-
+            let didFeed = false;
  const lines = upcScript.split('\n');
   const output = [];
   if(lines[0].trim() != '#!/bin/upcscript') {
@@ -3458,6 +3354,11 @@ console.log(hrn);
 
 		    remainder  = "https://ethercalc.net/" + upcHash;
              
+                    break;
+                   case "feed":
+                       var param = words[1];
+                       var id    = words[2];
+                       didFeed = await this.feedManager(param, id);
                     break;
                   case "tio":
 		    remainder = "https://tio.run";
@@ -3581,7 +3482,9 @@ console.log(hrn);
           allow="fullscreen;" style={{height:"95vh",width:"96vw"}} src={currentUrl} />
 </body>
 </html>
+          if(!didFeed) {
                 terminal.pushToStdout(page);
+          }
     }
   }
 
@@ -3682,51 +3585,129 @@ alert("clicked term");
 
 
 
+
+
+  printFeed= async () => {
+
+       // Get the feedCards from the state
+       const { feedCards } = this.state;
+       
+       if (feedCards.length > 0) { 
+           // Get the terminal reference
+           const terminal = this.progressTerminal.current;
+       
+           // Loop through all items in feedCards
+           feedCards.forEach((itemToDisplay, index) => {
+               terminal.pushToStdout(itemToDisplay);
+               console.log(itemToDisplay);
+           });
+       
+           // Remove all items from the feedCards array
+           this.setState({ feedCards: [] });
+       }
+       
+       window.removeEventListener('scroll', this.handleScroll);
+
+
+  }
+
+
+
+  feedManager = async (onOff, newFeed) => { 
+      const terminal = this.progressTerminal.current;
+  
+      switch (onOff) {
+          case 'on':
+              const upcrss = this.state.upcrss;
+              if (upcrss) {
+                  window.addEventListener('scroll', this.handleScroll);
+              } else {
+                  terminal.pushToStdout("There is no feed programmed into this unit. You must include a upcrss entity in the upcscript textarea when you flex or hack a upc");
+              }
+              break;
+  
+          case 'off':
+              window.removeEventListener('scroll', this.handleScroll);
+              break;
+  
+          case 'reset':
+              let feedVal;
+              let setNewFeed;
+  
+              if (newFeed) {
+                  feedVal = newFeed;
+                  setNewFeed = true;
+              } else {
+                  feedVal = this.state.upcrss;
+              }
+  
+              let feedProxy = 'https://corsproxy.io/?' + encodeURIComponent(feedVal);
+
+
+console.log("resetting to");
+console.log(feedProxy);
+
+              let feedSet = await this.setFeed(feedProxy);
+              break;
+  
+          default:
+                let printF = await this.printFeed();
+              break;
+      }
+      return true;
+  }
+
+
+  setFeed= async (url) => {
+       let parser = new Parser({
+         customFields: {
+           item: [
+             ['media:content', 'media:content', {keepArray: true}],
+           ]
+         }
+       })
+
+       const feed = await parser.parseURL(url)
+       let cards = [];
+       feed.items.forEach((item) => { 
+       // console.log(item);
+  
+           // Extract the URL of the first image from media:content
+           const images = [];
+           if (item['media:content']) {
+               // Check if media:content is an array or an object
+               const mediaContents = Array.isArray(item['media:content']) ? item['media:content'] : [item['media:content']];
+               if (mediaContents.length > 0) {
+                   const firstImage = mediaContents[0]['$'];
+                   if (firstImage && firstImage.url) {
+                       images.push(firstImage.url);
+                   }
+               }
+           }
+  
+           const cardItem = {
+               title: item.title || 'No Title Available',
+               link: item.link,
+               description: item.contentSnippet || 'No Description Available',
+               images: images
+           };
+  
+           const card = this.createCardHTML(cardItem);
+
+           cards.push(card);
+       });
+
+      this.setState({ feed: feed });
+      this.setState({ feedCards: cards });
+  }
+
+
   
   componentDidMount = async () => {
 
 
-    let parser = new Parser({
-      customFields: {
-        item: [
-          ['media:content', 'media:content', {keepArray: true}],
-        ]
-      }
-    })
-
-    const url = 'https://corsproxy.io/?' + encodeURIComponent(this.state.upcrss);
-    const feed = await parser.parseURL(url)
-    let cards = [];
-    feed.items.forEach((item) => { 
- //       console.log(item);
-  
-        // Extract the URL of the first image from media:content
-        const images = [];
-        if (item['media:content']) {
-            // Check if media:content is an array or an object
-            const mediaContents = Array.isArray(item['media:content']) ? item['media:content'] : [item['media:content']];
-            if (mediaContents.length > 0) {
-                const firstImage = mediaContents[0]['$'];
-                if (firstImage && firstImage.url) {
-                    images.push(firstImage.url);
-                }
-            }
-        }
-  
-        const cardItem = {
-            title: item.title || 'No Title Available',
-            link: item.link,
-            description: item.contentSnippet || 'No Description Available',
-            images: images
-        };
-  
-        const card = this.createCardHTML(cardItem);
-
-        cards.push(card);
-    });
-
-   this.setState({ feed: feed });
-   this.setState({ feedCards: cards });
+    let url = 'https://corsproxy.io/?' + encodeURIComponent(this.state.upcrss);
+    let feedset = await this.setFeed(url);
 
 
     var scan;
