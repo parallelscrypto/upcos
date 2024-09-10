@@ -100,13 +100,42 @@ export default class StaticCarouselExp extends Component {
     console.log("assist is " );
     console.log(assist);
 
+        
 
     this.setState({assist: assist});
     var missionUrl = atob(props.missionUrl);
     var manifest= props.manifest;
     var msg = atob(props.msg);
 
-    console.log(msg);
+
+    const lines = msg.split('\n');
+
+    // Define default values
+    var shell = "upc";
+    var pplCommand = "ppl";
+    
+    // Define the regular expression to capture the parameters from the shebang
+    const shebangRegex = /^#!\/bin\/([^\/]+)(?:\/([^\/]+))?$/;
+    
+    // Extract the first line and trim it
+    const firstLine = lines[0].trim();
+    
+    // Check if the first line matches the shebang pattern
+    const matchShebang = shebangRegex.exec(firstLine);
+    
+    if (matchShebang) {
+        // Capture the parameters from the regex match
+        shell = matchShebang[1] || "upc";  // Default to "upc" if not present
+        pplCommand = matchShebang[2] || "ppl";   // Default to "ppl" if not present
+    }
+    
+    // Now shell and pplCommand are either set to the values from the shebang or remain as their default values
+
+
+
+
+    console.log("shell is " + shell);
+    console.log("ppl is " + pplCommand);
 
     const regex = /upcrss\s+(https?:\/\/[^\s]+)/;
     
@@ -447,7 +476,7 @@ export default class StaticCarouselExp extends Component {
                       let tables = [];
                   
                       switch (type) {
-                        case 'ppl':
+                        case [pplCommand]:
 		          let pulls= await this.props.popitPullPPL(id)
 
                           var [id, link, hash, address, upc, hrn,updated,timestamp] = pulls.split(',');
@@ -1025,7 +1054,7 @@ tempLink.click();
 
 
 
-            upc: {
+            [shell]: {
               description: '<p style="color:hotpink;font-size:1.1em">** poppin a terminal already in your terminal**</p>',
               //fn: async (url,param,id) => {
               //fn: async (popArgs) => {
@@ -1243,7 +1272,7 @@ tempLink.click();
                    case "wurdup":
 		    url = "https://codverter.com/src/index";
                     break;
-                   case "ppl":
+                   case [pplCommand]:
                      let pulls= await this.props.popitPullPPL(param)
                      var [id, link, hash, address, upc, hrn] = pulls.split(',');
                      url = link;
@@ -1429,7 +1458,7 @@ tempLink.click();
 
 
 
-            ppl: {
+            [pplCommand]: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open PPL (private protocol link) minibrowser </p>',
               fn: async (url) => {
 
@@ -1561,7 +1590,9 @@ tempLink.click();
        pipVisibility: "false",
        pipDisplay: "none",
        msg: msg,
-       upcrss: upcrss
+       upcrss: upcrss,
+       shell: shell,
+       pplCommand: pplCommand
     }
 
 
@@ -1602,7 +1633,8 @@ tempLink.click();
                 var url    = popArgs[0];
                 var param  = popArgs[1];
                 var id     = popArgs[2];
-
+console.log(popArgs)
+                let pplCommand = this.state.pplCommand;
                 const terminal = this.progressTerminal.current
                 //var currentUrl = window.location.href;
                 var currentUrl = url;
@@ -1642,6 +1674,35 @@ style={{height:"90vh",width:"90vw"}} src={url} />
                 let pullOutput;
                 let sheetNum;
                 let didOutput = false;
+
+                //i removed this case from the below switch statement since cases can not be variables
+console.log("&*&*&" + param + "===" + pplCommand);
+                if(url == pplCommand) {
+                    var queryParams = [];
+                    for (var i = 2; i < popArgs.length; i++) {
+                        // Construct the query parameter string
+                        queryParams.push(i - 1 + '=' + encodeURIComponent(popArgs[i]));
+                    }
+                    
+                    // Join the parameters with '&' and construct the full URL
+                    var queryString = queryParams.length > 0 ? '?' + queryParams.join('&') : '';
+
+                    let pulls2= await this.props.popitPullPPL(param)
+                    var [id, link, hash, address, upc, hrn] = pulls2.split(',');
+console.log("&*&*&" + link);
+                    var url;
+                    if(link.includes('>>>')){
+                       didOutput = this.executeUpcScript(link);
+                    }
+                    else{
+                       url = link + queryString;
+                    }
+                }
+
+
+
+console.log(";;;;;;;;;;;URL IS " + url);
+
                 switch (url) {
                   case "fire":
 
@@ -1728,30 +1789,6 @@ style={{height:"90vh",width:"90vw"}} src={url} />
                     break;
 
 
-                   case "ppl":
-
-console.log("PPPPPPPPPPPPPPPPPPPPPPLLLLLLLLLLLLLLLL");
-                      var queryParams = [];
-                      for (var i = 2; i < popArgs.length; i++) {
-                          // Construct the query parameter string
-                          queryParams.push(i - 1 + '=' + encodeURIComponent(popArgs[i]));
-                      }
-                      
-                      // Join the parameters with '&' and construct the full URL
-                      var queryString = queryParams.length > 0 ? '?' + queryParams.join('&') : '';
-
-                      let pulls2= await this.props.popitPullPPL(param)
-                      var [id, link, hash, address, upc, hrn] = pulls2.split(',');
-                      var url;
-                      if(link.includes('>>>')){
-                         didOutput = this.executeUpcScript(link);
-                      }
-                      else{
-                         url = link + queryString;
-                      }
-                    break;
-
-
                    case "is":
 
                       url = "https://is.gd/" + param;
@@ -1776,7 +1813,7 @@ console.log("PPPPPPPPPPPPPPPPPPPPPPLLLLLLLLLLLLLLLL");
                       let tables = [];
                   
                       switch (param) {
-                        case 'ppl':
+                        case [this.state.pplCommand]:
 		          let pulls= await this.props.popitPullPPL(id)
 
                           var [id, link, hash, address, upc, hrn,updated,timestamp] = pulls.split(',');
@@ -1839,18 +1876,20 @@ console.log(pulls2);
                       }
                       else {
 
+                         if( command == this.state.pplCommand ) {
+
+		           let pulls= await this.props.popitPullPPL(arg)
+
+                           var [id, link, hash, address, upc, hrn,updated,timestamp] = pulls.split(',');
+                           var fullPage = this.printPull(id, link, hash, address, upc, hrn,updated,timestamp);
+
+		           this.djupc(link);
+                           return;
+                           //terminal.pushToStdout(fullPage);
+                         }
+
                          switch(command) {
                          
-                           case 'ppl':
-		             let pulls= await this.props.popitPullPPL(arg)
-
-                             var [id, link, hash, address, upc, hrn,updated,timestamp] = pulls.split(',');
-                             var fullPage = this.printPull(id, link, hash, address, upc, hrn,updated,timestamp);
-
-		             this.djupc(link);
-                             //terminal.pushToStdout(fullPage);
-
-                             break;
                            case 'upc':
 
                              var slidesTmp = this.state.slides;
@@ -2965,8 +3004,8 @@ console.log("in heroscan");
 	    var timestamp = new Date(tmpStamp * 1000);
 
             let hrnBare = hrn;
-            let defaultHrn = "ppl " + hrn;
-            let pullHrn = "pull ppl " + hrn;
+            let defaultHrn = this.state.pplCommand + hrn;
+            let pullHrn = "pull " + this.state.pplCommand  + hrn;
             let pullUpc = "pull upc " + upc;
             let pullAll = "pull all " + id + " " + id;
             let pullHash = "pull hash " + hash;
@@ -3276,25 +3315,20 @@ console.log(hrn);
       parsePop  = async (upcScript) => {
             var self = this;
             const terminal = this.progressTerminal.current
-            let didFeed = false;
  const lines = upcScript.split('\n');
   const output = [];
-  if(lines[0].trim() != '#!/bin/upcscript') {
-     var errorMsg = "An executable upcscript must start with the shebang on the first line. In other words, the first line of your script MUST be '#!/bin/upcscript'";
-      terminal.pushToStdout(`${errorMsg}`);
-      return false;
-  }
   let sheetNum;
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i].trim();
     
+    let didFeed = false;
     if (line.startsWith('#')) {
       terminal.pushToStdout(`${line}`);
       console.log(line);
       continue;
-    } else if (line.startsWith('upc')) {
-      console.log(line);
-                var remainder = line.substring(4);
+    } else if (line.startsWith(this.state.shell)) {
+                var shellLen = this.state.shell.length + 1;
+                var remainder = line.substring(shellLen);
 
                 if(remainder.includes('>>>')) {
                     var mplayer = await this.executeUpcScript(remainder);
@@ -3317,6 +3351,40 @@ console.log(hrn);
 
 
                 var words = remainder.split(" ");
+
+
+
+
+
+console.log("BBBBBBBOOOOOOOOOOOOOOOOOMMMMMMMMMMMM");
+console.log(words);
+                if( words[0] == this.state.pplCommand ) {
+                   var param = "";
+                   // Check if there are at least 2 words
+                   var resolvedPage;
+                   if (words.length >= 2) {
+		     param =  words[1];
+
+                     resolvedPage = await this.resolvePPLLink(param);
+                     //print ppl playlist to the console
+                     if(resolvedPage.includes('>>>')) {
+                         var mplayer = await this.executeUpcScript(resolvedPage);
+                     }
+                     else {
+
+console.log("IIIIIIIIIIIIIIIIINNNNNNNNNNNNNNNNNNN");
+console.log(param);
+                         var done = await this.dynamicPPL(words);
+                         continue;
+                     }
+ 
+
+                     // Return the second word
+                   }
+                   didFeed = true; 
+		   remainder = resolvedPage;
+                }
+
 
                 switch (words[0]) {
                   case "fire":
@@ -3424,36 +3492,14 @@ console.log(hrn);
                    var param = "";
                    // Check if there are at least 2 words
                    var resolvedPage;
+console.log("DDDDDDDDDDDDDDJJJJJJJJJJJJ ");
+console.log(words);
                    if (words.length >= 2) {
 		     let command =  words[1];
 		     let param   =  words[2];
+
                      let theDj = await this.doDj(command,param);
-
-                     // Return the second word
-                   }
-  
-		    remainder = resolvedPage;
-                    break;
-
-
-
-                   case "ppl":
-                   var param = "";
-                   // Check if there are at least 2 words
-                   var resolvedPage;
-                   if (words.length >= 2) {
-		     param =  words[1];
-                     resolvedPage = await this.resolvePPLLink(param);
-                     //print ppl playlist to the console
-                     if(resolvedPage.includes('>>>')) {
-                         var mplayer = await this.executeUpcScript(resolvedPage);
-                         continue;
-                     }
-                     else {
-                         this.dynamicPPL(words);
-                         continue;
-                     }
- 
+                     continue;
 
                      // Return the second word
                    }
