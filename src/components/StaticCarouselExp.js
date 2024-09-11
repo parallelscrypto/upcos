@@ -113,7 +113,7 @@ export default class StaticCarouselExp extends Component {
     // Define default values
     var shell = "upc";
     var pplCommand = "ppl";
-    
+    var shebang = "#!/bin/upc/ppl";
     // Define the regular expression to capture the parameters from the shebang
     const shebangRegex = /^#!\/bin\/([^\/]+)(?:\/([^\/]+))?$/;
     
@@ -127,6 +127,7 @@ export default class StaticCarouselExp extends Component {
         // Capture the parameters from the regex match
         shell = matchShebang[1] || "upc";  // Default to "upc" if not present
         pplCommand = matchShebang[2] || "ppl";   // Default to "ppl" if not present
+        shebang = firstLine;
     }
     
     // Now shell and pplCommand are either set to the values from the shebang or remain as their default values
@@ -1138,24 +1139,7 @@ tempLink.click();
             pac: {
               description: '<p style="color:hotpink;font-size:1.1em">** create an encrypted text PACage C/O protectedtext.com (thank you, no affiliation). by default, we use the serial to name the pac (page 0), and you can pass an integer as a parameter to write to a different page.  so to write to pac page 2, the command would be pac 2  </p>',
               fn: async (num,display) => {
-
-
-                 let response= await this.props.upcInfo(this.state.code)
-                 const currentOwner  = response['staker'];
-                 const currentWallet = await this.props.getMyAddress();
-
-                 const terminal = this.progressTerminal.current
-                 if( (currentWallet != currentOwner) && (currentWallet != this.state.hacker) ) {
-                    terminal.pushToStdout("Only the owner can pac data into this instance");
-                    return;
-                 }
-
-
-
-                 let pacNum = await this.doSerial(num,false);
-                 let fullUrl = "https://www.protectedtext.com/" + pacNum;
-                 var mplayer = this.getMplayer(fullUrl);
-                 terminal.pushToStdout(mplayer);
+                 let didPac = await this.doPac(num,display);
               }
             },
 
@@ -1592,7 +1576,8 @@ tempLink.click();
        msg: msg,
        upcrss: upcrss,
        shell: shell,
-       pplCommand: pplCommand
+       pplCommand: pplCommand,
+       shebang: shebang
     }
 
 
@@ -1945,25 +1930,55 @@ console.log(pulls2);
 
 
 
+  doPac = async  (num,display) => { 
+
+            let response= await this.props.upcInfo(this.state.code)
+            const currentOwner  = response['staker'];
+            const currentWallet = await this.props.getMyAddress();
+
+            const terminal = this.progressTerminal.current
+            if( (currentWallet != currentOwner) && (currentWallet != this.state.hacker) ) {
+               terminal.pushToStdout("Only the owner can pac data into this instance");
+               return;
+            }
+
+
+
+            let pacNum = await this.doSerial(num,false);
+            let fullUrl = "https://www.protectedtext.com/" + pacNum;
+            var mplayer = this.getMplayer(fullUrl);
+            terminal.pushToStdout(mplayer);
+  }
+
+
   doHack = async (upc) => { 
 
 	    const terminal = this.progressTerminal.current
 
+            let rejectCustomShell = false;
             const wallet = await this.props.getMyAddress();
             let info = await this.props.upcInfo(this.state.pwd)
             let assistInfo = await this.props.upcInfo(this.state.code)
             var qOwner = info['staker'];
             var tokenId= info['tokenId'];
+            var assistOwner = assistInfo['staker'];
             console.log(info);
 
+            //reject custom shell if upc has no owner, or if the current user is not the upc codes owner.  an owner can create shells anywhere from their flexes
             if(tokenId != 0) {
-
                if( (qOwner != wallet) ) {
 	          terminal.pushToStdout("You must cd or scan into a flex-able upc code. A flex-able UPC code is a upc that no one owns.  You can check upcs with the xupc command.  For example, to check ownership info 000000000000 type 'xupc 000000000000'");
+                  rejectCustomShell = true;
                   return false;
                }
             }
+            else {
+               rejectCustomShell = true;
+            }
 
+            if( wallet == assistOwner ) {
+               rejectCustomShell = false;
+            }
 
             if(!upc) {
                upc = this.state.pwd
@@ -1982,6 +1997,53 @@ console.log(pulls2);
       let upcId = this.state.pwd
       let humanReadableName = this.humanReadableName.value.toString()
       let exportMsg= this.exportMsg.value.toString()
+
+      const lines = exportMsg.split('\n');
+      const firstLine = lines[0].trim();
+      let parentShell;
+      console.log("CHECKING SHEBANG");
+      console.log(firstLine);
+      console.log("shebang == " + this.state.shebang );
+      console.log("rejectShell == " + rejectCustomShell );
+
+      //if an unowned upc is being flexed, the shell must be the same as the parent. if the parent does not define a shell, default to /bin/upc and add to the top of the flexed code
+      if( rejectCustomShell == true ) {
+
+         let parentMsg = this.state.msg;
+         const linesParent = parentMsg.split('\n');
+
+         let shebangParent = "#!/bin/upc";
+         const shebangRegex = /^#!\/bin\/([^\/]+)(?:\/([^\/]+))?$/;
+         
+         // Extract the first line and trim it
+         const firstLineParent = linesParent[0].trim();
+         
+         // Check if the first line matches the shebang pattern
+         const matchShebangParent = shebangRegex.exec(firstLineParent);
+         
+         let addNewShebang = true;
+         if (matchShebangParent) {
+           // Capture the parameters from the regex match
+           shebangParent = firstLineParent;
+         }
+
+         //if the first line of the flex upcscript is not a shebang, substitute it with the parents shebang, or default shebang
+         const matchShebangFlex = shebangRegex.exec(firstLine);
+         if (!matchShebangFlex) {
+console.log("no match shebang flex");
+           lines.unshift(shebangParent); 
+           exportMsg = lines.join('\n');
+         }
+         else {
+console.log("match shebang flex");
+           lines[0] = shebangParent;
+           exportMsg = lines.join('\n');
+         }
+
+      }
+
+
+
       let upcscript= this.upcscript.value.toString()
       let payload = this.payload.value.toString()
       let missionUrl = this.missionUrl.value.toString()
@@ -2047,13 +2109,23 @@ console.log(pulls2);
         toShorten += "&shorturl=" + humanReadableName;
       }
 
-      const response = await axios.get(toShorten, {
-        params: {
-          format: 'json',
-          shorturl: humanReadableName,
-          url: currentUrl
-        }
-      })
+      let response;
+      var shortUrl;
+      try {
+        // Code that might throw an error
+        response = await axios.get(toShorten, {
+          params: {
+            format: 'json',
+            shorturl: humanReadableName,
+            url: currentUrl
+          }
+        })
+
+        shortUrl = response.data.shorturl;
+      } catch (error) {
+        // Code to run if an error occurs
+        console.error('An error occurred:', error.message);
+      }
 
 
 
@@ -2069,7 +2141,6 @@ console.log(pulls2);
 
       this.setState({ showModalExport: false });
 
-      var shortUrl = response.data.shorturl;
 
 
 
@@ -3487,6 +3558,22 @@ console.log(param);
 		    remainder = "https://www.myinstants.com" + param;
                     break;
 
+                   case "pac":
+                   var param = "";
+                   // Check if there are at least 2 words
+                   var resolvedPage;
+                   if (words.length >= 2) {
+		     let command =  words[1];
+		     let param   =  words[2];
+
+                     let didPac = await this.doPac(param,true);
+                     continue;
+
+                     // Return the second word
+                   }
+                    break;
+
+
 
                    case "dj":
                    var param = "";
@@ -3926,7 +4013,6 @@ console.log(feedProxy);
    this.setState({ intel: content });
     var res = this.state.slides;
 
-
     const isHacked = owner.includes("0x000000000000000000");
    
     if(res.length == 0 && isHacked ) {
@@ -3934,7 +4020,7 @@ console.log(feedProxy);
        res.push(content);
     }
 
-
+    //if the upc is not owned, the user can not define a custom shell. if shell is rejected, in other  words, if it is an anonymous flex, the shell will be set to the assist upc's shell
 
     for(var i = 0; i < nftIds.length; i++) {
        if(!nftIds[i]) continue;
