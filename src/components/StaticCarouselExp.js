@@ -110,6 +110,17 @@ export default class StaticCarouselExp extends Component {
 
     const lines = msg.split('\n');
 
+    const publicPacs = [];
+    for (const line of lines) {
+        const match = line.match(/\b\w+ pac (\d+)$/);
+        if (match) {
+            publicPacs.push(parseInt(match[1], 10));
+        }
+    }
+
+
+
+
     // Define default values
     var shell = "upc";
     var pplCommand = "ppl";
@@ -1138,7 +1149,7 @@ tempLink.click();
 
             pac: {
               description: '<p style="color:hotpink;font-size:1.1em">** create an encrypted text PACage C/O protectedtext.com (thank you, no affiliation). by default, we use the serial to name the pac (page 0), and you can pass an integer as a parameter to write to a different page.  so to write to pac page 2, the command would be pac 2  </p>',
-              fn: async (num,display) => {
+              fn: async (num,display='private') => {
                  let didPac = await this.doPac(num,display);
               }
             },
@@ -1577,7 +1588,8 @@ tempLink.click();
        upcrss: upcrss,
        shell: shell,
        pplCommand: pplCommand,
-       shebang: shebang
+       shebang: shebang,
+       publicPacs: publicPacs
     }
 
 
@@ -1937,17 +1949,26 @@ console.log(pulls2);
             const currentWallet = await this.props.getMyAddress();
 
             const terminal = this.progressTerminal.current
-            if( (currentWallet != currentOwner) && (currentWallet != this.state.hacker) ) {
-               terminal.pushToStdout("Only the owner can pac data into this instance");
-               return;
+
+            const publicPacs = this.state.publicPacs;
+            console.log("PUBLIC PACS ARE ");
+            console.log(publicPacs);
+            console.log(num);
+            
+            const numInt = parseInt(num, 10);
+            if (!publicPacs.includes(numInt)) {
+                // If the param is not in the publicPacs array, execute the 'private' clause
+                if (currentWallet != currentOwner && currentWallet != this.state.hacker) {
+                    terminal.pushToStdout("Only the owner can pac data into this instance");
+                    return;
+                }
+            } else {
+                // If the param is in the publicPacs array, execute the 'public' clause
+                let pacNum = await this.doSerial(num, false);
+                let fullUrl = "https://www.protectedtext.com/" + pacNum;
+                var mplayer = this.getMplayer(fullUrl);
+                terminal.pushToStdout(mplayer);
             }
-
-
-
-            let pacNum = await this.doSerial(num,false);
-            let fullUrl = "https://www.protectedtext.com/" + pacNum;
-            var mplayer = this.getMplayer(fullUrl);
-            terminal.pushToStdout(mplayer);
   }
 
 
@@ -3563,10 +3584,11 @@ console.log(param);
                    // Check if there are at least 2 words
                    var resolvedPage;
                    if (words.length >= 2) {
-		     let command =  words[1];
-		     let param   =  words[2];
+		     let command =  words[0];
+		     let param   =  words[1];
 
-                     let didPac = await this.doPac(param,true);
+console.log("BIG PAC PARAM " + param);
+                     let didPac = await this.doPac(param,'public');
                      continue;
 
                      // Return the second word
