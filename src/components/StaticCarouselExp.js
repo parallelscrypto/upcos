@@ -243,8 +243,8 @@ export default class StaticCarouselExp extends Component {
 
 
 
-            flex: {
-              description: '<p style="color:hotpink;font-size:1.1em">**  attempt to flex on the current upc. you can pass the upc as a param, and if the upc is available, the flex interface will appear.  you must flex upon an unowned upc code.  to see if a upc is unowned, run the xupc command.  </p>',
+            anon: {
+              description: '<p style="color:hotpink;font-size:1.1em">**  attempt to anon on the current upc. you can pass the upc as a param, and if the upc is available, the anon interface will appear.  you must anon upon an unowned upc code.  to see if a upc is unowned, run the xupc command.  </p>',
 
               fn: async (upc) => {
                   this.hackScan(upc);
@@ -462,6 +462,49 @@ export default class StaticCarouselExp extends Component {
 
 
 
+            api: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** use the api from this cli</p>',
+              fn: async (...popArgs) => {
+                     const terminal = this.progressTerminal.current
+                     let finalUrl = this.prepareForApi(popArgs);
+                     let res = await this.fetchApi(finalUrl);
+
+                     console.log("FINAL IS " + res);
+                     let msg = "Copy your iframe link";
+
+                     var iframeFull= <iframe className='video'
+                             allowFullScreen="allowfullscreen"
+                             frameBorder="0"
+                             style={{height:"80vh",width:"96vw"}}
+		             allow="camera; microphone; fullscreen"
+                             title='6 upc dj player'
+                             sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                             src={finalUrl}>
+                     </iframe>
+
+
+                     var clipboard = 
+                     <CopyToClipboard text={iframeFull}>
+                       <button>{msg}</button>
+                     </CopyToClipboard>
+
+
+
+                     terminal.pushToStdout(res);
+                     //terminal.pushToStdout("HELLO");
+                     let scriptX = "";
+                     //console.log("res " + JSON.parse(res));
+                     if(res){
+                        scriptX = await this.executeUpcScript(res);
+                     }
+                     else {
+                        terminal.pushToStdout(res);
+                     }
+                     terminal.pushToStdout(clipboard);
+              }
+            },
+
+
 
 
             push: {
@@ -484,19 +527,26 @@ export default class StaticCarouselExp extends Component {
               fn: async (type,id,end,grep) => {
 
 
-                      const terminal = this.progressTerminal.current
-                      let tables = [];
-                  
-                      switch (type) {
-                        case [pplCommand]:
+console.log("ppl command is " + pplCommand);
+                      if( type == pplCommand ) {
 		          let pulls= await this.props.popitPullPPL(id)
 
                           var [id, link, hash, address, upc, hrn,updated,timestamp] = pulls.split(',');
                           var fullPage = this.printPull(id, link, hash, address, upc, hrn,updated,timestamp);
 
-                          terminal.pushToStdout(fullPage);
-                          break;
+                          //terminal.pushToStdout(fullPage);
+		          this.setState(prevState => ({ pipVisibility: "true" }));
+		          this.setState(prevState => ({ pipDisplay: "block"}));
+                          this.setState({fullIpfs: fullPage});
+		          this.setState(prevState => ({ showBigShow: true}));
+                          return;
+                      }
 
+
+                      const terminal = this.progressTerminal.current
+                      let tables = [];
+                  
+                      switch (type) {
 
                         case 'branch':
 		          let pulls1= await this.props.popitPullHash(id)
@@ -504,7 +554,13 @@ export default class StaticCarouselExp extends Component {
                           var [id, link, hash, address, upc, hrn,updated,timestamp] = pulls1.split(',');
                           var fullPage = this.printPull(id, link, hash, address, upc, hrn,updated,timestamp);
 
-                          terminal.pushToStdout(fullPage);
+                          //terminal.pushToStdout(fullPage);
+
+		          this.setState(prevState => ({ pipVisibility: "true" }));
+		          this.setState(prevState => ({ pipDisplay: "block"}));
+                          this.setState({fullIpfs: fullPage});
+		          this.setState(prevState => ({ showBigShow: true}));
+
                           break;
 
 
@@ -524,8 +580,12 @@ export default class StaticCarouselExp extends Component {
 
                              var out = <TableSlideshow  tables={tables} ></TableSlideshow>
 
+		             this.setState(prevState => ({ pipVisibility: "true" }));
+		             this.setState(prevState => ({ pipDisplay: "block"}));
+                             this.setState({fullIpfs: out});
+		             this.setState(prevState => ({ showBigShow: true}));
 
-                             terminal.pushToStdout(out);
+                             //terminal.pushToStdout(out);
 
                         break;
                         case 'grep':
@@ -544,9 +604,11 @@ export default class StaticCarouselExp extends Component {
                              var myPull = pulls4[i];
                              var [id, link, hash, address, upc, hrn, timestamp] = myPull.toString().split(',');
 
-                             console.log("BIGTEST");
-                             console.log(hrn + " =~= " + grep )
+console.log("my pull ");
+console.log(myPull);
                              if(!hrn.includes(grep)) {
+                                console.log("BIGTEST");
+                                console.log(hrn + " =~= " + grep )
                                 continue;
                              }
                              else {
@@ -558,7 +620,12 @@ export default class StaticCarouselExp extends Component {
                           }
 
                           var out = <TableSlideshow  tables={tables} ></TableSlideshow>
-                          terminal.pushToStdout(out);
+
+		          this.setState(prevState => ({ pipVisibility: "true" }));
+		          this.setState(prevState => ({ pipDisplay: "block"}));
+                          this.setState({fullIpfs: out});
+		          this.setState(prevState => ({ showBigShow: true}));
+                          //terminal.pushToStdout(out);
 
 
                           break;
@@ -580,7 +647,15 @@ export default class StaticCarouselExp extends Component {
                           }
 
                           var out = <TableSlideshow  tables={tables} ></TableSlideshow>
-                          terminal.pushToStdout(out);
+
+
+
+		          this.setState(prevState => ({ pipVisibility: "true" }));
+		          this.setState(prevState => ({ pipDisplay: "block"}));
+                          this.setState({fullIpfs: out});
+		          this.setState(prevState => ({ showBigShow: true}));
+
+                          //terminal.pushToStdout(out);
 
 
                           break;
@@ -1065,6 +1140,16 @@ tempLink.click();
             },
 
 
+            upc: {
+              description: '<p style="color:hotpink;font-size:1.1em">** poppin a terminal already in your terminal**</p>',
+              //fn: async (url,param,id) => {
+              //fn: async (popArgs) => {
+              fn: async (...popArgs) => {
+                 this.dynamicPPL(popArgs);
+              }
+            },
+
+
 
             [shell]: {
               description: '<p style="color:hotpink;font-size:1.1em">** poppin a terminal already in your terminal**</p>',
@@ -1145,6 +1230,17 @@ tempLink.click();
                       //this.setState({showProductModal:true});
               }
             },
+
+
+
+            drop: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Publish a anon to a front end.  The shebang to your upcscript will determine which fromtends the anon will be published to</p>',
+              fn: async (num,display='private') => {
+                 let didPac = await this.doDrop();
+              }
+            },
+
+
 
 
             pac: {
@@ -1272,6 +1368,13 @@ tempLink.click();
                      var [id, link, hash, address, upc, hrn] = pulls.split(',');
                      url = link;
                     break;
+                   case "ppl" :
+                     let pullsPPL= await this.props.popitPullPPL(param)
+                     var [id, link, hash, address, upc, hrn] = pullsPPL.split(',');
+                     url = link;
+                    break;
+
+
                    case "is":
 
                       url = "https://is.gd/" + param;
@@ -1453,6 +1556,34 @@ tempLink.click();
 
 
 
+
+            ppl: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open PPL (private protocol link) minibrowser </p>',
+              fn: async (url) => {
+
+
+
+		      //var fullUrl = "https://codverter.com/src/index";
+                   var winNum = "1";
+
+                      this.cSearch.value = "";
+                      this.cSearch3.value = url;
+                      if(winNum == "1") {
+                         let resolvedPage = await this.resolvePPL(url);
+                         // Rest of your code remains the same
+                         this.setState({fullIpfs3: resolvedPage});
+ 
+		         this.setState(prevState => ({ pipVisibility3: "true" }));
+		         this.setState(prevState => ({ pipDisplay3: "block"}));
+		         this.setState(prevState => ({ showBigShow3: true}));
+                      }
+              }
+            },
+
+
+
+
+
             [pplCommand]: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open PPL (private protocol link) minibrowser </p>',
               fn: async (url) => {
@@ -1624,6 +1755,62 @@ tempLink.click();
     this.setState({offerState: 'video'});
     this.setState(prevState => ({ player: mplayer }));
   }
+
+
+  parseUrl() {
+      const currentUrl = window.location.href;
+      const exportIndex = currentUrl.indexOf('/api');
+      const firstSlashIndex = currentUrl.indexOf('/', exportIndex + 1);
+
+      if (firstSlashIndex === -1) {
+          throw new Error("Invalid URL format.");
+      }
+
+      // Extract the substring after the first slash after 'export'
+      const encodedSubstring = currentUrl.substring(firstSlashIndex + 1);
+      const [functionName, encodedParams] = encodedSubstring.split('/');
+
+      // Decode and parse parameters
+      const decodedParams = JSON.parse(atob(encodedParams));
+      return { functionName, decodedParams };
+  }
+
+
+
+  async callFunction(functionName, params) {
+      if (typeof this[functionName] === 'function') {
+          const func = this[functionName];
+
+          console.log(functionName);
+          console.log(...Object.values(params));
+          let result = await func(...Object.values(params));
+          let filter = "vr";
+
+          console.log(params);
+          if(params['param2']) {
+             filter = params['param2'];
+          }
+          console.log(filter);
+          console.log(result);
+          console.log(result[filter]);
+          //let result = await this[functionName](params);
+  
+          let filtered = result[filter];
+          console.log("EXECUTED " + filtered);
+          if(filtered.includes('>>>')) {
+             let executed = await this.executeUpcScript(filtered);
+             console.log("IN THE FILTERED SECTION");
+          }
+
+
+          this.setState({ filtered }); // Optional: store functionName in state if needed
+          return filtered;
+      } else {
+          console.error(`Function ${functionName} is not defined.`);
+      }
+  }   
+
+
 
 
   dynamicPPL = async (popArgs) => { 
@@ -1819,6 +2006,16 @@ console.log(";;;;;;;;;;;URL IS " + url);
                           terminal.pushToStdout(fullPage);
                           break;
 
+                        case "ppl":
+		          let pullsPPL= await this.props.popitPullPPL(id)
+
+                          var [id, link, hash, address, upc, hrn,updated,timestamp] = pullsPPL.split(',');
+                          var fullPage = this.printPull(id, link, hash, address, upc, hrn,updated, timestamp);
+                          pullOutput = true;
+                          terminal.pushToStdout(fullPage);
+                          break;
+
+
                         case 'upc':
 
 		          let pulls2= await this.props.popitPullUpc(id)
@@ -1940,6 +2137,45 @@ console.log(pulls2);
                       }
              }
 
+doDrop = async () => {
+
+            let response= await this.props.upcInfo(this.state.code)
+
+            const currentOwner  = response['staker'];
+            const currentWallet = await this.props.getMyAddress();
+            if (currentWallet != currentOwner && currentWallet != this.state.hacker) {
+                terminal.pushToStdout("Only the owner can drop this code.");
+                return;
+            }
+
+            let owner = currentOwner;
+            let timestamp = Date.now();
+            let currentUrl = window.location.href;
+            let shell = this.state.shebang;
+            let urlHash  = sha256(currentUrl)
+
+            if(currentOwner.includes('0x000000000000000')) {
+               owner = this.state.hacker;
+            }
+
+
+            var dropData = {
+               urlHash:  urlHash,
+               owner: owner,
+               shell: shell,
+               timestamp: Date.now(),
+               url: currentUrl,
+            }
+ 
+
+
+            const terminal = this.progressTerminal.current
+
+            terminal.pushToStdout("drop data is");
+            terminal.pushToStdout(JSON.stringify(dropData));
+
+  }
+
 
 
   doPac = async  (num,display) => { 
@@ -1958,6 +2194,15 @@ console.log(pulls2);
             const numInt = parseInt(num, 10);
             if (!publicPacs.includes(numInt)) {
                 // If the param is not in the publicPacs array, execute the 'private' clause
+
+                console.log(currentOwner + "-" + currentWallet + "-" + this.state.hacker);
+                if( (currentOwner == currentWallet) || (currentWallet == this.state.hacker) ) {
+                   let pacNum = await this.doSerial(num, false);
+                   let fullUrl = "https://www.protectedtext.com/" + pacNum;
+                   var mplayer = this.getMplayer(fullUrl);
+                   terminal.pushToStdout(mplayer);
+                   return;
+                }
                 if (currentWallet != currentOwner && currentWallet != this.state.hacker) {
                     terminal.pushToStdout("Only the owner can pac data into this instance");
                     return;
@@ -1985,10 +2230,10 @@ console.log(pulls2);
             var assistOwner = assistInfo['staker'];
             console.log(info);
 
-            //reject custom shell if upc has no owner, or if the current user is not the upc codes owner.  an owner can create shells anywhere from their flexes
+            //reject custom shell if upc has no owner, or if the current user is not the upc codes owner.  an owner can create shells anywhere from their anones
             if(tokenId != 0) {
                if( (qOwner != wallet) ) {
-	          terminal.pushToStdout("You must cd or scan into a flex-able upc code. A flex-able UPC code is a upc that no one owns.  You can check upcs with the xupc command.  For example, to check ownership info 000000000000 type 'xupc 000000000000'");
+	          terminal.pushToStdout("You must cd or scan into a anon-able upc code. A anon-able UPC code is a upc that no one owns.  You can check upcs with the xupc command.  For example, to check ownership info 000000000000 type 'xupc 000000000000'");
                   rejectCustomShell = true;
                   return false;
                }
@@ -2027,7 +2272,7 @@ console.log(pulls2);
       console.log("shebang == " + this.state.shebang );
       console.log("rejectShell == " + rejectCustomShell );
 
-      //if an unowned upc is being flexed, the shell must be the same as the parent. if the parent does not define a shell, default to /bin/upc and add to the top of the flexed code
+      //if an unowned upc is being anoned, the shell must be the same as the parent. if the parent does not define a shell, default to /bin/upc and add to the top of the anoned code
       if( rejectCustomShell == true ) {
 
          let parentMsg = this.state.msg;
@@ -2048,15 +2293,15 @@ console.log(pulls2);
            shebangParent = firstLineParent;
          }
 
-         //if the first line of the flex upcscript is not a shebang, substitute it with the parents shebang, or default shebang
+         //if the first line of the anon upcscript is not a shebang, substitute it with the parents shebang, or default shebang
          const matchShebangFlex = shebangRegex.exec(firstLine);
          if (!matchShebangFlex) {
-console.log("no match shebang flex");
+console.log("no match shebang anon");
            lines.unshift(shebangParent); 
            exportMsg = lines.join('\n');
          }
          else {
-console.log("match shebang flex");
+console.log("match shebang anon");
            lines[0] = shebangParent;
            exportMsg = lines.join('\n');
          }
@@ -2080,7 +2325,7 @@ console.log("match shebang flex");
 
       const hackerAddress = await this.props.getMyAddress();
       const currTime = Math.floor(Date.now() / 1000);
-      const hrn = "flexed-upc-" + this.state.pwd + "-" + currTime;
+      const hrn = "anoned-upc-" + this.state.pwd + "-" + currTime;
 
 /*
       const manifestJson = {
@@ -2244,7 +2489,7 @@ console.log("match shebang flex");
         type="submit"
         className="btn btn-primary btn-block btn-lg"
       >
-       flex
+       anon
       </button>
     </form>
 
@@ -2379,6 +2624,59 @@ console.log("match shebang flex");
   }
 
 
+  fetchApi = async (url) => {
+          var mplayer = 
+          <iframe className='video'
+
+                  allowFullScreen="allowfullscreen"
+                  frameBorder="0"
+                  style={{height:"90vh",width:"100vw"}}
+                  allow='camera;microphone;fullscreen'
+                  title='upcOS-init'
+                  sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+                  src={url}>
+          </iframe>
+
+          return mplayer;
+  };
+
+
+
+  prepareForApi = (args) => {
+      // Get the current URL
+      const currentUrl = window.location.href;
+  
+      // Extract the base URL up to "index.html#/"
+      const baseUrl = currentUrl.split('#')[0] + '#/';
+  
+      console.log("base url");
+      console.log(baseUrl);
+  
+      // Ensure there is at least one argument
+      if (args.length < 1) {
+          throw new Error("At least one argument is required.");
+      }
+  
+      // Start constructing the new URL
+      const apiUrl = `${baseUrl}api/${args[0]}/`;
+  
+      // Create an object for the parameters after the first
+      const params = {};
+      for (let i = 1; i < args.length; i++) {
+          params[`param${i}`] = args[i];
+      }
+  
+      // Base64 encode the JSON object and append it to the URL
+      const jsonParams = JSON.stringify(params);
+      const base64Params = btoa(jsonParams);
+  
+      // Final URL
+      const finalUrl = `${apiUrl}${base64Params}`;
+      console.log("FINAL URL ISSSSS API");
+      console.log(finalUrl);
+  
+      return finalUrl;
+  };
 
 
 
@@ -3006,8 +3304,12 @@ console.log("in heroscan");
 
 
 
+    
+    var upcscript;
+    if(upcScript) {
+       upcscript = upcScript.split('>');
+    }
 
-    var upcscript = upcScript.split('>');
     for(var i = 0; i < upcscript.length; i++) {
        if(!upcscript[i]) continue;
        var vidSnippet;
@@ -3096,8 +3398,8 @@ console.log("in heroscan");
 	    var timestamp = new Date(tmpStamp * 1000);
 
             let hrnBare = hrn;
-            let defaultHrn = this.state.pplCommand + hrn;
-            let pullHrn = "pull " + this.state.pplCommand  + hrn;
+            let defaultHrn = this.state.pplCommand + " " + hrn;
+            let pullHrn = "pull " + this.state.pplCommand + " " + hrn;
             let pullUpc = "pull upc " + upc;
             let pullAll = "pull all " + id + " " + id;
             let pullHash = "pull hash " + hash;
@@ -3777,7 +4079,7 @@ alert("clicked term");
               if (upcrss) {
                   window.addEventListener('scroll', this.handleScroll);
               } else {
-                  terminal.pushToStdout("There is no feed programmed into this unit. You must include a upcrss entity in the upcscript textarea when you flex or hack a upc");
+                  terminal.pushToStdout("There is no feed programmed into this unit. You must include a upcrss entity in the upcscript textarea when you anon or hack a upc");
               }
               break;
   
@@ -3930,7 +4232,7 @@ console.log(feedProxy);
       assistUrl = scan[14];     
       console.log(assistUrl);
       isHacker = true;
-      title = "flexer";
+      title = "anoner";
 
 
       this.setState({ hacker: hacker});
@@ -4018,7 +4320,7 @@ console.log(feedProxy);
                     <br/>
                     <Zoom left> <b>----------</b></Zoom>
                     <br/>
-                    <Zoom left> <b style={{color:"red"}}>flex_date:</b><i>{hacked.toString()}</i></Zoom>
+                    <Zoom left> <b style={{color:"red"}}>anon_date:</b><i>{hacked.toString()}</i></Zoom>
                     <br/>
                     <Zoom left> <b style={{color:"red"}}>assist:</b><Barcode value={assist} format="UPC" /></Zoom>
                     <br/>
@@ -4042,7 +4344,7 @@ console.log(feedProxy);
        res.push(content);
     }
 
-    //if the upc is not owned, the user can not define a custom shell. if shell is rejected, in other  words, if it is an anonymous flex, the shell will be set to the assist upc's shell
+    //if the upc is not owned, the user can not define a custom shell. if shell is rejected, in other  words, if it is an anonymous anon, the shell will be set to the assist upc's shell
 
     for(var i = 0; i < nftIds.length; i++) {
        if(!nftIds[i]) continue;
