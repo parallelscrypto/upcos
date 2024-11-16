@@ -1736,6 +1736,8 @@ tempLink.click();
     this.getLink= this.getLink.bind(this);
     this.setAccount= this.setAccount.bind(this);
     this.firstLookup= this.firstLookup.bind(this);
+    this.resolvePPL= this.resolvePPL.bind(this);
+    this.dynamicPPL= this.dynamicPPL.bind(this);
   }
 
 
@@ -1817,12 +1819,12 @@ tempLink.click();
                 var url    = popArgs[0];
                 var param  = popArgs[1];
                 var id     = popArgs[2];
-console.log(popArgs)
                 let pplCommand = this.state.pplCommand;
                 const terminal = this.progressTerminal.current
                 //var currentUrl = window.location.href;
                 var currentUrl = url;
 
+console.log(popArgs)
                 var page = this.getMplayer(currentUrl);
  
 
@@ -1860,7 +1862,7 @@ style={{height:"90vh",width:"90vw"}} src={url} />
                 let didOutput = false;
 
                 //i removed this case from the below switch statement since cases can not be variables
-console.log("&*&*&" + param + "===" + pplCommand);
+console.log("&*&*&" + param + "===" + pplCommand + " URL == " + url);
                 if(url == pplCommand) {
                     var queryParams = [];
                     for (var i = 2; i < popArgs.length; i++) {
@@ -3561,6 +3563,8 @@ const fullPage = (
 
    resolvePPL= async (id) => {
 
+console.log("IDDDDDDDDDDDDDD  PULLLLLZZZ ARE .......... ");
+console.log(id);
                let pulls= await this.props.popitPullPPL(id)
                var [id, link, hash, address, upc, hrn] = pulls.split(',');
 
@@ -4648,13 +4652,13 @@ render () {
 var show =
 <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
   <div>
-    <TrebleCleffExp showHome={this.showHome} showPost={this.showPost} middleButton={this.heroScan} showLoad={this.showLoad} handleFlip={this.handleFlip} showMission={this.showMission} showTerminal={this.handleFlip} terminal={"false"}/>
+    <TrebleCleffExp dynamicPPL={this.dynamicPPL} resolvePPL={this.resolvePPL} showHome={this.showHome} showPost={this.showPost} middleButton={this.heroScan} showLoad={this.showLoad} handleFlip={this.handleFlip} showMission={this.showMission} showTerminal={this.handleFlip} terminal={"false"}/>
     <Carousel maxTurns={'0'}>
       {this.state.slidesOG}
     </Carousel>
   </div>
   <div>
-    <TrebleCleffExp upc={this.state.account} doEtc={this.doEtc} showPostTerminal={this.showPostTerminal} doHack={this.doHack}  showHome={this.handleFlip} handleFlip={this.handleFlip} middleButton={this.doEtc} showPopsWithCode={this.showPopsWithCode}  showTerminal={this.showPopsWithCode}  execute={this.parsePop} showMission={this.handleFlip} msg={this.state.msg} terminal={"true"}/>
+    <TrebleCleffExp dynamicPPL={this.dynamicPPL} resolvePPL={this.resolvePPL} upc={this.state.account} doEtc={this.doEtc} showPostTerminal={this.showPostTerminal} doHack={this.doHack}  showHome={this.handleFlip} handleFlip={this.handleFlip} middleButton={this.doEtc} showPopsWithCode={this.showPopsWithCode}  showTerminal={this.showPopsWithCode}  execute={this.parsePop} showMission={this.handleFlip} msg={this.state.msg} terminal={"true"}/>
     {this.state.terminal}
 
 
