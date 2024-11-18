@@ -71,7 +71,8 @@ class TrebleCleffExp extends Component {
                 // Logic for position 0
                 button2Label   = button.title;
                 button2Action  = this.props.dynamicPPL;
-                button2PPL  = button.link.trim().split(" ");
+                button2PPL  = button.payload.trim().split(" ");
+                this.setState({button2Terminal: false})
                 this.setState({button2Label})
                 this.setState({button2Action})
                 this.setState({button2PPL})
@@ -81,7 +82,8 @@ class TrebleCleffExp extends Component {
               case 3:
                 button3Label   = button.title;
                 button3Action  = this.props.dynamicPPL;
-                button3PPL  = button.link.trim().split(" ");
+                button3PPL  = button.payload.trim().split(" ");
+                this.setState({button3Terminal: false})
                 this.setState({button3Label})
                 this.setState({button3Action})
                 this.setState({button3PPL})
@@ -92,8 +94,9 @@ class TrebleCleffExp extends Component {
                 // Logic for position 2
                 button4Label   = button.title;
                 button4Action  = this.props.dynamicPPL;
-                button4PPL  = button.link.trim().split(" ");
+                button4PPL  = button.payload.trim().split(" ");
 console.log("PPPPPPPPPPLLLLLLL" + button4PPL );
+                this.setState({button4Terminal: false})
                 this.setState({button4Label})
                 this.setState({button4Action})
                 this.setState({button4PPL})
@@ -136,22 +139,12 @@ console.log("PPPPPPPPPPLLLLLLL" + button4PPL );
        data.buttons.forEach(button2 => {
             let position2 = button2.position;
             switch (position2) {
-              case 6:
-                // Logic for position 3
-                button1Label   = button2.title;
-                button1Action  = this.props.dynamicPPL;
-                button1PPL     = button2.link.trim().split(" ");
-                this.setState({button1Label})
-                this.setState({button1Action})
-                this.setState({button1PPL})
-                this.setState({button1Custom: true})
-                break;
-              
               case 7:
                 // Logic for position 4
                 button2Label   = button2.title;
                 button2Action  = this.props.dynamicPPL;
-                button2PPL  = button2.link.trim().split(" ");
+                button2PPL  = button2.payload.trim().split(" ");
+                this.setState({button2Terminal: true})
                 this.setState({button2Label})
                 this.setState({button2Action})
                 this.setState({button2PPL})
@@ -162,7 +155,8 @@ console.log("PPPPPPPPPPLLLLLLL" + button4PPL );
                 // Logic for position 5
                 button3Label   = button2.title;
                 button3Action  = this.props.dynamicPPL;
-                button3PPL  = button2.link.trim().split(" ");
+                button3PPL  = button2.payload.trim().split(" ");
+                this.setState({button3Terminal: true})
                 this.setState({button3Label})
                 this.setState({button3Action})
                 this.setState({button3PPL})
@@ -173,8 +167,9 @@ console.log("PPPPPPPPPPLLLLLLL" + button4PPL );
                 // Logic for position 6
                 button4Label   = button2.title;
                 button4Action  = this.props.dynamicPPL;
-                button4PPL  = button2.link.trim().split(" ");
+                button4PPL  = button2.payload.trim().split(" ");
 console.log("PPPPPPPPPPLLLLLLL" + button4PPL );
+                this.setState({button4Terminal: true})
                 this.setState({button4Label})
                 this.setState({button4Action})
                 this.setState({button4PPL})
@@ -191,17 +186,8 @@ console.log("PPPPPPPPPPLLLLLLL" + button4PPL );
     this.setState({button0Action: this.props.showHome})
 
 
-    //if on front stage
-    if(this.props.terminal==='false') {
-       if(!button1Label) {
-          this.setState({buttonLabel: "console"})
-          this.setState({button1Action: this.props.showTerminal})
-       }
-       else {
-          this.setState({button1Label})
-          this.setState({button1Action})
-       }
-    }
+    this.setState({buttonLabel: "console"})
+    this.setState({button1Action: this.props.showTerminal})
 
     
 
@@ -217,8 +203,18 @@ console.log("PPPPPPPPPPLLLLLLL" + button4PPL );
     //let jsonUrl = 'https://7jllktrkyancne7eixsgpkyrd3wbimumubgnxzj6i4zt7bvyzvea.arweave.net/-la1TirAGiaT5EXkZ6sRHuwUMoygTNvlPkczP4a4zUg';
     //let jsonUrl = 'https://5tlkgdn2zyvbbtxasb25oe77urj5yye43f4rqmjfu5rbstwp7qfq.arweave.net/7NajDbrOKhDO4JB11xP_pFPcYJzZeRgxJadiGU7P_As';
     //let jsonUrl = 'https://6fh7ldgp2bo4xtqv4si5nvzj3tyna7o2emo5zy7dp4vex74t2dta.arweave.net/8U_1jM_QXcvOFeSR1tcp3PDQfdojHdzj438qS_-T0OY';
-    let jsonUrl = 'https://xcpfgr4l24syfcrsb3jsn533oe2ab266tmho43ax2xh45skx2moq.arweave.net/uJ5TR4vXJYKKMg7TJvd7cTQA696bDu5sF9XPzslX0x0';
+    //let jsonUrl = 'https://s7foe4veu7dvxjz3aqvafzsouyoihbfchlozq6qdo3heswnfvlda.arweave.net/l8ricqSnx1unOwQqAuZOphyDhKI63Zh6A3bOSVmlqsY';
+    //let jsonUrl = 'https://c3i3bwxszycvdmn7o4toaqtu6247w3xkbzuyhaer3qqssm37f2bq.arweave.net/FtGw2vLOBVGxv3cm4EJ09rn7buoOaYOAkdwhKTN_LoM';
+    //let jsonUrl = 'https://lx7lvmf4bxrvxxaqssrsi5pyfpdqdaxjpt3xnw3orj4a3ojci2vq.arweave.net/Xf66sLwN41vcEJSjJHX4K8cBgul893bbbop4DbkiRqs';
 
+    let jsonUrl;
+
+    if(this.props.configUrl) {
+       jsonUrl = this.props.configUrl;
+    }
+    else {
+       jsonUrl = 'https://xcpfgr4l24syfcrsb3jsn533oe2ab266tmho43ax2xh45skx2moq.arweave.net/uJ5TR4vXJYKKMg7TJvd7cTQA696bDu5sF9XPzslX0x0';
+    }
 
     let config = await this.fetchConfig(jsonUrl);
 
@@ -313,34 +309,69 @@ console.log(this.state);
 	    <div>
                     <button
                         style={{background: "#000000", color:"green", width: "20vw", height: "20vw", fontSize: "15px"}}
-                        onClick={this.state.button0Action}
-                  >{this.state.button0Label}</button>
+                        onClick={(e) => {
 
+                                          let console0 = this.state.button0Terminal
+                                          if( this.state.button0Custom ) {
+                                             this.state.button0Action(this.state.button0PPL,console0)
+                                          }
+                                          else { 
+                                             this.state.button0Action(e)
+                                          } 
+                        }}
+                  >{this.state.button0Label}</button>
 
                     <button
                         style={{background: "#000000", color:"green", width: "20vw", height: "20vw", fontSize: "15px"}}
-                        onClick={this.state.button1Action}
+                        onClick={(e) => {
+                                          let console1 = this.state.button1Terminal
+                                          if( this.state.button1Custom ) {
+console.log("MOOOOOOOO");
+                                             this.state.button1Action(this.state.button1PPL, console1)
+                                          }
+                                          else { 
+
+                                             this.state.button1Action(e)
+                                          } 
+                        }}
                   >{this.state.button1Label}</button>
 
                     <button
                         style={{background: "#000000", color:"green", width: "20vw", height: "20vw", fontSize: "15px"}}
-                        onClick={this.state.button2Action}
+                        onClick={() => {
+                                          let console2 = this.state.button2Terminal
+                                          if( this.state.button2Custom ) {
+                                             this.state.button2Action(this.state.button2PPL,console2)
+                                          }
+                                          else { 
+                                             this.state.button2Action()
+                                          } 
+                        }}
+
                   >{this.state.button2Label}</button>
-
-
-
 
                     <button
                         style={{background: "#000000", color:"green", width: "20vw", height: "20vw", fontSize: "15px"}}
-                        onClick={this.state.button3Action}
+                        onClick={() => {
+                                          let console3 = this.state.button3Terminal
+                                          if( this.state.button3Custom ) {
+                                             this.state.button3Action(this.state.button3PPL,console3)
+                                          }
+                                          else { 
+                                             this.state.button3Action()
+                                          } 
+                        }}
+
                   >{this.state.button3Label}</button>
 
 
                     <button
                         style={{background: "#FFFF00", fontSize:".9em", fontWeight:"bold", color:"red", width: "20vw", height: "20vw", fontSize: "15px", verticalAlign:"middle"}}
                         onClick={() => {
+                                          let console4 = this.state.button4Terminal
                                           if( this.state.button4Custom ) {
-                                             this.state.button4Action(this.state.button4PPL)
+                                             this.state.button4Action(this.state.button4PPL,console4)
+console.log("the terminal var is " + console4);
                                           }
                                           else { 
                                              this.state.button4Action()

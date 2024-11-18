@@ -294,11 +294,12 @@ class AppExp extends Component {
 
     const msg = dataObject.msg;
     const missionUrl = dataObject.missionUrl;
+    const configUrl = dataObject.configUrl;
 
     return (
       <div style={{ background: "#000000", height: '100vh', width: '100vw', border: 'none' }}>
         <div>
-          <StaticCarouselExp nftInfo={this.nftInfo} latestRawId={this.latestRawId} upcInfo={this.upcInfo} approvePPL={this.approvePPL} loadBlockchainData={this.loadBlockchainData} latestTokenId={this.latestTokenId} popitPullUniversal={this.popitPullUniversal} popitUpdate={this.popitUpdate} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} getMyAddress={this.getMyAddress} />
+          <StaticCarouselExp nftInfo={this.nftInfo} latestRawId={this.latestRawId} upcInfo={this.upcInfo} approvePPL={this.approvePPL} loadBlockchainData={this.loadBlockchainData} latestTokenId={this.latestTokenId} popitPullUniversal={this.popitPullUniversal} popitUpdate={this.popitUpdate} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} configUrl={configUrl} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} getMyAddress={this.getMyAddress} />
         </div>
       </div>
     );

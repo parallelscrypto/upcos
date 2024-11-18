@@ -96,9 +96,11 @@ export default class StaticCarouselExp extends Component {
     var channel = props.upcId;
     var upc = props.code;
     var assist = props.assist;
+    var configUrl= props.configUrl;
 
-    console.log("assist is " );
-    console.log(assist);
+
+    console.log("config url is " );
+    console.log(configUrl);
 
         
 
@@ -1720,6 +1722,7 @@ tempLink.click();
        shell: shell,
        pplCommand: pplCommand,
        shebang: shebang,
+       configUrl: configUrl,
        publicPacs: publicPacs
     }
 
@@ -1815,7 +1818,7 @@ tempLink.click();
 
 
 
-  dynamicPPL = async (popArgs) => { 
+  dynamicPPL = async (popArgs,cli=true) => { 
                 var url    = popArgs[0];
                 var param  = popArgs[1];
                 var id     = popArgs[2];
@@ -1825,6 +1828,7 @@ tempLink.click();
                 var currentUrl = url;
 
 console.log(popArgs)
+console.log(currentUrl)
                 var page = this.getMplayer(currentUrl);
  
 
@@ -1853,8 +1857,12 @@ frameBorder="0"
 style={{height:"90vh",width:"90vw"}} src={url} />
 </body>
 </html>
-
-                terminal.pushToStdout(page);
+                if(!cli) {
+	           this.setState({slidesOG: page})
+                }
+                else {
+                   terminal.pushToStdout(page);
+                }
                 return;
                 }
                 let pullOutput;
@@ -1862,8 +1870,12 @@ style={{height:"90vh",width:"90vw"}} src={url} />
                 let didOutput = false;
 
                 //i removed this case from the below switch statement since cases can not be variables
-console.log("&*&*&" + param + "===" + pplCommand + " URL == " + url);
-                if(url == pplCommand) {
+console.log("is " + url + "==" + pplCommand);
+                let containsHttp = false;
+                if(url.includes("https://")) {
+                  containsHttp = true;
+                }
+                if( (url == pplCommand) || (!containsHttp) ) {
                     var queryParams = [];
                     for (var i = 2; i < popArgs.length; i++) {
                         // Construct the query parameter string
@@ -1875,7 +1887,6 @@ console.log("&*&*&" + param + "===" + pplCommand + " URL == " + url);
 
                     let pulls2= await this.props.popitPullPPL(param)
                     var [id, link, hash, address, upc, hrn] = pulls2.split(',');
-console.log("&*&*&" + link);
                     var url;
                     if(link.includes('>>>')){
                        didOutput = this.executeUpcScript(link);
@@ -1887,7 +1898,6 @@ console.log("&*&*&" + link);
 
 
 
-console.log(";;;;;;;;;;;URL IS " + url);
 
                 switch (url) {
                   case "fire":
@@ -2054,7 +2064,15 @@ console.log(pulls2);
 
                 var page = this.getMplayer(currentUrl);
                 if(!didOutput) {
-                   terminal.pushToStdout(page);
+
+
+
+                   if(!cli) {
+                      this.setState({slidesOG: page})
+                   }
+                   else {
+                      terminal.pushToStdout(page);
+                   }
                 }
                }
 
@@ -2315,6 +2333,7 @@ console.log("match shebang anon");
       let upcscript= this.upcscript.value.toString()
       let payload = this.payload.value.toString()
       let missionUrl = this.missionUrl.value.toString()
+      let configUrl= this.configUrl.value.toString()
 
       const terminal = this.progressTerminal.current
       var currentUrl = window.location.href;
@@ -2364,9 +2383,20 @@ console.log("match shebang anon");
       missionUrl = btoa(missionUrl);
 
 
+      //var upcJson = '{"show":"' + upcscript + '","code":"' + this.state.pwd + '","assist":"' + this.state.code + '","manifest":"' + manifestEncoded + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
 
-      var upcJson = '{"show":"' + upcscript + '","code":"' + this.state.pwd + '","assist":"' + this.state.code + '","manifest":"' + manifestEncoded + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
-      var upcEncoded = btoa(upcJson);
+
+      var upcJson = {
+        show: upcscript,
+        code: this.state.pwd,
+        assist: this.state.code,
+        manifest: manifestEncoded,
+        msg: exportMsg,
+        missionUrl: missionUrl,
+        configUrl: configUrl
+      };
+
+      var upcEncoded = btoa(JSON.stringify(upcJson));
       currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
       currentUrl = currentUrl.replace('intel', 'export');
 
@@ -2474,6 +2504,15 @@ console.log("match shebang anon");
           ref={(payload) => { this.payload=payload}}
           className="form-control form-control-lg break"
           placeholder="payload (etc button)"
+          required />
+
+
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(configUrl) => { this.configUrl=configUrl}}
+          className="form-control form-control-lg break"
+          placeholder="json config file url"
           required />
 
 
@@ -3296,7 +3335,7 @@ console.log("in heroscan");
   }
 
 
-  executeUpcScript= async (upcScript) => {
+  executeUpcScript= async (upcScript,cli=false) => {
 
     var info = [];
 
@@ -3373,7 +3412,16 @@ console.log("in heroscan");
  
 
       const terminal = this.progressTerminal.current
-      terminal.pushToStdout(newshow);
+
+      if(!cli) {
+         this.setState({slidesOG: newshow})
+      }
+      else {
+         terminal.pushToStdout(newshow);
+      }
+ 
+
+      //terminal.pushToStdout(newshow);
         
 
     return true;
@@ -4652,13 +4700,13 @@ render () {
 var show =
 <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
   <div>
-    <TrebleCleffExp dynamicPPL={this.dynamicPPL} resolvePPL={this.resolvePPL} showHome={this.showHome} showPost={this.showPost} middleButton={this.heroScan} showLoad={this.showLoad} handleFlip={this.handleFlip} showMission={this.showMission} showTerminal={this.handleFlip} terminal={"false"}/>
+    <TrebleCleffExp dynamicPPL={this.dynamicPPL} resolvePPL={this.resolvePPL} showHome={this.showHome} showPost={this.showPost} middleButton={this.heroScan} showLoad={this.showLoad} handleFlip={this.handleFlip} showMission={this.showMission} showTerminal={this.handleFlip} terminal={"false"} configUrl={this.state.configUrl}/>
     <Carousel maxTurns={'0'}>
       {this.state.slidesOG}
     </Carousel>
   </div>
   <div>
-    <TrebleCleffExp dynamicPPL={this.dynamicPPL} resolvePPL={this.resolvePPL} upc={this.state.account} doEtc={this.doEtc} showPostTerminal={this.showPostTerminal} doHack={this.doHack}  showHome={this.handleFlip} handleFlip={this.handleFlip} middleButton={this.doEtc} showPopsWithCode={this.showPopsWithCode}  showTerminal={this.showPopsWithCode}  execute={this.parsePop} showMission={this.handleFlip} msg={this.state.msg} terminal={"true"}/>
+    <TrebleCleffExp dynamicPPL={this.dynamicPPL} resolvePPL={this.resolvePPL} upc={this.state.account} doEtc={this.doEtc} showPostTerminal={this.showPostTerminal} doHack={this.doHack}  showHome={this.handleFlip} handleFlip={this.handleFlip} middleButton={this.doEtc} showPopsWithCode={this.showPopsWithCode}  showTerminal={this.showPopsWithCode}  execute={this.parsePop} showMission={this.handleFlip} msg={this.state.msg} terminal={"true"} configUrl={this.state.configUrl} />
     {this.state.terminal}
 
 
