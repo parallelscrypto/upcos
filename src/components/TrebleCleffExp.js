@@ -54,9 +54,39 @@ class TrebleCleffExp extends Component {
    //position 0-4 as params
    setButtons = async (isConsole=false) => {
 
-    let data = this.state.buttonConfig;
-    let button0Label, button0Action, button0PPL,button0Custom=false, button1Label, button1Action, button1PPL, button1Custom=false, button2Label, button2Action, button2PPL, button2Custom=false,button3Action,button3Label, button3PPL, button3Custom=false,button4Action,button4Label, button4Custom=false,button4PPL, button5Label, button5Action, button5PPL ,button6Label, button6Action, button6PPL
 
+    const ogStyle = {
+       background: "#000000", 
+       color:"green", 
+       width: "19vw", 
+       height: "20vw", 
+       fontSize: "15px"
+    }
+
+    const ogMission = {
+       background: "#FFFF00", 
+       fontSize:".9em", 
+       fontWeight:"bold", 
+       color:"red", 
+       width: "19vw", 
+       height: "20vw", 
+       fontSize: "15px", 
+       verticalAlign:"middle"
+    }
+
+
+
+
+    let data = this.state.buttonConfig;
+    let button0Label, button0Action, button0PPL,button0Custom=false, button1Label, button1Action, button1PPL, button1Custom=false, button2Label, button2Action, button2PPL, button2Custom=false,button3Action,button3Label, button3PPL, button3Custom=false,button4Action,button4Label, button4Custom=false,button4PPL, button0CSS, button1CSS, button2CSS, button3CSS, button4CSS;
+
+
+    button0CSS = button1CSS = button2CSS = button3CSS = ogStyle;
+
+    button4CSS = ogMission;
+
+    this.setState({button0CSS})
+    this.setState({button1CSS})
 
     // Loop through each item in the "buttons" array and log the details
     //console.log(`Position: ${button.position}, Title: ${button.title}, payload: ${button.payload}`);
@@ -70,10 +100,12 @@ class TrebleCleffExp extends Component {
               case 2:
                 // Logic for position 0
                 button2Label   = button.title;
+                button2CSS     = button.style;
                 button2Action  = this.props.dynamicPPL;
                 button2PPL  = button.payload.trim().split(" ");
                 this.setState({button2Terminal: false})
                 this.setState({button2Label})
+                this.setState({button2CSS})
                 this.setState({button2Action})
                 this.setState({button2PPL})
                 this.setState({button2Custom: true})
@@ -81,10 +113,12 @@ class TrebleCleffExp extends Component {
               
               case 3:
                 button3Label   = button.title;
+                button3CSS     = button.style;
                 button3Action  = this.props.dynamicPPL;
                 button3PPL  = button.payload.trim().split(" ");
                 this.setState({button3Terminal: false})
                 this.setState({button3Label})
+                this.setState({button3CSS})
                 this.setState({button3Action})
                 this.setState({button3PPL})
                 this.setState({button3Custom: true})
@@ -93,11 +127,13 @@ class TrebleCleffExp extends Component {
               case 4:
                 // Logic for position 2
                 button4Label   = button.title;
+                button4CSS     = button.style;
                 button4Action  = this.props.dynamicPPL;
                 button4PPL  = button.payload.trim().split(" ");
 console.log("PPPPPPPPPPLLLLLLL" + button4PPL );
                 this.setState({button4Terminal: false})
                 this.setState({button4Label})
+                this.setState({button4CSS})
                 this.setState({button4Action})
                 this.setState({button4PPL})
                 this.setState({button4Custom: true})
@@ -142,10 +178,12 @@ console.log("PPPPPPPPPPLLLLLLL" + button4PPL );
               case 7:
                 // Logic for position 4
                 button2Label   = button2.title;
+                button2CSS = button2.style;
                 button2Action  = this.props.dynamicPPL;
                 button2PPL  = button2.payload.trim().split(" ");
                 this.setState({button2Terminal: true})
                 this.setState({button2Label})
+                this.setState({button2CSS})
                 this.setState({button2Action})
                 this.setState({button2PPL})
                 this.setState({button2Custom: true})
@@ -154,10 +192,12 @@ console.log("PPPPPPPPPPLLLLLLL" + button4PPL );
               case 8:
                 // Logic for position 5
                 button3Label   = button2.title;
+                button3CSS   = button2.style;
                 button3Action  = this.props.dynamicPPL;
                 button3PPL  = button2.payload.trim().split(" ");
                 this.setState({button3Terminal: true})
                 this.setState({button3Label})
+                this.setState({button3CSS})
                 this.setState({button3Action})
                 this.setState({button3PPL})
                 this.setState({button3Custom: true})
@@ -166,11 +206,13 @@ console.log("PPPPPPPPPPLLLLLLL" + button4PPL );
               case 9:
                 // Logic for position 6
                 button4Label   = button2.title;
+                button4CSS   = button2.style;
                 button4Action  = this.props.dynamicPPL;
                 button4PPL  = button2.payload.trim().split(" ");
 console.log("PPPPPPPPPPLLLLLLL" + button4PPL );
                 this.setState({button4Terminal: true})
                 this.setState({button4Label})
+                this.setState({button4CSS})
                 this.setState({button4Action})
                 this.setState({button4PPL})
                 this.setState({button4Custom: true})
@@ -195,6 +237,10 @@ console.log("PPPPPPPPPPLLLLLLL" + button4PPL );
 
 
    componentDidMount = async () => {
+
+
+
+
     var consoleButton;
     console.log("terminal props is");
     console.log(this.props);
@@ -302,13 +348,11 @@ console.log(this.state);
 
 
   render() {
-
-
-
     return (
-	    <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+
                     <button
-                        style={{background: "#000000", color:"green", width: "20vw", height: "20vw", fontSize: "15px"}}
+                        style={this.state.button0CSS}
                         onClick={(e) => {
 
                                           let console0 = this.state.button0Terminal
@@ -322,7 +366,7 @@ console.log(this.state);
                   >{this.state.button0Label}</button>
 
                     <button
-                        style={{background: "#000000", color:"green", width: "20vw", height: "20vw", fontSize: "15px"}}
+                        style={this.state.button1CSS}
                         onClick={(e) => {
                                           let console1 = this.state.button1Terminal
                                           if( this.state.button1Custom ) {
@@ -337,7 +381,7 @@ console.log("MOOOOOOOO");
                   >{this.state.button1Label}</button>
 
                     <button
-                        style={{background: "#000000", color:"green", width: "20vw", height: "20vw", fontSize: "15px"}}
+                        style={this.state.button2CSS}
                         onClick={() => {
                                           let console2 = this.state.button2Terminal
                                           if( this.state.button2Custom ) {
@@ -351,7 +395,7 @@ console.log("MOOOOOOOO");
                   >{this.state.button2Label}</button>
 
                     <button
-                        style={{background: "#000000", color:"green", width: "20vw", height: "20vw", fontSize: "15px"}}
+                        style={this.state.button3CSS}
                         onClick={() => {
                                           let console3 = this.state.button3Terminal
                                           if( this.state.button3Custom ) {
@@ -366,7 +410,7 @@ console.log("MOOOOOOOO");
 
 
                     <button
-                        style={{background: "#FFFF00", fontSize:".9em", fontWeight:"bold", color:"red", width: "20vw", height: "20vw", fontSize: "15px", verticalAlign:"middle"}}
+                        style={this.state.button4CSS}
                         onClick={() => {
                                           let console4 = this.state.button4Terminal
                                           if( this.state.button4Custom ) {

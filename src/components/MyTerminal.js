@@ -40,7 +40,7 @@ var welcomeMsgDefault = "Welcome to the UPCVerse \n TheHomelessChannel Loaded \n
 
 //var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.oneafrika', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-DEVIL','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.coinbox']
 
-var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.mic', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-DEVIL','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.sha256','.slideshow','.champion','.for-sale','.public-key','.ticket','.happy-birthday','.metal-detect','.open-room','.scrap-bot','.blog','kyc','.coinbox']
+var tlds = ['.watch-this' ,'.hear-this' ,'.will-work' ,'.jokes' ,'.tutorial' ,'.mumia' ,'.profile' ,'.my-show' ,'.news' ,'.gif' ,'.BLACK-WALL-STREET' ,'.deliver' ,'.grind' ,'.11:11' ,'.prediction' ,'.dapp' ,'.txt' ,'.homeless' ,'.link' ,'.surprise' ,'.freestyle' ,'.poem' ,'.stretch' ,'.workout' ,'.recipe' ,'.moment-in-time' ,'.meme' ,'.upc', '.marriage', '.bowlgame','.character','.character-development','.skit','.ai','.wiki','.upcscript','.comment','.opposing-viewpoints','.meditate','.protest','.public-discussion','.king-piece','.queen-piece','.castle-piece','.knight-piece','.bishop-piece','.pawn-piece','.decentralized-email-list', '.sober-day', '.mic', '.afrika', '.dance', '.micro-finance','.artwork','.monthly-nft-club','.cringe','.thank-you','.dunk','.nice-try-DEVIL','.ad','.channel','.barefoot','.backup','.dog-walk','.dog-lost','.promo-code','.dream-log','.sha256','.slideshow','.champion','.for-sale','.public-key','.ticket','.happy-birthday','.metal-detect','.open-room','.scrap-bot','.blog','kyc','gps-data','.coinbox']
 
 
 
@@ -1434,6 +1434,7 @@ src={srcImg} height="200" width="200"/></p>
                            <option value="76">.scrap-bot</option>
                            <option value="77">.blog</option>
                            <option value="78">.kyc</option>
+                           <option value="79">.gps-data</option>
                            <option value="777">.coinbox</option>
                         </select>
 
@@ -3944,7 +3945,7 @@ console.log(this.state.account);
 
 
 
-            flex: {
+            drop: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display deep link for WEB2 current upc code.  This command is used to share your upc code with people who do not want to use the blockchain, but want to see your content.  this command will create a shortened url and you can specify the slug by passing as a param to this command.  the slug may only contain the characters a-z, 0-9 and underscore. if you get an undefined back instead of a url, you have tried an invalid or unavailable slug, try again or run command with no param to  get random  slug**</p>',
 
               fn: async () => {
@@ -3973,6 +3974,7 @@ console.log(this.state.account);
       let humanReadableName = this.humanReadableName.value.toString()
       let exportMsg= this.exportMsg.value.toString()
       let missionUrl = this.missionUrl.value.toString()
+      let configUrl= this.configUrl.value.toString()
 
       const terminal = this.progressTerminal.current
       var currentUrl = window.location.href;
@@ -3990,7 +3992,20 @@ console.log(this.state.account);
       console.log(addy);
       console.log(owner);
 
-      var upcJson = '{"show":"' + showString + '","code":"' + this.state.account + '","manifest":"' + infoSanit + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
+      //var upcJson = '{"show":"' + showString + '","code":"' + this.state.account + '","manifest":"' + infoSanit + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
+
+
+
+
+      var upcJson = JSON.stringify({
+        show: showString,
+        code: this.state.account,
+        manifest: infoSanit,
+        msg: exportMsg,
+        missionUrl: missionUrl,
+        configUrl: configUrl
+      });
+
       console.log("info iz " + upcJson);
       var upcEncoded = btoa(upcJson);
       currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
@@ -4038,6 +4053,16 @@ console.log(this.state.account);
           className="form-control form-control-lg break"
           placeholder="mission url (this is link that will load when your user activates the mission button)"
           required />
+
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(configUrl) => { this.configUrl=configUrl}}
+          className="form-control form-control-lg break"
+          placeholder="json config file url"
+          required />
+
+
 
 
         <br/>

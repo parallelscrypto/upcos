@@ -4376,7 +4376,7 @@ console.log(feedProxy);
                     <br/>
                     <Zoom left> <b style={{color:"red"}}>assist:</b><Barcode value={assist} format="UPC" /></Zoom>
                     <br/>
-                    <Zoom left> <b style={{color:"red"}}>assistUrl:</b><a target="_blank" href={assistUrl}>Access OG UPC</a> (refresh page after clicking link)</Zoom>
+                    <Zoom left> <b style={{color:"red"}}>assistUrl:</b><a target="_blank" href={assistUrl}>Access root UPC console</a> (refresh page if it does not load)</Zoom>
                     <Zoom left> <b>----------</b></Zoom>
                     <br/>
                     <Zoom left> <b style={{color:"red"}}>UPCScript:</b><i>s {upcscript}</i></Zoom>
