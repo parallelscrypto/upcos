@@ -10,6 +10,31 @@ class TrebleCleffExp extends Component {
     var showTerminal = props.showTerminal
     var flipFunction= props.handleFlip
 
+    const ogStyle = {
+       background: "#000000", 
+       color:"green", 
+       width: "19vw", 
+       height: "20vw", 
+       fontSize: "15px"
+    }
+
+    const ogMission = {
+       background: "#FFFF00", 
+       fontSize:".9em", 
+       fontWeight:"bold", 
+       color:"red", 
+       width: "19vw", 
+       height: "20vw", 
+       fontSize: "15px", 
+       verticalAlign:"middle"
+    }
+
+
+
+
+
+
+
 
     this.state = {
        upcStatus: "",
@@ -21,6 +46,12 @@ class TrebleCleffExp extends Component {
        button2Label: "hero",
        button3Label: "discuss",
        button4Label: "mission",
+       button0Style: ogStyle,
+       button1Style: ogStyle,
+       button2Style: ogStyle,
+       button3Style: ogStyle,
+       button4Style: ogMission,
+
        showTerminal: showTerminal,
        upc: "",
        msg: props.msg,
@@ -75,18 +106,69 @@ class TrebleCleffExp extends Component {
     }
 
 
-
-
-    let data = this.state.buttonConfig;
     let button0Label, button0Action, button0PPL,button0Custom=false, button1Label, button1Action, button1PPL, button1Custom=false, button2Label, button2Action, button2PPL, button2Custom=false,button3Action,button3Label, button3PPL, button3Custom=false,button4Action,button4Label, button4Custom=false,button4PPL, button0CSS, button1CSS, button2CSS, button3CSS, button4CSS;
 
 
+    let data = this.state.buttonConfig;
+
+    let isTerm = this.props.terminal;
+
     button0CSS = button1CSS = button2CSS = button3CSS = ogStyle;
-
     button4CSS = ogMission;
+    if( !data ) {
+       if(isTerm == 'true' ) {
 
+          button1Label = 'exe';
+          button2Label = 'etc';
+          button3Label = 'discuss';
+          button4Label = 'anon';
+
+          button1Action = this.props.showPopsWithCode
+          button2Action = this.props.doEtc
+          button3Action = this.props.showPostTerminal
+          button4Action = this.hackIt
+
+          this.setState({button1Label})
+          this.setState({button1Action})
+
+          this.setState({button2Label})
+          this.setState({button2Action})
+
+          this.setState({button3Label})
+          this.setState({button3Action})
+
+          this.setState({button4Label})
+          this.setState({button4Action})
+
+
+          this.setState({button0CSS})
+          this.setState({button1CSS})
+          this.setState({button2CSS})
+          this.setState({button3CSS})
+          this.setState({button4CSS})
+       }
+       else {
+          this.setState({button0CSS})
+          this.setState({button1CSS})
+          this.setState({button2CSS})
+          this.setState({button3CSS})
+          this.setState({button4CSS})
+          console.log(data);
+          console.log(isTerm);
+       }
+       return;
+    }
+
+
+
+
+
+    //apply original styles before applying anything from json config
     this.setState({button0CSS})
     this.setState({button1CSS})
+    this.setState({button2CSS})
+    this.setState({button3CSS})
+    this.setState({button4CSS})
 
     // Loop through each item in the "buttons" array and log the details
     //console.log(`Position: ${button.position}, Title: ${button.title}, payload: ${button.payload}`);
@@ -255,14 +337,11 @@ console.log("PPPPPPPPPPLLLLLLL" + button4PPL );
 
     let jsonUrl;
 
+    let config;
     if(this.props.configUrl) {
        jsonUrl = this.props.configUrl;
+       config  = await this.fetchConfig(jsonUrl);
     }
-    else {
-       jsonUrl = 'https://xcpfgr4l24syfcrsb3jsn533oe2ab266tmho43ax2xh45skx2moq.arweave.net/uJ5TR4vXJYKKMg7TJvd7cTQA696bDu5sF9XPzslX0x0';
-    }
-
-    let config = await this.fetchConfig(jsonUrl);
 
     var middleButton = this.props.showPops
     var showPost = this.props.showPost

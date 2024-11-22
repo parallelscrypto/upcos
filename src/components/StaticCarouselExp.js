@@ -205,7 +205,7 @@ export default class StaticCarouselExp extends Component {
     this.progressTerminal = React.createRef()
     var promptlabel =  '[[ AWAITING COMMAND@ ]] => ';
     var welcomeMsg ="\n[[ \n you are now on upcOS privately owned property owned by \n " + owner + "\n on {polygon} \n";
-    welcomeMsg += "\n Welcome to @_" + upc;
+    welcomeMsg += "\n Welcome to @_" + upc + "\n]]";
     var popArgs = [];
 
     var myTerm = <Terminal
@@ -2479,7 +2479,7 @@ console.log("match shebang anon");
           ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
           className="form-control form-control-lg break"
           placeholder="https://is.gd/[your-shortlink])"
-          required />
+        />
 
         <input
           type="text"
@@ -2513,7 +2513,7 @@ console.log("match shebang anon");
           ref={(configUrl) => { this.configUrl=configUrl}}
           className="form-control form-control-lg break"
           placeholder="json config file url"
-          required />
+          />
 
 
 
@@ -4253,11 +4253,12 @@ console.log(feedProxy);
                   <div>
                     <Zoom left> <i  style={{color:"red"}}>Welcome to</i></Zoom>
                     <br/>
-                    <Zoom left> <b>Flexnesium </b></Zoom>
+                    <Zoom left> <b> &lt;UPCScript/&gt; </b></Zoom>
                      <br/>
-                     <b style={{color:"white"}}>Click right arrow twice for info</b>
+                     <b style={{color:"white"}}>Click right arrow once to view intel</b>
                      <br/>
-                     <b style={{color:"white"}}>Click mission to start</b>
+                     <b style={{color:"white"}}>Click right arrow twice to start</b>
+                     <br/>
                      <Flip right> <Barcode value={this.state.code} format="UPC" /> </Flip>
     
                      <br/>
@@ -4284,7 +4285,7 @@ console.log(feedProxy);
       assistUrl = scan[14];     
       console.log(assistUrl);
       isHacker = true;
-      title = "anoner";
+      title = "anon";
 
 
       this.setState({ hacker: hacker});

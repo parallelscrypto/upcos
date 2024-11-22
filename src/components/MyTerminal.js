@@ -4044,7 +4044,7 @@ console.log(this.state.account);
           ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
           className="form-control form-control-lg break"
           placeholder="shortened url (this is the format: https://is.gd/{shortenedURL})"
-          required />
+        />
 
         <input
           type="text"
@@ -4060,7 +4060,7 @@ console.log(this.state.account);
           ref={(configUrl) => { this.configUrl=configUrl}}
           className="form-control form-control-lg break"
           placeholder="json config file url"
-          required />
+        />
 
 
 
