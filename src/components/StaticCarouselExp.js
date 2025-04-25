@@ -397,9 +397,11 @@ export default class StaticCarouselExp extends Component {
             cd: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** change to new upc code if the upc code is unowned.  this is the precursor to hacking a upc</p>',
               fn: async (upc) => {
-
+                   var done;
                    var didCd = await this.cd(upc);
-
+                   if( didCd ) {
+                      done = await this.resetFeed();
+                   }
 
               }
             },
@@ -3095,6 +3097,73 @@ src={srcImg} height="200" width="200"/></p>
 
 
 
+
+
+
+
+
+
+
+  resetFeed = async (newFeed) => {
+        let feedVal;
+        let setNewFeed;
+  
+        if (newFeed) {
+            feedVal = newFeed;
+            setNewFeed = true;
+        } else {
+
+            var testUpc       = this.state.pwd;      
+            var testResults   = await this.getUpc(testUpc);
+            var testOwner     = testResults[1];
+console.log(testResults);
+console.log("============testResults");
+            var upcrss2;
+            if( testOwner.includes("0x0000000000000000") ) {
+               var zeros = await this.getUpc("000000000000");
+               upcrss2 = zeros[5];
+            }
+            else {
+               var userFeed = await this.getUpc(testUpc);
+               upcrss2 = userFeed[5];
+            }
+
+
+            feedVal = upcrss2;
+        }
+  
+        let feedProxy = 'https://corsproxy.io/?url=' + encodeURIComponent(feedVal);
+
+        let feedSet = await this.setFeed(feedProxy);
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   heroScan = async () => {
 console.log("in heroscan");
        const terminal = this.progressTerminal.current
@@ -4161,34 +4230,8 @@ alert("clicked term");
               break;
   
           case 'reset':
-              let feedVal;
-              let setNewFeed;
-  
-              if (newFeed) {
-                  feedVal = newFeed;
-                  setNewFeed = true;
-              } else {
 
-                  var testUpc       = this.state.pwd;      
-                  var testResults   = await this.getUpc(testUpc);
-                  var testOwner     = testResults[1];
-                  var upcrss2;
-                  if( testOwner.includes("0x0000000000000000") ) {
-                     var zeros = await this.getUpc("000000000000");
-                     upcrss2 = zeros[5];
-                  }
-                  else {
-                     var userFeed = await this.getUpc(testUpc);
-                     upcrss2 = userFeed[5];
-                  }
-
-
-                  feedVal = upcrss2;
-              }
-  
-              let feedProxy = 'https://corsproxy.io/?url=' + encodeURIComponent(feedVal);
-
-              let feedSet = await this.setFeed(feedProxy);
+              var done = await this.resetFeed(newFeed);
               break;
   
           default:
