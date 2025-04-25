@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.css'
 import App from './components/App';
 import AppExp from './components/AppExp';
-import AppApi from './components/AppApi';
 import * as serviceWorker from './serviceWorker';
 import Intel from './components/Intel';
 import { HashRouter, Route, Link } from "react-router-dom";
@@ -23,12 +22,6 @@ const routingExport = (
 )
 
 
-const routingApi = (
-  <HashRouter>
-      <Route path="/api/:route/:code" component={AppApi} />
-  </HashRouter>
-)
-
 
 
 const currentPath = window.location.href
@@ -40,10 +33,7 @@ else if( currentPath.includes("export") ) {
   console.log("export");
   routing = routingExport;
 }    
-else {
-  console.log("api");
-  routing = routingApi;
-}
+
 ReactDOM.render(routing, document.getElementById('root'));
 
 

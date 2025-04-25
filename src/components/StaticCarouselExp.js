@@ -672,6 +672,27 @@ console.log(myPull);
             },
 
 
+            cook: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open sketchpad in a window  (thank you and no affiliation to any unless explicitly stated) </p>',
+              fn: (sheetNum) => {
+
+
+		      var fullUrl = "https://hello_cookbook.arweave.dev/";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
 
 
             draw: {
@@ -4147,14 +4168,25 @@ alert("clicked term");
                   feedVal = newFeed;
                   setNewFeed = true;
               } else {
-                  feedVal = this.state.upcrss;
+
+                  var testUpc       = this.state.pwd;      
+                  var testResults   = await this.getUpc(testUpc);
+                  var testOwner     = testResults[1];
+                  var upcrss2;
+                  if( testOwner.includes("0x0000000000000000") ) {
+                     var zeros = await this.getUpc("000000000000");
+                     upcrss2 = zeros[5];
+                  }
+                  else {
+                     var userFeed = await this.getUpc(testUpc);
+                     upcrss2 = userFeed[5];
+                  }
+
+
+                  feedVal = upcrss2;
               }
   
-              let feedProxy = 'https://corsproxy.io/?' + encodeURIComponent(feedVal);
-
-
-console.log("resetting to");
-console.log(feedProxy);
+              let feedProxy = 'https://corsproxy.io/?url=' + encodeURIComponent(feedVal);
 
               let feedSet = await this.setFeed(feedProxy);
               break;
@@ -4215,8 +4247,6 @@ console.log(feedProxy);
   componentDidMount = async () => {
 
 
-    let url = 'https://corsproxy.io/?' + encodeURIComponent(this.state.upcrss);
-    let feedset = await this.setFeed(url);
 
 
     var scan;
@@ -4446,6 +4476,28 @@ console.log(feedProxy);
           //var entry = await this.getNft(i,nftIds); 
        }
     }
+
+      var testUpc       = this.state.code;      
+      var testResults   = await this.getUpc(testUpc);
+      var testOwner     = testResults[1];
+      var upcrss;
+      if( testOwner.includes("0x0000000000000000") ) {
+         var zeros = await this.getUpc("000000000000");
+         upcrss = zeros[5];
+      }
+      else {
+         var userFeed = await this.getUpc(testUpc);
+         upcrss = userFeed[5];
+      }
+
+
+
+      //set the rss feed to the payload for the current upc unless it is unowned.  if unowned, default to system feed
+      this.setState({upcrss: upcrss});
+      let url = 'https://corsproxy.io/?url=' + encodeURIComponent(upcrss);
+      let feedset = await this.setFeed(url);
+
+
   }
 
 

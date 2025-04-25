@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { ethers } from "ethers";
 import * as Tone from "tone";
 import Terminal from 'react-console-emulator'
-import IPFSTerminal from './IPFSTerminal'
 import ScratchCard from './ScratchCard'
 import IpfsUpload from './IpfsUpload'
 import TrebleCleff from './TrebleCleff'
