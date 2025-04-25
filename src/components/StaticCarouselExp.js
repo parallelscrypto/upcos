@@ -3097,48 +3097,51 @@ src={srcImg} height="200" width="200"/></p>
 
 
 
-
-
-
-
-
-
-
-  resetFeed = async (newFeed) => {
-        let feedVal;
-        let setNewFeed;
+  resetFeed = async (newFeed) => { 
+      let feedVal;
+      let setNewFeed;
   
-        if (newFeed) {
-            feedVal = newFeed;
-            setNewFeed = true;
-        } else {
-
-            var testUpc       = this.state.pwd;      
-            var testResults   = await this.getUpc(testUpc);
-            var testOwner     = testResults[1];
-console.log(testResults);
-console.log("============testResults");
-            var upcrss2;
-            if( testOwner.includes("0x0000000000000000") ) {
-               var zeros = await this.getUpc("000000000000");
-               upcrss2 = zeros[5];
-            }
-            else {
-               var userFeed = await this.getUpc(testUpc);
-               upcrss2 = userFeed[5];
-            }
-
-
-            feedVal = upcrss2;
-        }
+      if (newFeed) {
+          feedVal = newFeed;
+          setNewFeed = true;
+      } else {
+          var testUpc = this.state.pwd;     
+          var testResults = await this.getUpc(testUpc);
+          var testOwner = testResults[1];
+          console.log(testResults);
+          console.log("============testResults");
+          
+          var upcrss2;
+          if (testOwner.includes("0x0000000000000000")) {
+              var zeros = await this.getUpc("000000000000");
+              upcrss2 = zeros[5];
+          } else {
+              try {
+                  var userFeed = await this.getUpc(testUpc);
+                  upcrss2 = userFeed[5];
+                  
+                  // Validate the RSS feed
+                  const feedProxy = 'https://corsproxy.io/?url=' + encodeURIComponent(upcrss2);
+                  const response = await fetch(feedProxy);
+                  const feedText = await response.text();
+                  
+                  // Simple RSS validation - check for basic RSS structure
+                  if (!feedText.includes('<rss') && !feedText.includes('<feed')) {
+                      throw new Error('Invalid RSS feed format');
+                  }
+              } catch (error) {
+                  console.error("Invalid user feed, falling back to default:", error);
+                  var zeros = await this.getUpc("000000000000");
+                  upcrss2 = zeros[5];
+              }
+          }
   
-        let feedProxy = 'https://corsproxy.io/?url=' + encodeURIComponent(feedVal);
-
-        let feedSet = await this.setFeed(feedProxy);
-
+          feedVal = upcrss2;
+      }
+  
+      let feedProxy = 'https://corsproxy.io/?url=' + encodeURIComponent(feedVal);
+      let feedSet = await this.setFeed(feedProxy);
   }
-
-
 
 
 
