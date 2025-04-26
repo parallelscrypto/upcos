@@ -1611,20 +1611,36 @@ tempLink.click();
 
             [pplCommand]: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open PPL (private protocol link) minibrowser </p>',
-              fn: async (url) => {
+              fn: async (...popArgs) => {
 
-
-
+var url;
+var param;
+console.log("popArgs");
+console.log(popArgs);
 		      //var fullUrl = "https://codverter.com/src/index";
                    var winNum = "1";
 
                       this.cSearch.value = "";
-                      this.cSearch3.value = url;
+                      this.cSearch3.value = popArgs.join(" ");;
                       if(winNum == "1") {
-                         let resolvedPage = await this.resolvePPL(url);
-                         // Rest of your code remains the same
-                         this.setState({fullIpfs3: resolvedPage});
- 
+
+                         //var words = remainde.split(" ");
+                         let pulls2= await this.props.popitPullPPL(popArgs[0])
+                         var [id, link, hash, address, upc, hrn] = pulls2.split(',');
+                         var queryParams = [];
+                         for (var i = 1; i < popArgs.length; i++) {
+                             // Construct the query parameter string
+                             queryParams.push(i - 1 + '=' + encodeURIComponent(popArgs[i]));
+                         }
+                         
+                         // Join the parameters with '&' and construct the full URL
+                         var queryString = queryParams.length > 0 ? '?' + queryParams.join('&') : '';
+
+
+                         var url = link + queryString;
+                         var mplayer = this.getMplayer(url);
+                         this.setState({fullIpfs3: mplayer}); 
+
 		         this.setState(prevState => ({ pipVisibility3: "true" }));
 		         this.setState(prevState => ({ pipDisplay3: "block"}));
 		         this.setState(prevState => ({ showBigShow3: true}));
@@ -1841,7 +1857,7 @@ tempLink.click();
 
 
 
-  dynamicPPL = async (popArgs,cli=true) => { 
+  dynamicPPL = async (popArgs,cli="true") => { 
                 var url    = popArgs[0];
                 var param  = popArgs[1];
                 var id     = popArgs[2];
@@ -1850,6 +1866,7 @@ tempLink.click();
                 //var currentUrl = window.location.href;
                 var currentUrl = url;
 
+console.log("DYNAMMMMMMMMMMMMMICCCCCCCCCCCCCCC")
 console.log(popArgs)
 console.log(currentUrl)
                 var page = this.getMplayer(currentUrl);
@@ -1875,29 +1892,23 @@ console.log(currentUrl)
 
 
 
-
-
-var page = <html>
-  <head><title>forever upcOS hasta que terminemos!</title></head>
-  <body style={{margin: 0, padding: 0, overflow: 'hidden'}}>
-    <iframe 
-      allowFullScreen="allowfullscreen"
-      frameBorder="0"
-      scrolling="yes"
-      style={{
-        height: "100vh", 
-        width: "100vw",
-        overflow: "auto",
-        border: "none"
-      }} 
-      src={url} 
-    />
-  </body>
-</html>
-
-
-
-
+                          var page = <html>
+                            <head><title>forever upcOS hasta que terminemos!</title></head>
+                            <body style={{margin: 0, padding: 0, overflow: 'hidden'}}>
+                              <iframe 
+                                allowFullScreen="allowfullscreen"
+                                frameBorder="0"
+                                scrolling="yes"
+                                style={{
+                                  height: "100vh", 
+                                  width: "100vw",
+                                  overflow: "auto",
+                                  border: "none"
+                                }} 
+                                src={url} 
+                              />
+                            </body>
+                          </html>
 
 
                 if(!cli) {
@@ -1918,7 +1929,7 @@ console.log("is " + url + "==" + pplCommand);
                 if(url.includes("https://")) {
                   containsHttp = true;
                 }
-                if( (url == pplCommand) || (!containsHttp) ) {
+                if( (url == pplCommand) && (!containsHttp) ) {
                     var queryParams = [];
                     for (var i = 2; i < popArgs.length; i++) {
                         // Construct the query parameter string
@@ -1927,10 +1938,34 @@ console.log("is " + url + "==" + pplCommand);
                     
                     // Join the parameters with '&' and construct the full URL
                     var queryString = queryParams.length > 0 ? '?' + queryParams.join('&') : '';
+//console.log("QUERRRRRRRRRRY STRING" + queryString);
+//console.log("param is" + param);
 
                     let pulls2= await this.props.popitPullPPL(param)
                     var [id, link, hash, address, upc, hrn] = pulls2.split(',');
                     var url;
+                    if(link.includes('>>>')){
+                       didOutput = this.executeUpcScript(link);
+                    }
+                    else{
+                       url = link + queryString;
+                    }
+                }
+                else {
+                    param = url;
+                    var queryParams = [];
+                    for (var i = 1; i < popArgs.length; i++) {
+                        // Construct the query parameter string
+                        queryParams.push(i - 1 + '=' + encodeURIComponent(popArgs[i]));
+                    }
+                    
+                    // Join the parameters with '&' and construct the full URL
+                    var queryString = queryParams.length > 0 ? '?' + queryParams.join('&') : '';
+console.log("QUERRRRRRRRRRY STRING" + queryString);
+console.log("param is" + param);
+
+                    let pulls2= await this.props.popitPullPPL(param)
+                    var [id, link, hash, address, upc, hrn] = pulls2.split(',');
                     if(link.includes('>>>')){
                        didOutput = this.executeUpcScript(link);
                     }
@@ -2110,11 +2145,16 @@ console.log(pulls2);
 
 
 
-                   if(!cli) {
+                   if(cli == "false") {
                       this.setState({slidesOG: page})
                    }
-                   else {
+                   else if(cli == "true") {
                       terminal.pushToStdout(page);
+                   }
+                   else if(cli == "mini") {
+                    console.log("URRRRRRRRRRRLLLLL" + url);
+                    console.log("going to load in the mini");
+                    return this.getMplayer(url);
                    }
                 }
                }
@@ -4988,9 +5028,12 @@ var show =
                                 event.preventDefault();
                                 let upcId = this.state.account;
                                 let cSearch3 = this.cSearch3.value.toString();
-                                let resolvedPage = await this.resolvePPL(cSearch3);
+                                let cSearch3Ar = cSearch3.split(' ');
+                                console.log(cSearch3Ar);
+                                let cSearch3Res = await this.dynamicPPL(cSearch3Ar,"mini");
+                                  
                                 // Rest of your code remains the same
-                                this.setState({fullIpfs3: resolvedPage});
+                                this.setState({fullIpfs3: cSearch3Res});
                               }}
 
                          >
