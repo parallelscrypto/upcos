@@ -1871,15 +1871,35 @@ console.log(currentUrl)
                 }
 
                 if(yt) {
-                var page = <html>
-<head><title>forever upcOS hasta que terminemos!</title></head>
-<body>
-<iframe 
-allowFullScreen="allowfullscreen"
-frameBorder="0"
-style={{height:"90vh",width:"90vw"}} src={url} />
-</body>
+
+
+
+
+
+
+var page = <html>
+  <head><title>forever upcOS hasta que terminemos!</title></head>
+  <body style={{margin: 0, padding: 0, overflow: 'hidden'}}>
+    <iframe 
+      allowFullScreen="allowfullscreen"
+      frameBorder="0"
+      scrolling="yes"
+      style={{
+        height: "100vh", 
+        width: "100vw",
+        overflow: "auto",
+        border: "none"
+      }} 
+      src={url} 
+    />
+  </body>
 </html>
+
+
+
+
+
+
                 if(!cli) {
 	           this.setState({slidesOG: page})
                 }
