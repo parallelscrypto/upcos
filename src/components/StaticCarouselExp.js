@@ -3002,6 +3002,7 @@ src={srcImg} height="200" width="200"/></p>
 
   getMplayer = (fullUrl) => {
 
+console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
       var mplayer = 
       <iframe className='video'
 
@@ -3040,8 +3041,20 @@ src={srcImg} height="200" width="200"/></p>
          && !fullUrl.includes('soundcloud') && !fullUrl.includes('vimeo') 
          && !fullUrl.includes('whistia') && !fullUrl.includes('mixcloud') 
          && !fullUrl.includes('dailymotion') && !fullUrl.includes('twitch')) {
-            mplayer = <iframe className='video'
+            mplayer = 
 
+
+<div style={{
+  width: '100vw',
+  height: '100vh',
+  overflow: 'auto',
+  '-webkit-overflow-scrolling': 'touch', // Helps iOS (ignored on Android but harmless)
+  'overscroll-behavior': 'contain', // Prevents parent page from scrolling (Android/Chrome)
+  'touch-action': 'pan-y', // Ensures vertical touch scrolling works
+}}>
+
+<iframe className='video'
+                    scrolling="yes"
                     allowFullScreen="allowfullscreen"
                     frameBorder="0"
                     style={{height:"100vh",width:"96vw"}}
@@ -3050,6 +3063,10 @@ src={srcImg} height="200" width="200"/></p>
                     sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                     src={fullUrl}>
             </iframe>
+</div>
+
+
+
 
       }
 
