@@ -1021,8 +1021,6 @@ console.log(myPull);
               }
             },
 
-
-
             batch: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** create a UPCScript for a batch of url/resources from a UI.  replace the ss with {dj} to use as a player, or {x} to create slideshow from the resulting string </p>',
               fn: () => {
@@ -1104,6 +1102,86 @@ console.log(myPull);
                       terminal.pushToStdout(mplayer);
               }
             },
+
+
+            web2cli: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open shortened link inside terminal  </p>',
+              fn: async (config) => {
+
+                      var fullUrl;
+                      const terminal = this.progressTerminal.current
+
+                      try {
+                        var config = await this.convertToWeb2Config(config);
+                        
+                        // Convert the config object to a nicely formatted JSON string
+                        const configString = JSON.stringify(config, null, 2);
+                        
+                        // Display the JSON string in the terminal
+                        terminal.pushToStdout('Web2 Configuration:');
+                        terminal.pushToStdout(configString);
+                        
+                      } catch (error) {
+                        terminal.pushToStdout(`Error converting to web2 config: ${error.message}`);
+                      }
+
+
+              }
+            },
+
+
+
+
+
+
+    web2: {
+        description: '<p style="color:hotpink;font-size:1.1em">** Transform Web3 config to Web2</p>',
+        fn: async (config) => {
+            try {
+                // Convert the config
+                const web2Config = await this.convertToWeb2Config(config);
+                
+                // Stringify and encode the config for URL
+                const encodedConfig = encodeURIComponent(JSON.stringify(web2Config));
+                
+                // Create the URL for the external app
+                const fullUrl = `https://mna533n7ufjkrgchlnxxaspjz32kh2omuxp722c62vot726zw4ua.arweave.net/Y0Hd7b-hUqiYR1tvcEnpzvSj6cyl3_1oXtVdP-vZtyg?0=${encodedConfig}`;
+
+                const terminal = this.progressTerminal.current
+                var winNum = "0";
+                var mplayer = this.getMplayer(fullUrl);
+
+
+
+                terminal.pushToStdout('Web2 Configuration:');
+                terminal.pushToStdout(mplayer);
+
+
+
+                return;
+
+
+
+
+                if(winNum == "0") {
+		   this.setState(prevState => ({ fullIpfs: mplayer }));
+		   this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		   this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                }
+                else if(winNum == "1") {
+		   this.setState(prevState => ({ fullIpfs2: mplayer }));
+		   this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		   this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                }
+ 
+
+
+            } catch (error) {
+                console.error('Error converting to web2 config:', error);
+                throw error;
+            }
+        }
+    },
 
 
 
@@ -1801,6 +1879,54 @@ console.log(popArgs);
   }
 
 
+  convertToWeb2Config = async (configUrl) => {
+    try {
+      // Fetch the original JSON configuration
+      const response = await fetch(configUrl);
+      const originalConfig = await response.json();
+      
+      // Create a deep copy of the config to modify
+      const web2Config = JSON.parse(JSON.stringify(originalConfig));
+      
+      // Process each button in the configuration
+      for (const button of web2Config.buttons) {
+        // Check if payload starts with 'ppl'
+        if (button.payload.startsWith('ppl ')) {
+          const payloadParts = button.payload.split(' ');
+          const pplName = payloadParts[1]; // The PPL identifier (jokes, yts, cringelaugh)
+          const params = payloadParts.slice(2); // Any additional parameters
+          
+          try {
+            // Resolve the PPL link using popitPullPPL
+            const pulls2 = await this.props.popitPullPPL(pplName);
+            const [id, link, hash, address, upc, hrn] = pulls2.split(',');
+            
+            // Construct the query string from parameters
+            let queryString = '';
+            if (params.length > 0) {
+              queryString = '?' + params.map((param, index) => `${index}=${encodeURIComponent(param)}`).join('&');
+            }
+            
+            // Update the payload to be the direct URL
+            button.payload = link + queryString;
+          } catch (error) {
+            console.error(`Failed to resolve PPL ${pplName}:`, error);
+            // If PPL resolution fails, keep the original payload
+            button.payload = button.payload;
+          }
+        }
+        // If payload doesn't start with 'ppl', leave it unchanged
+      }
+      
+      return web2Config;
+    } catch (error) {
+      console.error('Error converting to web2 config:', error);
+      throw error;
+    }
+  }
+
+
+
   parseUrl() {
       const currentUrl = window.location.href;
       const exportIndex = currentUrl.indexOf('/api');
@@ -1930,6 +2056,10 @@ console.log("is " + url + "==" + pplCommand);
                   containsHttp = true;
                 }
                 if( (url == pplCommand) && (!containsHttp) ) {
+
+
+
+console.log("*****************NNNNNNNNNNNNOOOOOOOOOOOOOOOOO");
                     var queryParams = [];
                     for (var i = 2; i < popArgs.length; i++) {
                         // Construct the query parameter string
@@ -1944,7 +2074,7 @@ console.log("is " + url + "==" + pplCommand);
                     let pulls2= await this.props.popitPullPPL(param)
                     var [id, link, hash, address, upc, hrn] = pulls2.split(',');
                     var url;
-                    if(link.includes('>>>')){
+		    if(link.includes('>>>')){
                        didOutput = this.executeUpcScript(link);
                     }
                     else{
@@ -1953,6 +2083,7 @@ console.log("is " + url + "==" + pplCommand);
                 }
                 else {
                     param = url;
+console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&YYYYYYYYEEEEEEEEEEESSSSSSSSSSSSSSSSSSSSSSSSs  is url");
                     var queryParams = [];
                     for (var i = 1; i < popArgs.length; i++) {
                         // Construct the query parameter string
@@ -1966,11 +2097,11 @@ console.log("param is" + param);
 
                     let pulls2= await this.props.popitPullPPL(param)
                     var [id, link, hash, address, upc, hrn] = pulls2.split(',');
-                    if(link.includes('>>>')){
+                    if(link && link.includes('>>>')){
                        didOutput = this.executeUpcScript(link);
                     }
                     else{
-                       url = link + queryString;
+                       url = param;
                     }
                 }
 
