@@ -1091,6 +1091,40 @@ console.log(myPull);
 
 
 
+            bg: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Open YouTube video/live/shorts in new tab so that video can be played in background or with screen off</p>',
+              fn: (url) => {
+                let embedUrl = url;
+                
+                // 1. Handle youtu.be short links (videos and live)
+                if (embedUrl.includes('youtu.be')) {
+                  embedUrl = embedUrl.replace('youtu.be/', 'youtube.com/embed/');
+                }
+                // 2. Handle regular watch URLs
+                else if (embedUrl.includes('/watch?v=')) {
+                  embedUrl = embedUrl.replace('/watch?v=', '/embed/');
+                }
+                // 3. Handle YouTube Shorts
+                else if (embedUrl.includes('/shorts/')) {
+                  embedUrl = embedUrl.replace('/shorts/', '/embed/');
+                }
+                // 4. Handle live streams
+                else if (embedUrl.includes('/live/')) {
+                  embedUrl = embedUrl.replace('/live/', '/embed/');
+                }
+                
+                // Remove any query parameters and hash fragments
+                embedUrl = embedUrl.split('?')[0].split('#')[0];
+                
+                // Ensure it's using HTTPS
+                embedUrl = embedUrl.replace('http://', 'https://');
+                
+                // Open in new tab
+                window.open(embedUrl, '_blank');
+              }
+            },
+
+
             is: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open shortened link inside terminal  </p>',
               fn: (slug) => {
@@ -2013,6 +2047,15 @@ console.log(currentUrl)
                    yt = true;
                 }
 
+                let containsHttp = false;
+                if(url.includes("https://")) {
+                  containsHttp = true;
+                }
+ 
+               if(containsHttp){
+                  return page;
+               }
+
                 if(yt) {
 
 
@@ -2050,11 +2093,7 @@ console.log(currentUrl)
 
                 //i removed this case from the below switch statement since cases can not be variables
 console.log("is " + url + "==" + pplCommand);
-                let containsHttp = false;
-                if(url.includes("https://")) {
-                  containsHttp = true;
-                }
-                if( (url == pplCommand) && (!containsHttp) ) {
+               if( (url == pplCommand) && (!containsHttp) ) {
 
 
 console.log("*****************NNNNNNNNNNNNOOOOOOOOOOOOOOOOO");
