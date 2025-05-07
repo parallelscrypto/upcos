@@ -5,6 +5,7 @@ import Modal from "react-animated-modal";
 import makeCarousel from 'react-reveal/makeCarousel';
 import TrebleCleffExp from './TrebleCleffExp'
 import BassCleff from './BassCleff'
+import SerialBoxTerminal from './SerialBoxTerminal'
 import TableSlideshow from './TableSlideshow'
 //import Popit from './Popit'
 import ReactCardFlip from 'react-card-flip';
@@ -507,6 +508,38 @@ export default class StaticCarouselExp extends Component {
                      terminal.pushToStdout(clipboard);
               }
             },
+
+
+
+
+
+
+
+            serb: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** open the serial box console</p>',
+              fn: () => {
+
+                     var winNum = 0;
+
+
+                      var mplayer = <SerialBoxTerminal />;
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
+
+
+
+
 
 
 
@@ -1390,7 +1423,7 @@ tempLink.click();
 
 
 
-            serial: {
+            ser: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC from go upc  (thank you and no affiliation)  </p>',
               fn: async (num,display) => {
                  let pacNum = await this.doSerial(num,true);
