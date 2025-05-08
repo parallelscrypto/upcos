@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 contract SerialBox is Ownable {
-    using EnumerableSet for EnumerableSet.StringSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     // Token contract address
@@ -24,9 +23,9 @@ contract SerialBox is Ownable {
     }
 
     // Reward tracking
-    mapping(string => Reward) public rewards;
-    EnumerableSet.StringSet private serialNumbers;
-    mapping(string => EnumerableSet.StringSet) private upcToSerialNumbers;
+    mapping(bytes32 => Reward) public rewards;
+    EnumerableSet.Bytes32Set private serialNumbers;
+    mapping(bytes32 => EnumerableSet.Bytes32Set) private upcToSerialNumbers;
     
     // Statistics
     uint256 public totalRewardsPaid;
@@ -44,7 +43,7 @@ contract SerialBox is Ownable {
         uint256 activeTokens;
         uint256 lastActivity;
     }
-    mapping(string => UPCStats) public upcStatistics;
+    mapping(bytes32 => UPCStats) public upcStatistics;
     EnumerableSet.Bytes32Set private upcCodes;
 
     // Events
@@ -72,9 +71,14 @@ contract SerialBox is Ownable {
 
     constructor() Ownable(msg.sender) {}
 
+    // Helper function to hash strings
+    function _hashString(string memory s) private pure returns (bytes32) {
+        return keccak256(bytes(s));
+    }
+
     // Modifiers
     modifier rewardExists(string memory serialNumber) {
-        require(serialNumbers.contains(serialNumber), "Reward does not exist");
+        require(serialNumbers.contains(_hashString(serialNumber)), "Reward does not exist");
         _;
     }
 
@@ -84,8 +88,9 @@ contract SerialBox is Ownable {
         address recipient,
         string memory upc,
         uint256 numTokens
-    ) external onlyOwner {
-        require(!serialNumbers.contains(serialNumber), "Serial number exists");
+    ) external {
+        bytes32 serialHash = _hashString(serialNumber);
+        require(!serialNumbers.contains(serialHash), "Serial number exists");
         require(numTokens > 0, "Token amount must be positive");
         require(recipient != address(0), "Invalid recipient");
         require(bytes(upc).length > 0, "UPC cannot be empty");
@@ -96,7 +101,7 @@ contract SerialBox is Ownable {
         uint256 issueDate = block.timestamp;
         uint256 deadline = issueDate + 30 days;
         
-        rewards[serialNumber] = Reward({
+        rewards[serialHash] = Reward({
             serialNumber: serialNumber,
             recipient: recipient,
             upc: upc,
@@ -107,8 +112,8 @@ contract SerialBox is Ownable {
             invalidated: false
         });
         
-        serialNumbers.add(serialNumber);
-        upcToSerialNumbers[upc].add(serialNumber);
+        serialNumbers.add(serialHash);
+        upcToSerialNumbers[_hashString(upc)].add(serialHash);
         _updateUPCStats(upc, numTokens, false);
         
         totalTokensReserved += numTokens;
@@ -125,7 +130,8 @@ contract SerialBox is Ownable {
     }
 
     function claimReward(string memory serialNumber) external rewardExists(serialNumber) {
-        Reward storage reward = rewards[serialNumber];
+        bytes32 serialHash = _hashString(serialNumber);
+        Reward storage reward = rewards[serialHash];
         
         require(msg.sender == reward.recipient, "Only recipient can claim");
         require(!reward.claimed, "Reward already claimed");
@@ -149,14 +155,14 @@ contract SerialBox is Ownable {
         uint256 count = 0;
         
         for (uint256 i = 0; i < serialNumbers.length(); i++) {
-            string memory serialNumber = serialNumbers.at(i);
-            Reward storage reward = rewards[serialNumber];
+            bytes32 serialHash = serialNumbers.at(i);
+            Reward storage reward = rewards[serialHash];
             
             if (!reward.claimed && !reward.invalidated && currentTime > reward.deadline) {
                 reward.invalidated = true;
                 totalTokensReserved -= reward.numTokens;
                 count++;
-                emit RewardInvalidated(serialNumber, "Claim period expired");
+                emit RewardInvalidated(reward.serialNumber, "Claim period expired");
             }
         }
     }
@@ -196,12 +202,12 @@ contract SerialBox is Ownable {
 
     // UPC Analytics
     function _updateUPCStats(string memory upc, uint256 tokenAmount, bool isClaim) private {
-        bytes32 upcHash = keccak256(bytes(upc));
+        bytes32 upcHash = _hashString(upc);
         if (!upcCodes.contains(upcHash)) {
             upcCodes.add(upcHash);
         }
 
-        UPCStats storage stats = upcStatistics[upc];
+        UPCStats storage stats = upcStatistics[upcHash];
         if (isClaim) {
             stats.claimedRewards++;
             stats.claimedTokens += tokenAmount;
@@ -242,8 +248,8 @@ contract SerialBox is Ownable {
         uint256 count = 0;
 
         for (uint256 i = 0; i < upcCodes.length(); i++) {
-            string memory upc = string(abi.encodePacked(upcCodes.at(i)));
-            UPCStats storage stats = upcStatistics[upc];
+            bytes32 upcHash = upcCodes.at(i);
+            UPCStats storage stats = upcStatistics[upcHash];
             
             if (stats.lastActivity >= minDate) {
                 uint256 value;
@@ -252,7 +258,7 @@ contract SerialBox is Ownable {
                 else if (sortBy == 2) value = stats.activeTokens;
                 else if (sortBy == 3) value = stats.totalRewards;
                 
-                allUpcs[count] = UPCRanking(upc, value);
+                allUpcs[count] = UPCRanking(string(abi.encodePacked(upcHash)), value);
                 count++;
             }
         }
@@ -292,8 +298,8 @@ contract SerialBox is Ownable {
         uint256 currentBalance = IERC20(REWARD_TOKEN).balanceOf(address(this));
         
         for (uint256 i = 0; i < serialNumbers.length(); i++) {
-            string memory serialNumber = serialNumbers.at(i);
-            Reward storage reward = rewards[serialNumber];
+            bytes32 serialHash = serialNumbers.at(i);
+            Reward storage reward = rewards[serialHash];
             
             if (!reward.claimed && !reward.invalidated) {
                 uint256 daysToExpire = (reward.deadline - currentTime) / 1 days;
@@ -312,11 +318,11 @@ contract SerialBox is Ownable {
     }
 
     function getSerialNumbersForUPC(string memory upc) external view returns (string[] memory) {
-        EnumerableSet.StringSet storage upcRewards = upcToSerialNumbers[upc];
+        EnumerableSet.Bytes32Set storage upcRewards = upcToSerialNumbers[_hashString(upc)];
         string[] memory result = new string[](upcRewards.length());
         
         for (uint256 i = 0; i < upcRewards.length(); i++) {
-            result[i] = upcRewards.at(i);
+            result[i] = rewards[upcRewards.at(i)].serialNumber;
         }
         
         return result;
@@ -331,7 +337,7 @@ contract SerialBox is Ownable {
         bool claimed,
         bool invalidated
     ) {
-        Reward storage reward = rewards[serialNumber];
+        Reward storage reward = rewards[_hashString(serialNumber)];
         return (
             reward.recipient,
             reward.upc,

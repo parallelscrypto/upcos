@@ -5,11 +5,10 @@ import SerialBox from '../etc/rawmaterial/SerialBox.json'
 import Web3 from 'web3';
 
 // Contract addresses
-const SERIAL_BOX_ADDRESS = "0x944E64d1faE3E66885cFd90dBfc85f3cfe5B4251";
+const SERIAL_BOX_ADDRESS = "0x37aFB9526794Aabb1aE8aC65BbBAA09aC7030dfF";
 const REWARD_TOKEN = "0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118";
 
 const SERIAL_BOX_ABI = SerialBox.abi;
-
 
 // Standard ERC20 ABI
 const ERC20_ABI = [
@@ -129,7 +128,6 @@ const ERC20_ABI = [
   }
 ];
 
-
 class SerialBoxTerminal extends Component {
   constructor(props) {
     super(props);
@@ -143,7 +141,8 @@ class SerialBoxTerminal extends Component {
       signer: null,
       fullIpfs: null,
       pipVisibility: false,
-      pipDisplay: false
+      pipDisplay: false,
+      web3: null
     };
     this.progressTerminal = React.createRef();
   }
@@ -152,136 +151,130 @@ class SerialBoxTerminal extends Component {
     await this.loadBlockchainData();
   }
 
+  async loadBlockchainData() {
+    try {
+      if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum);
+        await window.ethereum.enable();
+      } else if (window.web3) {
+        window.web3 = new Web3(window.web3.currentProvider);
+      } else {
+        window.web3 = new Web3(window.web3.currentProvider);
+      }
 
-async loadBlockchainData() {
-  try {
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum);
-      await window.ethereum.enable();
-    } else if (window.web3) {
-      window.web3 = new Web3(window.web3.currentProvider);
-    } else {
-      window.web3 = new Web3(window.web3.currentProvider);
+      const web3 = window.web3;
+      const accounts = await web3.eth.getAccounts();
+      
+      const serialBoxContract = new web3.eth.Contract(
+        SERIAL_BOX_ABI,
+        SERIAL_BOX_ADDRESS
+      );
+      
+      const rewardTokenContract = new web3.eth.Contract(
+        ERC20_ABI,
+        REWARD_TOKEN
+      );
+
+      this.setState({ 
+        serialBox: serialBoxContract,
+        rewardToken: rewardTokenContract,
+        account: accounts[0],
+        web3: web3
+      });
+
+      this.progressTerminal.current.pushToStdout(
+        `[[success]]Connected to account: ${accounts[0]}[[/success]]`
+      );
+      
+      return serialBoxContract;
+    } catch (error) {
+      this.progressTerminal.current.pushToStdout(
+        `[[error]]Connection error: ${error.message}[[/error]]`
+      );
+      console.error("Blockchain connection error:", error);
     }
-
-    const web3 = window.web3;
-    const accounts = await web3.eth.getAccounts();
-    
-    // Get the current network ID
-    const networkId = await web3.eth.net.getId();
-    
-    // Initialize contracts with signer capability
-    const serialBoxContract = new web3.eth.Contract(
-      SERIAL_BOX_ABI,
-      SERIAL_BOX_ADDRESS
-    );
-    
-    const rewardTokenContract = new web3.eth.Contract(
-      ERC20_ABI,
-      REWARD_TOKEN
-    );
-
-    this.setState({ 
-      serialBox: serialBoxContract,
-      rewardToken: rewardTokenContract,
-      account: accounts[0],
-      web3: web3  // Store web3 instance for transactions
-    });
-
-    this.progressTerminal.current.pushToStdout(
-      `[[success]]Connected to account: ${accounts[0]}[[/success]]`
-    );
-    
-    return serialBoxContract;
-  } catch (error) {
-    this.progressTerminal.current.pushToStdout(
-      `[[error]]Connection error: ${error.message}[[/error]]`
-    );
-    console.error("Blockchain connection error:", error);
   }
-}
 
-
-
-
-// Reward Token Approval
-approveRewardTokens = async (numTokens) => {
-  const terminal = this.progressTerminal.current;
-  this.setState({ isProgressing: true });
-  
-  try {
-    terminal.pushToStdout(`Approving ${numTokens} reward tokens...`);
-    const tx = await this.state.rewardToken.methods.approve(
-      SERIAL_BOX_ADDRESS,
-      numTokens
-    ).send({ from: this.state.account });
+  // Reward Token Approval
+  approveRewardTokens = async (numTokens) => {
+    const terminal = this.progressTerminal.current;
+    this.setState({ isProgressing: true });
     
-    terminal.pushToStdout(`[[success]]Reward tokens approved![[/success]]`);
-    terminal.pushToStdout(`Transaction hash: ${tx.transactionHash}`);
-  } catch (error) {
-    terminal.pushToStdout(`[[error]]Approval error: ${error.message}[[/error]]`);
-    console.error("Approval error:", error);
-  } finally {
-    this.setState({ isProgressing: false });
-  }
-};
+    try {
+      const amountInWei = this.state.web3.utils.toWei(numTokens, 'ether');
+      terminal.pushToStdout(`Approving ${numTokens} reward tokens...`);
+      const tx = await this.state.rewardToken.methods.approve(
+        SERIAL_BOX_ADDRESS,
+        amountInWei
+      ).send({ from: this.state.account });
+      
+      terminal.pushToStdout(`[[success]]Reward tokens approved![[/success]]`);
+      terminal.pushToStdout(`Transaction hash: ${tx.transactionHash}`);
+    } catch (error) {
+      terminal.pushToStdout(`[[error]]Approval error: ${error.message}[[/error]]`);
+      console.error("Approval error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  };
 
-
-// Add Reward
-addReward = async (serialNumber, recipient, upc, numTokens) => {
-  const terminal = this.progressTerminal.current;
-  this.setState({ isProgressing: true });
-  
-  try {
-    terminal.pushToStdout(`Creating reward #${serialNumber}...`);
+  // Add Reward
+  addReward = async (serialNumber, recipient, upc, numTokens) => {
+    const terminal = this.progressTerminal.current;
+    this.setState({ isProgressing: true });
     
-    // Convert parameters to correct types
-    const serialNumberBytes = Web3.utils.hexToBytes('0x' + serialNumber);
-    const tokensInWei = Web3.utils.toWei(numTokens.toString(), 'wei');
-    
-    const tx = await this.state.serialBox.methods.addReward(
-      '0x' + serialNumber, // Pass as hex string (alternative: serialNumberBytes)
-      recipient,
-      upc,
-      tokensInWei
-    ).send({ from: this.state.account });
-    
-    terminal.pushToStdout(
-      `[[success]]Reward #${serialNumber} created![[/success]]`
-    );
-    terminal.pushToStdout(`Transaction hash: ${tx.transactionHash}`);
-  } catch (error) {
-    terminal.pushToStdout(
-      `[[error]]Reward creation error: ${error.message}[[/error]]`
-    );
-    console.error("Reward creation error:", error);
-  } finally {
-    this.setState({ isProgressing: false });
-  }
-};
+    try {
+      terminal.pushToStdout(`Creating reward #${serialNumber}...`);
+      
+      const tokensInWei = this.state.web3.utils.toWei(numTokens, 'ether');
+      console.log("TOKENS IN WEI " + tokensInWei); 
+//      const tx = await this.state.serialBox.methods.addReward(
+//        serialNumber,
+//        recipient,
+//        upc,
+//        tokensInWei
+//      ).send({ from: this.state.account });
+      
+
+      const tx = await this.state.serialBox.methods.addReward(
+        serialNumber,
+        recipient,
+        upc,
+        tokensInWei
+      ).send({ from: this.state.account });
+ 
 
 
 
+      terminal.pushToStdout(
+        `[[success]]Reward #${serialNumber} created![[/success]]`
+      );
+      terminal.pushToStdout(`Transaction hash: ${tx.transactionHash}`);
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Reward creation error: ${error.message}[[/error]]`
+      );
+      console.error("Reward creation error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  };
 
-
-
-
-
-
-
+  // Claim Reward
   claimReward = async (serialNumber) => {
     const terminal = this.progressTerminal.current;
     this.setState({ isProgressing: true });
     
     try {
       terminal.pushToStdout(`Claiming reward #${serialNumber}...`);
-      const tx = await this.state.serialBox.methods.claimReward(serialNumber);
-      await tx.wait();
+      const tx = await this.state.serialBox.methods.claimReward(
+        serialNumber
+      ).send({ from: this.state.account });
       
       terminal.pushToStdout(
         `[[success]]Reward claimed successfully![[/success]]`
       );
-      terminal.pushToStdout(`Transaction hash: ${tx.hash}`);
+      terminal.pushToStdout(`Transaction hash: ${tx.transactionHash}`);
     } catch (error) {
       terminal.pushToStdout(
         `[[error]]Error: ${error.reason || error.message}[[/error]]`
@@ -298,13 +291,13 @@ addReward = async (serialNumber, recipient, upc, numTokens) => {
     
     try {
       terminal.pushToStdout('Fetching contract stats...');
-      const stats = await this.state.serialBox.methods.getStats();
+      const stats = await this.state.serialBox.methods.getStats().call();
       
       terminal.pushToStdout('[[header]]=== Contract Statistics ===[[/header]]');
-      terminal.pushToStdout(`Available Tokens: ${stats.availableTokens}`);
-      terminal.pushToStdout(`Reserved Tokens: ${stats.reservedTokens}`);
+      terminal.pushToStdout(`Available Tokens: ${this.state.web3.utils.fromWei(stats.availableTokens, 'ether')}`);
+      terminal.pushToStdout(`Reserved Tokens: ${this.state.web3.utils.fromWei(stats.reservedTokens, 'ether')}`);
       terminal.pushToStdout(`Total Rewards Paid: ${stats.totalPaidRewards}`);
-      terminal.pushToStdout(`Total Tokens Distributed: ${stats.totalPaidTokens}`);
+      terminal.pushToStdout(`Total Tokens Distributed: ${this.state.web3.utils.fromWei(stats.totalPaidTokens, 'ether')}`);
       terminal.pushToStdout(`Total Rewards Created: ${stats.totalCreatedRewards}`);
     } catch (error) {
       terminal.pushToStdout(
@@ -322,11 +315,11 @@ addReward = async (serialNumber, recipient, upc, numTokens) => {
     
     try {
       terminal.pushToStdout('Fetching top UPCs...');
-      const upcs = await this.state.serialBox.methods.getTop10ByTotalTokens(minDate);
+      const upcs = await this.state.serialBox.methods.getTop10ByTotalTokens(minDate).call();
       
       terminal.pushToStdout('[[header]]=== Top 10 UPCs by Total Tokens ===[[/header]]');
       upcs.forEach((upc, index) => {
-        terminal.pushToStdout(`${index + 1}. ${upc.upc}: ${upc.value} tokens`);
+        terminal.pushToStdout(`${index + 1}. ${upc.upc}: ${this.state.web3.utils.fromWei(upc.value, 'ether')} tokens`);
       });
     } catch (error) {
       terminal.pushToStdout(
@@ -344,12 +337,14 @@ addReward = async (serialNumber, recipient, upc, numTokens) => {
     
     try {
       terminal.pushToStdout(`Fetching details for reward #${serialNumber}...`);
-      const details = await this.state.serialBox.methods.getRewardDetails(serialNumber);
+      const details = await this.state.serialBox.methods.getRewardDetails(
+        serialNumber
+      ).call();
       
       terminal.pushToStdout('[[header]]=== Reward Details ===[[/header]]');
       terminal.pushToStdout(`Recipient: ${details.recipient}`);
       terminal.pushToStdout(`UPC: ${details.upc}`);
-      terminal.pushToStdout(`Tokens: ${details.numTokens}`);
+      terminal.pushToStdout(`Tokens: ${this.state.web3.utils.fromWei(details.numTokens, 'ether')}`);
       terminal.pushToStdout(`Issue Date: ${new Date(details.issueDate * 1000)}`);
       terminal.pushToStdout(`Deadline: ${new Date(details.deadline * 1000)}`);
       terminal.pushToStdout(`Claimed: ${details.claimed ? 'Yes' : 'No'}`);
@@ -363,40 +358,63 @@ addReward = async (serialNumber, recipient, upc, numTokens) => {
     }
   };
 
-// Token Approval
-approveTokens = async (amount) => {
-  const terminal = this.progressTerminal.current;
-  this.setState({ isProgressing: true });
-  
-  try {
-    terminal.pushToStdout(`Approving ${amount} tokens...`);
-    const tx = await this.state.rewardToken.methods.approve(
-      SERIAL_BOX_ADDRESS,
-      amount
-    ).send({ from: this.state.account });
+  // Get Serial Numbers for UPC
+  getSerialNumbersForUPC = async (upc) => {
+    const terminal = this.progressTerminal.current;
+    this.setState({ isProgressing: true });
     
-    terminal.pushToStdout(`[[success]]Approval successful![[/success]]`);
-    terminal.pushToStdout(`Transaction hash: ${tx.transactionHash}`);
-  } catch (error) {
-    terminal.pushToStdout(`[[error]]Approval error: ${error.message}[[/error]]`);
-    console.error("Approval error:", error);
-  } finally {
-    this.setState({ isProgressing: false });
-  }
-};
+    try {
+      terminal.pushToStdout(`Fetching serial numbers for UPC ${upc}...`);
+      const serials = await this.state.serialBox.methods.getSerialNumbersForUPC(
+        upc
+      ).call();
+      
+      terminal.pushToStdout('[[header]]=== Serial Numbers ===[[/header]]');
+      serials.forEach((serial, index) => {
+        terminal.pushToStdout(`${index + 1}. ${serial}`);
+      });
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error: ${error.reason || error.message}[[/error]]`
+      );
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  };
 
+  // Token Approval
+  approveTokens = async (amount) => {
+    const terminal = this.progressTerminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      const amountInWei = this.state.web3.utils.toWei(amount, 'ether');
+      terminal.pushToStdout(`Approving ${amount} tokens...`);
+      const tx = await this.state.rewardToken.methods.approve(
+        SERIAL_BOX_ADDRESS,
+        amountInWei
+      ).send({ from: this.state.account });
+      
+      terminal.pushToStdout(`[[success]]Approval successful![[/success]]`);
+      terminal.pushToStdout(`Transaction hash: ${tx.transactionHash}`);
+    } catch (error) {
+      terminal.pushToStdout(`[[error]]Approval error: ${error.message}[[/error]]`);
+      console.error("Approval error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  };
 
-
-  // Token Management
   // Token Deposit
   depositTokens = async (amount) => {
     const terminal = this.progressTerminal.current;
     this.setState({ isProgressing: true });
     
     try {
+      const amountInWei = this.state.web3.utils.toWei(amount, 'ether');
       terminal.pushToStdout(`Depositing ${amount} tokens...`);
       const tx = await this.state.serialBox.methods.depositTokens(
-        amount
+        amountInWei
       ).send({ from: this.state.account });
       
       terminal.pushToStdout(`[[success]]Deposit successful![[/success]]`);
@@ -411,35 +429,42 @@ approveTokens = async (amount) => {
 
 
 
-
-  getAvailableTokens = async () => {
-    const terminal = this.progressTerminal.current;
-    this.setState({ isProgressing: true });
+getAvailableTokens = async () => {
+  const terminal = this.progressTerminal.current;
+  this.setState({ isProgressing: true });
+  
+  try {
+    terminal.pushToStdout('Checking available tokens...');
     
-    try {
-      terminal.pushToStdout('Checking available tokens...');
-      const balance = await this.state.serialBox.methods.getAvailableTokens().call();
-      
-      // Convert the BigNumber to a readable string
-      const balanceString = Web3.utils.fromWei(balance.toString(), 'ether');
-      
-      terminal.pushToStdout(`[[info]]`);
-      terminal.pushToStdout(`Available tokens: ${balanceString}`);
-      terminal.pushToStdout(`[[/info]]`);
-    } catch (error) {
-      terminal.pushToStdout(
-        `[[error]]Error: ${error.message}[[/error]]`
-      );
-      console.error("Balance check error:", error);
-    } finally {
-      this.setState({ isProgressing: false });
+    // Debugging checks
+    if (!this.state.serialBox) {
+      throw new Error("Contract not initialized");
     }
-  };
+
+
+    if (!this.state.serialBox.methods.getAvailableTokens) {
+      console.log("Available methods:", Object.keys(this.state.serialBox.methods));
+      throw new Error("getAvailableTokens method not found in contract");
+    }
+
+    const balance = await this.state.serialBox.methods.getAvailableTokens().call();
+    const balanceString = Web3.utils.fromWei(balance.toString(), 'ether');
+    
+    terminal.pushToStdout(`[[info]]Available tokens: ${balanceString}[[/info]]`);
+  } catch (error) {
+    terminal.pushToStdout(`[[error]]Error: ${error.message}[[/error]]`);
+    console.error("Balance check error:", error);
+  } finally {
+    this.setState({ isProgressing: false });
+  }
+};
 
 
 
 
-  // Modal Form Example (like your push command)
+
+
+  // Modal Form Example
   showRewardForm = async () => {
     const terminal = this.progressTerminal.current;
     
@@ -501,11 +526,7 @@ approveTokens = async (amount) => {
               fn: async (serialNumber) => await this.claimReward(serialNumber)
             },
             
-
-
-
             // Statistics
-            // Query Commands
             stats: {
               description: 'View contract statistics',
               fn: async () => await this.getStats()
@@ -516,17 +537,18 @@ approveTokens = async (amount) => {
               fn: async (serialNumber) => await this.getRewardDetails(serialNumber)
             },
 
-
-           
             // UPC Analytics
             topupcs: {
               description: 'View top 10 UPCs by total tokens\nUsage: topupcs [minDate]',
               fn: async (minDate) => await this.getTop10ByTotalTokens(minDate || 0)
             },
             
-            // Reward Details
-           
-            // Token Management
+            // UPC Serial Numbers
+            upcserials: {
+              description: 'Get serial numbers for a UPC\nUsage: upcserials <upc>',
+              fn: async (upc) => await this.getSerialNumbersForUPC(upc)
+            },
+            
             // Token Management Commands
             approve: {
               description: 'Approve tokens for contract\nUsage: approve <amount>',
