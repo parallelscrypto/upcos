@@ -513,9 +513,19 @@ export default class StaticCarouselExp extends Component {
 
 
 
+            ser: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC from go upc  (thank you and no affiliation)  </p>',
+              fn: async (num,display) => {
+                 let pacNum = await this.doSerial(num,true);
+              }
+            },
 
 
-            serb: {
+
+
+
+
+            sb: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** open the serial box console</p>',
               fn: () => {
 
@@ -1422,16 +1432,6 @@ tempLink.click();
 
 
 
-
-            ser: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC from go upc  (thank you and no affiliation)  </p>',
-              fn: async (num,display) => {
-                 let pacNum = await this.doSerial(num,true);
-              }
-            },
-
-
-
             showscript: {
               description: '<p style="color:hotpink;font-size:1.1em">** Display embeded upcscript </p>',
               fn: () => {
@@ -2086,6 +2086,7 @@ console.log(currentUrl)
                 }
  
                if(containsHttp){
+                  terminal.pushToStdout(page);
                   return page;
                }
 

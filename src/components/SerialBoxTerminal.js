@@ -228,23 +228,12 @@ class SerialBoxTerminal extends Component {
       
       const tokensInWei = this.state.web3.utils.toWei(numTokens, 'ether');
       console.log("TOKENS IN WEI " + tokensInWei); 
-//      const tx = await this.state.serialBox.methods.addReward(
-//        serialNumber,
-//        recipient,
-//        upc,
-//        tokensInWei
-//      ).send({ from: this.state.account });
-      
-
       const tx = await this.state.serialBox.methods.addReward(
         serialNumber,
         recipient,
         upc,
         tokensInWei
       ).send({ from: this.state.account });
- 
-
-
 
       terminal.pushToStdout(
         `[[success]]Reward #${serialNumber} created![[/success]]`
@@ -290,15 +279,15 @@ class SerialBoxTerminal extends Component {
     this.setState({ isProgressing: true });
     
     try {
-      terminal.pushToStdout('Fetching contract stats...');
+      terminal.pushToStdout(`Fetching contract stats...`);
       const stats = await this.state.serialBox.methods.getStats().call();
       
-      terminal.pushToStdout('[[header]]=== Contract Statistics ===[[/header]]');
-      terminal.pushToStdout(`Available Tokens: ${this.state.web3.utils.fromWei(stats.availableTokens, 'ether')}`);
-      terminal.pushToStdout(`Reserved Tokens: ${this.state.web3.utils.fromWei(stats.reservedTokens, 'ether')}`);
-      terminal.pushToStdout(`Total Rewards Paid: ${stats.totalPaidRewards}`);
-      terminal.pushToStdout(`Total Tokens Distributed: ${this.state.web3.utils.fromWei(stats.totalPaidTokens, 'ether')}`);
-      terminal.pushToStdout(`Total Rewards Created: ${stats.totalCreatedRewards}`);
+      terminal.pushToStdout(`<span style="color:#FF5722;font-weight:bold">=== Contract Statistics ===</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">Available Tokens:</span> <span style="color:#64B5F6">${this.state.web3.utils.fromWei(stats.availableTokens, 'ether')}</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">Reserved Tokens:</span> <span style="color:#64B5F6">${this.state.web3.utils.fromWei(stats.reservedTokens, 'ether')}</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">Total Rewards Paid:</span> <span style="color:#64B5F6">${stats.totalPaidRewards}</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">Total Tokens Distributed:</span> <span style="color:#64B5F6">${this.state.web3.utils.fromWei(stats.totalPaidTokens, 'ether')}</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">Total Rewards Created:</span> <span style="color:#64B5F6">${stats.totalCreatedRewards}</span>`);
     } catch (error) {
       terminal.pushToStdout(
         `[[error]]Error: ${error.reason || error.message}[[/error]]`
@@ -341,14 +330,14 @@ class SerialBoxTerminal extends Component {
         serialNumber
       ).call();
       
-      terminal.pushToStdout('[[header]]=== Reward Details ===[[/header]]');
-      terminal.pushToStdout(`Recipient: ${details.recipient}`);
-      terminal.pushToStdout(`UPC: ${details.upc}`);
-      terminal.pushToStdout(`Tokens: ${this.state.web3.utils.fromWei(details.numTokens, 'ether')}`);
-      terminal.pushToStdout(`Issue Date: ${new Date(details.issueDate * 1000)}`);
-      terminal.pushToStdout(`Deadline: ${new Date(details.deadline * 1000)}`);
-      terminal.pushToStdout(`Claimed: ${details.claimed ? 'Yes' : 'No'}`);
-      terminal.pushToStdout(`Invalidated: ${details.invalidated ? 'Yes' : 'No'}`);
+      terminal.pushToStdout('<span style="color:#FF5722;font-weight:bold">=== Reward Details ===</span>');
+      terminal.pushToStdout(`<span style="color:#FFC107">Recipient:</span> <span style="color:#64B5F6">${details.recipient}</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">UPC:</span> <span style="color:#64B5F6">${details.upc}</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">Tokens:</span> <span style="color:#64B5F6">${this.state.web3.utils.fromWei(details.numTokens, 'ether')}</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">Issue Date:</span> <span style="color:#64B5F6">${new Date(details.issueDate * 1000)}</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">Deadline:</span> <span style="color:#64B5F6">${new Date(details.deadline * 1000)}</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">Claimed:</span> <span style="color:#${details.claimed ? '4CAF50' : 'F44336'}">${details.claimed ? 'Yes' : 'No'}</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">Invalidated:</span> <span style="color:#${details.invalidated ? 'F44336' : '4CAF50'}">${details.invalidated ? 'Yes' : 'No'}</span>`);
     } catch (error) {
       terminal.pushToStdout(
         `[[error]]Error: ${error.reason || error.message}[[/error]]`
@@ -427,42 +416,33 @@ class SerialBoxTerminal extends Component {
     }
   };
 
-
-
-getAvailableTokens = async () => {
-  const terminal = this.progressTerminal.current;
-  this.setState({ isProgressing: true });
-  
-  try {
-    terminal.pushToStdout('Checking available tokens...');
+  getAvailableTokens = async () => {
+    const terminal = this.progressTerminal.current;
+    this.setState({ isProgressing: true });
     
-    // Debugging checks
-    if (!this.state.serialBox) {
-      throw new Error("Contract not initialized");
+    try {
+      terminal.pushToStdout('Checking available tokens...');
+      
+      if (!this.state.serialBox) {
+        throw new Error("Contract not initialized");
+      }
+
+      if (!this.state.serialBox.methods.getAvailableTokens) {
+        console.log("Available methods:", Object.keys(this.state.serialBox.methods));
+        throw new Error("getAvailableTokens method not found in contract");
+      }
+
+      const balance = await this.state.serialBox.methods.getAvailableTokens().call();
+      const balanceString = Web3.utils.fromWei(balance.toString(), 'ether');
+      
+      terminal.pushToStdout(`[[info]]Available tokens: ${balanceString}[[/info]]`);
+    } catch (error) {
+      terminal.pushToStdout(`[[error]]Error: ${error.message}[[/error]]`);
+      console.error("Balance check error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
     }
-
-
-    if (!this.state.serialBox.methods.getAvailableTokens) {
-      console.log("Available methods:", Object.keys(this.state.serialBox.methods));
-      throw new Error("getAvailableTokens method not found in contract");
-    }
-
-    const balance = await this.state.serialBox.methods.getAvailableTokens().call();
-    const balanceString = Web3.utils.fromWei(balance.toString(), 'ether');
-    
-    terminal.pushToStdout(`[[info]]Available tokens: ${balanceString}[[/info]]`);
-  } catch (error) {
-    terminal.pushToStdout(`[[error]]Error: ${error.message}[[/error]]`);
-    console.error("Balance check error:", error);
-  } finally {
-    this.setState({ isProgressing: false });
-  }
-};
-
-
-
-
-
+  };
 
   // Modal Form Example
   showRewardForm = async () => {
@@ -500,11 +480,16 @@ getAvailableTokens = async () => {
     `;
 
     return (
-      <div style={{ position: 'relative' }}>
+      <div style={{ 
+        position: 'relative',
+        backgroundColor: '#121212',
+        minHeight: '100vh',
+        padding: '20px'
+      }}>
         <Terminal
           style={{
             minHeight: "75vh",
-            backgroundColor: "#000",
+            backgroundColor: "#1a0404",
             zIndex: "99",
             borderRadius: "5px",
             padding: "10px",
@@ -512,69 +497,57 @@ getAvailableTokens = async () => {
           }}
           ref={this.progressTerminal}
           commands={{
-            // Reward Management Commands
             approvereward: {
-              description: 'Approve tokens for rewards\nUsage: approvereward <amount>',
+              description: '<p style="color:hotpink;font-size:1.1em">Approve tokens for rewards <br/> Usage: approvereward [amount] </p>',
               fn: async (amount) => await this.approveRewardTokens(amount)
             },
             addreward: {
-              description: 'Add a new reward\nUsage: addreward <serialNumber> <recipient> <upc> <numTokens>',
+              description: '<p style="color:hotpink;font-size:1.1em">Add a new reward <br/> Usage: addreward [serialNumber>] [recipient] [upc] [numTokens]</p>',
               fn: async (...args) => await this.addReward(...args)
             },
             claim: {
-              description: 'Claim a reward\nUsage: claim <serialNumber>',
+              description: '<p style="color:hotpink;font-size:1.1em">Claim a reward <br/>Usage: claim [serialNumber]</p>',
               fn: async (serialNumber) => await this.claimReward(serialNumber)
             },
-            
-            // Statistics
             stats: {
-              description: 'View contract statistics',
+              description: '<p style="color:hotpink;font-size:1.1em">View contract statistics</p>',
               fn: async () => await this.getStats()
             },
-        
             rewardinfo: {
-              description: 'Get reward details\nUsage: rewardinfo <serialNumber>',
+              description: '<p style="color:hotpink;font-size:1.1em">Get reward details <br/> Usage: rewardinfo [serialNumber]</p>',
               fn: async (serialNumber) => await this.getRewardDetails(serialNumber)
             },
-
-            // UPC Analytics
             topupcs: {
-              description: 'View top 10 UPCs by total tokens\nUsage: topupcs [minDate]',
+              description: '<p style="color:hotpink;font-size:1.1em">View top 10 UPCs by total tokens <br/> Usage: topupcs [minDate]</p>',
               fn: async (minDate) => await this.getTop10ByTotalTokens(minDate || 0)
             },
-            
-            // UPC Serial Numbers
             upcserials: {
-              description: 'Get serial numbers for a UPC\nUsage: upcserials <upc>',
+              description: '<p style="color:hotpink;font-size:1.1em">Get serial numbers for a UPC <br/> Usage: upcserials [upc]</p>',
               fn: async (upc) => await this.getSerialNumbersForUPC(upc)
             },
-            
-            // Token Management Commands
             approve: {
-              description: 'Approve tokens for contract\nUsage: approve <amount>',
+              description: '<p style="color:hotpink;font-size:1.1em">Approve tokens for contract <br/> Usage: approve [amount]</p>',
               fn: async (amount) => await this.approveTokens(amount)
             },
             deposit: {
-              description: 'Deposit approved tokens\nUsage: deposit <amount>',
+              description: '<p style="color:hotpink;font-size:1.1em">Deposit approved tokens<br/>Usage: deposit [amount]</p>',
               fn: async (amount) => await this.depositTokens(amount)
             },
-
             balance: {
-              description: 'Check available tokens',
+              description: '<p style="color:hotpink;font-size:1.1em">Check available tokens</p>',
               fn: async () => await this.getAvailableTokens()
             },
-            
-            // Modal Form
             showform: {
-              description: 'Show reward form in modal',
+              description: '<p style="color:hotpink;font-size:1.1em">Show reward form in modal</p>',
               fn: async () => await this.showRewardForm()
             },
           }}
+          dangerMode={true}
           welcomeMessage={welcomeMsg}
           ignoreCommandCase={true}
           promptLabel={'user@serialbox:~$'}
           promptLabelStyle={{
-            color: "green",
+            color: "#00BCD4",
             fontWeight: "bold",
             fontSize: "1.1em"
           }}
