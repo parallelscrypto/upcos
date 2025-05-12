@@ -6,6 +6,7 @@ import makeCarousel from 'react-reveal/makeCarousel';
 import TrebleCleffExp from './TrebleCleffExp'
 import BassCleff from './BassCleff'
 import SerialBoxTerminal from './SerialBoxTerminal'
+import MLBBettingTerminal from './MLBBettingTerminal'
 import TableSlideshow from './TableSlideshow'
 //import Popit from './Popit'
 import ReactCardFlip from 'react-card-flip';
@@ -520,6 +521,29 @@ export default class StaticCarouselExp extends Component {
               }
             },
 
+
+
+            basebet: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** open the baseball betting console.  NOT AFFILIATED WITH OR ENDORSED BY MLB IN ANY WAY</p>',
+              fn: () => {
+
+                     var winNum = 0;
+
+
+                      var mplayer = <MLBBettingTerminal/>;
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
 
 
 
