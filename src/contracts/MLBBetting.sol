@@ -57,6 +57,7 @@ contract MLBBetting {
         uint256 currentInning;
         bool isFinished;
         uint256 creationTime;
+        uint256 gameDate; // Added date field
     }
     
     struct Contestant {
@@ -93,12 +94,13 @@ contract MLBBetting {
     mapping(string => uint256[]) public upcToWagers;
     mapping(MLBTeam => uint256[]) public teamToMatchups;
     mapping(uint256 => Reward[]) public matchupRewards;
+    mapping(uint256 => uint256[]) public dateToMatchups; // Mapping for date to matchups
     
     uint256 public constant INSURANCE_FEE_PERCENT = 5;
     uint256 public constant LOSER_REWARD_PERCENT = 10;
     uint256 public constant CLAIM_PERIOD = 30 days;
     
-    event MatchupAdded(uint256 id, MLBTeam homeTeam, MLBTeam awayTeam);
+    event MatchupAdded(uint256 id, MLBTeam homeTeam, MLBTeam awayTeam, uint256 gameDate);
     event MatchupUpdated(uint256 id, uint256 homeScore, uint256 awayScore, uint256 currentInning, bool isFinished);
     event WagerCreated(uint256 id, uint256 matchupId, address initiator, MLBTeam predictedWinner, uint256 amount, bool isDoubleInsured, string upcId);
     event ContestantJoined(uint256 wagerId, address contestant, uint256 amount, MLBTeam predictedWinner);
@@ -150,7 +152,7 @@ contract MLBBetting {
         teamNames[MLBTeam.WASHINGTON_NATIONALS] = "Washington Nationals";
     }
 
-    function addMatchup(MLBTeam _homeTeam, MLBTeam _awayTeam) external onlyOwner {
+    function addMatchup(MLBTeam _homeTeam, MLBTeam _awayTeam, uint256 _gameDate) external onlyOwner {
         uint256 matchupId = _matchupIdCounter.current();
         _matchupIdCounter.increment();
         
@@ -162,13 +164,15 @@ contract MLBBetting {
             awayScore: 0,
             currentInning: 0,
             isFinished: false,
-            creationTime: block.timestamp
+            creationTime: block.timestamp,
+            gameDate: _gameDate
         });
         
         teamToMatchups[_homeTeam].push(matchupId);
         teamToMatchups[_awayTeam].push(matchupId);
+        dateToMatchups[_gameDate].push(matchupId);
         
-        emit MatchupAdded(matchupId, _homeTeam, _awayTeam);
+        emit MatchupAdded(matchupId, _homeTeam, _awayTeam, _gameDate);
     }
 
     function updateMatchup(
@@ -310,6 +314,10 @@ contract MLBBetting {
         return teamToMatchups[_team];
     }
 
+    function getMatchupsByDate(uint256 _date) external view returns (uint256[] memory) {
+        return dateToMatchups[_date];
+    }
+
     function getWagersByUPC(string memory _upcId) external view returns (uint256[] memory) {
         return upcToWagers[_upcId];
     }
@@ -333,7 +341,8 @@ contract MLBBetting {
         uint256 awayScore,
         uint256 currentInning,
         bool isFinished,
-        uint256 creationTime
+        uint256 creationTime,
+        uint256 gameDate
     ) {
         require(_matchupId < _matchupIdCounter.current(), "Invalid matchup ID");
         Matchup storage matchup = matchups[_matchupId];
@@ -345,7 +354,8 @@ contract MLBBetting {
             matchup.awayScore,
             matchup.currentInning,
             matchup.isFinished,
-            matchup.creationTime
+            matchup.creationTime,
+            matchup.gameDate
         );
     }
 

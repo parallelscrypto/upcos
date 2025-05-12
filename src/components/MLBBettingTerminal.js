@@ -5,7 +5,7 @@ import MLBBettingContract from '../etc/rawmaterial/MLBBetting.json';
 import Web3 from 'web3';
 
 // Contract addresses
-const MLB_BETTING_ADDRESS = "0x4229bFFb75135F942DecfB13055a31580D80C855";
+const MLB_BETTING_ADDRESS = "0x58A25b987394AA74E881904e4B01D0fF98E485F3";
 const FLIP_TOKEN_ADDRESS = "0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118";
 
 const MLB_BETTING_ABI = MLBBettingContract.abi;
@@ -35,10 +35,23 @@ const ERC20_ABI = [
     "payable": false,
     "stateMutability": "view",
     "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {"name": "_owner", "type": "address"}
+    ],
+    "name": "balanceOf",
+    "outputs": [{"name": "balance", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   }
 ];
 
 class MLBBettingTerminal extends Component {
+
+
   constructor(props) {
     super(props);
     this.state = {
@@ -48,10 +61,43 @@ class MLBBettingTerminal extends Component {
       isProgressing: false,
       provider: null,
       signer: null,
-      web3: null
+      web3: null,
+      teams: [
+        "ARIZONA_DIAMONDBACKS",
+        "ATLANTA_BRAVES",
+        "BALTIMORE_ORIOLES",
+        "BOSTON_RED_SOX",
+        "CHICAGO_CUBS",
+        "CHICAGO_WHITE_SOX",
+        "CINCINNATI_REDS",
+        "CLEVELAND_GUARDIANS",
+        "COLORADO_ROCKIES",
+        "DETROIT_TIGERS",
+        "HOUSTON_ASTROS",
+        "KANSAS_CITY_ROYALS",
+        "LOS_ANGELES_ANGELS",
+        "LOS_ANGELES_DODGERS",
+        "MIAMI_MARLINS",
+        "MILWAUKEE_BREWERS",
+        "MINNESOTA_TWINS",
+        "NEW_YORK_METS",
+        "NEW_YORK_YANKEES",
+        "OAKLAND_ATHLETICS",
+        "PHILADELPHIA_PHILLIES",
+        "PITTSBURGH_PIRATES",
+        "SAN_DIEGO_PADRES",
+        "SAN_FRANCISCO_GIANTS",
+        "SEATTLE_MARINERS",
+        "ST_LOUIS_CARDINALS",
+        "TAMPA_BAY_RAYS",
+        "TEXAS_RANGERS",
+        "TORONTO_BLUE_JAYS",
+        "WASHINGTON_NATIONALS"
+      ]
     };
     this.terminal = React.createRef();
   }
+
 
   async componentDidMount() {
     await this.loadBlockchainData();
@@ -99,6 +145,68 @@ class MLBBettingTerminal extends Component {
       console.error("Blockchain connection error:", error);
     }
   }
+
+  // List teams with optional filter
+  listTeams = async (filter = '') => {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      const filterLower = filter.toLowerCase();
+      const filteredTeams = filter 
+        ? this.state.teams.filter(team => 
+            team.toLowerCase().includes(filterLower))
+        : this.state.teams;
+
+      if (filteredTeams.length === 0) {
+        terminal.pushToStdout(`[[info]]No teams found matching "${filter}"[[/info]]`);
+        return;
+      }
+
+      terminal.pushToStdout('[[header]]=== MLB Teams ===[[/header]]');
+      filteredTeams.forEach(team => {
+        terminal.pushToStdout(`- ${team}`);
+      });
+      terminal.pushToStdout(`[[info]]Found ${filteredTeams.length} team(s)[[/info]]`);
+    } catch (error) {
+      terminal.pushToStdout(`[[error]]Error listing teams: ${error.message}[[/error]]`);
+      console.error("Team list error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  };
+
+  // Helper to convert team names to enum values
+  getTeamEnum = (teamName) => {
+    const teamIndex = this.state.teams.indexOf(teamName.toUpperCase());
+    if (teamIndex === -1) {
+      throw new Error(`Invalid team name: ${teamName}`);
+    }
+    return teamIndex;
+  };
+
+
+  // Check FLIP token balance of contract
+  checkFlipBalance = async () => {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      terminal.pushToStdout('Checking FLIP token balance...');
+      
+      const balance = await this.state.mlbBetting.methods.getFlipTokenBalance().call();
+      const balanceInEth = this.state.web3.utils.fromWei(balance, 'ether');
+      
+      terminal.pushToStdout(`[[balance]]`);
+      terminal.pushToStdout(`${balanceInEth} FLIP`);
+      terminal.pushToStdout(`[[/balance]]`);
+    } catch (error) {
+      terminal.pushToStdout(`[[error]]Balance check error: ${error.message}[[/error]]`);
+      console.error("Balance check error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  };
 
   // Approve Flip tokens for betting contract
   approveFlipTokens = async (amount) => {
@@ -289,6 +397,330 @@ class MLBBettingTerminal extends Component {
     }
   };
 
+
+
+
+
+
+
+
+
+
+
+// Updated addMatchup function to properly handle dates
+addMatchup = async (homeTeam, awayTeam, dateString) => {
+  const terminal = this.terminal.current;
+  this.setState({ isProgressing: true });
+  
+  try {
+    terminal.pushToStdout(`Adding matchup: ${homeTeam} vs ${awayTeam}...`);
+    
+    // Convert team strings to enum values
+    const homeTeamEnum = this.getTeamEnum(homeTeam);
+    const awayTeamEnum = this.getTeamEnum(awayTeam);
+    
+    // Parse date string into timestamp (seconds since epoch)
+    const gameTimestamp = this.parseDateToTimestamp(dateString);
+    
+    terminal.pushToStdout(`Game time: ${new Date(gameTimestamp * 1000).toString()}`);
+    
+    // Call the contract with the timestamp
+    const tx = await this.state.mlbBetting.methods.addMatchup(
+      homeTeamEnum,
+      awayTeamEnum,
+      gameTimestamp
+    ).send({ from: this.state.account });
+
+    terminal.pushToStdout(
+      `[[success]]Matchup added successfully![[/success]]`
+    );
+    terminal.pushToStdout(`Transaction hash: ${tx.transactionHash}`);
+    terminal.pushToStdout(`Game timestamp: ${gameTimestamp} (${new Date(gameTimestamp * 1000).toString()})`);
+  } catch (error) {
+    terminal.pushToStdout(
+      `[[error]]Error adding matchup: ${error.message}[[/error]]`
+    );
+    console.error("Add matchup error:", error);
+  } finally {
+    this.setState({ isProgressing: false });
+  }
+};
+
+// Helper function to convert date string to timestamp (seconds since epoch)
+parseDateToTimestamp = (dateString) => {
+  try {
+    // Expected format: "YYYY-MM-DD" or "YYYY-MM-DD:HH:MM"
+    let dateParts, timeParts;
+    
+    if (dateString.includes(':')) {
+      // Handle "YYYY-MM-DD:HH:MM" format
+      const [datePart, timePart] = dateString.split(':');
+      dateParts = datePart.split('-').map(Number);
+      timeParts = timePart.split(':').map(Number);
+    } else {
+      // Handle "YYYY-MM-DD" format (default to noon)
+      dateParts = dateString.split('-').map(Number);
+      timeParts = [12, 0]; // Default to 12:00 PM
+    }
+
+    const [year, month, day] = dateParts;
+    const [hours, minutes] = timeParts;
+
+    // JavaScript months are 0-indexed
+    const date = new Date(year, month - 1, day, hours, minutes);
+    
+    // Validate the date was parsed correctly
+    if (isNaN(date.getTime())) {
+      throw new Error('Invalid date values');
+    }
+    
+    // Convert to Unix timestamp (seconds)
+    return Math.floor(date.getTime() / 1000);
+  } catch (error) {
+    console.error("Date parsing error:", error);
+    throw new Error('Invalid date format. Please use "YYYY-MM-DD" or "YYYY-MM-DD:HH:MM" (24-hour format)');
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // Update matchup (owner only)
+  updateMatchup = async (matchupId, homeScore, awayScore, currentInning, isFinished) => {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      terminal.pushToStdout(`Updating matchup ${matchupId}...`);
+      
+      const tx = await this.state.mlbBetting.methods.updateMatchup(
+        matchupId,
+        homeScore,
+        awayScore,
+        currentInning,
+        isFinished
+      ).send({ from: this.state.account });
+
+      terminal.pushToStdout(
+        `[[success]]Matchup updated successfully![[/success]]`
+      );
+      terminal.pushToStdout(`Transaction hash: ${tx.transactionHash}`);
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error updating matchup: ${error.message}[[/error]]`
+      );
+      console.error("Update matchup error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  };
+
+  // Helper to convert team names to enum values
+  getTeamEnum = (teamName) => {
+
+    const teamMap = {
+      "ARIZONA_DIAMONDBACKS": 0,
+      "ATLANTA_BRAVES": 1,
+      "BALTIMORE_ORIOLES": 2,
+      "BOSTON_RED_SOX": 3,
+      "CHICAGO_CUBS": 4,
+      "CHICAGO_WHITE_SOX": 5,
+      "CINCINNATI_REDS": 6,
+      "CLEVELAND_GUARDIANS": 7,
+      "COLORADO_ROCKIES": 8,
+      "DETROIT_TIGERS": 9,
+      "HOUSTON_ASTROS": 10,
+      "KANSAS_CITY_ROYALS": 11,
+      "LOS_ANGELES_ANGELS": 12,
+      "LOS_ANGELES_DODGERS": 13,
+      "MIAMI_MARLINS": 14,
+      "MILWAUKEE_BREWERS": 15,
+      "MINNESOTA_TWINS": 16,
+      "NEW_YORK_METS": 17,
+      "NEW_YORK_YANKEES": 18,
+      "OAKLAND_ATHLETICS": 19,
+      "PHILADELPHIA_PHILLIES": 20,
+      "PITTSBURGH_PIRATES": 21,
+      "SAN_DIEGO_PADRES": 22,
+      "SAN_FRANCISCO_GIANTS": 23,
+      "SEATTLE_MARINERS": 24,
+      "ST_LOUIS_CARDINALS": 25,
+      "TAMPA_BAY_RAYS": 26,
+      "TEXAS_RANGERS": 27,
+      "TORONTO_BLUE_JAYS": 28,
+      "WASHINGTON_NATIONALS": 29
+    };
+
+    const enumValue = teamMap[teamName.toUpperCase()];
+    if (enumValue === undefined) {
+      throw new Error(`Invalid team name: ${teamName}`);
+    }
+    return enumValue;
+  };
+
+
+
+
+
+  // Helper to convert date string to day number
+  parseDateString = (dateString) => {
+    try {
+      // Expected format: "YYYY-MM-DD"
+      const [year, month, day] = dateString.split('-').map(Number);
+      
+      // JavaScript months are 0-indexed
+      const date = new Date(year, month - 1, day);
+      
+      // Validate the date was parsed correctly
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date values');
+      }
+      
+      // Convert to days since epoch (Unix timestamp / seconds per day)
+      return Math.floor(date.getTime() / 1000 / 86400);
+    } catch (error) {
+      console.error("Date parsing error:", error);
+      throw new Error('Invalid date format. Please use "YYYY-MM-DD"');
+    }
+  };
+
+  // Get matchups by date (YYYY-MM-DD format)
+  getMatchupsByDate = async (dateString) => {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      // Parse date string into day number
+      const dayNumber = this.parseDateString(dateString);
+      
+      terminal.pushToStdout(`Fetching matchups for ${dateString} (day ${dayNumber})...`);
+      
+      // Get matchup IDs for this day
+      const matchupIds = await this.state.mlbBetting.methods.getMatchupsByDay(
+        dayNumber
+      ).call();
+      
+      if (matchupIds.length === 0) {
+        terminal.pushToStdout('[[info]]No matchups found for this date[[/info]]');
+        return;
+      }
+      
+      terminal.pushToStdout('[[header]]=== Matchups ===[[/header]]');
+      
+      // Get details for each matchup
+      for (const id of matchupIds) {
+        const details = await this.state.mlbBetting.methods.getMatchupDetails(id).call();
+        const homeTeam = this.state.teams[details.homeTeam];
+        const awayTeam = this.state.teams[details.awayTeam];
+        
+        terminal.pushToStdout(`- ID: ${id} | ${homeTeam} vs ${awayTeam}`);
+        terminal.pushToStdout(`  Status: ${details.isFinished ? 'Finished' : 'In Progress'}`);
+        terminal.pushToStdout(`  Score: ${details.homeScore} - ${details.awayScore}`);
+      }
+      
+      terminal.pushToStdout(`[[info]]Found ${matchupIds.length} matchup(s)[[/info]]`);
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error fetching matchups: ${error.message}[[/error]]`
+      );
+      console.error("Get matchups by date error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  };
+
+  // Get detailed view of matchups by date
+  getMatchupsByDateDetailed = async (dateString) => {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      // Parse date string into day number
+      const dayNumber = this.parseDateString(dateString);
+      
+      terminal.pushToStdout(`Fetching detailed matchups for ${dateString}...`);
+      
+      // Get matchup IDs for this day
+      const matchupIds = await this.state.mlbBetting.methods.getMatchupsByDay(
+        dayNumber
+      ).call();
+      
+      if (matchupIds.length === 0) {
+        terminal.pushToStdout('[[info]]No matchups found for this date[[/info]]');
+        return;
+      }
+      
+      terminal.pushToStdout('<span style="color:#FF5722;font-weight:bold">=== Matchups ===</span>');
+      
+      // Get full details for each matchup
+      for (const id of matchupIds) {
+        const details = await this.state.mlbBetting.methods.getMatchupDetails(id).call();
+        const homeTeam = this.state.teams[details.homeTeam];
+        const awayTeam = this.state.teams[details.awayTeam];
+        
+        terminal.pushToStdout(`<span style="color:#FFC107">Matchup ID:</span> <span style="color:#64B5F6">${id}</span>`);
+        terminal.pushToStdout(`<span style="color:#FFC107">Teams:</span> <span style="color:#64B5F6">${homeTeam} vs ${awayTeam}</span>`);
+        terminal.pushToStdout(`<span style="color:#FFC107">Score:</span> <span style="color:#64B5F6">${details.homeScore} - ${details.awayScore}</span>`);
+        terminal.pushToStdout(`<span style="color:#FFC107">Inning:</span> <span style="color:#64B5F6">${details.currentInning}</span>`);
+        terminal.pushToStdout(`<span style="color:#FFC107">Status:</span> <span style="color:#${details.isFinished ? '4CAF50' : 'F44336'}">${details.isFinished ? 'Finished' : 'In Progress'}</span>`);
+        terminal.pushToStdout('----------------------------------');
+      }
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error: ${error.reason || error.message}[[/error]]`
+      );
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   render() {
     const welcomeMsg = `
       [[header]]
@@ -318,6 +750,22 @@ class MLBBettingTerminal extends Component {
           }}
           ref={this.terminal}
           commands={{
+            games: {
+              description: '<p style="color:hotpink;font-size:1.1em">List games by date (YYYY-MM-DD)<br/>Usage: games [date]</p>',
+              fn: async (date) => await this.getMatchupsByDate(date)
+            },
+            gamesdetail: {
+              description: '<p style="color:hotpink;font-size:1.1em">List games with details by date (YYYY-MM-DD)<br/>Usage: gamesdetail [date]</p>',
+              fn: async (date) => await this.getMatchupsByDateDetailed(date)
+            },
+            teams: {
+              description: '<p style="color:hotpink;font-size:1.1em">List all teams or filter by name<br/>Usage: teams [filter]</p>',
+              fn: async (filter = '') => await this.listTeams(filter)
+            },
+            bal: {
+              description: '<p style="color:hotpink;font-size:1.1em">Check contract FLIP token balance</p>',
+              fn: async () => await this.checkFlipBalance()
+            },
             approve: {
               description: '<p style="color:hotpink;font-size:1.1em">Approve FLIP tokens for betting contract<br/>Usage: approve [amount]</p>',
               fn: async (amount) => await this.approveFlipTokens(amount)
@@ -345,7 +793,15 @@ class MLBBettingTerminal extends Component {
             depositflip: {
               description: '<p style="color:hotpink;font-size:1.1em">Deposit FLIP tokens to contract<br/>Usage: depositflip [amount]</p>',
               fn: async (amount) => await this.depositFlipTokens(amount)
-            }
+            },
+            addmatchup: {
+              description: '<p style="color:hotpink;font-size:1.1em">Add new matchup (Owner only)<br/>Usage: addmatchup [homeTeam] [awayTeam] [dateTime]<br/>Team names must be in ALL_CAPS (e.g. NEW_YORK_YANKEES)<br/>DateTime format: "YYYY-MM-DD HH:MM" (24-hour)</p>',
+              fn: async (...args) => await this.addMatchup(...args)
+            },
+            updatematchup: {
+              description: '<p style="color:hotpink;font-size:1.1em">Update matchup (Owner only)<br/>Usage: updatematchup [matchupId] [homeScore] [awayScore] [currentInning] [isFinished]<br/>isFinished: true/false</p>',
+              fn: async (...args) => await this.updateMatchup(...args)
+            },
           }}
           dangerMode={true}
           welcomeMessage={welcomeMsg}
