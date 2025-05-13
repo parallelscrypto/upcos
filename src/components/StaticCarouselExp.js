@@ -523,7 +523,7 @@ export default class StaticCarouselExp extends Component {
 
 
 
-            betbase: {
+            base: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** open the baseball betting console.  NOT AFFILIATED WITH OR ENDORSED BY MLB IN ANY WAY</p>',
               fn: () => {
 

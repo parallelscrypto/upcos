@@ -7,7 +7,7 @@ import "./RawMaterial.sol" as UPCContract;
 
 contract MLBBetting {
     using Counters for Counters.Counter;
-    
+    mapping(address => bool) public admins;
     address public owner;
     UPCContract.RawMaterial public upcNFT;
     IERC20 public flipToken;
@@ -57,7 +57,7 @@ contract MLBBetting {
         uint256 currentInning;
         bool isFinished;
         uint256 creationTime;
-        uint256 gameDate; // Added date field
+        uint256 gameDay;
     }
     
     struct Contestant {
@@ -94,29 +94,80 @@ contract MLBBetting {
     mapping(string => uint256[]) public upcToWagers;
     mapping(MLBTeam => uint256[]) public teamToMatchups;
     mapping(uint256 => Reward[]) public matchupRewards;
-    mapping(uint256 => uint256[]) public dateToMatchups; // Mapping for date to matchups
+    mapping(uint256 => uint256[]) public dayToMatchups;
     
     uint256 public constant INSURANCE_FEE_PERCENT = 5;
     uint256 public constant LOSER_REWARD_PERCENT = 10;
     uint256 public constant CLAIM_PERIOD = 30 days;
     
-    event MatchupAdded(uint256 id, MLBTeam homeTeam, MLBTeam awayTeam, uint256 gameDate);
+    event MatchupAdded(uint256 id, MLBTeam homeTeam, MLBTeam awayTeam, uint256 gameDay);
     event MatchupUpdated(uint256 id, uint256 homeScore, uint256 awayScore, uint256 currentInning, bool isFinished);
+    event MatchupModified(uint256 id, MLBTeam homeTeam, MLBTeam awayTeam, uint256 gameDay);
     event WagerCreated(uint256 id, uint256 matchupId, address initiator, MLBTeam predictedWinner, uint256 amount, bool isDoubleInsured, string upcId);
     event ContestantJoined(uint256 wagerId, address contestant, uint256 amount, MLBTeam predictedWinner);
     event RewardClaimed(uint256 wagerId, address user, uint256 amount);
     event FlipTokensSent(address loser, uint256 amount);
-    
+    event MatchupFinishedStatusChanged(uint256 id, bool isFinished);
+    event AdminAdded(address indexed admin);
+    event AdminRemoved(address indexed admin);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+
     constructor() {
         owner = msg.sender;
+        // Owner is also an admin by default
+        admins[msg.sender] = true;
+        // Add the specified default admins
+        admins[0xf67F98DBFC81581F0d2af6bDf343c762e1e6C406] = true;
+        admins[0xe2140091460Be6d556ad810460a59e80C45c6A8D] = true;
+        
         upcNFT = UPCContract.RawMaterial(0x62c287A2d9af21369669E555c733cEb1eE5D74b5);
         flipToken = IERC20(FLIP_TOKEN_ADDRESS);
         _initializeTeamNames();
+        
+        // Emit events for the default admins
+        emit AdminAdded(msg.sender);
+        emit AdminAdded(0xf67F98DBFC81581F0d2af6bDf343c762e1e6C406);
+        emit AdminAdded(0xe2140091460Be6d556ad810460a59e80C45c6A8D);
     }
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner");
         _;
+    }
+
+    modifier onlyAdmin() {
+        require(admins[msg.sender], "Only admin");
+        _;
+    }
+
+    modifier onlyOwnerOrAdmin() {
+        require(msg.sender == owner || admins[msg.sender], "Only owner or admin");
+        _;
+    }    
+
+    // Admin management functions
+    function addAdmin(address _admin) external onlyOwner {
+        require(_admin != address(0), "Invalid address");
+        require(!admins[_admin], "Already admin");
+        admins[_admin] = true;
+        emit AdminAdded(_admin);
+    }
+
+    function removeAdmin(address _admin) external onlyOwner {
+        require(_admin != owner, "Cannot remove owner");
+        require(admins[_admin], "Not an admin");
+        admins[_admin] = false;
+        emit AdminRemoved(_admin);
+    }
+
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "Invalid address");
+        require(newOwner != owner, "Already owner");
+        admins[owner] = false; // Remove old owner from admins
+        emit OwnershipTransferred(owner, newOwner);
+        owner = newOwner;
+        admins[newOwner] = true; // Add new owner to admins
     }
 
     function _initializeTeamNames() private {
@@ -152,7 +203,7 @@ contract MLBBetting {
         teamNames[MLBTeam.WASHINGTON_NATIONALS] = "Washington Nationals";
     }
 
-    function addMatchup(MLBTeam _homeTeam, MLBTeam _awayTeam, uint256 _gameDate) external onlyOwner {
+    function addMatchup(MLBTeam _homeTeam, MLBTeam _awayTeam, uint256 _gameDay) external onlyOwnerOrAdmin {
         uint256 matchupId = _matchupIdCounter.current();
         _matchupIdCounter.increment();
         
@@ -165,15 +216,25 @@ contract MLBBetting {
             currentInning: 0,
             isFinished: false,
             creationTime: block.timestamp,
-            gameDate: _gameDate
+            gameDay: _gameDay
         });
         
         teamToMatchups[_homeTeam].push(matchupId);
         teamToMatchups[_awayTeam].push(matchupId);
-        dateToMatchups[_gameDate].push(matchupId);
+        dayToMatchups[_gameDay].push(matchupId);
         
-        emit MatchupAdded(matchupId, _homeTeam, _awayTeam, _gameDate);
+        emit MatchupAdded(matchupId, _homeTeam, _awayTeam, _gameDay);
     }
+
+    function setMatchupFinishedStatus(uint256 _matchupId, bool _isFinished) external onlyOwnerOrAdmin{
+        require(_matchupId < _matchupIdCounter.current(), "Invalid matchup ID");
+        
+        Matchup storage matchup = matchups[_matchupId];
+        matchup.isFinished = _isFinished;
+        
+        emit MatchupFinishedStatusChanged(_matchupId, _isFinished);
+    }
+
 
     function updateMatchup(
         uint256 _matchupId,
@@ -181,16 +242,53 @@ contract MLBBetting {
         uint256 _awayScore,
         uint256 _currentInning,
         bool _isFinished
-    ) external onlyOwner {
+    ) external onlyOwnerOrAdmin{
         require(_matchupId < _matchupIdCounter.current(), "Invalid matchup ID");
         
         Matchup storage matchup = matchups[_matchupId];
         matchup.homeScore = _homeScore;
         matchup.awayScore = _awayScore;
         matchup.currentInning = _currentInning;
-        matchup.isFinished = _isFinished;
         
         emit MatchupUpdated(_matchupId, _homeScore, _awayScore, _currentInning, _isFinished);
+    }
+
+    function modifyMatchup(
+        uint256 _matchupId,
+        MLBTeam _homeTeam,
+        MLBTeam _awayTeam,
+        uint256 _gameDay
+    ) external onlyOwnerOrAdmin{
+        require(_matchupId < _matchupIdCounter.current(), "Invalid matchup ID");
+        require(!matchups[_matchupId].isFinished, "Cannot modify finished matchup");
+        
+        MLBTeam oldHomeTeam = matchups[_matchupId].homeTeam;
+        MLBTeam oldAwayTeam = matchups[_matchupId].awayTeam;
+        uint256 oldGameDay = matchups[_matchupId].gameDay;
+        
+        removeFromMapping(teamToMatchups[oldHomeTeam], _matchupId);
+        removeFromMapping(teamToMatchups[oldAwayTeam], _matchupId);
+        removeFromMapping(dayToMatchups[oldGameDay], _matchupId);
+        
+        matchups[_matchupId].homeTeam = _homeTeam;
+        matchups[_matchupId].awayTeam = _awayTeam;
+        matchups[_matchupId].gameDay = _gameDay;
+        
+        teamToMatchups[_homeTeam].push(_matchupId);
+        teamToMatchups[_awayTeam].push(_matchupId);
+        dayToMatchups[_gameDay].push(_matchupId);
+        
+        emit MatchupModified(_matchupId, _homeTeam, _awayTeam, _gameDay);
+    }
+
+    function removeFromMapping(uint256[] storage array, uint256 value) private {
+        for (uint256 i = 0; i < array.length; i++) {
+            if (array[i] == value) {
+                array[i] = array[array.length - 1];
+                array.pop();
+                break;
+            }
+        }
     }
 
     function createWager(
@@ -314,8 +412,8 @@ contract MLBBetting {
         return teamToMatchups[_team];
     }
 
-    function getMatchupsByDate(uint256 _date) external view returns (uint256[] memory) {
-        return dateToMatchups[_date];
+    function getMatchupsByDay(uint256 _dayNumber) external view returns (uint256[] memory) {
+        return dayToMatchups[_dayNumber];
     }
 
     function getWagersByUPC(string memory _upcId) external view returns (uint256[] memory) {
@@ -342,7 +440,7 @@ contract MLBBetting {
         uint256 currentInning,
         bool isFinished,
         uint256 creationTime,
-        uint256 gameDate
+        uint256 gameDay
     ) {
         require(_matchupId < _matchupIdCounter.current(), "Invalid matchup ID");
         Matchup storage matchup = matchups[_matchupId];
@@ -355,7 +453,7 @@ contract MLBBetting {
             matchup.currentInning,
             matchup.isFinished,
             matchup.creationTime,
-            matchup.gameDate
+            matchup.gameDay
         );
     }
 

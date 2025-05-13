@@ -5,7 +5,7 @@ import MLBBettingContract from '../etc/rawmaterial/MLBBetting.json';
 import Web3 from 'web3';
 
 // Contract addresses
-const MLB_BETTING_ADDRESS = "0x58A25b987394AA74E881904e4B01D0fF98E485F3";
+const MLB_BETTING_ADDRESS = "0x38B58fe2cB08Ba9f2D57103dC22592d9f9b7237d";
 const FLIP_TOKEN_ADDRESS = "0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118";
 
 const MLB_BETTING_ABI = MLBBettingContract.abi;
@@ -50,8 +50,6 @@ const ERC20_ABI = [
 ];
 
 class MLBBettingTerminal extends Component {
-
-
   constructor(props) {
     super(props);
     this.state = {
@@ -97,7 +95,6 @@ class MLBBettingTerminal extends Component {
     };
     this.terminal = React.createRef();
   }
-
 
   async componentDidMount() {
     await this.loadBlockchainData();
@@ -146,6 +143,40 @@ class MLBBettingTerminal extends Component {
     }
   }
 
+
+
+  // Set matchup finished status (owner only)
+  setMatchupFinished = async (matchupId, isFinished) => {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      // Convert string to boolean if needed
+      const finishedStatus = isFinished === 'true' || isFinished === '1';
+      
+      terminal.pushToStdout(`Setting matchup ${matchupId} finished status to ${finishedStatus}...`);
+      
+      const tx = await this.state.mlbBetting.methods.setMatchupFinishedStatus(
+        matchupId,
+        finishedStatus
+      ).send({ from: this.state.account });
+  
+      terminal.pushToStdout(
+        `[[success]]Matchup finished status updated successfully![[/success]]`
+      );
+      terminal.pushToStdout(`Transaction hash: ${tx.transactionHash}`);
+      terminal.pushToStdout(`New status: ${finishedStatus ? 'Finished' : 'Not Finished'}`);
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error updating finished status: ${error.message}[[/error]]`
+      );
+      console.error("Update finished status error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  };
+
+
   // List teams with optional filter
   listTeams = async (filter = '') => {
     const terminal = this.terminal.current;
@@ -184,7 +215,6 @@ class MLBBettingTerminal extends Component {
     }
     return teamIndex;
   };
-
 
   // Check FLIP token balance of contract
   checkFlipBalance = async () => {
@@ -331,8 +361,9 @@ class MLBBettingTerminal extends Component {
       ).call();
       
       terminal.pushToStdout('<span style="color:#FF5722;font-weight:bold">=== Matchup Details ===</span>');
-      terminal.pushToStdout(`<span style="color:#FFC107">Home Team:</span> <span style="color:#64B5F6">${details.homeTeam}</span>`);
-      terminal.pushToStdout(`<span style="color:#FFC107">Away Team:</span> <span style="color:#64B5F6">${details.awayTeam}</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">Home Team:</span> <span style="color:#64B5F6">${this.state.teams[details.homeTeam]}</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">Away Team:</span> <span style="color:#64B5F6">${this.state.teams[details.awayTeam]}</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">Game Date:</span> <span style="color:#64B5F6">${new Date(details.gameDay * 86400 * 1000).toISOString().split('T')[0]}</span>`);
       terminal.pushToStdout(`<span style="color:#FFC107">Home Score:</span> <span style="color:#64B5F6">${details.homeScore}</span>`);
       terminal.pushToStdout(`<span style="color:#FFC107">Away Score:</span> <span style="color:#64B5F6">${details.awayScore}</span>`);
       terminal.pushToStdout(`<span style="color:#FFC107">Current Inning:</span> <span style="color:#64B5F6">${details.currentInning}</span>`);
@@ -360,7 +391,7 @@ class MLBBettingTerminal extends Component {
       terminal.pushToStdout('<span style="color:#FF5722;font-weight:bold">=== Wager Details ===</span>');
       terminal.pushToStdout(`<span style="color:#FFC107">Matchup ID:</span> <span style="color:#64B5F6">${details.matchupId}</span>`);
       terminal.pushToStdout(`<span style="color:#FFC107">Initiator:</span> <span style="color:#64B5F6">${details.initiator}</span>`);
-      terminal.pushToStdout(`<span style="color:#FFC107">Predicted Winner:</span> <span style="color:#64B5F6">${details.predictedWinner}</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">Predicted Winner:</span> <span style="color:#64B5F6">${this.state.teams[details.predictedWinner]}</span>`);
       terminal.pushToStdout(`<span style="color:#FFC107">Amount:</span> <span style="color:#64B5F6">${this.state.web3.utils.fromWei(details.wagerAmount, 'ether')} MATIC</span>`);
       terminal.pushToStdout(`<span style="color:#FFC107">Double Insured:</span> <span style="color:#${details.isDoubleInsured ? '4CAF50' : 'F44336'}">${details.isDoubleInsured ? 'Yes' : 'No'}</span>`);
       terminal.pushToStdout(`<span style="color:#FFC107">Insurance Fee:</span> <span style="color:#64B5F6">${this.state.web3.utils.fromWei(details.insuranceFee, 'ether')} MATIC</span>`);
@@ -397,111 +428,88 @@ class MLBBettingTerminal extends Component {
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-// Updated addMatchup function to properly handle dates
-addMatchup = async (homeTeam, awayTeam, dateString) => {
-  const terminal = this.terminal.current;
-  this.setState({ isProgressing: true });
-  
-  try {
-    terminal.pushToStdout(`Adding matchup: ${homeTeam} vs ${awayTeam}...`);
+  // Add new matchup (owner only)
+  addMatchup = async (homeTeam, awayTeam, dateString) => {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
     
-    // Convert team strings to enum values
-    const homeTeamEnum = this.getTeamEnum(homeTeam);
-    const awayTeamEnum = this.getTeamEnum(awayTeam);
-    
-    // Parse date string into timestamp (seconds since epoch)
-    const gameTimestamp = this.parseDateToTimestamp(dateString);
-    
-    terminal.pushToStdout(`Game time: ${new Date(gameTimestamp * 1000).toString()}`);
-    
-    // Call the contract with the timestamp
-    const tx = await this.state.mlbBetting.methods.addMatchup(
-      homeTeamEnum,
-      awayTeamEnum,
-      gameTimestamp
-    ).send({ from: this.state.account });
+    try {
+      terminal.pushToStdout(`Adding matchup: ${homeTeam} vs ${awayTeam}...`);
+      
+      const homeTeamEnum = this.getTeamEnum(homeTeam);
+      const awayTeamEnum = this.getTeamEnum(awayTeam);
+      
+      const gameDay = this.parseDateString(dateString);
+      const displayDate = new Date(gameDay * 86400 * 1000).toISOString().split('T')[0];
+      
+      terminal.pushToStdout(`Game day: ${displayDate} (day number: ${gameDay})`);
+      
+      const tx = await this.state.mlbBetting.methods.addMatchup(
+        homeTeamEnum,
+        awayTeamEnum,
+        gameDay
+      ).send({ from: this.state.account });
 
-    terminal.pushToStdout(
-      `[[success]]Matchup added successfully![[/success]]`
-    );
-    terminal.pushToStdout(`Transaction hash: ${tx.transactionHash}`);
-    terminal.pushToStdout(`Game timestamp: ${gameTimestamp} (${new Date(gameTimestamp * 1000).toString()})`);
-  } catch (error) {
-    terminal.pushToStdout(
-      `[[error]]Error adding matchup: ${error.message}[[/error]]`
-    );
-    console.error("Add matchup error:", error);
-  } finally {
-    this.setState({ isProgressing: false });
-  }
-};
-
-// Helper function to convert date string to timestamp (seconds since epoch)
-parseDateToTimestamp = (dateString) => {
-  try {
-    // Expected format: "YYYY-MM-DD" or "YYYY-MM-DD:HH:MM"
-    let dateParts, timeParts;
-    
-    if (dateString.includes(':')) {
-      // Handle "YYYY-MM-DD:HH:MM" format
-      const [datePart, timePart] = dateString.split(':');
-      dateParts = datePart.split('-').map(Number);
-      timeParts = timePart.split(':').map(Number);
-    } else {
-      // Handle "YYYY-MM-DD" format (default to noon)
-      dateParts = dateString.split('-').map(Number);
-      timeParts = [12, 0]; // Default to 12:00 PM
+      terminal.pushToStdout(
+        `[[success]]Matchup added successfully![[/success]]`
+      );
+      terminal.pushToStdout(`Transaction hash: ${tx.transactionHash}`);
+      terminal.pushToStdout(`Game day: ${gameDay} (${displayDate})`);
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error adding matchup: ${error.message}[[/error]]`
+      );
+      console.error("Add matchup error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
     }
+  };
 
-    const [year, month, day] = dateParts;
-    const [hours, minutes] = timeParts;
-
-    // JavaScript months are 0-indexed
-    const date = new Date(year, month - 1, day, hours, minutes);
+  // Edit existing matchup (owner only)
+  editMatchup = async (matchupId, homeTeam, awayTeam, dateString) => {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
     
-    // Validate the date was parsed correctly
-    if (isNaN(date.getTime())) {
-      throw new Error('Invalid date values');
+    try {
+      terminal.pushToStdout(`Editing matchup ${matchupId}: ${homeTeam} vs ${awayTeam}...`);
+      
+      const homeTeamEnum = this.getTeamEnum(homeTeam);
+      const awayTeamEnum = this.getTeamEnum(awayTeam);
+      const gameDay = this.parseDateString(dateString);
+      const displayDate = new Date(gameDay * 86400 * 1000).toISOString().split('T')[0];
+      
+      terminal.pushToStdout(`New game day: ${displayDate} (day number: ${gameDay})`);
+      
+      const tx = await this.state.mlbBetting.methods.modifyMatchup(
+        matchupId,
+        homeTeamEnum,
+        awayTeamEnum,
+        gameDay
+      ).send({ from: this.state.account });
+
+      terminal.pushToStdout(
+        `[[success]]Matchup modified successfully![[/success]]`
+      );
+      terminal.pushToStdout(`Transaction hash: ${tx.transactionHash}`);
+      terminal.pushToStdout(`New details: ${homeTeam} vs ${awayTeam} on ${displayDate}`);
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error modifying matchup: ${error.message}[[/error]]`
+      );
+      console.error("Modify matchup error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
     }
-    
-    // Convert to Unix timestamp (seconds)
-    return Math.floor(date.getTime() / 1000);
-  } catch (error) {
-    console.error("Date parsing error:", error);
-    throw new Error('Invalid date format. Please use "YYYY-MM-DD" or "YYYY-MM-DD:HH:MM" (24-hour format)');
-  }
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  };
 
   // Update matchup (owner only)
   updateMatchup = async (matchupId, homeScore, awayScore, currentInning, isFinished) => {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
-    
+    if(isFinished === false)
+    {
+       isFinished = 0;
+    }
     try {
       terminal.pushToStdout(`Updating matchup ${matchupId}...`);
       
@@ -529,7 +537,6 @@ parseDateToTimestamp = (dateString) => {
 
   // Helper to convert team names to enum values
   getTeamEnum = (teamName) => {
-
     const teamMap = {
       "ARIZONA_DIAMONDBACKS": 0,
       "ATLANTA_BRAVES": 1,
@@ -570,25 +577,16 @@ parseDateToTimestamp = (dateString) => {
     return enumValue;
   };
 
-
-
-
-
   // Helper to convert date string to day number
   parseDateString = (dateString) => {
     try {
-      // Expected format: "YYYY-MM-DD"
       const [year, month, day] = dateString.split('-').map(Number);
-      
-      // JavaScript months are 0-indexed
       const date = new Date(year, month - 1, day);
       
-      // Validate the date was parsed correctly
       if (isNaN(date.getTime())) {
         throw new Error('Invalid date values');
       }
       
-      // Convert to days since epoch (Unix timestamp / seconds per day)
       return Math.floor(date.getTime() / 1000 / 86400);
     } catch (error) {
       console.error("Date parsing error:", error);
@@ -602,12 +600,9 @@ parseDateToTimestamp = (dateString) => {
     this.setState({ isProgressing: true });
     
     try {
-      // Parse date string into day number
       const dayNumber = this.parseDateString(dateString);
-      
       terminal.pushToStdout(`Fetching matchups for ${dateString} (day ${dayNumber})...`);
       
-      // Get matchup IDs for this day
       const matchupIds = await this.state.mlbBetting.methods.getMatchupsByDay(
         dayNumber
       ).call();
@@ -618,18 +613,9 @@ parseDateToTimestamp = (dateString) => {
       }
       
       terminal.pushToStdout('[[header]]=== Matchups ===[[/header]]');
-      
-      // Get details for each matchup
-      for (const id of matchupIds) {
-        const details = await this.state.mlbBetting.methods.getMatchupDetails(id).call();
-        const homeTeam = this.state.teams[details.homeTeam];
-        const awayTeam = this.state.teams[details.awayTeam];
-        
-        terminal.pushToStdout(`- ID: ${id} | ${homeTeam} vs ${awayTeam}`);
-        terminal.pushToStdout(`  Status: ${details.isFinished ? 'Finished' : 'In Progress'}`);
-        terminal.pushToStdout(`  Score: ${details.homeScore} - ${details.awayScore}`);
-      }
-      
+      matchupIds.forEach(id => {
+        terminal.pushToStdout(`- ID: ${id}`);
+      });
       terminal.pushToStdout(`[[info]]Found ${matchupIds.length} matchup(s)[[/info]]`);
     } catch (error) {
       terminal.pushToStdout(
@@ -647,12 +633,9 @@ parseDateToTimestamp = (dateString) => {
     this.setState({ isProgressing: true });
     
     try {
-      // Parse date string into day number
       const dayNumber = this.parseDateString(dateString);
-      
       terminal.pushToStdout(`Fetching detailed matchups for ${dateString}...`);
       
-      // Get matchup IDs for this day
       const matchupIds = await this.state.mlbBetting.methods.getMatchupsByDay(
         dayNumber
       ).call();
@@ -664,7 +647,6 @@ parseDateToTimestamp = (dateString) => {
       
       terminal.pushToStdout('<span style="color:#FF5722;font-weight:bold">=== Matchups ===</span>');
       
-      // Get full details for each matchup
       for (const id of matchupIds) {
         const details = await this.state.mlbBetting.methods.getMatchupDetails(id).call();
         const homeTeam = this.state.teams[details.homeTeam];
@@ -685,41 +667,6 @@ parseDateToTimestamp = (dateString) => {
       this.setState({ isProgressing: false });
     }
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   render() {
     const welcomeMsg = `
@@ -795,12 +742,20 @@ parseDateToTimestamp = (dateString) => {
               fn: async (amount) => await this.depositFlipTokens(amount)
             },
             addmatchup: {
-              description: '<p style="color:hotpink;font-size:1.1em">Add new matchup (Owner only)<br/>Usage: addmatchup [homeTeam] [awayTeam] [dateTime]<br/>Team names must be in ALL_CAPS (e.g. NEW_YORK_YANKEES)<br/>DateTime format: "YYYY-MM-DD HH:MM" (24-hour)</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">Add new matchup (Owner only)<br/>Usage: addmatchup [homeTeam] [awayTeam] [YYYY-MM-DD]<br/>Team names must be in ALL_CAPS (e.g. NEW_YORK_YANKEES)</p>',
               fn: async (...args) => await this.addMatchup(...args)
+            },
+            editmatchup: {
+              description: '<p style="color:hotpink;font-size:1.1em">Edit existing matchup (Owner only)<br/>Usage: editmatchup [matchupId] [homeTeam] [awayTeam] [YYYY-MM-DD]<br/>Team names must be in ALL_CAPS</p>',
+              fn: async (...args) => await this.editMatchup(...args)
             },
             updatematchup: {
               description: '<p style="color:hotpink;font-size:1.1em">Update matchup (Owner only)<br/>Usage: updatematchup [matchupId] [homeScore] [awayScore] [currentInning] [isFinished]<br/>isFinished: true/false</p>',
               fn: async (...args) => await this.updateMatchup(...args)
+            },
+            setfinished: {
+              description: '<p style="color:hotpink;font-size:1.1em">Set matchup finished status (Owner only)<br/>Usage: setfinished [matchupId] [true/false]</p>',
+              fn: async (...args) => await this.setMatchupFinished(...args)
             },
           }}
           dangerMode={true}
