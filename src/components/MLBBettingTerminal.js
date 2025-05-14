@@ -5,7 +5,7 @@ import MLBBettingContract from '../etc/rawmaterial/MLBBetting.json';
 import Web3 from 'web3';
 
 // Contract addresses
-const MLB_BETTING_ADDRESS = "0x38B58fe2cB08Ba9f2D57103dC22592d9f9b7237d";
+const MLB_BETTING_ADDRESS = "0xf101cd859D219ab6f728512Fe44B6097B9491821";
 const FLIP_TOKEN_ADDRESS = "0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118";
 
 const MLB_BETTING_ABI = MLBBettingContract.abi;
@@ -143,7 +143,209 @@ class MLBBettingTerminal extends Component {
     }
   }
 
+  // Helper to convert team names to enum values
+  getTeamEnum = (teamName) => {
+    const teamMap = {
+      "ARIZONA_DIAMONDBACKS": 0,
+      "ATLANTA_BRAVES": 1,
+      "BALTIMORE_ORIOLES": 2,
+      "BOSTON_RED_SOX": 3,
+      "CHICAGO_CUBS": 4,
+      "CHICAGO_WHITE_SOX": 5,
+      "CINCINNATI_REDS": 6,
+      "CLEVELAND_GUARDIANS": 7,
+      "COLORADO_ROCKIES": 8,
+      "DETROIT_TIGERS": 9,
+      "HOUSTON_ASTROS": 10,
+      "KANSAS_CITY_ROYALS": 11,
+      "LOS_ANGELES_ANGELS": 12,
+      "LOS_ANGELES_DODGERS": 13,
+      "MIAMI_MARLINS": 14,
+      "MILWAUKEE_BREWERS": 15,
+      "MINNESOTA_TWINS": 16,
+      "NEW_YORK_METS": 17,
+      "NEW_YORK_YANKEES": 18,
+      "OAKLAND_ATHLETICS": 19,
+      "PHILADELPHIA_PHILLIES": 20,
+      "PITTSBURGH_PIRATES": 21,
+      "SAN_DIEGO_PADRES": 22,
+      "SAN_FRANCISCO_GIANTS": 23,
+      "SEATTLE_MARINERS": 24,
+      "ST_LOUIS_CARDINALS": 25,
+      "TAMPA_BAY_RAYS": 26,
+      "TEXAS_RANGERS": 27,
+      "TORONTO_BLUE_JAYS": 28,
+      "WASHINGTON_NATIONALS": 29
+    };
 
+    const enumValue = teamMap[teamName.toUpperCase()];
+    if (enumValue === undefined) {
+      throw new Error(`Invalid team name: ${teamName}`);
+    }
+    return enumValue;
+  };
+
+
+
+
+
+  // Get all user wagers
+  getUserWagers = async () => {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      terminal.pushToStdout('Fetching all your wagers...');
+      const wagerIds = await this.state.mlbBetting.methods.getUserWagers(this.state.account).call();
+      
+      if (wagerIds.length === 0) {
+        terminal.pushToStdout('[[info]]No wagers found[[/info]]');
+        return;
+      }
+      
+      terminal.pushToStdout('[[header]]=== Your Wagers ===[[/header]]');
+      for (const id of wagerIds) {
+        await this.displayWagerDetails(id);
+      }
+    } catch (error) {
+      terminal.pushToStdout(`[[error]]Error: ${error.message}[[/error]]`);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  };
+  
+  // Get user's won wagers
+  getUserWonWagers = async () => {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      terminal.pushToStdout('Fetching your won wagers...');
+      const wagerIds = await this.state.mlbBetting.methods.getUserWonWagers(this.state.account).call();
+      
+      if (wagerIds.length === 0) {
+        terminal.pushToStdout('[[info]]No won wagers found[[/info]]');
+        return;
+      }
+      
+      terminal.pushToStdout('[[header]]=== Won Wagers ===[[/header]]');
+      for (const id of wagerIds) {
+        await this.displayWagerDetails(id);
+      }
+    } catch (error) {
+      terminal.pushToStdout(`[[error]]Error: ${error.message}[[/error]]`);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  };
+  
+  // Get user's lost wagers
+  getUserLostWagers = async () => {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      terminal.pushToStdout('Fetching your lost wagers...');
+      const wagerIds = await this.state.mlbBetting.methods.getUserLostWagers(this.state.account).call();
+      
+      if (wagerIds.length === 0) {
+        terminal.pushToStdout('[[info]]No lost wagers found[[/info]]');
+        return;
+      }
+      
+      terminal.pushToStdout('[[header]]=== Lost Wagers ===[[/header]]');
+      for (const id of wagerIds) {
+        await this.displayWagerDetails(id);
+      }
+    } catch (error) {
+      terminal.pushToStdout(`[[error]]Error: ${error.message}[[/error]]`);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  };
+  
+  // Get user's active wagers
+  getUserActiveWagers = async () => {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      terminal.pushToStdout('Fetching your active wagers...');
+      const wagerIds = await this.state.mlbBetting.methods.getUserActiveWagers(this.state.account).call();
+      
+      if (wagerIds.length === 0) {
+        terminal.pushToStdout('[[info]]No active wagers found[[/info]]');
+        return;
+      }
+      
+      terminal.pushToStdout('[[header]]=== Active Wagers ===[[/header]]');
+      for (const id of wagerIds) {
+        await this.displayWagerDetails(id);
+      }
+    } catch (error) {
+      terminal.pushToStdout(`[[error]]Error: ${error.message}[[/error]]`);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  };
+
+
+
+  displayWagerDetails = async (wagerId) => {
+    const terminal = this.terminal.current;
+    
+    try {
+      const status = await this.state.mlbBetting.methods.getWagerStatus(wagerId).call();
+      const details = await this.state.mlbBetting.methods.getWagerDetails(wagerId).call();
+      const matchup = await this.state.mlbBetting.methods.getMatchupDetails(details.matchupId).call();
+      
+      const homeTeam = this.state.teams[matchup.homeTeam];
+      const awayTeam = this.state.teams[matchup.awayTeam];
+      const predictedWinner = this.state.teams[details.predictedWinner];
+      
+      terminal.pushToStdout(`<span style="color:#FF5722;font-weight:bold">Wager ID: ${wagerId} (Status: ${status})</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">Matchup:</span> <span style="color:#64B5F6">${homeTeam} vs ${awayTeam}</span>`);
+      terminal.pushToStdout(`<span style="color:#FFC107">Original Prediction:</span> <span style="color:#64B5F6">${predictedWinner}</span>`);
+      
+      // Show contestant predictions if you participated
+      for (let i = 0; i < details.contestants.length; i++) {
+        if (details.contestants[i].user.toLowerCase() === this.state.account.toLowerCase()) {
+          const myPrediction = this.state.teams[details.contestants[i].predictedWinner];
+          terminal.pushToStdout(`<span style="color:#FFC107">Your Prediction:</span> <span style="color:#64B5F6">${myPrediction}</span>`);
+          terminal.pushToStdout(`<span style="color:#FFC107">Your Amount:</span> <span style="color:#64B5F6">${this.state.web3.utils.fromWei(details.contestants[i].amount, 'ether')} MATIC</span>`);
+        }
+      }
+      
+      terminal.pushToStdout(`<span style="color:#FFC107">Total Wager Amount:</span> <span style="color:#64B5F6">${this.state.web3.utils.fromWei(details.wagerAmount, 'ether')} MATIC</span>`);
+      terminal.pushToStdout('----------------------------------');
+    } catch (error) {
+      terminal.pushToStdout(`[[error]]Error displaying wager ${wagerId}: ${error.message}[[/error]]`);
+    }
+  }; 
+
+
+
+
+
+
+
+
+  // Helper to convert date string to day number
+  parseDateString = (dateString) => {
+    try {
+      const [year, month, day] = dateString.split('-').map(Number);
+      const date = new Date(year, month - 1, day);
+      
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date values');
+      }
+      
+      return Math.floor(date.getTime() / 1000 / 86400);
+    } catch (error) {
+      console.error("Date parsing error:", error);
+      throw new Error('Invalid date format. Please use "YYYY-MM-DD"');
+    }
+  };
 
   // Set matchup finished status (owner only)
   setMatchupFinished = async (matchupId, isFinished) => {
@@ -176,7 +378,6 @@ class MLBBettingTerminal extends Component {
     }
   };
 
-
   // List teams with optional filter
   listTeams = async (filter = '') => {
     const terminal = this.terminal.current;
@@ -205,15 +406,6 @@ class MLBBettingTerminal extends Component {
     } finally {
       this.setState({ isProgressing: false });
     }
-  };
-
-  // Helper to convert team names to enum values
-  getTeamEnum = (teamName) => {
-    const teamIndex = this.state.teams.indexOf(teamName.toUpperCase());
-    if (teamIndex === -1) {
-      throw new Error(`Invalid team name: ${teamName}`);
-    }
-    return teamIndex;
   };
 
   // Check FLIP token balance of contract
@@ -269,12 +461,19 @@ class MLBBettingTerminal extends Component {
     
     try {
       const amountInWei = this.state.web3.utils.toWei(amount, 'ether');
+      const predictedWinnerEnum = this.getTeamEnum(predictedWinner);
+      const isDoubleInsuredBool = isDoubleInsured === 'true' || isDoubleInsured === '1';
+      
       terminal.pushToStdout(`Creating wager for matchup ${matchupId}...`);
+      terminal.pushToStdout(`Predicted winner: ${predictedWinner} (enum: ${predictedWinnerEnum})`);
+      terminal.pushToStdout(`Amount: ${amount} MATIC (${amountInWei} wei)`);
+      terminal.pushToStdout(`Double insured: ${isDoubleInsuredBool}`);
+      terminal.pushToStdout(`UPC ID: ${upcId}`);
       
       const tx = await this.state.mlbBetting.methods.createWager(
         matchupId,
-        predictedWinner,
-        isDoubleInsured,
+        predictedWinnerEnum,
+        isDoubleInsuredBool,
         upcId
       ).send({ 
         from: this.state.account,
@@ -302,11 +501,15 @@ class MLBBettingTerminal extends Component {
     
     try {
       const amountInWei = this.state.web3.utils.toWei(amount, 'ether');
+      const predictedWinnerEnum = this.getTeamEnum(predictedWinner);
+      
       terminal.pushToStdout(`Joining wager ${wagerId}...`);
+      terminal.pushToStdout(`Predicted winner: ${predictedWinner} (enum: ${predictedWinnerEnum})`);
+      terminal.pushToStdout(`Amount: ${amount} MATIC (${amountInWei} wei)`);
       
       const tx = await this.state.mlbBetting.methods.joinWager(
         wagerId,
-        predictedWinner
+        predictedWinnerEnum
       ).send({ 
         from: this.state.account,
         value: amountInWei
@@ -535,65 +738,6 @@ class MLBBettingTerminal extends Component {
     }
   };
 
-  // Helper to convert team names to enum values
-  getTeamEnum = (teamName) => {
-    const teamMap = {
-      "ARIZONA_DIAMONDBACKS": 0,
-      "ATLANTA_BRAVES": 1,
-      "BALTIMORE_ORIOLES": 2,
-      "BOSTON_RED_SOX": 3,
-      "CHICAGO_CUBS": 4,
-      "CHICAGO_WHITE_SOX": 5,
-      "CINCINNATI_REDS": 6,
-      "CLEVELAND_GUARDIANS": 7,
-      "COLORADO_ROCKIES": 8,
-      "DETROIT_TIGERS": 9,
-      "HOUSTON_ASTROS": 10,
-      "KANSAS_CITY_ROYALS": 11,
-      "LOS_ANGELES_ANGELS": 12,
-      "LOS_ANGELES_DODGERS": 13,
-      "MIAMI_MARLINS": 14,
-      "MILWAUKEE_BREWERS": 15,
-      "MINNESOTA_TWINS": 16,
-      "NEW_YORK_METS": 17,
-      "NEW_YORK_YANKEES": 18,
-      "OAKLAND_ATHLETICS": 19,
-      "PHILADELPHIA_PHILLIES": 20,
-      "PITTSBURGH_PIRATES": 21,
-      "SAN_DIEGO_PADRES": 22,
-      "SAN_FRANCISCO_GIANTS": 23,
-      "SEATTLE_MARINERS": 24,
-      "ST_LOUIS_CARDINALS": 25,
-      "TAMPA_BAY_RAYS": 26,
-      "TEXAS_RANGERS": 27,
-      "TORONTO_BLUE_JAYS": 28,
-      "WASHINGTON_NATIONALS": 29
-    };
-
-    const enumValue = teamMap[teamName.toUpperCase()];
-    if (enumValue === undefined) {
-      throw new Error(`Invalid team name: ${teamName}`);
-    }
-    return enumValue;
-  };
-
-  // Helper to convert date string to day number
-  parseDateString = (dateString) => {
-    try {
-      const [year, month, day] = dateString.split('-').map(Number);
-      const date = new Date(year, month - 1, day);
-      
-      if (isNaN(date.getTime())) {
-        throw new Error('Invalid date values');
-      }
-      
-      return Math.floor(date.getTime() / 1000 / 86400);
-    } catch (error) {
-      console.error("Date parsing error:", error);
-      throw new Error('Invalid date format. Please use "YYYY-MM-DD"');
-    }
-  };
-
   // Get matchups by date (YYYY-MM-DD format)
   getMatchupsByDate = async (dateString) => {
     const terminal = this.terminal.current;
@@ -718,11 +862,11 @@ class MLBBettingTerminal extends Component {
               fn: async (amount) => await this.approveFlipTokens(amount)
             },
             createwager: {
-              description: '<p style="color:hotpink;font-size:1.1em">Create new wager<br/>Usage: createwager [matchupId] [predictedWinner] [amount] [isDoubleInsured] [upcId]</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">Create new wager<br/>Usage: createwager [matchupId] [teamName] [amount] [isDoubleInsured] [upcId]<br/>Example: createwager 1 NEW_YORK_YANKEES 1.0 true 123</p>',
               fn: async (...args) => await this.createWager(...args)
             },
             joinwager: {
-              description: '<p style="color:hotpink;font-size:1.1em">Join existing wager<br/>Usage: joinwager [wagerId] [predictedWinner] [amount]</p>',
+              description: '<p style="color:hotpink;font-size:1.1em">Join existing wager<br/>Usage: joinwager [wagerId] [teamName] [amount]<br/>Example: joinwager 1 BOSTON_RED_SOX 1.0</p>',
               fn: async (...args) => await this.joinWager(...args)
             },
             claim: {
@@ -757,6 +901,25 @@ class MLBBettingTerminal extends Component {
               description: '<p style="color:hotpink;font-size:1.1em">Set matchup finished status (Owner only)<br/>Usage: setfinished [matchupId] [true/false]</p>',
               fn: async (...args) => await this.setMatchupFinished(...args)
             },
+
+            mywagers: {
+              description: '<p style="color:hotpink;font-size:1.1em">List all your wagers</p>',
+              fn: async () => await this.getUserWagers()
+            },
+            mywins: {
+              description: '<p style="color:hotpink;font-size:1.1em">List your won wagers</p>',
+              fn: async () => await this.getUserWonWagers()
+            },
+            mylosses: {
+              description: '<p style="color:hotpink;font-size:1.1em">List your lost wagers</p>',
+              fn: async () => await this.getUserLostWagers()
+            },
+            myactive: {
+              description: '<p style="color:hotpink;font-size:1.1em">List your active wagers</p>',
+              fn: async () => await this.getUserActiveWagers()
+            },
+
+
           }}
           dangerMode={true}
           welcomeMessage={welcomeMsg}

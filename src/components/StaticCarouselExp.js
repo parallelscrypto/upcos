@@ -544,6 +544,14 @@ export default class StaticCarouselExp extends Component {
             },
 
 
+            whoami: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC from go upc  (thank you and no affiliation)  </p>',
+              fn: async () => {
+                 let who = await this.whoAmI();
+              }
+            },
+
+
 
 
 
@@ -567,10 +575,10 @@ export default class StaticCarouselExp extends Component {
                          mplayer = <MLBBettingTerminal/>;
                       }
 
-                      if(winNum == "0") {
+                      if(winNum == "1") {
                         terminal.pushToStdout(mplayer);
                       }
-                      else if(winNum == "1") {
+                      else {
  		        this.setState(prevState => ({ fullIpfs: mplayer }));
 		        this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
 		        this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
@@ -2973,6 +2981,16 @@ console.log("match shebang anon");
     }
     return slideshow;
 
+  }
+
+
+
+  whoAmI = async () => {
+      const terminal = this.progressTerminal.current
+      const address = await this.props.getMyAddress();
+      terminal.pushToStdout(`###### <address> ######`);
+      terminal.pushToStdout(`${address}`);
+      terminal.pushToStdout(`###### </address> #######`);
   }
 
 

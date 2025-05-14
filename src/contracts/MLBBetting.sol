@@ -96,6 +96,11 @@ contract MLBBetting {
     mapping(uint256 => Reward[]) public matchupRewards;
     mapping(uint256 => uint256[]) public dayToMatchups;
     
+    // New mappings for user wager tracking
+    mapping(address => uint256[]) public userWagers;
+    mapping(address => uint256[]) public userWonWagers;
+    mapping(address => uint256[]) public userLostWagers;
+    
     uint256 public constant INSURANCE_FEE_PERCENT = 5;
     uint256 public constant LOSER_REWARD_PERCENT = 10;
     uint256 public constant CLAIM_PERIOD = 30 days;
@@ -112,12 +117,9 @@ contract MLBBetting {
     event AdminRemoved(address indexed admin);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-
     constructor() {
         owner = msg.sender;
-        // Owner is also an admin by default
         admins[msg.sender] = true;
-        // Add the specified default admins
         admins[0xf67F98DBFC81581F0d2af6bDf343c762e1e6C406] = true;
         admins[0xe2140091460Be6d556ad810460a59e80C45c6A8D] = true;
         
@@ -125,7 +127,6 @@ contract MLBBetting {
         flipToken = IERC20(FLIP_TOKEN_ADDRESS);
         _initializeTeamNames();
         
-        // Emit events for the default admins
         emit AdminAdded(msg.sender);
         emit AdminAdded(0xf67F98DBFC81581F0d2af6bDf343c762e1e6C406);
         emit AdminAdded(0xe2140091460Be6d556ad810460a59e80C45c6A8D);
@@ -144,9 +145,13 @@ contract MLBBetting {
     modifier onlyOwnerOrAdmin() {
         require(msg.sender == owner || admins[msg.sender], "Only owner or admin");
         _;
-    }    
+    }
 
-    // Admin management functions
+    modifier trackUserWager(address user, uint256 wagerId) {
+        _;
+        userWagers[user].push(wagerId);
+    }
+
     function addAdmin(address _admin) external onlyOwner {
         require(_admin != address(0), "Invalid address");
         require(!admins[_admin], "Already admin");
@@ -164,10 +169,10 @@ contract MLBBetting {
     function transferOwnership(address newOwner) external onlyOwner {
         require(newOwner != address(0), "Invalid address");
         require(newOwner != owner, "Already owner");
-        admins[owner] = false; // Remove old owner from admins
+        admins[owner] = false;
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
-        admins[newOwner] = true; // Add new owner to admins
+        admins[newOwner] = true;
     }
 
     function _initializeTeamNames() private {
@@ -226,7 +231,7 @@ contract MLBBetting {
         emit MatchupAdded(matchupId, _homeTeam, _awayTeam, _gameDay);
     }
 
-    function setMatchupFinishedStatus(uint256 _matchupId, bool _isFinished) external onlyOwnerOrAdmin{
+    function setMatchupFinishedStatus(uint256 _matchupId, bool _isFinished) external onlyOwnerOrAdmin {
         require(_matchupId < _matchupIdCounter.current(), "Invalid matchup ID");
         
         Matchup storage matchup = matchups[_matchupId];
@@ -235,20 +240,20 @@ contract MLBBetting {
         emit MatchupFinishedStatusChanged(_matchupId, _isFinished);
     }
 
-
     function updateMatchup(
         uint256 _matchupId,
         uint256 _homeScore,
         uint256 _awayScore,
         uint256 _currentInning,
         bool _isFinished
-    ) external onlyOwnerOrAdmin{
+    ) external onlyOwnerOrAdmin {
         require(_matchupId < _matchupIdCounter.current(), "Invalid matchup ID");
         
         Matchup storage matchup = matchups[_matchupId];
         matchup.homeScore = _homeScore;
         matchup.awayScore = _awayScore;
         matchup.currentInning = _currentInning;
+        matchup.isFinished = _isFinished;
         
         emit MatchupUpdated(_matchupId, _homeScore, _awayScore, _currentInning, _isFinished);
     }
@@ -258,7 +263,7 @@ contract MLBBetting {
         MLBTeam _homeTeam,
         MLBTeam _awayTeam,
         uint256 _gameDay
-    ) external onlyOwnerOrAdmin{
+    ) external onlyOwnerOrAdmin {
         require(_matchupId < _matchupIdCounter.current(), "Invalid matchup ID");
         require(!matchups[_matchupId].isFinished, "Cannot modify finished matchup");
         
@@ -296,7 +301,7 @@ contract MLBBetting {
         MLBTeam _predictedWinner,
         bool _isDoubleInsured,
         string memory _upcId
-    ) external payable {
+    ) external payable trackUserWager(msg.sender, _wagerIdCounter.current()) {
         require(_matchupId < _matchupIdCounter.current(), "Invalid matchup ID");
         require(!matchups[_matchupId].isFinished, "Matchup finished");
         require(msg.value > 0, "Zero value");
@@ -336,7 +341,7 @@ contract MLBBetting {
     function joinWager(
         uint256 _wagerId,
         MLBTeam _predictedWinner
-    ) external payable {
+    ) external payable trackUserWager(msg.sender, _wagerId) {
         require(_wagerId < _wagerIdCounter.current(), "Invalid wager ID");
         Wager storage wager = wagers[_wagerId];
         
@@ -383,6 +388,12 @@ contract MLBBetting {
                 }
             }
             payable(wager.initiator).transfer(totalWinnings);
+            
+            // Track won/lost wagers
+            userWonWagers[wager.initiator].push(_wagerId);
+            for (uint i = 0; i < wager.contestantCount; i++) {
+                userLostWagers[wager.contestants[i].user].push(_wagerId);
+            }
         } else {
             uint256 totalContestantAmount = 0;
             for (uint i = 0; i < wager.contestantCount; i++) {
@@ -398,6 +409,16 @@ contract MLBBetting {
                 uint256 flipAmount = (wager.wagerAmount * LOSER_REWARD_PERCENT) / 100;
                 require(flipToken.transfer(wager.initiator, flipAmount), "Flip transfer failed");
                 emit FlipTokensSent(wager.initiator, flipAmount);
+            }
+            
+            // Track won/lost wagers
+            userLostWagers[wager.initiator].push(_wagerId);
+            for (uint i = 0; i < wager.contestantCount; i++) {
+                if (wager.contestants[i].predictedWinner == actualWinner) {
+                    userWonWagers[wager.contestants[i].user].push(_wagerId);
+                } else {
+                    userLostWagers[wager.contestants[i].user].push(_wagerId);
+                }
             }
         }
         
@@ -487,6 +508,70 @@ contract MLBBetting {
             wager.isSettled,
             contestants
         );
+    }
+
+    // New functions for user wager tracking
+    function getUserWagers(address user) external view returns (uint256[] memory) {
+        return userWagers[user];
+    }
+
+    function getUserWonWagers(address user) external view returns (uint256[] memory) {
+        return userWonWagers[user];
+    }
+
+    function getUserLostWagers(address user) external view returns (uint256[] memory) {
+        return userLostWagers[user];
+    }
+
+    function getUserActiveWagers(address user) external view returns (uint256[] memory) {
+        uint256[] memory allWagers = userWagers[user];
+        uint256 activeCount = 0;
+        
+        for (uint i = 0; i < allWagers.length; i++) {
+            uint256 wagerId = allWagers[i];
+            if (!wagers[wagerId].isSettled && !matchups[wagers[wagerId].matchupId].isFinished) {
+                activeCount++;
+            }
+        }
+        
+        uint256[] memory activeWagers = new uint256[](activeCount);
+        uint256 index = 0;
+        for (uint i = 0; i < allWagers.length; i++) {
+            uint256 wagerId = allWagers[i];
+            if (!wagers[wagerId].isSettled && !matchups[wagers[wagerId].matchupId].isFinished) {
+                activeWagers[index] = wagerId;
+                index++;
+            }
+        }
+        
+        return activeWagers;
+    }
+
+    function getWagerStatus(uint256 wagerId) external view returns (string memory) {
+        require(wagerId < _wagerIdCounter.current(), "Invalid wager ID");
+        Wager storage wager = wagers[wagerId];
+        Matchup storage matchup = matchups[wager.matchupId];
+        
+        if (wager.isSettled) {
+            MLBTeam actualWinner = matchup.homeScore > matchup.awayScore ? matchup.homeTeam : matchup.awayTeam;
+            bool initiatorWon = (wager.predictedWinner == actualWinner);
+            
+            if (initiatorWon) {
+                return wager.initiator == msg.sender ? "won" : "lost";
+            } else {
+                for (uint i = 0; i < wager.contestantCount; i++) {
+                    if (wager.contestants[i].user == msg.sender && 
+                        wager.contestants[i].predictedWinner == actualWinner) {
+                        return "won";
+                    }
+                }
+                return "lost";
+            }
+        } else if (matchup.isFinished) {
+            return "ready to claim";
+        } else {
+            return "active";
+        }
     }
 
     function setUPCNFT(address newAddress) external onlyOwner {
