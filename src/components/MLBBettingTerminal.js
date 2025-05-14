@@ -689,7 +689,7 @@ class MLBBettingTerminal extends Component {
         <Terminal
           style={{
             minHeight: "75vh",
-            backgroundColor: "#1a0404",
+            backgroundColor: "#750505",
             zIndex: "99",
             borderRadius: "5px",
             padding: "10px",

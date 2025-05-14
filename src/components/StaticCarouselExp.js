@@ -207,6 +207,7 @@ export default class StaticCarouselExp extends Component {
     this.progressTerminal = React.createRef()
     var promptlabel =  '[[ AWAITING COMMAND@ ]] => ';
     var welcomeMsg ="\n[[ \n you are now on upcOS privately owned property owned by \n " + owner + "\n on {polygon} \n";
+    welcomeMsg += "\n Type `d` to see the disclaimer.  By continuing use, you agree to the disclaimer";
     welcomeMsg += "\n Welcome to @_" + upc + "\n]]";
     var popArgs = [];
 
@@ -215,8 +216,8 @@ export default class StaticCarouselExp extends Component {
       ref={this.progressTerminal}
       commands={{
 
-            fire: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open firepad.io collab suite in a window & sheeit  (thank you and no affiliation) </p>',
+            d: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** View the disclaimer.</p>',
               fn: (sheetNum) => {
 
 
@@ -230,7 +231,39 @@ export default class StaticCarouselExp extends Component {
                       } 
 
 
-		      var fullUrl = "https://demo.firepad.io/#" + upcHash;
+		      var fullUrl = "https://l4ita7fhaqho5fvvsyr7xgr6fb25o72kaddeusrqd65r26t7sdrq.arweave.net/XxEwfKcEDu6WtZYj-5o-KHXXf0oAxkpKMB-7HXp_kOM";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+            fire: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open shrib notebook in a window.  pass a param  (thank you and no affiliation) </p>',
+              fn: (sheetNum=0) => {
+
+
+                      if (Number.isInteger(sheetNum) && sheetNum < 0) {
+                         sheetNum = 0;
+                      }
+
+                      var currentUrl = window.location.href;
+                      var upcHash  = sha256(currentUrl)
+                      for(var i=0; i<sheetNum; i++) {
+                          upcHash = sha256(upcHash);
+                      } 
+
+
+		      var fullUrl = "https://shrib.com/#" + upcHash;
                       var winNum = "0";
 
                       //this.cSearch.value = "";
@@ -523,23 +556,24 @@ export default class StaticCarouselExp extends Component {
 
 
 
-            base: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** open the baseball betting console.  NOT AFFILIATED WITH OR ENDORSED BY MLB IN ANY WAY</p>',
-              fn: () => {
+            bet: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** open the betting console. you can pass mlb, nba, nfl, nhl, ncaaf, ncaabb as the options.  the second param will allow you to open the console in a modal by passing 1 as the second param.  for example, to open the mlb betting console, type `bet mlb` and to open  it in a modal `bet mlb 1`  NOT AFFILIATED WITH OR ENDORSED BY ANY PROFESSIONAL SPORT ORGANIZATION OR ENTITY IN ANY WAY</p>',
+              fn: (sport,winNum=0) => {
 
-                     var winNum = 0;
+                     const terminal = this.progressTerminal.current
 
+                     var mplayer;
+                      if( sport == "mlb" ) {
+                         mplayer = <MLBBettingTerminal/>;
+                      }
 
-                      var mplayer = <MLBBettingTerminal/>;
                       if(winNum == "0") {
-		         this.setState(prevState => ({ fullIpfs: mplayer }));
-		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
-		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                        terminal.pushToStdout(mplayer);
                       }
                       else if(winNum == "1") {
-		         this.setState(prevState => ({ fullIpfs2: mplayer }));
-		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
-		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+ 		        this.setState(prevState => ({ fullIpfs: mplayer }));
+		        this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		        this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
                       }
  
               }
