@@ -94,10 +94,238 @@ class MLBBettingTerminal extends Component {
       ]
     };
     this.terminal = React.createRef();
+    this.modalContainer = null;
   }
 
   async componentDidMount() {
     await this.loadBlockchainData();
+    this.createModalContainer();
+  }
+
+  createModalContainer() {
+    // Remove existing modal if it exists
+    const existingModal = document.getElementById('betting-modal-container');
+    if (existingModal) {
+      document.body.removeChild(existingModal);
+    }
+
+    // Create new modal container
+    this.modalContainer = document.createElement('div');
+    this.modalContainer.id = 'betting-modal-container';
+    this.modalContainer.style = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    `;
+    document.body.appendChild(this.modalContainer);
+  }
+
+  showModal(content) {
+    this.modalContainer.innerHTML = `
+      <div style="
+        background: #121212;
+        padding: 20px;
+        border-radius: 5px;
+        border: 1px solid #00f0ff;
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+        color: #e0e0e0;
+        width: 80%;
+        max-width: 600px;
+        position: relative;
+      ">
+        <button id="close-modal" style="
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          background: #ff3d3d;
+          color: white;
+          border: none;
+          border-radius: 3px;
+          padding: 5px 10px;
+          cursor: pointer;
+        ">X</button>
+        ${content}
+      </div>
+    `;
+
+    this.modalContainer.style.display = 'flex';
+    
+    // Add close event
+    document.getElementById('close-modal').addEventListener('click', () => {
+      this.modalContainer.style.display = 'none';
+    });
+  }
+
+  showGBetModal() {
+    const content = `
+      <h2 style="color: #00f0ff; text-align: center; margin-bottom: 20px;">CREATE NEW WAGER</h2>
+      <form id="gbet-form">
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; color: #00f0ff;">Matchup ID</label>
+          <input type="text" name="matchupId" required style="
+            width: 100%;
+            padding: 8px;
+            background: #1a1a2e;
+            border: 1px solid #00f0ff;
+            color: #e0e0e0;
+            border-radius: 3px;
+          ">
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; color: #00f0ff;">Predicted Winner</label>
+          <select name="predictedWinner" required style="
+            width: 100%;
+            padding: 8px;
+            background: #1a1a2e;
+            border: 1px solid #00f0ff;
+            color: #e0e0e0;
+            border-radius: 3px;
+          ">
+            ${this.state.teams.map(team => `<option value="${team}">${team}</option>`).join('')}
+          </select>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; color: #00f0ff;">Amount (MATIC)</label>
+          <input type="number" name="amount" step="0.01" min="0" required style="
+            width: 100%;
+            padding: 8px;
+            background: #1a1a2e;
+            border: 1px solid #00f0ff;
+            color: #e0e0e0;
+            border-radius: 3px;
+          ">
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label style="display: flex; align-items: center; color: #e0e0e0;">
+            <input type="checkbox" name="isDoubleInsured" style="margin-right: 8px;">
+            Double Insured
+          </label>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; color: #00f0ff;">UPC ID (Optional)</label>
+          <input type="text" name="upcId" style="
+            width: 100%;
+            padding: 8px;
+            background: #1a1a2e;
+            border: 1px solid #00f0ff;
+            color: #e0e0e0;
+            border-radius: 3px;
+          ">
+        </div>
+        
+        <button type="submit" style="
+          background: linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%);
+          border: none;
+          border-radius: 3px;
+          color: white;
+          padding: 12px 24px;
+          width: 100%;
+          cursor: pointer;
+          font-weight: bold;
+          box-shadow: 0 3px 5px 2px rgba(255, 105, 135, .3);
+        ">Place Bet</button>
+      </form>
+    `;
+
+    this.showModal(content);
+
+    document.getElementById('gbet-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = {
+        matchupId: formData.get('matchupId'),
+        predictedWinner: formData.get('predictedWinner'),
+        amount: formData.get('amount'),
+        isDoubleInsured: formData.get('isDoubleInsured') === 'on',
+        upcId: formData.get('upcId')
+      };
+      
+      this.createWager(data.matchupId, data.predictedWinner, data.amount, data.isDoubleInsured, data.upcId);
+      this.modalContainer.style.display = 'none';
+    });
+  }
+
+  showGJoinModal() {
+    const content = `
+      <h2 style="color: #00f0ff; text-align: center; margin-bottom: 20px;">JOIN EXISTING WAGER</h2>
+      <form id="gjoin-form">
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; color: #00f0ff;">Wager ID</label>
+          <input type="text" name="wagerId" required style="
+            width: 100%;
+            padding: 8px;
+            background: #1a1a2e;
+            border: 1px solid #00f0ff;
+            color: #e0e0e0;
+            border-radius: 3px;
+          ">
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; color: #00f0ff;">Predicted Winner</label>
+          <select name="predictedWinner" required style="
+            width: 100%;
+            padding: 8px;
+            background: #1a1a2e;
+            border: 1px solid #00f0ff;
+            color: #e0e0e0;
+            border-radius: 3px;
+          ">
+            ${this.state.teams.map(team => `<option value="${team}">${team}</option>`).join('')}
+          </select>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; color: #00f0ff;">Amount (MATIC)</label>
+          <input type="number" name="amount" step="0.01" min="0" required style="
+            width: 100%;
+            padding: 8px;
+            background: #1a1a2e;
+            border: 1px solid #00f0ff;
+            color: #e0e0e0;
+            border-radius: 3px;
+          ">
+        </div>
+        
+        <button type="submit" style="
+          background: linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%);
+          border: none;
+          border-radius: 3px;
+          color: white;
+          padding: 12px 24px;
+          width: 100%;
+          cursor: pointer;
+          font-weight: bold;
+          box-shadow: 0 3px 5px 2px rgba(255, 105, 135, .3);
+        ">Join Wager</button>
+      </form>
+    `;
+
+    this.showModal(content);
+
+    document.getElementById('gjoin-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = {
+        wagerId: formData.get('wagerId'),
+        predictedWinner: formData.get('predictedWinner'),
+        amount: formData.get('amount')
+      };
+      
+      this.joinWager(data.wagerId, data.predictedWinner, data.amount);
+      this.modalContainer.style.display = 'none';
+    });
   }
 
   async loadBlockchainData() {
@@ -143,7 +371,6 @@ class MLBBettingTerminal extends Component {
     }
   }
 
-  // Helper to convert team names to enum values
   getTeamEnum = (teamName) => {
     const teamMap = {
       "ARIZONA_DIAMONDBACKS": 0,
@@ -184,10 +411,6 @@ class MLBBettingTerminal extends Component {
     }
     return enumValue;
   };
-
-
-
-
 
   // Get all user wagers
   getUserWagers = async () => {
@@ -289,8 +512,6 @@ class MLBBettingTerminal extends Component {
     }
   };
 
-
-
   displayWagerDetails = async (wagerId) => {
     const terminal = this.terminal.current;
     
@@ -322,13 +543,6 @@ class MLBBettingTerminal extends Component {
       terminal.pushToStdout(`[[error]]Error displaying wager ${wagerId}: ${error.message}[[/error]]`);
     }
   }; 
-
-
-
-
-
-
-
 
   // Helper to convert date string to day number
   parseDateString = (dateString) => {
@@ -841,85 +1055,90 @@ class MLBBettingTerminal extends Component {
           }}
           ref={this.terminal}
           commands={{
+            gbet: {
+              description: 'Open GUI for placing new bets',
+              fn: () => this.showGBetModal()
+            },
+            gjoin: {
+              description: 'Open GUI for joining existing wagers',
+              fn: () => this.showGJoinModal()
+            },
             games: {
-              description: '<p style="color:hotpink;font-size:1.1em">List games by date (YYYY-MM-DD)<br/>Usage: games [date]</p>',
+              description: 'List games by date (YYYY-MM-DD)',
               fn: async (date) => await this.getMatchupsByDate(date)
             },
             gamesdetail: {
-              description: '<p style="color:hotpink;font-size:1.1em">List games with details by date (YYYY-MM-DD)<br/>Usage: gamesdetail [date]</p>',
+              description: 'List games with details by date (YYYY-MM-DD)',
               fn: async (date) => await this.getMatchupsByDateDetailed(date)
             },
             teams: {
-              description: '<p style="color:hotpink;font-size:1.1em">List all teams or filter by name<br/>Usage: teams [filter]</p>',
+              description: 'List all teams or filter by name',
               fn: async (filter = '') => await this.listTeams(filter)
             },
             bal: {
-              description: '<p style="color:hotpink;font-size:1.1em">Check contract FLIP token balance</p>',
+              description: 'Check contract FLIP token balance',
               fn: async () => await this.checkFlipBalance()
             },
             approve: {
-              description: '<p style="color:hotpink;font-size:1.1em">Approve FLIP tokens for betting contract<br/>Usage: approve [amount]</p>',
+              description: 'Approve FLIP tokens for betting contract',
               fn: async (amount) => await this.approveFlipTokens(amount)
             },
             createwager: {
-              description: '<p style="color:hotpink;font-size:1.1em">Create new wager<br/>Usage: createwager [matchupId] [teamName] [amount] [isDoubleInsured] [upcId]<br/>Example: createwager 1 NEW_YORK_YANKEES 1.0 true 123</p>',
+              description: 'Create new wager',
               fn: async (...args) => await this.createWager(...args)
             },
             joinwager: {
-              description: '<p style="color:hotpink;font-size:1.1em">Join existing wager<br/>Usage: joinwager [wagerId] [teamName] [amount]<br/>Example: joinwager 1 BOSTON_RED_SOX 1.0</p>',
+              description: 'Join existing wager',
               fn: async (...args) => await this.joinWager(...args)
             },
             claim: {
-              description: '<p style="color:hotpink;font-size:1.1em">Claim wager reward<br/>Usage: claim [wagerId]</p>',
+              description: 'Claim wager reward',
               fn: async (wagerId) => await this.claimReward(wagerId)
             },
             matchup: {
-              description: '<p style="color:hotpink;font-size:1.1em">Get matchup details<br/>Usage: matchup [matchupId]</p>',
+              description: 'Get matchup details',
               fn: async (matchupId) => await this.getMatchupDetails(matchupId)
             },
             wager: {
-              description: '<p style="color:hotpink;font-size:1.1em">Get wager details<br/>Usage: wager [wagerId]</p>',
+              description: 'Get wager details',
               fn: async (wagerId) => await this.getWagerDetails(wagerId)
             },
             depositflip: {
-              description: '<p style="color:hotpink;font-size:1.1em">Deposit FLIP tokens to contract<br/>Usage: depositflip [amount]</p>',
+              description: 'Deposit FLIP tokens to contract',
               fn: async (amount) => await this.depositFlipTokens(amount)
             },
             addmatchup: {
-              description: '<p style="color:hotpink;font-size:1.1em">Add new matchup (Owner only)<br/>Usage: addmatchup [homeTeam] [awayTeam] [YYYY-MM-DD]<br/>Team names must be in ALL_CAPS (e.g. NEW_YORK_YANKEES)</p>',
+              description: 'Add new matchup (Owner only)',
               fn: async (...args) => await this.addMatchup(...args)
             },
             editmatchup: {
-              description: '<p style="color:hotpink;font-size:1.1em">Edit existing matchup (Owner only)<br/>Usage: editmatchup [matchupId] [homeTeam] [awayTeam] [YYYY-MM-DD]<br/>Team names must be in ALL_CAPS</p>',
+              description: 'Edit existing matchup (Owner only)',
               fn: async (...args) => await this.editMatchup(...args)
             },
             updatematchup: {
-              description: '<p style="color:hotpink;font-size:1.1em">Update matchup (Owner only)<br/>Usage: updatematchup [matchupId] [homeScore] [awayScore] [currentInning] [isFinished]<br/>isFinished: true/false</p>',
+              description: 'Update matchup (Owner only)',
               fn: async (...args) => await this.updateMatchup(...args)
             },
             setfinished: {
-              description: '<p style="color:hotpink;font-size:1.1em">Set matchup finished status (Owner only)<br/>Usage: setfinished [matchupId] [true/false]</p>',
+              description: 'Set matchup finished status (Owner only)',
               fn: async (...args) => await this.setMatchupFinished(...args)
             },
-
             mywagers: {
-              description: '<p style="color:hotpink;font-size:1.1em">List all your wagers</p>',
+              description: 'List all your wagers',
               fn: async () => await this.getUserWagers()
             },
             mywins: {
-              description: '<p style="color:hotpink;font-size:1.1em">List your won wagers</p>',
+              description: 'List your won wagers',
               fn: async () => await this.getUserWonWagers()
             },
             mylosses: {
-              description: '<p style="color:hotpink;font-size:1.1em">List your lost wagers</p>',
+              description: 'List your lost wagers',
               fn: async () => await this.getUserLostWagers()
             },
             myactive: {
-              description: '<p style="color:hotpink;font-size:1.1em">List your active wagers</p>',
+              description: 'List your active wagers',
               fn: async () => await this.getUserActiveWagers()
-            },
-
-
+            }
           }}
           dangerMode={true}
           welcomeMessage={welcomeMsg}
