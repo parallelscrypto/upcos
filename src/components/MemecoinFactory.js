@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { ethers } from "ethers";
 import Terminal from 'react-console-emulator';
-import MemecoinFactoryABI from '../etc/rawmaterial/MemecoinFactory.json'; // You'll need to generate this
+import MemecoinFactoryABI from '../etc/rawmaterial/MemecoinFactory.json';
 
-// Contract addresses (replace with your actual addresses)
 const MEMECOIN_FACTORY_ADDRESS = "0x843e40211C088F429b1D35dd5f641CE0b05F4496";
 
 class MemecoinTerminal extends Component {
@@ -15,6 +14,8 @@ class MemecoinTerminal extends Component {
       provider: null,
       signer: null,
       isProgressing: false,
+      isConnected: false,
+      connectionError: null,
       templates: [
         { id: 0, name: "Standard Memecoin" },
         { id: 1, name: "Mintable Memecoin" },
@@ -27,8 +28,107 @@ class MemecoinTerminal extends Component {
   }
 
   async componentDidMount() {
-    await this.loadBlockchainData();
     this.createModalContainer();
+    await this.checkWalletConnection();
+  }
+
+  async checkWalletConnection() {
+    try {
+      if (!window.ethereum) {
+        throw new Error("No Ethereum provider detected. Please install MetaMask!");
+      }
+
+      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+      if (accounts.length > 0) {
+        await this.loadBlockchainData();
+      } else {
+        this.terminal.current.pushToStdout(
+          '[[info]]Wallet not connected. Use "connect" command to connect.[[/info]]'
+        );
+      }
+
+      window.ethereum.on('accountsChanged', (accounts) => {
+        if (accounts.length > 0) {
+          this.loadBlockchainData();
+        } else {
+          this.handleDisconnect();
+        }
+      });
+
+      window.ethereum.on('chainChanged', () => {
+        window.location.reload();
+      });
+
+    } catch (error) {
+      this.setState({ connectionError: error.message });
+      this.terminal.current.pushToStdout(
+        `[[error]]Connection error: ${error.message}[[/error]]`
+      );
+    }
+  }
+
+  async connectWallet() {
+    try {
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+      await this.loadBlockchainData();
+    } catch (error) {
+      this.terminal.current.pushToStdout(
+        `[[error]]Connection error: ${error.message}[[/error]]`
+      );
+    }
+  }
+
+  handleDisconnect() {
+    this.setState({
+      account: '',
+      memecoinFactory: null,
+      provider: null,
+      signer: null,
+      isConnected: false,
+      userTokens: []
+    });
+    this.terminal.current.pushToStdout('[[warning]]Wallet disconnected[[/warning]]');
+  }
+
+  async loadBlockchainData() {
+    this.setState({ isProgressing: true, connectionError: null });
+    
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const account = await signer.getAddress();
+      
+      const memecoinFactory = new ethers.Contract(
+        MEMECOIN_FACTORY_ADDRESS,
+        MemecoinFactoryABI.abi,
+        signer
+      );
+
+      await memecoinFactory.getUserTokenCount(account);
+
+      this.setState({ 
+        memecoinFactory,
+        provider,
+        signer,
+        account,
+        isConnected: true
+      });
+
+      this.terminal.current.pushToStdout(
+        `[[success]]Connected to account: ${account}[[/success]]`
+      );
+
+      await this.loadUserTokens();
+      
+    } catch (error) {
+      this.setState({ connectionError: error.message });
+      this.terminal.current.pushToStdout(
+        `[[error]]Connection error: ${error.message}[[/error]]`
+      );
+      console.error("Blockchain connection error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
   }
 
   createModalContainer() {
@@ -193,45 +293,6 @@ class MemecoinTerminal extends Component {
     });
   }
 
-  async loadBlockchainData() {
-    try {
-      if (window.ethereum) {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-        const account = await signer.getAddress();
-        
-        const memecoinFactory = new ethers.Contract(
-          MEMECOIN_FACTORY_ADDRESS,
-          MemecoinFactoryABI,
-          signer
-        );
-
-        this.setState({ 
-          memecoinFactory,
-          provider,
-          signer,
-          account
-        });
-
-        this.terminal.current.pushToStdout(
-          `[[success]]Connected to account: ${account}[[/success]]`
-        );
-
-        // Load user's tokens
-        await this.loadUserTokens();
-        
-      } else {
-        throw new Error("No Ethereum provider detected");
-      }
-    } catch (error) {
-      this.terminal.current.pushToStdout(
-        `[[error]]Connection error: ${error.message}[[/error]]`
-      );
-      console.error("Blockchain connection error:", error);
-    }
-  }
-
   async loadUserTokens() {
     try {
       const tokenCount = await this.state.memecoinFactory.getUserTokenCount(this.state.account);
@@ -248,19 +309,32 @@ class MemecoinTerminal extends Component {
     }
   }
 
-  // Create a new memecoin
   createMemecoin = async (templateId, name, symbol, initialSupply, extraParams = '0x') => {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
     
     try {
+      if (!this.state.isConnected || !this.state.memecoinFactory) {
+        throw new Error("Not connected to wallet or contract not initialized");
+      }
+
       terminal.pushToStdout(`Creating ${name} (${symbol})...`);
       
-      // Convert extraParams to bytes if needed
       let extraBytes = extraParams;
       if (extraParams && !extraParams.startsWith('0x')) {
         extraBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(extraParams));
       }
+
+      const gasEstimate = await this.state.memecoinFactory.estimateGas.createMemecoin(
+        templateId,
+        name,
+        symbol,
+        ethers.utils.parseEther(initialSupply.toString()),
+        extraBytes,
+        { value: ethers.utils.parseEther("0.01") }
+      );
+
+      const gasLimit = gasEstimate.mul(120).div(100);
 
       const tx = await this.state.memecoinFactory.createMemecoin(
         templateId,
@@ -268,21 +342,19 @@ class MemecoinTerminal extends Component {
         symbol,
         ethers.utils.parseEther(initialSupply.toString()),
         extraBytes,
-        { value: ethers.utils.parseEther("0.01") } // Assuming 0.01 ETH creation fee
+        { 
+          value: ethers.utils.parseEther("0.01"),
+          gasLimit: gasLimit
+        }
       );
 
-      terminal.pushToStdout(
-        `[[success]]Transaction sent! Waiting for confirmation...[[/success]]`
-      );
+      terminal.pushToStdout(`[[success]]Transaction sent! Waiting for confirmation...[[/success]]`);
+      terminal.pushToStdout(`Transaction hash: ${tx.hash}`);
       
       await tx.wait();
       
-      terminal.pushToStdout(
-        `[[success]]Token created successfully![[/success]]`
-      );
-      terminal.pushToStdout(`Transaction hash: ${tx.hash}`);
+      terminal.pushToStdout(`[[success]]Token created successfully![[/success]]`);
       
-      // Refresh user tokens
       await this.loadUserTokens();
     } catch (error) {
       terminal.pushToStdout(
@@ -294,13 +366,11 @@ class MemecoinTerminal extends Component {
     }
   };
 
-  // Get token details
   getTokenDetails = async (tokenAddress) => {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
     
     try {
-      // Basic ERC20 ABI for name/symbol/decimals
       const erc20Abi = [
         "function name() view returns (string)",
         "function symbol() view returns (string)",
@@ -336,7 +406,6 @@ class MemecoinTerminal extends Component {
     }
   };
 
-  // List all templates
   listTemplates = async () => {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
@@ -356,7 +425,6 @@ class MemecoinTerminal extends Component {
     }
   };
 
-  // List user's tokens
   listUserTokens = async () => {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
@@ -388,8 +456,10 @@ class MemecoinTerminal extends Component {
       Memecoin Factory Terminal
       =============================================
       [[/header]]
-      Connected to: ${this.state.account || 'Not connected'}
+      Connected: ${this.state.isConnected ? `Yes (${this.state.account})` : 'No'}
+      ${this.state.connectionError ? `\nLast error: ${this.state.connectionError}` : ''}
       Type 'help' to see available commands
+      ${!this.state.isConnected ? '\n[[warning]]Use "connect" command to connect your wallet[[/warning]]' : ''}
     `;
 
     return (
@@ -410,9 +480,19 @@ class MemecoinTerminal extends Component {
           }}
           ref={this.terminal}
           commands={{
+            connect: {
+              description: 'Connect your wallet',
+              fn: async () => await this.connectWallet()
+            },
             guicreate: {
               description: 'Open GUI for creating new tokens',
-              fn: () => this.showCreateTokenModal()
+              fn: () => {
+                if (!this.state.isConnected) {
+                  this.terminal.current.pushToStdout('[[error]]Please connect your wallet first[[/error]]');
+                  return;
+                }
+                this.showCreateTokenModal();
+              }
             },
             createtoken: {
               description: 'Create new memecoin (templateId, name, symbol, supply, [extraParams])',
