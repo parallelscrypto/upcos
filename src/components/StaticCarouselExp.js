@@ -8,6 +8,7 @@ import BassCleff from './BassCleff'
 import SerialBoxTerminal from './SerialBoxTerminal'
 import MLBBettingTerminal from './MLBBettingTerminal'
 import MemecoinFactory from './MemecoinFactory';
+import MoneyPostTerminal from './MoneyPostTerminal';
 import TableSlideshow from './TableSlideshow'
 //import Popit from './Popit'
 import ReactCardFlip from 'react-card-flip';
@@ -589,9 +590,30 @@ export default class StaticCarouselExp extends Component {
             },
 
 
+            mp: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** open the memecoin generator </p>',
+              fn: (winNum=0) => {
+
+                     const terminal = this.progressTerminal.current
+
+                     var mplayer = <MoneyPostTerminal/>;
+
+                      if(winNum == "1") {
+                        terminal.pushToStdout(mplayer);
+                      }
+                      else {
+ 		        this.setState(prevState => ({ fullIpfs: mplayer }));
+		        this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		        this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+ 
+              }
+            },
 
 
-            meme: {
+
+
+            mc: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** open the memecoin generator </p>',
               fn: (winNum=0) => {
 

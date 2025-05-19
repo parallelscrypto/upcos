@@ -1,18 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./Base64.sol";  // Local import
+import "./Base64.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-
-
 contract MoneyPost {
     using EnumerableSet for EnumerableSet.AddressSet;
+    using EnumerableSet for EnumerableSet.Bytes32Set;
 
     address public owner;
     string public baseURL;
-    IERC20 public flipToken;
 
     struct RewardToken {
         string name;
@@ -20,16 +18,36 @@ contract MoneyPost {
         uint256 rewardAmount;
     }
 
+    struct Topic {
+        bytes32 topicId;
+        string name;
+        uint256 createdAt;
+    }
+
+    struct Post {
+        bytes32 urlHash;
+        address author;
+        uint256 timestamp;
+        address rewardToken;
+    }
+
     EnumerableSet.AddressSet private rewardTokenAddresses;
+    EnumerableSet.AddressSet private blockedAddresses;
     mapping(address => RewardToken) public rewardTokens;
     mapping(address => uint256) public exchangeRates;
     mapping(bytes32 => bool) public eligibleHashes;
-    uint256 public flipRewardAmount = 0.1 ether;
+    
+    // Topic management
+    EnumerableSet.Bytes32Set private topicIds;
+    mapping(bytes32 => Topic) public topics;
+    mapping(bytes32 => uint256) public topicPostCounts;
+    
+    // Post tracking
+    mapping(bytes32 => Post[]) public topicPosts;
+    mapping(bytes32 => bytes32) public postToTopic;
 
     constructor() {
         owner = msg.sender;
-        //baseURL = _baseURL;
-        flipToken = IERC20(0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118);
     }
 
     modifier onlyOwner() {
@@ -37,19 +55,41 @@ contract MoneyPost {
         _;
     }
 
-    function depositFlip(uint256 amount) external {
-        require(flipToken.transferFrom(msg.sender, address(this), amount), "Transfer failed");
+    // Address Blocking Functions
+    function addBlockedAddress(address _address) external onlyOwner {
+        blockedAddresses.add(_address);
     }
 
-    function addRewardToken(string calldata name, address tokenAddress, uint256 rewardAmount) external onlyOwner {
+    function addBlockedAddresses(address[] calldata _addresses) external onlyOwner {
+        for (uint i = 0; i < _addresses.length; i++) {
+            blockedAddresses.add(_addresses[i]);
+        }
+    }
+
+    function removeBlockedAddress(address _address) external onlyOwner {
+        blockedAddresses.remove(_address);
+    }
+
+    function isAddressBlocked(address _address) public view returns (bool) {
+        return blockedAddresses.contains(_address);
+    }
+
+    function getBlockedAddresses() external view returns (address[] memory) {
+        return blockedAddresses.values();
+    }
+
+    // Reward Token Functions
+    function addRewardToken(string calldata name, address tokenAddress, uint256 rewardAmount, uint256 exchangeRate) external onlyOwner {
         require(tokenAddress != address(0), "Invalid token");
         rewardTokens[tokenAddress] = RewardToken(name, tokenAddress, rewardAmount);
         rewardTokenAddresses.add(tokenAddress);
+        exchangeRates[tokenAddress] = exchangeRate;
     }
 
     function removeRewardToken(address tokenAddress) external onlyOwner {
         rewardTokenAddresses.remove(tokenAddress);
         delete rewardTokens[tokenAddress];
+        delete exchangeRates[tokenAddress];
     }
 
     function setRewardAmount(address tokenAddress, uint256 rewardAmount) external onlyOwner {
@@ -57,48 +97,132 @@ contract MoneyPost {
         rewardTokens[tokenAddress].rewardAmount = rewardAmount;
     }
 
-    function setExchangeRate(address creatorToken, uint256 rate) external onlyOwner {
-        require(rewardTokenAddresses.contains(creatorToken), "Token not registered");
-        exchangeRates[creatorToken] = rate;
+    function setExchangeRate(address tokenAddress, uint256 rate) external onlyOwner {
+        require(rewardTokenAddresses.contains(tokenAddress), "Token not registered");
+        exchangeRates[tokenAddress] = rate;
     }
 
-    function setBaseURL(string memory _baseURL) external onlyOwner {
-        baseURL = _baseURL;
+    // Topic Management Functions
+    function addTopic(string calldata name) external onlyOwner returns (bytes32) {
+        bytes32 topicId = keccak256(abi.encodePacked(name, block.timestamp));
+        topics[topicId] = Topic(topicId, name, block.timestamp);
+        topicIds.add(topicId);
+        return topicId;
     }
 
-    function submitPost(bytes32 urlHash, string calldata url, address rewardToken) external {
+    function removeTopic(bytes32 topicId) external onlyOwner {
+        require(topicIds.contains(topicId), "Topic not found");
+        topicIds.remove(topicId);
+        delete topics[topicId];
+    }
+
+    function renameTopic(bytes32 topicId, string calldata newName) external onlyOwner {
+        require(topicIds.contains(topicId), "Topic not found");
+        topics[topicId].name = newName;
+    }
+
+    // Post Submission with Topic
+    function submitPost(bytes32 urlHash, string calldata url, address rewardToken, bytes32 topicId) external {
+        require(!blockedAddresses.contains(msg.sender), "Address is blocked");
         require(bytes(url).length > 0, "Empty URL");
         require(sha256(bytes(url)) == urlHash, "Hash mismatch");
         require(containsBaseURL(url), "Invalid base URL");
         require(containsExport(url), "Missing '/export/'");
+        require(topicIds.contains(topicId), "Invalid topic ID");
         validatePayload(extractPayload(url));
         require(!eligibleHashes[urlHash], "Hash already used");
+        
         eligibleHashes[urlHash] = true;
+        topicPostCounts[topicId]++;
+        
+        Post memory newPost = Post({
+            urlHash: urlHash,
+            author: msg.sender,
+            timestamp: block.timestamp,
+            rewardToken: rewardToken
+        });
+        topicPosts[topicId].push(newPost);
+        postToTopic[urlHash] = topicId;
 
-        if (rewardToken == address(flipToken)) {
-            require(flipToken.transfer(msg.sender, flipRewardAmount), "FLIP payment failed");
-        } else {
-            RewardToken memory token = rewardTokens[rewardToken];
-            require(token.tokenAddress != address(0), "Invalid reward token");
-            require(IERC20(token.tokenAddress).transfer(msg.sender, token.rewardAmount), "Payment failed");
-        }
+        RewardToken memory token = rewardTokens[rewardToken];
+        require(token.tokenAddress != address(0), "Invalid reward token");
+        require(IERC20(token.tokenAddress).transfer(msg.sender, token.rewardAmount), "Payment failed");
     }
 
-    function swapForFlip(address creatorToken, uint256 amount) external {
-        uint256 rate = exchangeRates[creatorToken];
-        require(rate > 0, "Token not swappable");
-        uint256 flipAmount = amount / rate;
-        require(flipAmount > 0, "Amount too low");
-        require(IERC20(creatorToken).transferFrom(msg.sender, address(this), amount), "Transfer failed");
-        require(flipToken.transfer(msg.sender, flipAmount), "FLIP payment failed");
+    // Swap Function
+    function swapTokens(address fromToken, address toToken, uint256 amount) external {
+        require(rewardTokenAddresses.contains(fromToken), "From token not supported");
+        require(rewardTokenAddresses.contains(toToken), "To token not supported");
+        
+        uint256 fromRate = exchangeRates[fromToken];
+        uint256 toRate = exchangeRates[toToken];
+        require(fromRate > 0 && toRate > 0, "Tokens not swappable");
+        
+        uint256 equivalentAmount = (amount * fromRate) / toRate;
+        require(equivalentAmount > 0, "Amount too low");
+        
+        require(IERC20(fromToken).transferFrom(msg.sender, address(this), amount), "From transfer failed");
+        require(IERC20(toToken).transfer(msg.sender, equivalentAmount), "To transfer failed");
     }
 
-    function listRewardTokens() external view returns (RewardToken[] memory) {
-        RewardToken[] memory tokens = new RewardToken[](rewardTokenAddresses.length());
-        for (uint256 i = 0; i < rewardTokenAddresses.length(); i++) {
-            tokens[i] = rewardTokens[rewardTokenAddresses.at(i)];
+    // View Functions
+    function listRewardTokens() external view returns (RewardToken[] memory, uint256[] memory) {
+        uint256 length = rewardTokenAddresses.length();
+        RewardToken[] memory tokens = new RewardToken[](length);
+        uint256[] memory rates = new uint256[](length);
+        
+        for (uint256 i = 0; i < length; i++) {
+            address tokenAddress = rewardTokenAddresses.at(i);
+            tokens[i] = rewardTokens[tokenAddress];
+            rates[i] = exchangeRates[tokenAddress];
         }
-        return tokens;
+        return (tokens, rates);
+    }
+
+    function listTopics() external view returns (Topic[] memory) {
+        uint256 length = topicIds.length();
+        Topic[] memory allTopics = new Topic[](length);
+        
+        for (uint256 i = 0; i < length; i++) {
+            allTopics[i] = topics[topicIds.at(i)];
+        }
+        return allTopics;
+    }
+
+    function getTopicPostCount(bytes32 topicId) external view returns (uint256) {
+        return topicPostCounts[topicId];
+    }
+
+    function getPostsByTopic(bytes32 topicId, uint256 startIndex, uint256 endIndex) external view returns (Post[] memory) {
+        require(topicIds.contains(topicId), "Invalid topic ID");
+        require(startIndex <= endIndex, "Invalid index range");
+        
+        Post[] storage allPosts = topicPosts[topicId];
+        if (endIndex >= allPosts.length) {
+            endIndex = allPosts.length - 1;
+        }
+        
+        uint256 resultLength = endIndex - startIndex + 1;
+        Post[] memory result = new Post[](resultLength);
+        
+        for (uint256 i = 0; i < resultLength; i++) {
+            result[i] = allPosts[startIndex + i];
+        }
+        
+        return result;
+    }
+
+    function getTotalPostsByTopic(bytes32 topicId) external view returns (uint256) {
+        return topicPosts[topicId].length;
+    }
+
+    function getPostTopic(bytes32 urlHash) external view returns (bytes32) {
+        return postToTopic[urlHash];
+    }
+
+    // Helper Functions
+    function setBaseURL(string memory _baseURL) external onlyOwner {
+        baseURL = _baseURL;
     }
 
     function containsBaseURL(string memory url) internal view returns (bool) {
