@@ -653,6 +653,23 @@ console.log("mk addy is " + market_address);
 
 
 
+
+  transferNFT = async (fromAddress, toAddress, tokenId) => {
+      this.state.upcNft.methods.transferFrom(fromAddress, toAddress, tokenId)
+          .send({ from: this.state.account })
+          .once('receipt', (receipt) => {
+              this.setState({ loading: false });
+              // Optional: Add any post-transfer logic here
+          })
+          .on('error', (error) => {
+              this.setState({ loading: false });
+              console.error('Transfer failed:', error);
+              // Handle error (e.g., show notification)
+          });
+  };
+
+
+
   mintNft = async (upcId) => {
     const { accounts, contract } = this.state;
 
@@ -1247,6 +1264,7 @@ console.log("mk addy is " + market_address);
 
     this.buyNftNav= this.buyNftNav.bind(this);
     this.mintNftNav= this.mintNftNav.bind(this);
+    this.transferNFT = this.transferNFT.bind(this);
     this.approveNav= this.approveNav.bind(this);
 
     this.approveUSDC= this.approveUSDC.bind(this);
@@ -1357,6 +1375,7 @@ console.log("mk addy is " + market_address);
 
 	getBulkCount={this.getBulkCount}
 	getBulkPrice={this.getBulkPrice}
+	transferNFT={this.transferNFT}
 
 
 

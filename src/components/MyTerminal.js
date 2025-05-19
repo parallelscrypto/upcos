@@ -4497,48 +4497,6 @@ console.log(this.state.account);
 
             },
 
-
-
-
-            room: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Create a VR room or dial into an existing room</p>',
-              fn: () => {
-                this.setState({progressBal: ''});
-                this.setState({ isProgressing: true }, () => {
-                  const terminal = this.progressTerminal.current
-		  var self = this;
-                  let info = this.props.upcInfo(this.state.account)
-		   .then(data => {
-
-			var loc = "https://hubs.mozilla.com/link"
-			var link = <a href={loc} >Dial into a room</a>
-
-
-			//var link = <a href={data['vr']} >View my VR Experience!</a>
-
-			   self.setState({vrLink: link});
-			   self.setState({showModal: true});
-                  });
-		  
-
-                  const interval = setInterval(() => {
-                    if (this.state.progressBal != '') { // Stop at 100%
-                      clearInterval(interval)
-                      this.setState({ isProgressing: false, progress: 0 })
-                    } else {
-                      this.setState({progressBal: info});
-                      var self = this;
-                      this.setState({ progress: this.state.progress + 10 })
-                    }
-                  }, 1500)
-                })
-
-                return ''
-              }
-
-
-            },
-
             crown : {
               description: '<p style="color:hotpink;font-size:1.1em">** Crown a upc (give it the ability to mint tokens).  Crowner must hold nft (9999) and syntax is `crown <kingUpc> <crownedUpc>`</p>',
               fn: (kingUpc, upcId, numTokens ) => {
@@ -4577,6 +4535,59 @@ console.log(this.state.account);
             },
 
 
+            chown: {
+                description: '<p style="color:hotpink;font-size:1.1em">** Transfer ownership of an NFT to another address. Usage: chown <nftId> <toAddress></p>',
+                fn: async (nftId, toAddress) => {
+                    const terminal = this.progressTerminal.current;
+                    
+                    // Validate inputs
+                    if (!nftId || !toAddress) {
+                        terminal.pushToStdout('[[error]]');
+                        terminal.pushToStdout('Error: Please provide both NFT ID and recipient address');
+                        terminal.pushToStdout('Usage: chown <nftId> <toAddress>');
+                        terminal.pushToStdout('[[/error]]');
+                        return '';
+                    }
+            
+                    // Validate Ethereum address format
+                    if (!ethers.utils.isAddress(toAddress)) {
+                        terminal.pushToStdout('[[error]]');
+                        terminal.pushToStdout('Error: Invalid recipient address format');
+                        terminal.pushToStdout('[[/error]]');
+                        return '';
+                    }
+            
+                    try {
+                        this.setState({ isProgressing: true });
+                        
+                        // Call the contract's transfer function
+                        const tx = await this.props.transferNFT(this.props.address, toAddress, nftId);
+                        
+                        terminal.pushToStdout('[[transfer]]');
+                        terminal.pushToStdout(`Transfer initiated for NFT ${nftId}`);
+                        terminal.pushToStdout(`From: ${this.state.account}`);
+                        terminal.pushToStdout(`To: ${toAddress}`);
+                        terminal.pushToStdout('Waiting for transaction confirmation...');
+                        terminal.pushToStdout('[[/transfer]]');
+                        
+                        // Wait for transaction confirmation
+                        await tx.wait();
+                        
+                        terminal.pushToStdout('[[success]]');
+                        terminal.pushToStdout(`Successfully transferred NFT ${nftId} to ${toAddress}`);
+                        terminal.pushToStdout('[[/success]]');
+                        
+                    } catch (error) {
+                        terminal.pushToStdout('[[error]]');
+                        terminal.pushToStdout(`Transfer failed: ${error.message}`);
+                        terminal.pushToStdout('[[/error]]');
+                    } finally {
+                        this.setState({ isProgressing: false });
+                    }
+                    
+                    return '';
+                }
+            },
 
             mine: {
               description: '<p style="color:hotpink;font-size:1.1em">** Mine Flip Token that has been Crowned into the UPC. specify in whole number, not wei.  example: "mine 777777777777 50" will mine 50 tokens from upc 777777777777</p>',

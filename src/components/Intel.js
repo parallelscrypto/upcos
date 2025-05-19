@@ -114,6 +114,7 @@ class Intel extends Component {
 
 
             revokePermission= {this.props.revokePermission}
+            transferNFT= {this.props.transferNFT}
             grantPermission= {this.props.grantPermission}
             checkPermission= {this.props.checkPermission}
 
