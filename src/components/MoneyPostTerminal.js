@@ -275,6 +275,8 @@ class MoneyPostTerminal extends Component {
     }
   }
 
+
+
   async loadRewardTokens() {
     try {
       const terminal = this.terminal.current;
@@ -284,7 +286,8 @@ class MoneyPostTerminal extends Component {
       
       const rewardTokens = tokens.map((token, index) => ({
         ...token,
-        exchangeRate: rates[index]
+        rewardAmount: ethers.utils.formatEther(token.rewardAmount), // Convert BigNumber to string
+        exchangeRate: rates[index].toString() // Convert BigNumber to string
       }));
       
       this.setState({ rewardTokens });
@@ -293,7 +296,7 @@ class MoneyPostTerminal extends Component {
       rewardTokens.forEach((token, index) => {
         terminal.pushToStdout(
           `${index + 1}. ${token.name} (${token.tokenAddress}) - ` +
-          `Reward: ${ethers.utils.formatEther(token.rewardAmount)} ` +
+          `Reward: ${token.rewardAmount} ` +
           `Rate: ${token.exchangeRate}`
         );
       });
@@ -301,6 +304,7 @@ class MoneyPostTerminal extends Component {
       console.error("Error loading reward tokens:", error);
     }
   }
+
 
   async loadTopics() {
     try {
@@ -332,6 +336,7 @@ class MoneyPostTerminal extends Component {
     }
   }
 
+
   async manageRewardToken(action, name, tokenAddress, rewardAmount, exchangeRate) {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
@@ -344,8 +349,8 @@ class MoneyPostTerminal extends Component {
         const tx = await moneyPost.manageRewardToken(
           tokenAddress,
           name,
-          ethers.utils.parseEther(rewardAmount),
-          exchangeRate,
+          ethers.utils.parseEther(rewardAmount.toString()), // Convert to string then to BigNumber
+          ethers.BigNumber.from(exchangeRate.toString()), // Convert to string then to BigNumber
           0 // add action
         );
         await tx.wait();
@@ -355,8 +360,8 @@ class MoneyPostTerminal extends Component {
         const tx = await moneyPost.manageRewardToken(
           tokenAddress,
           "",
-          0,
-          0,
+          ethers.constants.Zero, // Use Zero constant for BigNumber
+          ethers.constants.Zero,
           1 // remove action
         );
         await tx.wait();
@@ -366,8 +371,8 @@ class MoneyPostTerminal extends Component {
         const tx = await moneyPost.manageRewardToken(
           tokenAddress,
           "",
-          ethers.utils.parseEther(rewardAmount),
-          exchangeRate,
+          ethers.utils.parseEther(rewardAmount.toString()),
+          ethers.BigNumber.from(exchangeRate.toString()),
           2 // update action
         );
         await tx.wait();
@@ -377,10 +382,14 @@ class MoneyPostTerminal extends Component {
       await this.loadRewardTokens();
     } catch (error) {
       terminal.pushToStdout(`[[error]]Error: ${error.reason || error.message}[[/error]]`);
+      console.error("Manage reward token error:", error);
     } finally {
       this.setState({ isProgressing: false });
     }
   }
+
+
+
 
   async manageTopic(action, topicId, name) {
     const terminal = this.terminal.current;
@@ -513,27 +522,29 @@ class MoneyPostTerminal extends Component {
     }
   }
 
+
+
   async depositRewardTokens(tokenAddress, amount) {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
     
     try {
-      const { moneyPost } = this.state;
+      // Check allowance first
+      const allowance = await this.checkAllowance(tokenAddress);
+      const amountBN = ethers.utils.parseEther(amount);
       
+      if (allowance.lt(amountBN)) {
+        throw new Error(`Insufficient allowance. Please approve at least ${amount} tokens first.`);
+      }
+  
       terminal.pushToStdout(`Depositing ${amount} of token ${tokenAddress}...`);
       
-      const tx = await moneyPost.depositRewardTokens(
+      const tx = await this.state.moneyPost.depositRewardTokens(
         tokenAddress,
-        ethers.utils.parseEther(amount)
+        amountBN
       );
-
-      terminal.pushToStdout(`[[success]]Transaction sent! Waiting for confirmation...[[/success]]`);
-      terminal.pushToStdout(`Transaction hash: ${tx.hash}`);
-      
-      await tx.wait();
-      
-      terminal.pushToStdout(`[[success]]Tokens deposited successfully![[/success]]`);
-      
+  
+      // ... rest of deposit function remains same
     } catch (error) {
       terminal.pushToStdout(
         `[[error]]Error: ${error.reason || error.message}[[/error]]`
@@ -543,6 +554,9 @@ class MoneyPostTerminal extends Component {
       this.setState({ isProgressing: false });
     }
   }
+
+
+
 
   async withdrawRewardTokens(tokenAddress, amount) {
     const terminal = this.terminal.current;
@@ -605,6 +619,165 @@ class MoneyPostTerminal extends Component {
     }
   }
 
+
+
+  async getContractTokenBalance(tokenAddress) {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+  
+    try {
+      // Minimal ERC20 ABI for balance check
+      const minimalERC20ABI = [
+        {
+          "constant": true,
+          "inputs": [{"name": "_owner", "type": "address"}],
+          "name": "balanceOf",
+          "outputs": [{"name": "", "type": "uint256"}],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        }
+      ];
+  
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        minimalERC20ABI,
+        this.state.provider
+      );
+  
+      // Check balance of MoneyPost contract's holdings
+      const balance = await tokenContract.balanceOf(MONEYPOST_ADDRESS);
+      const formattedBalance = ethers.utils.formatEther(balance);
+      
+      terminal.pushToStdout(
+        `[[success]]Contract token balance: ${formattedBalance}[[/success]]`
+      );
+      
+      return balance;
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error: ${error.reason || error.message}[[/error]]`
+      );
+      console.error("Contract token balance error:", error);
+      return ethers.constants.Zero;
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  }
+
+
+
+
+  async approveToken(tokenAddress, amount) {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      terminal.pushToStdout(`Approving ${amount} tokens for contract...`);
+      
+      // Minimal ERC20 ABI just for approvals
+      const minimalERC20ABI = [
+        {
+          "constant": false,
+          "inputs": [
+            {"name": "_spender","type": "address"},
+            {"name": "_value","type": "uint256"}
+          ],
+          "name": "approve",
+          "outputs": [{"name": "","type": "bool"}],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": true,
+          "inputs": [
+            {"name": "_owner","type": "address"},
+            {"name": "_spender","type": "address"}
+          ],
+          "name": "allowance",
+          "outputs": [{"name": "","type": "uint256"}],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        }
+      ];
+  
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        minimalERC20ABI,
+        this.state.signer
+      );
+  
+      const tx = await tokenContract.approve(
+        MONEYPOST_ADDRESS,
+        ethers.utils.parseEther(amount.toString())
+      );
+  
+      terminal.pushToStdout(`[[success]]Approval sent! Waiting for confirmation...[[/success]]`);
+      terminal.pushToStdout(`Transaction hash: ${tx.hash}`);
+      
+      await tx.wait();
+      
+      terminal.pushToStdout(`[[success]]Tokens approved successfully![[/success]]`);
+      await this.checkAllowance(tokenAddress); // Update allowance state
+      
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error: ${error.reason || error.message}[[/error]]`
+      );
+      console.error("Token approval error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  }
+
+
+  async checkAllowance(tokenAddress) {
+    try {
+      // Minimal ABI for allowance check
+      const minimalERC20ABI = [
+        {
+          "constant": true,
+          "inputs": [
+            {"name": "_owner","type": "address"},
+            {"name": "_spender","type": "address"}
+          ],
+          "name": "allowance",
+          "outputs": [{"name": "","type": "uint256"}],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        }
+      ];
+  
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        minimalERC20ABI,
+        this.state.signer
+      );
+  
+      const allowance = await tokenContract.allowance(
+        this.state.account,
+        MONEYPOST_ADDRESS
+      );
+  
+      this.setState(prevState => ({
+        allowances: {
+          ...prevState.allowances,
+          [tokenAddress]: ethers.utils.formatEther(allowance)
+        }
+      }));
+  
+      return allowance;
+    } catch (error) {
+      console.error("Error checking allowance:", error);
+      return ethers.constants.Zero;
+    }
+  }
+
+
+
   async setBaseURL(newURL) {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
@@ -634,21 +807,45 @@ class MoneyPostTerminal extends Component {
     this.setState({ isProgressing: true });
     
     try {
-      const { moneyPost } = this.state;
-      
-      const balance = await moneyPost.getRewardTokenBalance(tokenAddress);
+      // Minimal ERC20 ABI for balance check
+      const minimalERC20ABI = [
+        {
+          "constant": true,
+          "inputs": [{"name": "_owner", "type": "address"}],
+          "name": "balanceOf",
+          "outputs": [{"name": "", "type": "uint256"}],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        }
+      ];
+  
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        minimalERC20ABI,
+        this.state.provider
+      );
+  
+      const balance = await tokenContract.balanceOf(this.state.account);
+      const formattedBalance = ethers.utils.formatEther(balance);
       
       terminal.pushToStdout(
-        `[[success]]Token balance: ${ethers.utils.formatEther(balance)}[[/success]]`
+        `[[success]]Token balance: ${formattedBalance}[[/success]]`
       );
+      
+      return balance;
     } catch (error) {
       terminal.pushToStdout(
         `[[error]]Error: ${error.reason || error.message}[[/error]]`
       );
+      console.error("Token balance error:", error);
+      return ethers.constants.Zero;
     } finally {
       this.setState({ isProgressing: false });
     }
   }
+
+
 
   showSubmitPostGUI() {
     const { rewardTokens, topics } = this.state;
@@ -958,6 +1155,39 @@ class MoneyPostTerminal extends Component {
     );
   }
 
+
+  showApproveTokenGUI() {
+    const { rewardTokens } = this.state;
+    
+    this.showCyberpunkModal(
+      "APPROVE TOKENS",
+      [
+        {
+          label: "Token",
+          name: "tokenAddress",
+          type: "select",
+          required: true,
+          options: rewardTokens.map(token => ({
+            value: token.tokenAddress,
+            label: `${token.name} (${token.tokenAddress})`
+          }))
+        },
+        {
+          label: "Amount to Approve",
+          name: "amount",
+          type: "number",
+          required: true,
+          placeholder: "Enter amount to approve"
+        }
+      ],
+      ({ tokenAddress, amount }) => {
+        this.approveToken(tokenAddress, amount);
+      }
+    );
+  }
+
+
+
   showSetBaseURLGUI() {
     const { baseURL } = this.state;
     
@@ -997,7 +1227,7 @@ class MoneyPostTerminal extends Component {
         }
       ],
       ({ tokenAddress }) => {
-        this.getTokenBalance(tokenAddress);
+        this.getContractTokenBalance(tokenAddress);
       }
     );
   }
@@ -1168,6 +1398,20 @@ class MoneyPostTerminal extends Component {
               >
                 CHECK BALANCE
               </button>
+              <button
+                onClick={() => this.showApproveTokenGUI()}
+                style={{
+                  background: 'linear-gradient(45deg, #FFC107 30%, #FF9800 90%)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                APPROVE
+              </button>
             </div>
             <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
               {this.state.rewardTokens.map((token, index) => (
@@ -1180,7 +1424,7 @@ class MoneyPostTerminal extends Component {
                 }}>
                   <div style={{ color: '#00f0ff', fontWeight: 'bold' }}>{token.name}</div>
                   <div style={{ color: '#e0e0e0', fontSize: '12px' }}>{token.tokenAddress}</div>
-                  <div style={{ color: '#FFC107' }}>Reward: {ethers.utils.formatEther(token.rewardAmount)} ETH</div>
+                  <div style={{ color: '#FFC107' }}>Reward: {token.rewardAmount} ETH</div>
                   <div style={{ color: '#4CAF50' }}>Exchange Rate: {token.exchangeRate}</div>
                 </div>
               ))}
@@ -1398,6 +1642,10 @@ class MoneyPostTerminal extends Component {
               description: 'Check token balance (tokenAddress)',
               fn: async (tokenAddress) => await this.getTokenBalance(tokenAddress)
             },
+            contractbalance: {
+              description: 'Check contract token balance (tokenAddress)',
+              fn: async (tokenAddress) => await this.getContractTokenBalance(tokenAddress)
+            },
             block: {
               description: 'Block an address (address)',
               fn: async (address) => await this.manageBlockedAddresses([address], true)
@@ -1417,6 +1665,10 @@ class MoneyPostTerminal extends Component {
                   `[[success]]Current base URL: ${this.state.baseURL || 'Not set'}[[/success]]`
                 );
               }
+            },
+            approve: {
+              description: 'Approve tokens for deposit (tokenAddress, amount)',
+              fn: async (...args) => await this.approveToken(...args)
             },
             blocked: {
               description: 'List blocked addresses',
