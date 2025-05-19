@@ -7,77 +7,206 @@
 		"type": "constructor"
 	},
 	{
+		"anonymous": false,
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "_address",
-				"type": "address"
-			}
-		],
-		"name": "addBlockedAddress",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address[]",
-				"name": "_addresses",
-				"type": "address[]"
-			}
-		],
-		"name": "addBlockedAddresses",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			},
-			{
+				"indexed": true,
 				"internalType": "address",
 				"name": "tokenAddress",
 				"type": "address"
 			},
 			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "EmergencyWithdraw",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "newRate",
+				"type": "uint256"
+			}
+		],
+		"name": "ExchangeRateUpdated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "urlHash",
+				"type": "bytes32"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "author",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "topicId",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "rewardToken",
+				"type": "address"
+			}
+		],
+		"name": "PostSubmitted",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "newAmount",
+				"type": "uint256"
+			}
+		],
+		"name": "RewardAmountUpdated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
 				"internalType": "uint256",
 				"name": "rewardAmount",
 				"type": "uint256"
 			},
 			{
+				"indexed": false,
 				"internalType": "uint256",
 				"name": "exchangeRate",
 				"type": "uint256"
 			}
 		],
-		"name": "addRewardToken",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
+		"name": "RewardTokenAdded",
+		"type": "event"
 	},
 	{
+		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "RewardTokenDeposited",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			}
+		],
+		"name": "RewardTokenRemoved",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "RewardTokenWithdrawn",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "topicId",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
 				"internalType": "string",
 				"name": "name",
 				"type": "string"
 			}
 		],
-		"name": "addTopic",
-		"outputs": [
+		"name": "TopicAdded",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
 			{
+				"indexed": true,
 				"internalType": "bytes32",
-				"name": "",
+				"name": "topicId",
 				"type": "bytes32"
 			}
 		],
-		"stateMutability": "nonpayable",
-		"type": "function"
+		"name": "TopicRemoved",
+		"type": "event"
 	},
 	{
 		"inputs": [],
@@ -90,6 +219,24 @@
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "depositRewardTokens",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -132,147 +279,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "getBlockedAddresses",
-		"outputs": [
-			{
-				"internalType": "address[]",
-				"name": "",
-				"type": "address[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "urlHash",
-				"type": "bytes32"
-			}
-		],
-		"name": "getPostTopic",
-		"outputs": [
-			{
-				"internalType": "bytes32",
-				"name": "",
-				"type": "bytes32"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "uint256",
-				"name": "startIndex",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "endIndex",
-				"type": "uint256"
-			}
-		],
-		"name": "getPostsByTopic",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "bytes32",
-						"name": "urlHash",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "address",
-						"name": "author",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "timestamp",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "rewardToken",
-						"type": "address"
-					}
-				],
-				"internalType": "struct MoneyPost.Post[]",
-				"name": "",
-				"type": "tuple[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			}
-		],
-		"name": "getTopicPostCount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			}
-		],
-		"name": "getTotalPostsByTopic",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_address",
-				"type": "address"
-			}
-		],
-		"name": "isAddressBlocked",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "listRewardTokens",
+		"name": "getRewardTokenData",
 		"outputs": [
 			{
 				"components": [
@@ -307,7 +314,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "listTopics",
+		"name": "getTopicData",
 		"outputs": [
 			{
 				"components": [
@@ -333,6 +340,86 @@
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "_addresses",
+				"type": "address[]"
+			},
+			{
+				"internalType": "bool",
+				"name": "blockAction",
+				"type": "bool"
+			}
+		],
+		"name": "manageBlockedAddresses",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "rewardAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "exchangeRate",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "action",
+				"type": "uint256"
+			}
+		],
+		"name": "manageRewardToken",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "topicId",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "bool",
+				"name": "isAdd",
+				"type": "bool"
+			}
+		],
+		"name": "manageTopic",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -371,63 +458,6 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "_address",
-				"type": "address"
-			}
-		],
-		"name": "removeBlockedAddress",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			}
-		],
-		"name": "removeRewardToken",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			}
-		],
-		"name": "removeTopic",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "string",
-				"name": "newName",
-				"type": "string"
-			}
-		],
-		"name": "renameTopic",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
 				"name": "",
 				"type": "address"
 			}
@@ -451,55 +481,6 @@
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_baseURL",
-				"type": "string"
-			}
-		],
-		"name": "setBaseURL",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "rate",
-				"type": "uint256"
-			}
-		],
-		"name": "setExchangeRate",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "rewardAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "setRewardAmount",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -638,6 +619,24 @@
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "withdrawRewardTokens",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -17484,7 +17483,7 @@
     "137": {
       "events": {},
       "links": {},
-      "address": "0x98D102E7b15162423A89F635D50A5681ae25441D",
+      "address": "0x9eE98B2095D8749a14B8ca87eBC8DbeAFF4Bd160",
       "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
     }
   },

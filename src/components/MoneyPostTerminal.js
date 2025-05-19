@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import Terminal from 'react-console-emulator';
 import MoneyPostABI from '../etc/rawmaterial/MoneyPost.json';
 
-const MONEYPOST_ADDRESS = "0x98D102E7b15162423A89F635D50A5681ae25441D";
+const MONEYPOST_ADDRESS = "0x9eE98B2095D8749a14B8ca87eBC8DbeAFF4Bd160";
 
 class MoneyPostTerminal extends Component {
   constructor(props) {
@@ -18,14 +18,15 @@ class MoneyPostTerminal extends Component {
       connectionError: null,
       rewardTokens: [],
       topics: [],
+      blockedAddresses: [],
       activeTab: 'submit',
       modalContent: null,
-      showModal: false
+      showModal: false,
+      baseURL: ''
     };
     this.terminal = React.createRef();
     this.modalContainer = null;
   }
-
 
   componentDidMount() {
     this.checkWalletConnection();
@@ -59,10 +60,6 @@ class MoneyPostTerminal extends Component {
     }
   }
 
-
-
-
-
   showModal(content) {
     this.modalContainer.innerHTML = `
       <div style="
@@ -95,6 +92,8 @@ class MoneyPostTerminal extends Component {
       </div>
     `;
 
+    this.modalContainer.style.display = 'flex';
+    
     document.getElementById('close-modal').addEventListener('click', () => {
       this.modalContainer.style.display = 'none';
     });
@@ -246,12 +245,15 @@ class MoneyPostTerminal extends Component {
         signer
       );
 
+      const baseURL = await moneyPost.baseURL();
+
       this.setState({ 
         moneyPost,
         provider,
         signer,
         account,
-        isConnected: true
+        isConnected: true,
+        baseURL
       });
 
       this.terminal.current.pushToStdout(
@@ -260,6 +262,7 @@ class MoneyPostTerminal extends Component {
 
       await this.loadRewardTokens();
       await this.loadTopics();
+      await this.loadBlockedAddresses();
       
     } catch (error) {
       this.setState({ connectionError: error.message });
@@ -277,7 +280,7 @@ class MoneyPostTerminal extends Component {
       const terminal = this.terminal.current;
       const { moneyPost } = this.state;
       
-      const [tokens, rates] = await moneyPost.listRewardTokens();
+      const [tokens, rates] = await moneyPost.getRewardTokenData();
       
       const rewardTokens = tokens.map((token, index) => ({
         ...token,
@@ -304,7 +307,7 @@ class MoneyPostTerminal extends Component {
       const terminal = this.terminal.current;
       const { moneyPost } = this.state;
       
-      const topics = await moneyPost.listTopics();
+      const topics = await moneyPost.getTopicData();
       
       this.setState({ topics });
       
@@ -319,23 +322,58 @@ class MoneyPostTerminal extends Component {
     }
   }
 
-  async addRewardToken(name, tokenAddress, rewardAmount, exchangeRate) {
+  async loadBlockedAddresses() {
+    try {
+      const { moneyPost } = this.state;
+      const blockedAddresses = await moneyPost.getBlockedAddresses();
+      this.setState({ blockedAddresses });
+    } catch (error) {
+      console.error("Error loading blocked addresses:", error);
+    }
+  }
+
+  async manageRewardToken(action, name, tokenAddress, rewardAmount, exchangeRate) {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
     
     try {
       const { moneyPost } = this.state;
-      terminal.pushToStdout(`Adding reward token: ${name}...`);
       
-      const tx = await moneyPost.addRewardToken(
-        name,
-        tokenAddress,
-        ethers.utils.parseEther(rewardAmount),
-        exchangeRate
-      );
-
-      await tx.wait();
-      terminal.pushToStdout(`[[success]]Token added successfully![[/success]]`);
+      if (action === 'add') {
+        terminal.pushToStdout(`Adding reward token: ${name}...`);
+        const tx = await moneyPost.manageRewardToken(
+          tokenAddress,
+          name,
+          ethers.utils.parseEther(rewardAmount),
+          exchangeRate,
+          0 // add action
+        );
+        await tx.wait();
+        terminal.pushToStdout(`[[success]]Token added successfully![[/success]]`);
+      } else if (action === 'remove') {
+        terminal.pushToStdout(`Removing reward token: ${tokenAddress}...`);
+        const tx = await moneyPost.manageRewardToken(
+          tokenAddress,
+          "",
+          0,
+          0,
+          1 // remove action
+        );
+        await tx.wait();
+        terminal.pushToStdout(`[[success]]Token removed successfully![[/success]]`);
+      } else if (action === 'update') {
+        terminal.pushToStdout(`Updating reward token: ${tokenAddress}...`);
+        const tx = await moneyPost.manageRewardToken(
+          tokenAddress,
+          "",
+          ethers.utils.parseEther(rewardAmount),
+          exchangeRate,
+          2 // update action
+        );
+        await tx.wait();
+        terminal.pushToStdout(`[[success]]Token updated successfully![[/success]]`);
+      }
+      
       await this.loadRewardTokens();
     } catch (error) {
       terminal.pushToStdout(`[[error]]Error: ${error.reason || error.message}[[/error]]`);
@@ -344,101 +382,33 @@ class MoneyPostTerminal extends Component {
     }
   }
 
-  async removeRewardToken(tokenAddress) {
+  async manageTopic(action, topicId, name) {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
     
     try {
       const { moneyPost } = this.state;
-      terminal.pushToStdout(`Removing reward token: ${tokenAddress}...`);
       
-      const tx = await moneyPost.removeRewardToken(tokenAddress);
-      await tx.wait();
+      if (action === 'add') {
+        terminal.pushToStdout(`Adding topic: ${name}...`);
+        const tx = await moneyPost.manageTopic(
+          ethers.constants.HashZero, // dummy value for add
+          name,
+          true // isAdd
+        );
+        await tx.wait();
+        terminal.pushToStdout(`[[success]]Topic added successfully![[/success]]`);
+      } else if (action === 'remove') {
+        terminal.pushToStdout(`Removing topic: ${topicId}...`);
+        const tx = await moneyPost.manageTopic(
+          topicId,
+          "",
+          false // isAdd (false = remove)
+        );
+        await tx.wait();
+        terminal.pushToStdout(`[[success]]Topic removed successfully![[/success]]`);
+      }
       
-      terminal.pushToStdout(`[[success]]Token removed successfully![[/success]]`);
-      await this.loadRewardTokens();
-    } catch (error) {
-      terminal.pushToStdout(`[[error]]Error: ${error.reason || error.message}[[/error]]`);
-    } finally {
-      this.setState({ isProgressing: false });
-    }
-  }
-
-  async setExchangeRate(tokenAddress, newRate) {
-    const terminal = this.terminal.current;
-    this.setState({ isProgressing: true });
-    
-    try {
-      const { moneyPost } = this.state;
-      terminal.pushToStdout(`Updating exchange rate for token: ${tokenAddress}...`);
-      
-      const tx = await moneyPost.setExchangeRate(
-        tokenAddress,
-        newRate
-      );
-
-      await tx.wait();
-      terminal.pushToStdout(`[[success]]Exchange rate updated successfully![[/success]]`);
-      await this.loadRewardTokens();
-    } catch (error) {
-      terminal.pushToStdout(`[[error]]Error: ${error.reason || error.message}[[/error]]`);
-    } finally {
-      this.setState({ isProgressing: false });
-    }
-  }
-
-  async addTopic(name) {
-    const terminal = this.terminal.current;
-    this.setState({ isProgressing: true });
-    
-    try {
-      const { moneyPost } = this.state;
-      terminal.pushToStdout(`Adding topic: ${name}...`);
-      
-      const tx = await moneyPost.addTopic(name);
-      await tx.wait();
-      
-      terminal.pushToStdout(`[[success]]Topic added successfully![[/success]]`);
-      await this.loadTopics();
-    } catch (error) {
-      terminal.pushToStdout(`[[error]]Error: ${error.reason || error.message}[[/error]]`);
-    } finally {
-      this.setState({ isProgressing: false });
-    }
-  }
-
-  async renameTopic(topicId, newName) {
-    const terminal = this.terminal.current;
-    this.setState({ isProgressing: true });
-    
-    try {
-      const { moneyPost } = this.state;
-      terminal.pushToStdout(`Renaming topic ${topicId} to ${newName}...`);
-      
-      const tx = await moneyPost.renameTopic(topicId, newName);
-      await tx.wait();
-      
-      terminal.pushToStdout(`[[success]]Topic renamed successfully![[/success]]`);
-      await this.loadTopics();
-    } catch (error) {
-      terminal.pushToStdout(`[[error]]Error: ${error.reason || error.message}[[/error]]`);
-    } finally {
-      this.setState({ isProgressing: false });
-    }
-  }
-
-  async removeTopic(topicId) {
-    const terminal = this.terminal.current;
-    this.setState({ isProgressing: true });
-    
-    try {
-      const { moneyPost } = this.state;
-      terminal.pushToStdout(`Removing topic: ${topicId}...`);
-      
-      const tx = await moneyPost.removeTopic(topicId);
-      await tx.wait();
-      
-      terminal.pushToStdout(`[[success]]Topic removed successfully![[/success]]`);
       await this.loadTopics();
     } catch (error) {
       terminal.pushToStdout(`[[error]]Error: ${error.reason || error.message}[[/error]]`);
@@ -511,6 +481,175 @@ class MoneyPostTerminal extends Component {
     }
   }
 
+  async swapTokens(fromToken, toToken, amount) {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      const { moneyPost } = this.state;
+      
+      terminal.pushToStdout(`Swapping ${amount} of token ${fromToken} to token ${toToken}...`);
+      
+      const tx = await moneyPost.swapTokens(
+        fromToken,
+        toToken,
+        ethers.utils.parseEther(amount)
+      );
+
+      terminal.pushToStdout(`[[success]]Transaction sent! Waiting for confirmation...[[/success]]`);
+      terminal.pushToStdout(`Transaction hash: ${tx.hash}`);
+      
+      await tx.wait();
+      
+      terminal.pushToStdout(`[[success]]Tokens swapped successfully![[/success]]`);
+      
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error: ${error.reason || error.message}[[/error]]`
+      );
+      console.error("Token swap error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  }
+
+  async depositRewardTokens(tokenAddress, amount) {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      const { moneyPost } = this.state;
+      
+      terminal.pushToStdout(`Depositing ${amount} of token ${tokenAddress}...`);
+      
+      const tx = await moneyPost.depositRewardTokens(
+        tokenAddress,
+        ethers.utils.parseEther(amount)
+      );
+
+      terminal.pushToStdout(`[[success]]Transaction sent! Waiting for confirmation...[[/success]]`);
+      terminal.pushToStdout(`Transaction hash: ${tx.hash}`);
+      
+      await tx.wait();
+      
+      terminal.pushToStdout(`[[success]]Tokens deposited successfully![[/success]]`);
+      
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error: ${error.reason || error.message}[[/error]]`
+      );
+      console.error("Token deposit error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  }
+
+  async withdrawRewardTokens(tokenAddress, amount) {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      const { moneyPost } = this.state;
+      
+      terminal.pushToStdout(`Withdrawing ${amount} of token ${tokenAddress}...`);
+      
+      const tx = await moneyPost.withdrawRewardTokens(
+        tokenAddress,
+        ethers.utils.parseEther(amount)
+      );
+
+      terminal.pushToStdout(`[[success]]Transaction sent! Waiting for confirmation...[[/success]]`);
+      terminal.pushToStdout(`Transaction hash: ${tx.hash}`);
+      
+      await tx.wait();
+      
+      terminal.pushToStdout(`[[success]]Tokens withdrawn successfully![[/success]]`);
+      
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error: ${error.reason || error.message}[[/error]]`
+      );
+      console.error("Token withdrawal error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  }
+
+  async manageBlockedAddresses(addresses, shouldBlock) {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      const { moneyPost } = this.state;
+      
+      if (shouldBlock) {
+        terminal.pushToStdout(`Blocking addresses: ${addresses.join(', ')}...`);
+        const tx = await moneyPost.addBlockedAddresses(addresses);
+        await tx.wait();
+        terminal.pushToStdout(`[[success]]Addresses blocked successfully![[/success]]`);
+      } else {
+        terminal.pushToStdout(`Unblocking addresses: ${addresses.join(', ')}...`);
+        const tx = await moneyPost.removeBlockedAddress(addresses[0]); // Can only remove one at a time
+        await tx.wait();
+        terminal.pushToStdout(`[[success]]Address unblocked successfully![[/success]]`);
+      }
+      
+      await this.loadBlockedAddresses();
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error: ${error.reason || error.message}[[/error]]`
+      );
+      console.error("Address management error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  }
+
+  async setBaseURL(newURL) {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      const { moneyPost } = this.state;
+      
+      terminal.pushToStdout(`Setting base URL to: ${newURL}...`);
+      
+      const tx = await moneyPost.setBaseURL(newURL);
+      await tx.wait();
+      
+      terminal.pushToStdout(`[[success]]Base URL updated successfully![[/success]]`);
+      this.setState({ baseURL: newURL });
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error: ${error.reason || error.message}[[/error]]`
+      );
+      console.error("Base URL update error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  }
+
+  async getTokenBalance(tokenAddress) {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      const { moneyPost } = this.state;
+      
+      const balance = await moneyPost.getRewardTokenBalance(tokenAddress);
+      
+      terminal.pushToStdout(
+        `[[success]]Token balance: ${ethers.utils.formatEther(balance)}[[/success]]`
+      );
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error: ${error.reason || error.message}[[/error]]`
+      );
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  }
+
   showSubmitPostGUI() {
     const { rewardTokens, topics } = this.state;
     
@@ -561,7 +700,7 @@ class MoneyPostTerminal extends Component {
         { label: "Exchange Rate", name: "rate", type: "number", required: true }
       ],
       ({ name, address, amount, rate }) => {
-        this.addRewardToken(name, address, amount, rate);
+        this.manageRewardToken('add', name, address, amount, rate);
       }
     );
   }
@@ -584,7 +723,7 @@ class MoneyPostTerminal extends Component {
         }
       ],
       ({ address }) => {
-        this.removeRewardToken(address);
+        this.manageRewardToken('remove', '', address, '0', 0);
       }
     );
   }
@@ -614,7 +753,7 @@ class MoneyPostTerminal extends Component {
         }
       ],
       ({ tokenAddress, newRate }) => {
-        this.setExchangeRate(tokenAddress, newRate);
+        this.manageRewardToken('update', '', tokenAddress, '0', newRate);
       }
     );
   }
@@ -626,7 +765,7 @@ class MoneyPostTerminal extends Component {
         { label: "Topic Name", name: "name", required: true }
       ],
       ({ name }) => {
-        this.addTopic(name);
+        this.manageTopic('add', '', name);
       }
     );
   }
@@ -650,7 +789,7 @@ class MoneyPostTerminal extends Component {
         { label: "New Name", name: "newName", required: true }
       ],
       ({ topicId, newName }) => {
-        this.renameTopic(topicId, newName);
+        this.manageTopic('add', topicId, newName);
       }
     );
   }
@@ -673,7 +812,192 @@ class MoneyPostTerminal extends Component {
         }
       ],
       ({ topicId }) => {
-        this.removeTopic(topicId);
+        this.manageTopic('remove', topicId, '');
+      }
+    );
+  }
+
+  showDepositTokensGUI() {
+    const { rewardTokens } = this.state;
+    
+    this.showCyberpunkModal(
+      "DEPOSIT TOKENS",
+      [
+        {
+          label: "Token",
+          name: "tokenAddress",
+          type: "select",
+          required: true,
+          options: rewardTokens.map(token => ({
+            value: token.tokenAddress,
+            label: `${token.name} (${token.tokenAddress})`
+          }))
+        },
+        {
+          label: "Amount to Deposit",
+          name: "amount",
+          type: "number",
+          required: true,
+          placeholder: "Enter amount to deposit"
+        }
+      ],
+      ({ tokenAddress, amount }) => {
+        this.depositRewardTokens(tokenAddress, amount);
+      }
+    );
+  }
+
+  showWithdrawTokensGUI() {
+    const { rewardTokens } = this.state;
+    
+    this.showCyberpunkModal(
+      "WITHDRAW TOKENS",
+      [
+        {
+          label: "Token",
+          name: "tokenAddress",
+          type: "select",
+          required: true,
+          options: rewardTokens.map(token => ({
+            value: token.tokenAddress,
+            label: `${token.name} (${token.tokenAddress})`
+          }))
+        },
+        {
+          label: "Amount to Withdraw",
+          name: "amount",
+          type: "number",
+          required: true,
+          placeholder: "Enter amount to withdraw"
+        }
+      ],
+      ({ tokenAddress, amount }) => {
+        this.withdrawRewardTokens(tokenAddress, amount);
+      }
+    );
+  }
+
+  showSwapTokensGUI() {
+    const { rewardTokens } = this.state;
+    
+    this.showCyberpunkModal(
+      "SWAP TOKENS",
+      [
+        {
+          label: "From Token",
+          name: "fromToken",
+          type: "select",
+          required: true,
+          options: rewardTokens.map(token => ({
+            value: token.tokenAddress,
+            label: `${token.name} (${token.tokenAddress})`
+          }))
+        },
+        {
+          label: "To Token",
+          name: "toToken",
+          type: "select",
+          required: true,
+          options: rewardTokens.map(token => ({
+            value: token.tokenAddress,
+            label: `${token.name} (${token.tokenAddress})`
+          }))
+        },
+        {
+          label: "Amount to Swap",
+          name: "amount",
+          type: "number",
+          required: true,
+          placeholder: "Enter amount to swap"
+        }
+      ],
+      ({ fromToken, toToken, amount }) => {
+        this.swapTokens(fromToken, toToken, amount);
+      }
+    );
+  }
+
+  showBlockAddressGUI() {
+    this.showCyberpunkModal(
+      "BLOCK ADDRESS",
+      [
+        {
+          label: "Address to Block",
+          name: "address",
+          type: "text",
+          required: true,
+          placeholder: "0x..."
+        }
+      ],
+      ({ address }) => {
+        this.manageBlockedAddresses([address], true);
+      }
+    );
+  }
+
+  showUnblockAddressGUI() {
+    const { blockedAddresses } = this.state;
+    
+    this.showCyberpunkModal(
+      "UNBLOCK ADDRESS",
+      [
+        {
+          label: "Address to Unblock",
+          name: "address",
+          type: "select",
+          required: true,
+          options: blockedAddresses.map(address => ({
+            value: address,
+            label: address
+          }))
+        }
+      ],
+      ({ address }) => {
+        this.manageBlockedAddresses([address], false);
+      }
+    );
+  }
+
+  showSetBaseURLGUI() {
+    const { baseURL } = this.state;
+    
+    this.showCyberpunkModal(
+      "SET BASE URL",
+      [
+        {
+          label: "New Base URL",
+          name: "url",
+          type: "text",
+          required: true,
+          placeholder: "https://example.com",
+          value: baseURL
+        }
+      ],
+      ({ url }) => {
+        this.setBaseURL(url);
+      }
+    );
+  }
+
+  showTokenBalanceGUI() {
+    const { rewardTokens } = this.state;
+    
+    this.showCyberpunkModal(
+      "CHECK TOKEN BALANCE",
+      [
+        {
+          label: "Token",
+          name: "tokenAddress",
+          type: "select",
+          required: true,
+          options: rewardTokens.map(token => ({
+            value: token.tokenAddress,
+            label: `${token.name} (${token.tokenAddress})`
+          }))
+        }
+      ],
+      ({ tokenAddress }) => {
+        this.getTokenBalance(tokenAddress);
       }
     );
   }
@@ -694,7 +1018,7 @@ class MoneyPostTerminal extends Component {
           borderBottom: '1px solid #00f0ff',
           paddingBottom: '10px'
         }}>
-          {['submit', 'rewards', 'topics'].map(tab => (
+          {['submit', 'rewards', 'topics', 'admin'].map(tab => (
             <button
               key={tab}
               onClick={() => this.setState({ activeTab: tab })}
@@ -784,6 +1108,62 @@ class MoneyPostTerminal extends Component {
               >
                 SET RATE
               </button>
+              <button
+                onClick={() => this.showDepositTokensGUI()}
+                style={{
+                  background: 'linear-gradient(45deg, #9C27B0 30%, #673AB7 90%)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                DEPOSIT
+              </button>
+              <button
+                onClick={() => this.showWithdrawTokensGUI()}
+                style={{
+                  background: 'linear-gradient(45deg, #607D8B 30%, #455A64 90%)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                WITHDRAW
+              </button>
+              <button
+                onClick={() => this.showSwapTokensGUI()}
+                style={{
+                  background: 'linear-gradient(45deg, #FF5722 30%, #E91E63 90%)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                SWAP
+              </button>
+              <button
+                onClick={() => this.showTokenBalanceGUI()}
+                style={{
+                  background: 'linear-gradient(45deg, #00BCD4 30%, #009688 90%)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                CHECK BALANCE
+              </button>
             </div>
             <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
               {this.state.rewardTokens.map((token, index) => (
@@ -870,6 +1250,84 @@ class MoneyPostTerminal extends Component {
             </div>
           </div>
         )}
+
+        {this.state.activeTab === 'admin' && (
+          <div>
+            <h3 style={{ color: '#00f0ff', marginBottom: '15px' }}>ADMIN FUNCTIONS</h3>
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => this.showBlockAddressGUI()}
+                style={{
+                  background: 'linear-gradient(45deg, #F44336 30%, #D32F2F 90%)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                BLOCK ADDRESS
+              </button>
+              <button
+                onClick={() => this.showUnblockAddressGUI()}
+                style={{
+                  background: 'linear-gradient(45deg, #4CAF50 30%, #388E3C 90%)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                UNBLOCK ADDRESS
+              </button>
+              <button
+                onClick={() => this.showSetBaseURLGUI()}
+                style={{
+                  background: 'linear-gradient(45deg, #00BCD4 30%, #0097A7 90%)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                SET BASE URL
+              </button>
+            </div>
+            <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+              <div style={{
+                background: '#121212',
+                padding: '10px',
+                marginBottom: '10px',
+                borderRadius: '4px',
+                borderLeft: '3px solid #00f0ff'
+              }}>
+                <div style={{ color: '#00f0ff', fontWeight: 'bold' }}>Current Base URL</div>
+                <div style={{ color: '#e0e0e0', fontSize: '12px' }}>{this.state.baseURL || 'Not set'}</div>
+              </div>
+              <div style={{
+                background: '#121212',
+                padding: '10px',
+                marginBottom: '10px',
+                borderRadius: '4px',
+                borderLeft: '3px solid #00f0ff'
+              }}>
+                <div style={{ color: '#00f0ff', fontWeight: 'bold' }}>Blocked Addresses</div>
+                {this.state.blockedAddresses.length > 0 ? (
+                  this.state.blockedAddresses.map((address, index) => (
+                    <div key={index} style={{ color: '#e0e0e0', fontSize: '12px' }}>{address}</div>
+                  ))
+                ) : (
+                  <div style={{ color: '#e0e0e0', fontSize: '12px' }}>No addresses blocked</div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -898,16 +1356,6 @@ class MoneyPostTerminal extends Component {
         {this.state.isConnected && this.renderCyberpunkGUI()}
         
         <Terminal
-          style={{
-            minHeight: "75vh",
-            backgroundColor: "#1a1a2e",
-            zIndex: "99",
-            borderRadius: "5px",
-            padding: "10px",
-            fontFamily: "monospace",
-            border: "1px solid #333",
-            boxShadow: "none"
-          }}
           ref={this.terminal}
           commands={{
             connect: {
@@ -917,30 +1365,6 @@ class MoneyPostTerminal extends Component {
             submit: {
               description: 'Submit a post (url, rewardTokenAddress, topicId)',
               fn: async (...args) => await this.submitPost(...args)
-            },
-            addreward: {
-              description: 'Add reward token (name, address, amount, rate)',
-              fn: async (...args) => await this.addRewardToken(...args)
-            },
-            removereward: {
-              description: 'Remove reward token (address)',
-              fn: async (address) => await this.removeRewardToken(address)
-            },
-            setrate: {
-              description: 'Set exchange rate (tokenAddress, newRate)',
-              fn: async (...args) => await this.setExchangeRate(...args)
-            },
-            addtopic: {
-              description: 'Add topic (name)',
-              fn: async (name) => await this.addTopic(name)
-            },
-            edittopic: {
-              description: 'Edit topic (topicId, newName)',
-              fn: async (topicId, newName) => await this.renameTopic(topicId, newName)
-            },
-            removetopic: {
-              description: 'Remove topic (topicId)',
-              fn: async (topicId) => await this.removeTopic(topicId)
             },
             rewards: {
               description: 'List reward tokens',
@@ -953,8 +1377,56 @@ class MoneyPostTerminal extends Component {
             posts: {
               description: 'Get posts by topic (topicId, [start], [end])',
               fn: async (...args) => await this.getPostsByTopic(...args)
+            },
+            deposit: {
+              description: 'Deposit tokens (tokenAddress, amount)',
+              fn: async (...args) => await this.depositRewardTokens(...args)
+            },
+            withdraw: {
+              description: 'Withdraw tokens (tokenAddress, amount)',
+              fn: async (...args) => await this.withdrawRewardTokens(...args)
+            },
+            swap: {
+              description: 'Swap tokens (fromToken, toToken, amount)',
+              fn: async (...args) => await this.swapTokens(...args)
+            },
+            balance: {
+              description: 'Check token balance (tokenAddress)',
+              fn: async (tokenAddress) => await this.getTokenBalance(tokenAddress)
+            },
+            block: {
+              description: 'Block an address (address)',
+              fn: async (address) => await this.manageBlockedAddresses([address], true)
+            },
+            unblock: {
+              description: 'Unblock an address (address)',
+              fn: async (address) => await this.manageBlockedAddresses([address], false)
+            },
+            seturl: {
+              description: 'Set base URL (newURL)',
+              fn: async (newURL) => await this.setBaseURL(newURL)
+            },
+            geturl: {
+              description: 'Get current base URL',
+              fn: async () => {
+                this.terminal.current.pushToStdout(
+                  `[[success]]Current base URL: ${this.state.baseURL || 'Not set'}[[/success]]`
+                );
+              }
+            },
+            blocked: {
+              description: 'List blocked addresses',
+              fn: async () => {
+                if (this.state.blockedAddresses.length === 0) {
+                  this.terminal.current.pushToStdout('[[info]]No addresses blocked[[/info]]');
+                } else {
+                  this.terminal.current.pushToStdout('[[header]]=== Blocked Addresses ===[[/header]]');
+                  this.state.blockedAddresses.forEach((address, index) => {
+                    this.terminal.current.pushToStdout(`${index + 1}. ${address}`);
+                  });
+                }
+              }
             }
-
           }}
           dangerMode={true}
           welcomeMessage={welcomeMsg}
@@ -970,6 +1442,16 @@ class MoneyPostTerminal extends Component {
             fontSize: "1.1em"
           }}
           autoFocus={true}
+          style={{
+            minHeight: "75vh",
+            backgroundColor: "#1a1a2e",
+            zIndex: "99",
+            borderRadius: "5px",
+            padding: "10px",
+            fontFamily: "monospace",
+            border: "1px solid #333",
+            boxShadow: "none"
+          }}
         />
         
         {this.state.isProgressing && (
