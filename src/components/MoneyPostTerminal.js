@@ -1012,12 +1012,15 @@ class MoneyPostTerminal extends Component {
         marginBottom: '20px',
         boxShadow: '0 0 20px rgba(0, 240, 255, 0.3)'
       }}>
-        <div style={{
-          display: 'flex',
-          marginBottom: '20px',
-          borderBottom: '1px solid #00f0ff',
-          paddingBottom: '10px'
-        }}>
+      <div style={{
+        display: 'flex',
+        marginBottom: '20px',
+        borderBottom: '1px solid #00f0ff',
+        paddingBottom: '10px',
+        overflowX: 'auto',
+        whiteSpace: 'nowrap',
+        WebkitOverflowScrolling: 'touch', // For smooth scrolling on iOS
+      }}>
           {['submit', 'rewards', 'topics', 'admin'].map(tab => (
             <button
               key={tab}
@@ -1033,7 +1036,8 @@ class MoneyPostTerminal extends Component {
                 fontWeight: 'bold',
                 textTransform: 'uppercase',
                 letterSpacing: '1px',
-                transition: 'all 0.3s'
+                transition: 'all 0.3s',
+                flexShrink: 0 // Add this line
               }}
             >
               {tab}
