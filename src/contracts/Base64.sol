@@ -4,8 +4,7 @@ pragma solidity ^0.8.0;
 library Base64 {
     bytes internal constant TABLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-    function decode(bytes memory data) internal pure returns (bytes memory) {
-        uint256 len = data.length;
+    function decode(bytes memory data) public pure returns (bytes memory) {        uint256 len = data.length;
         if (len % 4 != 0) revert("Invalid base64 length");
         
         bytes memory result = new bytes(len / 4 * 3);

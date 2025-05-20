@@ -3,7 +3,8 @@ import { ethers } from "ethers";
 import Terminal from 'react-console-emulator';
 import MoneyPostABI from '../etc/rawmaterial/MoneyPost.json';
 
-const MONEYPOST_ADDRESS = "0x9eE98B2095D8749a14B8ca87eBC8DbeAFF4Bd160";
+const MONEYPOST_ADDRESS = "0xb18876555309e20C919A00c07d7b2203376ae136";
+var sha256 = require('js-sha256');
 
 class MoneyPostTerminal extends Component {
   constructor(props) {
@@ -282,7 +283,7 @@ class MoneyPostTerminal extends Component {
       const terminal = this.terminal.current;
       const { moneyPost } = this.state;
       
-      const [tokens, rates] = await moneyPost.getRewardTokenData();
+      const [tokens, rates] = await moneyPost.listRewardTokens();
       
       const rewardTokens = tokens.map((token, index) => ({
         ...token,
@@ -311,7 +312,7 @@ class MoneyPostTerminal extends Component {
       const terminal = this.terminal.current;
       const { moneyPost } = this.state;
       
-      const topics = await moneyPost.getTopicData();
+      const topics = await moneyPost.listTopics();
       
       this.setState({ topics });
       
@@ -426,42 +427,58 @@ class MoneyPostTerminal extends Component {
     }
   }
 
-  async submitPost(url, rewardTokenAddress, topicId) {
-    const terminal = this.terminal.current;
-    this.setState({ isProgressing: true });
-    
-    try {
-      const { moneyPost } = this.state;
-      
-      const urlHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(url));
-      
-      terminal.pushToStdout(`Submitting post: ${url}`);
-      terminal.pushToStdout(`Using reward token: ${rewardTokenAddress}`);
-      terminal.pushToStdout(`For topic: ${topicId}`);
-      
-      const tx = await moneyPost.submitPost(
-        urlHash,
-        url,
-        rewardTokenAddress,
-        topicId
-      );
 
-      terminal.pushToStdout(`[[success]]Transaction sent! Waiting for confirmation...[[/success]]`);
-      terminal.pushToStdout(`Transaction hash: ${tx.hash}`);
+
+
+
+
+
+  async submitPost(url, rewardTokenAddress, topicId) {
+      const terminal = this.terminal.current;
+      this.setState({ isProgressing: true });
       
-      await tx.wait();
-      
-      terminal.pushToStdout(`[[success]]Post submitted successfully![[/success]]`);
-      
-    } catch (error) {
-      terminal.pushToStdout(
-        `[[error]]Error: ${error.reason || error.message}[[/error]]`
-      );
-      console.error("Post submission error:", error);
-    } finally {
-      this.setState({ isProgressing: false });
-    }
+      try {
+          const { moneyPost } = this.state;
+          
+          // Generate SHA256 hash
+          const urlHash = sha256(url);
+          
+          // Convert the hex string to bytes32 format that Solidity expects
+          const bytes32Hash = ethers.utils.hexZeroPad('0x' + urlHash, 32);
+          
+          terminal.pushToStdout(`Submitting post: ${url}`);
+          terminal.pushToStdout(`Using reward token: ${rewardTokenAddress}`);
+          terminal.pushToStdout(`For topic: ${topicId}`);
+          
+          const tx = await moneyPost.submitPost(
+              bytes32Hash,  // Use the properly formatted bytes32 hash
+              url,
+              rewardTokenAddress,
+              topicId
+          );
+  
+          terminal.pushToStdout(`[[success]]Transaction sent! Waiting for confirmation...[[/success]]`);
+          terminal.pushToStdout(`Transaction hash: ${tx.hash}`);
+          
+          await tx.wait();
+          
+          terminal.pushToStdout(`[[success]]Post submitted successfully![[/success]]`);
+          
+      } catch (error) {
+          terminal.pushToStdout(
+              `[[error]]Error: ${error.reason || error.message}[[/error]]`
+          );
+          console.error("Post submission error:", error);
+      } finally {
+          this.setState({ isProgressing: false });
+      }
   }
+
+
+
+
+
+
 
   async getPostsByTopic(topicId, startIndex = 0, endIndex = 10) {
     const terminal = this.terminal.current;
