@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import Terminal from 'react-console-emulator';
 import MoneyPostABI from '../etc/rawmaterial/MoneyPost.json';
 
-const MONEYPOST_ADDRESS = "0xAbEcf696fd18C8410296663144D1F1Fe0FFA8A42";
+const MONEYPOST_ADDRESS = "0x420dB1dA9e123C68D1cfc31461981F476685080a";
 var sha256 = require('js-sha256');
 
 class MoneyPostTerminal extends Component {
@@ -292,7 +292,6 @@ class MoneyPostTerminal extends Component {
         exchangeRate: rates[index].toString()
       }));
 
-      // Add FLIP token to the rewardTokens array if it's not already there
       if (flipToken && !rewardTokens.some(t => t.tokenAddress === flipToken)) {
         rewardTokens.push({
           name: "FLIP",
@@ -320,16 +319,29 @@ class MoneyPostTerminal extends Component {
   async loadTopics() {
     try {
       const terminal = this.terminal.current;
-      const { moneyPost } = this.state;
+      const { moneyPost, rewardTokens } = this.state;
       
       const topics = await moneyPost.listTopics();
       
-      this.setState({ topics });
+      // Get topics for each token
+      const topicsWithToken = await Promise.all(
+        topics.map(async topic => {
+          const attachedToken = topic.attachedToken;
+          const token = rewardTokens.find(t => t.tokenAddress === attachedToken);
+          return {
+            ...topic,
+            tokenName: token ? token.name : 'None'
+          };
+        })
+      );
+      
+      this.setState({ topics: topicsWithToken });
       
       terminal.pushToStdout('[[header]]=== Topics ===[[/header]]');
-      topics.forEach((topic, index) => {
+      topicsWithToken.forEach((topic, index) => {
         terminal.pushToStdout(
-          `${index + 1}. ${topic.name} (${topic.topicId})`
+          `${index + 1}. ${topic.name} (${topic.topicId})\n` +
+          `   Token: ${topic.tokenName || 'Not assigned'} (${topic.attachedToken || 'None'})`
         );
       });
     } catch (error) {
@@ -398,101 +410,121 @@ class MoneyPostTerminal extends Component {
     }
   }
 
-  async manageTopic(action, topicId, name) {
+  async addTopic(name, tokenAddress) {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
     
     try {
       const { moneyPost } = this.state;
       
-      if (action === 'add') {
-        terminal.pushToStdout(`Adding topic: ${name}...`);
-        const tx = await moneyPost.manageTopic(
-          ethers.constants.HashZero,
-          name,
-          true
-        );
-        await tx.wait();
-        terminal.pushToStdout(`[[success]]Topic added successfully![[/success]]`);
-      } else if (action === 'remove') {
-        terminal.pushToStdout(`Removing topic: ${topicId}...`);
-        const tx = await moneyPost.manageTopic(
-          topicId,
-          "",
-          false
-        );
-        await tx.wait();
-        terminal.pushToStdout(`[[success]]Topic removed successfully![[/success]]`);
-      }
+      terminal.pushToStdout(`Adding topic: ${name}...`);
+      const tx = await moneyPost.addTopic(name, tokenAddress);
+      await tx.wait();
+      terminal.pushToStdout(`[[success]]Topic added successfully![[/success]]`);
       
       await this.loadTopics();
     } catch (error) {
       terminal.pushToStdout(`[[error]]Error: ${error.reason || error.message}[[/error]]`);
+      console.error("Add topic error:", error);
     } finally {
       this.setState({ isProgressing: false });
     }
   }
 
-  async submitPost(url, rewardTokenAddress, topicId) {
-      const terminal = this.terminal.current;
-      this.setState({ isProgressing: true });
-      
-      try {
-          const { moneyPost } = this.state;
-          
-          const urlHash = sha256(url);
-          const bytes32Hash = ethers.utils.hexZeroPad('0x' + urlHash, 32);
-          
-          terminal.pushToStdout(`Submitting post: ${url}`);
-          terminal.pushToStdout(`Using reward token: ${rewardTokenAddress}`);
-          terminal.pushToStdout(`For topic: ${topicId}`);
-          
-          const tx = await moneyPost.submitPost(
-              bytes32Hash,
-              url,
-              rewardTokenAddress,
-              topicId
-          );
-  
-          terminal.pushToStdout(`[[success]]Transaction sent! Waiting for confirmation...[[/success]]`);
-          terminal.pushToStdout(`Transaction hash: ${tx.hash}`);
-          
-          await tx.wait();
-          
-          terminal.pushToStdout(`[[success]]Post submitted successfully![[/success]]`);
-          
-      } catch (error) {
-          terminal.pushToStdout(
-              `[[error]]Error: ${error.reason || error.message}[[/error]]`
-          );
-          console.error("Post submission error:", error);
-      } finally {
-          this.setState({ isProgressing: false });
-      }
-  }
-
-  async getPostsByTopic(topicId, startIndex = 0, endIndex = 10) {
+  async removeTopic(topicId) {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
     
     try {
       const { moneyPost } = this.state;
       
-      const posts = await moneyPost.getPostsByTopic(topicId, startIndex, endIndex);
+      terminal.pushToStdout(`Removing topic: ${topicId}...`);
+      const tx = await moneyPost.removeTopic(topicId);
+      await tx.wait();
+      terminal.pushToStdout(`[[success]]Topic removed successfully![[/success]]`);
       
-      terminal.pushToStdout('[[header]]=== Posts ===[[/header]]');
-      posts.forEach((post, index) => {
-        terminal.pushToStdout(
-          `${startIndex + index + 1}. Hash: ${post.urlHash}\n` +
-          `   Author: ${post.author}\n` +
-          `   Timestamp: ${new Date(post.timestamp * 1000).toLocaleString()}\n` +
-          `   Reward Token: ${post.rewardToken}`
-        );
-      });
+      await this.loadTopics();
+    } catch (error) {
+      terminal.pushToStdout(`[[error]]Error: ${error.reason || error.message}[[/error]]`);
+      console.error("Remove topic error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  }
+
+  async attachTopicToToken(topicId, tokenAddress) {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      const { moneyPost } = this.state;
+      
+      terminal.pushToStdout(`Attaching topic ${topicId} to token ${tokenAddress}...`);
+      const tx = await moneyPost.attachTopicToToken(topicId, tokenAddress);
+      await tx.wait();
+      terminal.pushToStdout(`[[success]]Topic attached successfully![[/success]]`);
+      
+      await this.loadTopics();
+    } catch (error) {
+      terminal.pushToStdout(`[[error]]Error: ${error.reason || error.message}[[/error]]`);
+      console.error("Attach topic error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  }
+
+  async detachTopicFromToken(topicId) {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      const { moneyPost } = this.state;
+      
+      terminal.pushToStdout(`Detaching topic ${topicId} from token...`);
+      const tx = await moneyPost.detachTopicFromToken(topicId);
+      await tx.wait();
+      terminal.pushToStdout(`[[success]]Topic detached successfully![[/success]]`);
+      
+      await this.loadTopics();
+    } catch (error) {
+      terminal.pushToStdout(`[[error]]Error: ${error.reason || error.message}[[/error]]`);
+      console.error("Detach topic error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  }
+
+  async submitPost(url, topicId) {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      const { moneyPost } = this.state;
+      
+      const urlHash = sha256(url);
+      const bytes32Hash = ethers.utils.hexZeroPad('0x' + urlHash, 32);
+      
+      terminal.pushToStdout(`Submitting post: ${url}`);
+      terminal.pushToStdout(`For topic: ${topicId}`);
+      
+      const tx = await moneyPost.submitPost(
+        bytes32Hash,
+        url,
+        topicId
+      );
+
+      terminal.pushToStdout(`[[success]]Transaction sent! Waiting for confirmation...[[/success]]`);
+      terminal.pushToStdout(`Transaction hash: ${tx.hash}`);
+      
+      await tx.wait();
+      
+      terminal.pushToStdout(`[[success]]Post submitted successfully![[/success]]`);
+      
     } catch (error) {
       terminal.pushToStdout(
         `[[error]]Error: ${error.reason || error.message}[[/error]]`
       );
+      console.error("Post submission error:", error);
     } finally {
       this.setState({ isProgressing: false });
     }
@@ -870,7 +902,7 @@ class MoneyPostTerminal extends Component {
   }
 
   showSubmitPostGUI() {
-    const { rewardTokens, topics } = this.state;
+    const { topics } = this.state;
     
     this.showCyberpunkModal(
       "SUBMIT NEW POST",
@@ -883,28 +915,18 @@ class MoneyPostTerminal extends Component {
           placeholder: "https://example.com/export/..."
         },
         {
-          label: "Reward Token",
-          name: "rewardToken",
-          type: "select",
-          required: true,
-          options: rewardTokens.map(token => ({
-            value: token.tokenAddress,
-            label: `${token.name} (${token.tokenAddress})`
-          }))
-        },
-        {
           label: "Topic",
           name: "topicId",
           type: "select",
           required: true,
           options: topics.map(topic => ({
             value: topic.topicId,
-            label: topic.name
+            label: `${topic.name} (${topic.tokenName || 'No token'})`
           }))
         }
       ],
-      ({ url, rewardToken, topicId }) => {
-        this.submitPost(url, rewardToken, topicId);
+      ({ url, topicId }) => {
+        this.submitPost(url, topicId);
       }
     );
   }
@@ -978,37 +1000,81 @@ class MoneyPostTerminal extends Component {
   }
 
   showAddTopicGUI() {
+    const { rewardTokens } = this.state;
+    
     this.showCyberpunkModal(
       "ADD TOPIC",
       [
-        { label: "Topic Name", name: "name", required: true }
+        { label: "Topic Name", name: "name", required: true },
+        {
+          label: "Attached Token",
+          name: "tokenAddress",
+          type: "select",
+          required: true,
+          options: rewardTokens.map(token => ({
+            value: token.tokenAddress,
+            label: `${token.name} (${token.tokenAddress})`
+          }))
+        }
       ],
-      ({ name }) => {
-        this.manageTopic('add', '', name);
+      ({ name, tokenAddress }) => {
+        this.addTopic(name, tokenAddress);
       }
     );
   }
 
-  showEditTopicGUI() {
-    const { topics } = this.state;
+  showAttachTopicGUI() {
+    const { topics, rewardTokens } = this.state;
     
     this.showCyberpunkModal(
-      "EDIT TOPIC",
+      "ATTACH TOPIC TO TOKEN",
       [
         {
-          label: "Select Topic",
+          label: "Topic",
           name: "topicId",
           type: "select",
           required: true,
           options: topics.map(topic => ({
             value: topic.topicId,
-            label: topic.name
+            label: `${topic.name} (${topic.topicId})`
           }))
         },
-        { label: "New Name", name: "newName", required: true }
+        {
+          label: "Token",
+          name: "tokenAddress",
+          type: "select",
+          required: true,
+          options: rewardTokens.map(token => ({
+            value: token.tokenAddress,
+            label: `${token.name} (${token.tokenAddress})`
+          }))
+        }
       ],
-      ({ topicId, newName }) => {
-        this.manageTopic('add', topicId, newName);
+      ({ topicId, tokenAddress }) => {
+        this.attachTopicToToken(topicId, tokenAddress);
+      }
+    );
+  }
+
+  showDetachTopicGUI() {
+    const { topics } = this.state;
+    
+    this.showCyberpunkModal(
+      "DETACH TOPIC FROM TOKEN",
+      [
+        {
+          label: "Topic",
+          name: "topicId",
+          type: "select",
+          required: true,
+          options: topics.filter(t => t.attachedToken).map(topic => ({
+            value: topic.topicId,
+            label: `${topic.name} (${topic.topicId})`
+          }))
+        }
+      ],
+      ({ topicId }) => {
+        this.detachTopicFromToken(topicId);
       }
     );
   }
@@ -1026,12 +1092,12 @@ class MoneyPostTerminal extends Component {
           required: true,
           options: topics.map(topic => ({
             value: topic.topicId,
-            label: topic.name
+            label: `${topic.name} (${topic.topicId})`
           }))
         }
       ],
       ({ topicId }) => {
-        this.manageTopic('remove', topicId, '');
+        this.removeTopic(topicId);
       }
     );
   }
@@ -1108,7 +1174,7 @@ class MoneyPostTerminal extends Component {
           type: "select",
           required: true,
           options: rewardTokens
-            .filter(token => token.tokenAddress !== flipToken) // Exclude FLIP from fromToken options
+            .filter(token => token.tokenAddress !== flipToken)
             .map(token => ({
               value: token.tokenAddress,
               label: `${token.name} (${token.tokenAddress})`
@@ -1250,7 +1316,7 @@ class MoneyPostTerminal extends Component {
         }
       ],
       ({ tokenAddress }) => {
-        this.getContractTokenBalance(tokenAddress);
+        this.getTokenBalance(tokenAddress);
       }
     );
   }
@@ -1275,15 +1341,15 @@ class MoneyPostTerminal extends Component {
         marginBottom: '20px',
         boxShadow: '0 0 20px rgba(0, 240, 255, 0.3)'
       }}>
-      <div style={{
-        display: 'flex',
-        marginBottom: '20px',
-        borderBottom: '1px solid #00f0ff',
-        paddingBottom: '10px',
-        overflowX: 'auto',
-        whiteSpace: 'nowrap',
-        WebkitOverflowScrolling: 'touch',
-      }}>
+        <div style={{
+          display: 'flex',
+          marginBottom: '20px',
+          borderBottom: '1px solid #00f0ff',
+          paddingBottom: '10px',
+          overflowX: 'auto',
+          whiteSpace: 'nowrap',
+          WebkitOverflowScrolling: 'touch',
+        }}>
           {['submit', 'rewards', 'topics', 'admin'].map(tab => (
             <button
               key={tab}
@@ -1498,7 +1564,21 @@ class MoneyPostTerminal extends Component {
                 ADD TOPIC
               </button>
               <button
-                onClick={() => this.showEditTopicGUI()}
+                onClick={() => this.showAttachTopicGUI()}
+                style={{
+                  background: 'linear-gradient(45deg, #4CAF50 30%, #8BC34A 90%)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                ATTACH TOKEN
+              </button>
+              <button
+                onClick={() => this.showDetachTopicGUI()}
                 style={{
                   background: 'linear-gradient(45deg, #FF9800 30%, #FFC107 90%)',
                   border: 'none',
@@ -1509,7 +1589,7 @@ class MoneyPostTerminal extends Component {
                   fontWeight: 'bold'
                 }}
               >
-                EDIT TOPIC
+                DETACH TOKEN
               </button>
               <button
                 onClick={() => this.showRemoveTopicGUI()}
@@ -1538,6 +1618,9 @@ class MoneyPostTerminal extends Component {
                   <div style={{ color: '#00f0ff', fontWeight: 'bold' }}>{topic.name}</div>
                   <div style={{ color: '#e0e0e0', fontSize: '12px' }}>ID: {topic.topicId}</div>
                   <div style={{ color: '#9C27B0' }}>
+                    Token: {topic.tokenName || 'None'} ({topic.attachedToken || 'None'})
+                  </div>
+                  <div style={{ color: '#607D8B' }}>
                     Created: {new Date(topic.createdAt * 1000).toLocaleString()}
                   </div>
                 </div>
@@ -1658,7 +1741,7 @@ class MoneyPostTerminal extends Component {
               fn: async () => await this.connectWallet()
             },
             submit: {
-              description: 'Submit a post (url, rewardTokenAddress, topicId)',
+              description: 'Submit a post (url, topicId)',
               fn: async (...args) => await this.submitPost(...args)
             },
             rewards: {
@@ -1733,6 +1816,22 @@ class MoneyPostTerminal extends Component {
                   });
                 }
               }
+            },
+            addtopic: {
+              description: 'Add a topic (name, tokenAddress)',
+              fn: async (...args) => await this.addTopic(...args)
+            },
+            removetopic: {
+              description: 'Remove a topic (topicId)',
+              fn: async (...args) => await this.removeTopic(...args)
+            },
+            attachtopic: {
+              description: 'Attach topic to token (topicId, tokenAddress)',
+              fn: async (...args) => await this.attachTopicToToken(...args)
+            },
+            detachtopic: {
+              description: 'Detach topic from token (topicId)',
+              fn: async (...args) => await this.detachTopicFromToken(...args)
             }
           }}
           dangerMode={true}

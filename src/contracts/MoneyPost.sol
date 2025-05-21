@@ -23,6 +23,7 @@ contract MoneyPost {
         bytes32 topicId;
         string name;
         uint256 createdAt;
+        address attachedToken; // New field to track which token this topic belongs to
     }
 
     struct Post {
@@ -42,6 +43,7 @@ contract MoneyPost {
     mapping(bytes32 => uint256) public topicPostCounts;
     mapping(bytes32 => Post[]) public topicPosts;
     mapping(bytes32 => bytes32) public postToTopic;
+    mapping(address => EnumerableSet.Bytes32Set) private tokenTopics; // New mapping to track topics per token
 
     event RewardTokenAdded(address indexed tokenAddress, string name, uint256 rewardAmount, uint256 exchangeRate);
     event RewardTokenRemoved(address indexed tokenAddress);
@@ -50,10 +52,13 @@ contract MoneyPost {
     event RewardAmountUpdated(address indexed tokenAddress, uint256 newAmount);
     event ExchangeRateUpdated(address indexed tokenAddress, uint256 newRate);
     event EmergencyWithdraw(address indexed tokenAddress, uint256 amount);
-    event TopicAdded(bytes32 indexed topicId, string name);
+    event TopicAdded(bytes32 indexed topicId, string name, address indexed attachedToken);
     event TopicRemoved(bytes32 indexed topicId);
+    event TopicAttached(bytes32 indexed topicId, address indexed tokenAddress);
+    event TopicDetached(bytes32 indexed topicId, address indexed tokenAddress);
     event PostSubmitted(bytes32 indexed urlHash, address indexed author, bytes32 indexed topicId, address rewardToken);
     event FlipTokensDeposited(address indexed depositor, uint256 amount);
+    event TokensSwapped(address indexed user, address fromToken, uint256 fromAmount, uint256 flipAmount);
 
     constructor(address _flipToken) {
         owner = msg.sender;
@@ -163,42 +168,64 @@ contract MoneyPost {
         emit RewardTokenWithdrawn(tokenAddress, amount);
     }
 
-    function addTopic(string calldata name) external onlyOwner returns (bytes32) {
+    function addTopic(string calldata name, address tokenAddress) external onlyOwner returns (bytes32) {
+        require(rewardTokenAddresses.contains(tokenAddress), "Token not registered");
         bytes32 topicId = keccak256(abi.encodePacked(name, block.timestamp));
-        topics[topicId] = Topic(topicId, name, block.timestamp);
+        topics[topicId] = Topic(topicId, name, block.timestamp, tokenAddress);
         topicIds.add(topicId);
-        emit TopicAdded(topicId, name);
+        tokenTopics[tokenAddress].add(topicId);
+        emit TopicAdded(topicId, name, tokenAddress);
         return topicId;
     }
 
     function removeTopic(bytes32 topicId) external onlyOwner {
         require(topicIds.contains(topicId), "Topic not found");
+        address tokenAddress = topics[topicId].attachedToken;
         topicIds.remove(topicId);
+        if (tokenAddress != address(0)) {
+            tokenTopics[tokenAddress].remove(topicId);
+        }
         delete topics[topicId];
         emit TopicRemoved(topicId);
     }
 
-    function renameTopic(bytes32 topicId, string calldata newName) external onlyOwner {
+    function attachTopicToToken(bytes32 topicId, address tokenAddress) external onlyOwner {
         require(topicIds.contains(topicId), "Topic not found");
-        topics[topicId].name = newName;
-    }
-
-    function manageTopic(bytes32 topicId, string calldata name, bool isAdd) external onlyOwner returns (bytes32) {
-        if (isAdd) {
-            bytes32 newTopicId = keccak256(abi.encodePacked(name, block.timestamp));
-            topics[newTopicId] = Topic(newTopicId, name, block.timestamp);
-            topicIds.add(newTopicId);
-            emit TopicAdded(newTopicId, name);
-            return newTopicId;
-        } else {
-            topicIds.remove(topicId);
-            delete topics[topicId];
-            emit TopicRemoved(topicId);
-            return topicId;
+        require(rewardTokenAddresses.contains(tokenAddress), "Token not registered");
+        
+        address currentToken = topics[topicId].attachedToken;
+        if (currentToken != address(0)) {
+            tokenTopics[currentToken].remove(topicId);
         }
+        
+        topics[topicId].attachedToken = tokenAddress;
+        tokenTopics[tokenAddress].add(topicId);
+        emit TopicAttached(topicId, tokenAddress);
     }
 
-    function submitPost(bytes32 urlHash, string calldata url, address rewardToken, bytes32 topicId) external {
+    function detachTopicFromToken(bytes32 topicId) external onlyOwner {
+        require(topicIds.contains(topicId), "Topic not found");
+        address tokenAddress = topics[topicId].attachedToken;
+        require(tokenAddress != address(0), "Topic not attached to any token");
+        
+        tokenTopics[tokenAddress].remove(topicId);
+        topics[topicId].attachedToken = address(0);
+        emit TopicDetached(topicId, tokenAddress);
+    }
+
+    function getTopicsForToken(address tokenAddress) external view returns (Topic[] memory) {
+        uint256 length = tokenTopics[tokenAddress].length();
+        Topic[] memory tokenTopicsList = new Topic[](length);
+        
+        for (uint256 i = 0; i < length; i++) {
+            bytes32 topicId = tokenTopics[tokenAddress].at(i);
+            tokenTopicsList[i] = topics[topicId];
+        }
+        
+        return tokenTopicsList;
+    }
+
+    function submitPost(bytes32 urlHash, string calldata url, bytes32 topicId) external {
         require(!blockedAddresses.contains(msg.sender), "Address is blocked");
         require(bytes(url).length > 0, "Empty URL");
         require(sha256(bytes(url)) == urlHash, "Hash mismatch");
@@ -206,6 +233,10 @@ contract MoneyPost {
         require(containsExport(url), "Missing '/export/'");
         require(topicIds.contains(topicId), "Invalid topic ID");
         require(!eligibleHashes[urlHash], "Hash already used");
+
+        address rewardToken = topics[topicId].attachedToken;
+        require(rewardToken != address(0), "Topic not assigned to any token");
+        require(rewardToken != flipToken, "Cannot earn FLIP directly");
 
         RewardToken memory token = rewardTokens[rewardToken];
         require(token.tokenAddress != address(0), "Invalid reward token");
@@ -227,6 +258,7 @@ contract MoneyPost {
         emit PostSubmitted(urlHash, msg.sender, topicId, rewardToken);
     }
 
+
     function swapTokens(address fromToken, uint256 amount) external {
         require(rewardTokenAddresses.contains(fromToken), "From token not supported");
         require(fromToken != flipToken, "Cannot swap FLIP for FLIP");
@@ -246,6 +278,13 @@ contract MoneyPost {
     function setFlipToken(address _flipToken) external onlyOwner {
         flipToken = _flipToken;
     }
+
+
+    function getFlipBalance() external view returns (uint256) {
+        require(flipToken != address(0), "FLIP token not set");
+        return IERC20(flipToken).balanceOf(address(this));
+    }
+
 
     function getRewardTokenData() private view returns (RewardToken[] memory, uint256[] memory) {
         uint256 length = rewardTokenAddresses.length();

@@ -206,6 +206,37 @@
 		"inputs": [
 			{
 				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "fromToken",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "fromAmount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "flipAmount",
+				"type": "uint256"
+			}
+		],
+		"name": "TokensSwapped",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
 				"internalType": "bytes32",
 				"name": "topicId",
 				"type": "bytes32"
@@ -215,9 +246,53 @@
 				"internalType": "string",
 				"name": "name",
 				"type": "string"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "attachedToken",
+				"type": "address"
 			}
 		],
 		"name": "TopicAdded",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "topicId",
+				"type": "bytes32"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			}
+		],
+		"name": "TopicAttached",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "topicId",
+				"type": "bytes32"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			}
+		],
+		"name": "TopicDetached",
 		"type": "event"
 	},
 	{
@@ -293,6 +368,11 @@
 				"internalType": "string",
 				"name": "name",
 				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
 			}
 		],
 		"name": "addTopic",
@@ -303,6 +383,24 @@
 				"type": "bytes32"
 			}
 		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "topicId",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			}
+		],
+		"name": "attachTopicToToken",
+		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
@@ -346,6 +444,19 @@
 			}
 		],
 		"name": "depositRewardTokens",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "topicId",
+				"type": "bytes32"
+			}
+		],
+		"name": "detachTopicFromToken",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -409,6 +520,19 @@
 				"internalType": "address[]",
 				"name": "",
 				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getFlipBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -498,6 +622,47 @@
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			}
+		],
+		"name": "getTopicsForToken",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "bytes32",
+						"name": "topicId",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "createdAt",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "attachedToken",
+						"type": "address"
+					}
+				],
+				"internalType": "struct MoneyPost.Topic[]",
+				"name": "",
+				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",
@@ -596,6 +761,11 @@
 						"internalType": "uint256",
 						"name": "createdAt",
 						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "attachedToken",
+						"type": "address"
 					}
 				],
 				"internalType": "struct MoneyPost.Topic[]",
@@ -654,35 +824,6 @@
 		],
 		"name": "manageRewardToken",
 		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			},
-			{
-				"internalType": "bool",
-				"name": "isAdd",
-				"type": "bool"
-			}
-		],
-		"name": "manageTopic",
-		"outputs": [
-			{
-				"internalType": "bytes32",
-				"name": "",
-				"type": "bytes32"
-			}
-		],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
@@ -753,24 +894,6 @@
 			}
 		],
 		"name": "removeTopic",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "string",
-				"name": "newName",
-				"type": "string"
-			}
-		],
-		"name": "renameTopic",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -877,11 +1000,6 @@
 				"internalType": "string",
 				"name": "url",
 				"type": "string"
-			},
-			{
-				"internalType": "address",
-				"name": "rewardToken",
-				"type": "address"
 			},
 			{
 				"internalType": "bytes32",
@@ -994,6 +1112,11 @@
 				"internalType": "uint256",
 				"name": "createdAt",
 				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "attachedToken",
+				"type": "address"
 			}
 		],
 		"stateMutability": "view",
@@ -17861,7 +17984,7 @@
     "137": {
       "events": {},
       "links": {},
-      "address": "0xAbEcf696fd18C8410296663144D1F1Fe0FFA8A42",
+      "address": "0x420dB1dA9e123C68D1cfc31461981F476685080a",
       "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
     }
   },
