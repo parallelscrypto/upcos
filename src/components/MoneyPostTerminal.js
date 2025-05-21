@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import Terminal from 'react-console-emulator';
 import MoneyPostABI from '../etc/rawmaterial/MoneyPost.json';
 
-const MONEYPOST_ADDRESS = "0xb18876555309e20C919A00c07d7b2203376ae136";
+const MONEYPOST_ADDRESS = "0xAbEcf696fd18C8410296663144D1F1Fe0FFA8A42";
 var sha256 = require('js-sha256');
 
 class MoneyPostTerminal extends Component {
@@ -23,7 +23,8 @@ class MoneyPostTerminal extends Component {
       activeTab: 'submit',
       modalContent: null,
       showModal: false,
-      baseURL: ''
+      baseURL: '',
+      flipToken: null
     };
     this.terminal = React.createRef();
     this.modalContainer = null;
@@ -247,6 +248,7 @@ class MoneyPostTerminal extends Component {
       );
 
       const baseURL = await moneyPost.baseURL();
+      const flipToken = await moneyPost.flipToken();
 
       this.setState({ 
         moneyPost,
@@ -254,7 +256,8 @@ class MoneyPostTerminal extends Component {
         signer,
         account,
         isConnected: true,
-        baseURL
+        baseURL,
+        flipToken
       });
 
       this.terminal.current.pushToStdout(
@@ -276,20 +279,28 @@ class MoneyPostTerminal extends Component {
     }
   }
 
-
-
   async loadRewardTokens() {
     try {
       const terminal = this.terminal.current;
-      const { moneyPost } = this.state;
+      const { moneyPost, flipToken } = this.state;
       
       const [tokens, rates] = await moneyPost.listRewardTokens();
       
       const rewardTokens = tokens.map((token, index) => ({
         ...token,
-        rewardAmount: ethers.utils.formatEther(token.rewardAmount), // Convert BigNumber to string
-        exchangeRate: rates[index].toString() // Convert BigNumber to string
+        rewardAmount: ethers.utils.formatEther(token.rewardAmount),
+        exchangeRate: rates[index].toString()
       }));
+
+      // Add FLIP token to the rewardTokens array if it's not already there
+      if (flipToken && !rewardTokens.some(t => t.tokenAddress === flipToken)) {
+        rewardTokens.push({
+          name: "FLIP",
+          tokenAddress: flipToken,
+          rewardAmount: "0",
+          exchangeRate: "1"
+        });
+      }
       
       this.setState({ rewardTokens });
       
@@ -305,7 +316,6 @@ class MoneyPostTerminal extends Component {
       console.error("Error loading reward tokens:", error);
     }
   }
-
 
   async loadTopics() {
     try {
@@ -337,7 +347,6 @@ class MoneyPostTerminal extends Component {
     }
   }
 
-
   async manageRewardToken(action, name, tokenAddress, rewardAmount, exchangeRate) {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
@@ -350,9 +359,9 @@ class MoneyPostTerminal extends Component {
         const tx = await moneyPost.manageRewardToken(
           tokenAddress,
           name,
-          ethers.utils.parseEther(rewardAmount.toString()), // Convert to string then to BigNumber
-          ethers.BigNumber.from(exchangeRate.toString()), // Convert to string then to BigNumber
-          0 // add action
+          ethers.utils.parseEther(rewardAmount.toString()),
+          ethers.BigNumber.from(exchangeRate.toString()),
+          0
         );
         await tx.wait();
         terminal.pushToStdout(`[[success]]Token added successfully![[/success]]`);
@@ -361,9 +370,9 @@ class MoneyPostTerminal extends Component {
         const tx = await moneyPost.manageRewardToken(
           tokenAddress,
           "",
-          ethers.constants.Zero, // Use Zero constant for BigNumber
           ethers.constants.Zero,
-          1 // remove action
+          ethers.constants.Zero,
+          1
         );
         await tx.wait();
         terminal.pushToStdout(`[[success]]Token removed successfully![[/success]]`);
@@ -374,7 +383,7 @@ class MoneyPostTerminal extends Component {
           "",
           ethers.utils.parseEther(rewardAmount.toString()),
           ethers.BigNumber.from(exchangeRate.toString()),
-          2 // update action
+          2
         );
         await tx.wait();
         terminal.pushToStdout(`[[success]]Token updated successfully![[/success]]`);
@@ -389,9 +398,6 @@ class MoneyPostTerminal extends Component {
     }
   }
 
-
-
-
   async manageTopic(action, topicId, name) {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
@@ -402,9 +408,9 @@ class MoneyPostTerminal extends Component {
       if (action === 'add') {
         terminal.pushToStdout(`Adding topic: ${name}...`);
         const tx = await moneyPost.manageTopic(
-          ethers.constants.HashZero, // dummy value for add
+          ethers.constants.HashZero,
           name,
-          true // isAdd
+          true
         );
         await tx.wait();
         terminal.pushToStdout(`[[success]]Topic added successfully![[/success]]`);
@@ -413,7 +419,7 @@ class MoneyPostTerminal extends Component {
         const tx = await moneyPost.manageTopic(
           topicId,
           "",
-          false // isAdd (false = remove)
+          false
         );
         await tx.wait();
         terminal.pushToStdout(`[[success]]Topic removed successfully![[/success]]`);
@@ -427,12 +433,6 @@ class MoneyPostTerminal extends Component {
     }
   }
 
-
-
-
-
-
-
   async submitPost(url, rewardTokenAddress, topicId) {
       const terminal = this.terminal.current;
       this.setState({ isProgressing: true });
@@ -440,10 +440,7 @@ class MoneyPostTerminal extends Component {
       try {
           const { moneyPost } = this.state;
           
-          // Generate SHA256 hash
           const urlHash = sha256(url);
-          
-          // Convert the hex string to bytes32 format that Solidity expects
           const bytes32Hash = ethers.utils.hexZeroPad('0x' + urlHash, 32);
           
           terminal.pushToStdout(`Submitting post: ${url}`);
@@ -451,7 +448,7 @@ class MoneyPostTerminal extends Component {
           terminal.pushToStdout(`For topic: ${topicId}`);
           
           const tx = await moneyPost.submitPost(
-              bytes32Hash,  // Use the properly formatted bytes32 hash
+              bytes32Hash,
               url,
               rewardTokenAddress,
               topicId
@@ -473,12 +470,6 @@ class MoneyPostTerminal extends Component {
           this.setState({ isProgressing: false });
       }
   }
-
-
-
-
-
-
 
   async getPostsByTopic(topicId, startIndex = 0, endIndex = 10) {
     const terminal = this.terminal.current;
@@ -507,18 +498,17 @@ class MoneyPostTerminal extends Component {
     }
   }
 
-  async swapTokens(fromToken, toToken, amount) {
+  async swapTokens(fromToken, amount) {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
     
     try {
-      const { moneyPost } = this.state;
+      const { moneyPost, flipToken } = this.state;
       
-      terminal.pushToStdout(`Swapping ${amount} of token ${fromToken} to token ${toToken}...`);
+      terminal.pushToStdout(`Swapping ${amount} of token ${fromToken} to FLIP...`);
       
       const tx = await moneyPost.swapTokens(
         fromToken,
-        toToken,
         ethers.utils.parseEther(amount)
       );
 
@@ -539,14 +529,11 @@ class MoneyPostTerminal extends Component {
     }
   }
 
-
-
   async depositRewardTokens(tokenAddress, amount) {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
     
     try {
-      // Check allowance first
       const allowance = await this.checkAllowance(tokenAddress);
       const amountBN = ethers.utils.parseEther(amount);
       
@@ -561,7 +548,13 @@ class MoneyPostTerminal extends Component {
         amountBN
       );
   
-      // ... rest of deposit function remains same
+      terminal.pushToStdout(`[[success]]Transaction sent! Waiting for confirmation...[[/success]]`);
+      terminal.pushToStdout(`Transaction hash: ${tx.hash}`);
+      
+      await tx.wait();
+      
+      terminal.pushToStdout(`[[success]]Tokens deposited successfully![[/success]]`);
+      
     } catch (error) {
       terminal.pushToStdout(
         `[[error]]Error: ${error.reason || error.message}[[/error]]`
@@ -571,9 +564,6 @@ class MoneyPostTerminal extends Component {
       this.setState({ isProgressing: false });
     }
   }
-
-
-
 
   async withdrawRewardTokens(tokenAddress, amount) {
     const terminal = this.terminal.current;
@@ -620,7 +610,7 @@ class MoneyPostTerminal extends Component {
         terminal.pushToStdout(`[[success]]Addresses blocked successfully![[/success]]`);
       } else {
         terminal.pushToStdout(`Unblocking addresses: ${addresses.join(', ')}...`);
-        const tx = await moneyPost.removeBlockedAddress(addresses[0]); // Can only remove one at a time
+        const tx = await moneyPost.removeBlockedAddress(addresses[0]);
         await tx.wait();
         terminal.pushToStdout(`[[success]]Address unblocked successfully![[/success]]`);
       }
@@ -636,14 +626,11 @@ class MoneyPostTerminal extends Component {
     }
   }
 
-
-
   async getContractTokenBalance(tokenAddress) {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
   
     try {
-      // Minimal ERC20 ABI for balance check
       const minimalERC20ABI = [
         {
           "constant": true,
@@ -662,7 +649,6 @@ class MoneyPostTerminal extends Component {
         this.state.provider
       );
   
-      // Check balance of MoneyPost contract's holdings
       const balance = await tokenContract.balanceOf(MONEYPOST_ADDRESS);
       const formattedBalance = ethers.utils.formatEther(balance);
       
@@ -682,8 +668,35 @@ class MoneyPostTerminal extends Component {
     }
   }
 
-
-
+  async getFlipBalance() {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      const { moneyPost, flipToken } = this.state;
+      
+      if (!flipToken) {
+        throw new Error("FLIP token address not set");
+      }
+      
+      const balance = await moneyPost.getFlipBalance();
+      const formattedBalance = ethers.utils.formatEther(balance);
+      
+      terminal.pushToStdout(
+        `[[success]]Contract FLIP balance: ${formattedBalance}[[/success]]`
+      );
+      
+      return balance;
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error: ${error.reason || error.message}[[/error]]`
+      );
+      console.error("FLIP balance error:", error);
+      return ethers.constants.Zero;
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  }
 
   async approveToken(tokenAddress, amount) {
     const terminal = this.terminal.current;
@@ -692,7 +705,6 @@ class MoneyPostTerminal extends Component {
     try {
       terminal.pushToStdout(`Approving ${amount} tokens for contract...`);
       
-      // Minimal ERC20 ABI just for approvals
       const minimalERC20ABI = [
         {
           "constant": false,
@@ -737,7 +749,7 @@ class MoneyPostTerminal extends Component {
       await tx.wait();
       
       terminal.pushToStdout(`[[success]]Tokens approved successfully![[/success]]`);
-      await this.checkAllowance(tokenAddress); // Update allowance state
+      await this.checkAllowance(tokenAddress);
       
     } catch (error) {
       terminal.pushToStdout(
@@ -749,10 +761,8 @@ class MoneyPostTerminal extends Component {
     }
   }
 
-
   async checkAllowance(tokenAddress) {
     try {
-      // Minimal ABI for allowance check
       const minimalERC20ABI = [
         {
           "constant": true,
@@ -793,8 +803,6 @@ class MoneyPostTerminal extends Component {
     }
   }
 
-
-
   async setBaseURL(newURL) {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
@@ -824,7 +832,6 @@ class MoneyPostTerminal extends Component {
     this.setState({ isProgressing: true });
     
     try {
-      // Minimal ERC20 ABI for balance check
       const minimalERC20ABI = [
         {
           "constant": true,
@@ -861,8 +868,6 @@ class MoneyPostTerminal extends Component {
       this.setState({ isProgressing: false });
     }
   }
-
-
 
   showSubmitPostGUI() {
     const { rewardTokens, topics } = this.state;
@@ -1092,7 +1097,7 @@ class MoneyPostTerminal extends Component {
   }
 
   showSwapTokensGUI() {
-    const { rewardTokens } = this.state;
+    const { rewardTokens, flipToken } = this.state;
     
     this.showCyberpunkModal(
       "SWAP TOKENS",
@@ -1102,20 +1107,12 @@ class MoneyPostTerminal extends Component {
           name: "fromToken",
           type: "select",
           required: true,
-          options: rewardTokens.map(token => ({
-            value: token.tokenAddress,
-            label: `${token.name} (${token.tokenAddress})`
-          }))
-        },
-        {
-          label: "To Token",
-          name: "toToken",
-          type: "select",
-          required: true,
-          options: rewardTokens.map(token => ({
-            value: token.tokenAddress,
-            label: `${token.name} (${token.tokenAddress})`
-          }))
+          options: rewardTokens
+            .filter(token => token.tokenAddress !== flipToken) // Exclude FLIP from fromToken options
+            .map(token => ({
+              value: token.tokenAddress,
+              label: `${token.name} (${token.tokenAddress})`
+            }))
         },
         {
           label: "Amount to Swap",
@@ -1125,8 +1122,8 @@ class MoneyPostTerminal extends Component {
           placeholder: "Enter amount to swap"
         }
       ],
-      ({ fromToken, toToken, amount }) => {
-        this.swapTokens(fromToken, toToken, amount);
+      ({ fromToken, amount }) => {
+        this.swapTokens(fromToken, amount);
       }
     );
   }
@@ -1172,9 +1169,8 @@ class MoneyPostTerminal extends Component {
     );
   }
 
-
   showApproveTokenGUI() {
-    const { rewardTokens } = this.state;
+    const { rewardTokens, flipToken } = this.state;
     
     this.showCyberpunkModal(
       "APPROVE TOKENS",
@@ -1184,10 +1180,16 @@ class MoneyPostTerminal extends Component {
           name: "tokenAddress",
           type: "select",
           required: true,
-          options: rewardTokens.map(token => ({
-            value: token.tokenAddress,
-            label: `${token.name} (${token.tokenAddress})`
-          }))
+          options: [
+            ...rewardTokens.map(token => ({
+              value: token.tokenAddress,
+              label: `${token.name} (${token.tokenAddress})`
+            })),
+            ...(flipToken ? [{
+              value: flipToken,
+              label: `FLIP (${flipToken})`
+            }] : [])
+          ]
         },
         {
           label: "Amount to Approve",
@@ -1202,8 +1204,6 @@ class MoneyPostTerminal extends Component {
       }
     );
   }
-
-
 
   showSetBaseURLGUI() {
     const { baseURL } = this.state;
@@ -1227,7 +1227,7 @@ class MoneyPostTerminal extends Component {
   }
 
   showTokenBalanceGUI() {
-    const { rewardTokens } = this.state;
+    const { rewardTokens, flipToken } = this.state;
     
     this.showCyberpunkModal(
       "CHECK TOKEN BALANCE",
@@ -1237,14 +1237,30 @@ class MoneyPostTerminal extends Component {
           name: "tokenAddress",
           type: "select",
           required: true,
-          options: rewardTokens.map(token => ({
-            value: token.tokenAddress,
-            label: `${token.name} (${token.tokenAddress})`
-          }))
+          options: [
+            ...rewardTokens.map(token => ({
+              value: token.tokenAddress,
+              label: `${token.name} (${token.tokenAddress})`
+            })),
+            ...(flipToken ? [{
+              value: flipToken,
+              label: `FLIP (${flipToken})`
+            }] : [])
+          ]
         }
       ],
       ({ tokenAddress }) => {
         this.getContractTokenBalance(tokenAddress);
+      }
+    );
+  }
+
+  showFlipBalanceGUI() {
+    this.showCyberpunkModal(
+      "CHECK FLIP BALANCE",
+      [],
+      () => {
+        this.getFlipBalance();
       }
     );
   }
@@ -1266,7 +1282,7 @@ class MoneyPostTerminal extends Component {
         paddingBottom: '10px',
         overflowX: 'auto',
         whiteSpace: 'nowrap',
-        WebkitOverflowScrolling: 'touch', // For smooth scrolling on iOS
+        WebkitOverflowScrolling: 'touch',
       }}>
           {['submit', 'rewards', 'topics', 'admin'].map(tab => (
             <button
@@ -1284,7 +1300,7 @@ class MoneyPostTerminal extends Component {
                 textTransform: 'uppercase',
                 letterSpacing: '1px',
                 transition: 'all 0.3s',
-                flexShrink: 0 // Add this line
+                flexShrink: 0
               }}
             >
               {tab}
@@ -1414,6 +1430,20 @@ class MoneyPostTerminal extends Component {
                 }}
               >
                 CHECK BALANCE
+              </button>
+              <button
+                onClick={() => this.showFlipBalanceGUI()}
+                style={{
+                  background: 'linear-gradient(45deg, #00BCD4 30%, #009688 90%)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                CHECK FLIP BALANCE
               </button>
               <button
                 onClick={() => this.showApproveTokenGUI()}
@@ -1652,7 +1682,7 @@ class MoneyPostTerminal extends Component {
               fn: async (...args) => await this.withdrawRewardTokens(...args)
             },
             swap: {
-              description: 'Swap tokens (fromToken, toToken, amount)',
+              description: 'Swap tokens (fromToken, amount)',
               fn: async (...args) => await this.swapTokens(...args)
             },
             balance: {
@@ -1662,6 +1692,10 @@ class MoneyPostTerminal extends Component {
             contractbalance: {
               description: 'Check contract token balance (tokenAddress)',
               fn: async (tokenAddress) => await this.getContractTokenBalance(tokenAddress)
+            },
+            flipbalance: {
+              description: 'Check contract FLIP balance',
+              fn: async () => await this.getFlipBalance()
             },
             block: {
               description: 'Block an address (address)',

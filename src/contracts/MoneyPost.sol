@@ -11,6 +11,7 @@ contract MoneyPost {
 
     address public owner;
     string public baseURL;
+    address public flipToken;
 
     struct RewardToken {
         string name;
@@ -52,9 +53,11 @@ contract MoneyPost {
     event TopicAdded(bytes32 indexed topicId, string name);
     event TopicRemoved(bytes32 indexed topicId);
     event PostSubmitted(bytes32 indexed urlHash, address indexed author, bytes32 indexed topicId, address rewardToken);
+    event FlipTokensDeposited(address indexed depositor, uint256 amount);
 
-    constructor() {
+    constructor(address _flipToken) {
         owner = msg.sender;
+        flipToken = _flipToken;
     }
 
     modifier onlyOwner() {
@@ -62,7 +65,6 @@ contract MoneyPost {
         _;
     }
 
-    // Address Blocking Functions
     function addBlockedAddress(address _address) external onlyOwner {
         blockedAddresses.add(_address);
     }
@@ -91,7 +93,6 @@ contract MoneyPost {
         return blockedAddresses.values();
     }
 
-    // Reward Token Management
     function addRewardToken(string calldata name, address tokenAddress, uint256 rewardAmount, uint256 exchangeRate) external onlyOwner {
         require(tokenAddress != address(0), "Invalid token");
         rewardTokens[tokenAddress] = RewardToken(name, tokenAddress, rewardAmount);
@@ -124,7 +125,7 @@ contract MoneyPost {
         string calldata name,
         uint256 rewardAmount,
         uint256 exchangeRate,
-        uint256 action // 0=add, 1=remove, 2=update
+        uint256 action
     ) external onlyOwner {
         if (action == 0) {
             require(tokenAddress != address(0), "Invalid token");
@@ -151,12 +152,17 @@ contract MoneyPost {
         emit RewardTokenDeposited(tokenAddress, amount);
     }
 
+    function depositFlipTokens(uint256 amount) external {
+        require(flipToken != address(0), "FLIP token not set");
+        require(IERC20(flipToken).transferFrom(msg.sender, address(this), amount), "FLIP transfer failed");
+        emit FlipTokensDeposited(msg.sender, amount);
+    }
+
     function withdrawRewardTokens(address tokenAddress, uint256 amount) external onlyOwner {
         require(IERC20(tokenAddress).transfer(msg.sender, amount), "Transfer failed");
         emit RewardTokenWithdrawn(tokenAddress, amount);
     }
 
-    // Topic Management
     function addTopic(string calldata name) external onlyOwner returns (bytes32) {
         bytes32 topicId = keccak256(abi.encodePacked(name, block.timestamp));
         topics[topicId] = Topic(topicId, name, block.timestamp);
@@ -192,7 +198,6 @@ contract MoneyPost {
         }
     }
 
-    // Post Submission
     function submitPost(bytes32 urlHash, string calldata url, address rewardToken, bytes32 topicId) external {
         require(!blockedAddresses.contains(msg.sender), "Address is blocked");
         require(bytes(url).length > 0, "Empty URL");
@@ -200,7 +205,6 @@ contract MoneyPost {
         require(containsBaseURL(url), "Invalid base URL");
         require(containsExport(url), "Missing '/export/'");
         require(topicIds.contains(topicId), "Invalid topic ID");
-        validatePayload(extractPayload(url));
         require(!eligibleHashes[urlHash], "Hash already used");
 
         RewardToken memory token = rewardTokens[rewardToken];
@@ -223,23 +227,26 @@ contract MoneyPost {
         emit PostSubmitted(urlHash, msg.sender, topicId, rewardToken);
     }
 
-    // Swap Function
-    function swapTokens(address fromToken, address toToken, uint256 amount) external {
+    function swapTokens(address fromToken, uint256 amount) external {
         require(rewardTokenAddresses.contains(fromToken), "From token not supported");
-        require(rewardTokenAddresses.contains(toToken), "To token not supported");
+        require(fromToken != flipToken, "Cannot swap FLIP for FLIP");
+        require(amount > 0, "Amount must be positive");
         
-        uint256 fromRate = exchangeRates[fromToken];
-        uint256 toRate = exchangeRates[toToken];
-        require(fromRate > 0 && toRate > 0, "Tokens not swappable");
+        uint256 exchangeRate = exchangeRates[fromToken];
+        require(exchangeRate > 0, "Token not swappable");
         
-        uint256 equivalentAmount = (amount * fromRate) / toRate;
-        require(equivalentAmount > 0, "Amount too low");
+        uint256 flipAmount = (amount * exchangeRate) / (10**18);
+        require(flipAmount > 0, "Amount too low");
+        require(IERC20(flipToken).balanceOf(address(this)) >= flipAmount, "Insufficient FLIP balance");
         
         require(IERC20(fromToken).transferFrom(msg.sender, address(this), amount), "From transfer failed");
-        require(IERC20(toToken).transfer(msg.sender, equivalentAmount), "To transfer failed");
+        require(IERC20(flipToken).transfer(msg.sender, flipAmount), "FLIP transfer failed");
     }
 
-    // View Functions
+    function setFlipToken(address _flipToken) external onlyOwner {
+        flipToken = _flipToken;
+    }
+
     function getRewardTokenData() private view returns (RewardToken[] memory, uint256[] memory) {
         uint256 length = rewardTokenAddresses.length();
         RewardToken[] memory tokens = new RewardToken[](length);
@@ -300,7 +307,6 @@ contract MoneyPost {
         return postToTopic[urlHash];
     }
 
-    // Helper Functions
     function setBaseURL(string memory _baseURL) external onlyOwner {
         baseURL = _baseURL;
     }
@@ -349,18 +355,14 @@ contract MoneyPost {
     function validatePayload(string memory payload) internal pure {
         bytes memory decoded = Base64.decode(bytes(payload));
         
-        // Check minimum valid JSON length (empty object "{}")
         if (decoded.length < 2) {
             revert("Payload too short");
         }
         
-        // Check opening and closing braces
         if (decoded[0] != '{' || decoded[decoded.length - 1] != '}') {
             revert("Not JSON: Missing braces");
         }
         
-        // Optional: Add more thorough JSON validation here
-        // For example, check for basic JSON structure
         bool hasColon;
         for (uint i = 1; i < decoded.length - 1; i++) {
             if (decoded[i] == ':') {
