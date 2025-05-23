@@ -42,6 +42,7 @@ class AppExp extends Component {
     this.popitPush = this.popitPush.bind(this);
     this.upcInfo= this.upcInfo.bind(this);
     this.nftInfo= this.nftInfo.bind(this);
+    this.getMyNfts= this.getMyNfts.bind(this);
     this.latestTokenId= this.latestTokenId.bind(this);
     this.popitUpdate = this.popitUpdate.bind(this);
     this.popitPullPPL = this.popitPullPPL.bind(this);
@@ -129,6 +130,19 @@ class AppExp extends Component {
     // Stores a given value, 5 by default.
     return this.state.upcNft.methods.latestTokenId().call({ from: address });
   };
+
+
+
+  getMyNfts= async () => {
+
+    var loadedFull = await this.loadBlockchainData();
+    var address = this.state.account;
+    //console.log(this.state.sendCryptoValue);
+    // Stores a given value, 5 by default.
+    return this.state.upcNft.methods.getMyNfts().call({ from: address });
+  };
+
+
 
 
 
@@ -299,7 +313,7 @@ class AppExp extends Component {
     return (
       <div style={{ background: "#000000", height: '100vh', width: '100vw', border: 'none' }}>
         <div>
-          <StaticCarouselExp nftInfo={this.nftInfo} latestRawId={this.latestRawId} upcInfo={this.upcInfo} approvePPL={this.approvePPL} loadBlockchainData={this.loadBlockchainData} latestTokenId={this.latestTokenId} popitPullUniversal={this.popitPullUniversal} popitUpdate={this.popitUpdate} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} configUrl={configUrl} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} getMyAddress={this.getMyAddress} />
+          <StaticCarouselExp getMyNfts={this.getMyNfts} nftInfo={this.nftInfo} latestRawId={this.latestRawId} upcInfo={this.upcInfo} approvePPL={this.approvePPL} loadBlockchainData={this.loadBlockchainData} latestTokenId={this.latestTokenId} popitPullUniversal={this.popitPullUniversal} popitUpdate={this.popitUpdate} popitPush={this.popitPush} popitPullUpc={this.popitPullUpc} popitPullPPL={this.popitPullPPL} popitPullHash={this.popitPullHash} configUrl={configUrl} missionUrl={missionUrl} msg={msg} manifest={manifestValue} code={codeValue} show={showValue} getMyAddress={this.getMyAddress} />
         </div>
       </div>
     );

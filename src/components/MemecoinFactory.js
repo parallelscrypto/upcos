@@ -329,7 +329,7 @@ class MemecoinTerminal extends Component {
         templateId,
         name,
         symbol,
-        ethers.utils.parseEther(initialSupply.toString()),
+        ethers.utils.parseUnits(initialSupply.toString(), 0),
         extraBytes,
         { value: ethers.utils.parseEther("0.01") }
       );
@@ -340,7 +340,7 @@ class MemecoinTerminal extends Component {
         templateId,
         name,
         symbol,
-        ethers.utils.parseEther(initialSupply.toString()),
+        ethers.utils.parseUnits(initialSupply.toString(), 0),
         extraBytes,
         { 
           value: ethers.utils.parseEther("0.01"),
@@ -484,7 +484,7 @@ class MemecoinTerminal extends Component {
               description: 'Connect your wallet',
               fn: async () => await this.connectWallet()
             },
-            guicreate: {
+            mint: {
               description: 'Open GUI for creating new tokens',
               fn: () => {
                 if (!this.state.isConnected) {

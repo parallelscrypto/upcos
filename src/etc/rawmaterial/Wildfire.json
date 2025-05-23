@@ -1,267 +1,8 @@
 {
-  "contractName": "MoneyPost",
+  "contractName": "Wildfire",
   "abi": [
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_address",
-				"type": "address"
-			}
-		],
-		"name": "addBlockedAddress",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address[]",
-				"name": "_addresses",
-				"type": "address[]"
-			}
-		],
-		"name": "addBlockedAddresses",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			},
-			{
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "rewardAmount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "exchangeRate",
-				"type": "uint256"
-			}
-		],
-		"name": "addRewardToken",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			},
-			{
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			}
-		],
-		"name": "addTopic",
-		"outputs": [
-			{
-				"internalType": "bytes32",
-				"name": "",
-				"type": "bytes32"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			}
-		],
-		"name": "attachTopicToToken",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "string",
-				"name": "upcCode",
-				"type": "string"
-			}
-		],
-		"name": "attachTopicToUPC",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "depositFlipTokens",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "depositRewardTokens",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			}
-		],
-		"name": "detachTopicFromToken",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			}
-		],
-		"name": "detachTopicFromUPC",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address[]",
-				"name": "_addresses",
-				"type": "address[]"
-			},
-			{
-				"internalType": "bool",
-				"name": "blockAction",
-				"type": "bool"
-			}
-		],
-		"name": "manageBlockedAddresses",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "rewardAmount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "exchangeRate",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "action",
-				"type": "uint256"
-			}
-		],
-		"name": "manageRewardToken",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_address",
-				"type": "address"
-			}
-		],
-		"name": "removeBlockedAddress",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_baseURL",
-				"type": "string"
-			}
-		],
-		"name": "setBaseURL",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_flipToken",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_rawMaterialContract",
-				"type": "address"
-			}
-		],
+		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
 	},
@@ -270,309 +11,10 @@
 		"inputs": [
 			{
 				"indexed": true,
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			},
-			{
-				"indexed": false,
 				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "EmergencyWithdraw",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "newRate",
-				"type": "uint256"
-			}
-		],
-		"name": "ExchangeRateUpdated",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "depositor",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "FlipTokensDeposited",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "bytes32",
-				"name": "urlHash",
-				"type": "bytes32"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "author",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "rewardToken",
-				"type": "address"
-			}
-		],
-		"name": "PostSubmitted",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			}
-		],
-		"name": "removeRewardToken",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			}
-		],
-		"name": "removeTopic",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "newAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "RewardAmountUpdated",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "rewardAmount",
+				"name": "wildfireId",
 				"type": "uint256"
 			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "exchangeRate",
-				"type": "uint256"
-			}
-		],
-		"name": "RewardTokenAdded",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "RewardTokenDeposited",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			}
-		],
-		"name": "RewardTokenRemoved",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "RewardTokenWithdrawn",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "rate",
-				"type": "uint256"
-			}
-		],
-		"name": "setExchangeRate",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_flipToken",
-				"type": "address"
-			}
-		],
-		"name": "setFlipToken",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "rewardAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "setRewardAmount",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "urlHash",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "string",
-				"name": "url",
-				"type": "string"
-			},
-			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			}
-		],
-		"name": "submitPost",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "fromToken",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "swapTokens",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
 			{
 				"indexed": true,
 				"internalType": "address",
@@ -581,24 +23,105 @@
 			},
 			{
 				"indexed": false,
+				"internalType": "uint256",
+				"name": "badgeIndex",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "imageUrl",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "description",
+				"type": "string"
+			}
+		],
+		"name": "BadgeEarned",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
 				"internalType": "address",
-				"name": "fromToken",
+				"name": "previousOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "wildfireId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "burner",
 				"type": "address"
 			},
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "fromAmount",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "consoleUrl",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "consoleHash",
+				"type": "string"
+			}
+		],
+		"name": "TokensBurned",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "wildfireId",
 				"type": "uint256"
 			},
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "flipAmount",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "newTotal",
 				"type": "uint256"
 			}
 		],
-		"name": "TokensSwapped",
+		"name": "TokensDeposited",
 		"type": "event"
 	},
 	{
@@ -606,164 +129,163 @@
 		"inputs": [
 			{
 				"indexed": true,
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
+				"internalType": "uint256",
+				"name": "wildfireId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "miner",
+				"type": "address"
 			},
 			{
 				"indexed": false,
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "attachedToken",
-				"type": "address"
-			}
-		],
-		"name": "TopicAdded",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			}
-		],
-		"name": "TopicAttached",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "upcCode",
-				"type": "string"
-			}
-		],
-		"name": "TopicAttachedToUPC",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			}
-		],
-		"name": "TopicDetached",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "upcCode",
-				"type": "string"
-			}
-		],
-		"name": "TopicDetachedFromUPC",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			}
-		],
-		"name": "TopicRemoved",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			},
-			{
 				"internalType": "uint256",
 				"name": "amount",
 				"type": "uint256"
 			}
 		],
-		"name": "withdrawRewardTokens",
+		"name": "TokensMined",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "tokenName",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "missionStatement",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "targetBurnAmount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "startDate",
+				"type": "uint256"
+			}
+		],
+		"name": "WildfireCreated",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "DEAD_ADDRESS",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_wildfireId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_threshold",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_imageUrl",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_description",
+				"type": "string"
+			}
+		],
+		"name": "addBadge",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
-		"stateMutability": "payable",
-		"type": "receive"
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_wildfireId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_consoleUrl",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_consoleHash",
+				"type": "string"
+			}
+		],
+		"name": "burnTokens",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "baseURL",
-		"outputs": [
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
 			{
 				"internalType": "string",
 				"name": "",
 				"type": "string"
 			}
 		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "",
-				"type": "bytes32"
-			}
-		],
-		"name": "eligibleHashes",
+		"name": "consoleBurnsPerWildfire",
 		"outputs": [
 			{
-				"internalType": "bool",
+				"internalType": "uint256",
 				"name": "",
-				"type": "bool"
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -773,109 +295,110 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "",
+				"name": "_tokenAddress",
 				"type": "address"
-			}
-		],
-		"name": "exchangeRates",
-		"outputs": [
+			},
+			{
+				"internalType": "string",
+				"name": "_tokenName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_missionStatement",
+				"type": "string"
+			},
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "_targetBurnAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_tokensPerMine",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_minePrice",
 				"type": "uint256"
 			}
 		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "flipToken",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getBlockedAddresses",
-		"outputs": [
-			{
-				"internalType": "address[]",
-				"name": "",
-				"type": "address[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getFlipBalance",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
+		"name": "createWildfire",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
 		"inputs": [
 			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			},
-			{
 				"internalType": "uint256",
-				"name": "startIndex",
+				"name": "_wildfireId",
 				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
-				"name": "endIndex",
+				"name": "_amount",
 				"type": "uint256"
 			}
 		],
-		"name": "getPostsByTopic",
+		"name": "depositTokens",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_wildfireId",
+				"type": "uint256"
+			}
+		],
+		"name": "endWildfire",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_wildfireId",
+				"type": "uint256"
+			}
+		],
+		"name": "getBurnRecords",
 		"outputs": [
 			{
 				"components": [
 					{
-						"internalType": "bytes32",
-						"name": "urlHash",
-						"type": "bytes32"
+						"internalType": "address",
+						"name": "burner",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
 					},
 					{
 						"internalType": "string",
-						"name": "url",
+						"name": "consoleUrl",
 						"type": "string"
 					},
 					{
-						"internalType": "address",
-						"name": "author",
-						"type": "address"
+						"internalType": "string",
+						"name": "consoleHash",
+						"type": "string"
 					},
 					{
 						"internalType": "uint256",
 						"name": "timestamp",
 						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "rewardToken",
-						"type": "address"
 					}
 				],
-				"internalType": "struct MoneyPost.Post[]",
+				"internalType": "struct WildfireBurn.BurnRecord[]",
 				"name": "",
 				"type": "tuple[]"
 			}
@@ -886,99 +409,47 @@
 	{
 		"inputs": [
 			{
-				"internalType": "bytes32",
-				"name": "urlHash",
-				"type": "bytes32"
-			}
-		],
-		"name": "getPostTopic",
-		"outputs": [
-			{
-				"internalType": "bytes32",
-				"name": "",
-				"type": "bytes32"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
+				"internalType": "uint256",
+				"name": "_wildfireId",
+				"type": "uint256"
+			},
 			{
 				"internalType": "address",
-				"name": "tokenAddress",
+				"name": "_user",
 				"type": "address"
 			}
 		],
-		"name": "getRewardTokenBalance",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			}
-		],
-		"name": "getTopicPostCount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "tokenAddress",
-				"type": "address"
-			}
-		],
-		"name": "getTopicsForToken",
+		"name": "getUserBurnRecords",
 		"outputs": [
 			{
 				"components": [
 					{
-						"internalType": "bytes32",
-						"name": "topicId",
-						"type": "bytes32"
+						"internalType": "address",
+						"name": "burner",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
 					},
 					{
 						"internalType": "string",
-						"name": "name",
+						"name": "consoleUrl",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "consoleHash",
 						"type": "string"
 					},
 					{
 						"internalType": "uint256",
-						"name": "createdAt",
+						"name": "timestamp",
 						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "attachedToken",
-						"type": "address"
-					},
-					{
-						"internalType": "string",
-						"name": "upcCode",
-						"type": "string"
 					}
 				],
-				"internalType": "struct MoneyPost.Topic[]",
+				"internalType": "struct WildfireBurn.BurnRecord[]",
 				"name": "",
 				"type": "tuple[]"
 			}
@@ -989,77 +460,102 @@
 	{
 		"inputs": [
 			{
+				"internalType": "uint256",
+				"name": "_wildfireId",
+				"type": "uint256"
+			}
+		],
+		"name": "getWildfireBadges",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "threshold",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "imageUrl",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "description",
+						"type": "string"
+					}
+				],
+				"internalType": "struct WildfireBurn.Badge[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_wildfireId",
+				"type": "uint256"
+			}
+		],
+		"name": "getWildfireStats",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "totalDeposited",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalMined",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalBurned",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "remainingToTarget",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "targetReached",
+				"type": "bool"
+			},
+			{
 				"internalType": "string",
-				"name": "upcCode",
+				"name": "missionStatement",
 				"type": "string"
 			}
 		],
-		"name": "getTopicsForUPC",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "bytes32",
-						"name": "topicId",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "string",
-						"name": "name",
-						"type": "string"
-					},
-					{
-						"internalType": "uint256",
-						"name": "createdAt",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "attachedToken",
-						"type": "address"
-					},
-					{
-						"internalType": "string",
-						"name": "upcCode",
-						"type": "string"
-					}
-				],
-				"internalType": "struct MoneyPost.Topic[]",
-				"name": "",
-				"type": "tuple[]"
-			}
-		],
 		"stateMutability": "view",
 		"type": "function"
 	},
 	{
 		"inputs": [
 			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			}
-		],
-		"name": "getTotalPostsByTopic",
-		"outputs": [
+				"internalType": "uint256",
+				"name": "_wildfireId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			},
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "_badgeIndex",
 				"type": "uint256"
 			}
 		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_address",
-				"type": "address"
-			}
-		],
-		"name": "isAddressBlocked",
+		"name": "hasBadge",
 		"outputs": [
 			{
 				"internalType": "bool",
@@ -1071,78 +567,16 @@
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "listRewardTokens",
-		"outputs": [
+		"inputs": [
 			{
-				"components": [
-					{
-						"internalType": "string",
-						"name": "name",
-						"type": "string"
-					},
-					{
-						"internalType": "address",
-						"name": "tokenAddress",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "rewardAmount",
-						"type": "uint256"
-					}
-				],
-				"internalType": "struct MoneyPost.RewardToken[]",
-				"name": "",
-				"type": "tuple[]"
-			},
-			{
-				"internalType": "uint256[]",
-				"name": "",
-				"type": "uint256[]"
+				"internalType": "uint256",
+				"name": "_wildfireId",
+				"type": "uint256"
 			}
 		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "listTopics",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "bytes32",
-						"name": "topicId",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "string",
-						"name": "name",
-						"type": "string"
-					},
-					{
-						"internalType": "uint256",
-						"name": "createdAt",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "attachedToken",
-						"type": "address"
-					},
-					{
-						"internalType": "string",
-						"name": "upcCode",
-						"type": "string"
-					}
-				],
-				"internalType": "struct MoneyPost.Topic[]",
-				"name": "",
-				"type": "tuple[]"
-			}
-		],
-		"stateMutability": "view",
+		"name": "mineTokens",
+		"outputs": [],
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -1159,51 +593,175 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "",
-				"type": "bytes32"
-			}
-		],
-		"name": "postToTopic",
-		"outputs": [
-			{
-				"internalType": "bytes32",
-				"name": "",
-				"type": "bytes32"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [],
-		"name": "rawMaterialContract",
-		"outputs": [
-			{
-				"internalType": "contract RawMaterial",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
 		"inputs": [
 			{
 				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "userBadges",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
 				"name": "",
 				"type": "address"
 			}
 		],
-		"name": "rewardTokens",
+		"name": "userBurnsPerWildfire",
 		"outputs": [
 			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "wildfireBadges",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "threshold",
+				"type": "uint256"
+			},
+			{
 				"internalType": "string",
-				"name": "name",
+				"name": "imageUrl",
 				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "description",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "wildfireBurns",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "burner",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "consoleUrl",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "consoleHash",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "wildfires",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
 			},
 			{
 				"internalType": "address",
@@ -1211,115 +769,69 @@
 				"type": "address"
 			},
 			{
+				"internalType": "string",
+				"name": "tokenName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "missionStatement",
+				"type": "string"
+			},
+			{
 				"internalType": "uint256",
-				"name": "rewardAmount",
+				"name": "targetBurnAmount",
 				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "startDate",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokensPerMine",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "minePrice",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalDeposited",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalMined",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalBurned",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "isActive",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "",
-				"type": "bytes32"
-			}
-		],
-		"name": "topicPostCounts",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
+		"inputs": [],
+		"name": "withdrawMATIC",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "topicPosts",
-		"outputs": [
-			{
-				"internalType": "bytes32",
-				"name": "urlHash",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "string",
-				"name": "url",
-				"type": "string"
-			},
-			{
-				"internalType": "address",
-				"name": "author",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "timestamp",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "rewardToken",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "",
-				"type": "bytes32"
-			}
-		],
-		"name": "topics",
-		"outputs": [
-			{
-				"internalType": "bytes32",
-				"name": "topicId",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "createdAt",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "attachedToken",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "upcCode",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
+		"stateMutability": "payable",
+		"type": "receive"
 	}
 ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.7+commit.e28d00a7\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"approved\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"approved\",\"type\":\"bool\"}],\"name\":\"ApprovalForAll\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"addressToNFTMeta\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"upcHash\",\"type\":\"bytes32\"},{\"internalType\":\"string\",\"name\":\"word\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"ipfs\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"vr\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"humanReadableName\",\"type\":\"string\"},{\"internalType\":\"bool\",\"name\":\"minted\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"upcId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"humanReadableName\",\"type\":\"string\"}],\"name\":\"buyNft\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"defaultIpfs\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"defaultVr\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"findTokenIndexByAddress\",\"outputs\":[{\"internalType\":\"int256\",\"name\":\"\",\"type\":\"int256\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getApproved\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"upcHash\",\"type\":\"bytes32\"}],\"name\":\"getHumanReadableNameByHash\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"upcHash\",\"type\":\"bytes32\"}],\"name\":\"getIpfsByHash\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getMyNfts\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"upcHash\",\"type\":\"bytes32\"},{\"internalType\":\"string\",\"name\":\"word\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"ipfs\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"vr\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"humanReadableName\",\"type\":\"string\"},{\"internalType\":\"bool\",\"name\":\"minted\",\"type\":\"bool\"}],\"internalType\":\"struct UPCNFT.NFTMeta[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"upcHash\",\"type\":\"bytes32\"}],\"name\":\"getVrByHash\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"upcId\",\"type\":\"string\"}],\"name\":\"getVrByUpcId\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"name\":\"hashedHumanReadableLookup\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"}],\"name\":\"isApprovedForAll\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"upcId\",\"type\":\"string\"}],\"name\":\"mintNft\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"nftsToMintByAddress\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"upcHash\",\"type\":\"bytes32\"},{\"internalType\":\"string\",\"name\":\"word\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"ipfs\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"vr\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"humanReadableName\",\"type\":\"string\"},{\"internalType\":\"bool\",\"name\":\"minted\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"nftsToMintByHash\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"minted\",\"type\":\"bool\"},{\"internalType\":\"bytes32\",\"name\":\"upcHash\",\"type\":\"bytes32\"},{\"internalType\":\"string\",\"name\":\"word\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"ipfs\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"vr\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"humanReadableName\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"ownerOf\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"_data\",\"type\":\"bytes\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"approved\",\"type\":\"bool\"}],\"name\":\"setApprovalForAll\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_price\",\"type\":\"uint256\"}],\"name\":\"setCurrentNftPrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"upcHash\",\"type\":\"bytes32\"},{\"internalType\":\"string\",\"name\":\"_ipfs\",\"type\":\"string\"}],\"name\":\"setIpfsByHash\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addy\",\"type\":\"address\"}],\"name\":\"setPayToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"upcHash\",\"type\":\"bytes32\"},{\"internalType\":\"string\",\"name\":\"_vr\",\"type\":\"string\"}],\"name\":\"setVrByHash\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"tokenURI\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalBalance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"upcHashToDomain\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"approve(address,uint256)\":{\"details\":\"See {IERC721-approve}.\"},\"balanceOf(address)\":{\"details\":\"See {IERC721-balanceOf}.\"},\"getApproved(uint256)\":{\"details\":\"See {IERC721-getApproved}.\"},\"isApprovedForAll(address,address)\":{\"details\":\"See {IERC721-isApprovedForAll}.\"},\"name()\":{\"details\":\"See {IERC721Metadata-name}.\"},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"ownerOf(uint256)\":{\"details\":\"See {IERC721-ownerOf}.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"safeTransferFrom(address,address,uint256)\":{\"details\":\"See {IERC721-safeTransferFrom}.\"},\"safeTransferFrom(address,address,uint256,bytes)\":{\"details\":\"See {IERC721-safeTransferFrom}.\"},\"setApprovalForAll(address,bool)\":{\"details\":\"See {IERC721-setApprovalForAll}.\"},\"supportsInterface(bytes4)\":{\"details\":\"See {IERC165-supportsInterface}.\"},\"symbol()\":{\"details\":\"See {IERC721Metadata-symbol}.\"},\"tokenURI(uint256)\":{\"details\":\"See {IERC721Metadata-tokenURI}.\"},\"transferFrom(address,address,uint256)\":{\"details\":\"See {IERC721-transferFrom}.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/tenten/Projects/upcgold.io/src/contracts/UPCNFT.sol\":\"UPCNFT\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/tenten/Projects/upcgold.io/src/contracts/UPCNFT.sol\":{\"keccak256\":\"0xc3a1dfcb75a653c8958977ff05131b1d7bca6fe08c1be26ca1dbd5921f47bdcc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://66ad514a6aace805ced7d9ff763e7b9c1a7a45b2c8524b05012f7b8b9196e756\",\"dweb:/ipfs/QmQ9HPj6rZDmk5jzyH2waa5GfTkZ9riHuuvD71WJyriYCG\"]},\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/access/Ownable.sol\":{\"keccak256\":\"0x6bb804a310218875e89d12c053e94a13a4607cdf7cc2052f3e52bd32a0dc50a1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b2ebbbe6d0011175bd9e7268b83de3f9c2f9d8d4cbfbaef12aff977d7d727163\",\"dweb:/ipfs/Qmd5c7Vxtis9wzkDNhxwc6A2QT5H9xn9kfjhx7qx44vpro\"]},\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol\":{\"keccak256\":\"0x999cea287aa385b94d95d5aefa2cd273a1f4b86cbd01929ebba66f4bf0851bf1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0569fb0b00b0e0ee69ad7e6d32c8ca90467b43ef7e23ee434badf09a35fad487\",\"dweb:/ipfs/Qmc1K7Q3SXDoNxZA2HuoS1m4r39hJDEzMQ8zMhN3aaLmR8\"]},\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x027b891937d20ccf213fdb9c31531574256de774bda99d3a70ecef6e1913ed2a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://087318b21c528119f649899f5b5580566dd8d7b0303d4904bd0e8580c3545f14\",\"dweb:/ipfs/Qmbn5Mj7aUn8hJuQ8VrQjjEXRsXyJKykgnjR9p4C3nfLtL\"]},\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Burnable.sol\":{\"keccak256\":\"0xf98cb1651a90d20ef77d8c1dd10d5fce4954e747603e5672a8292bd4368120dd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://76b539a8edd558b010d1ff3e462c5d4edd039b790b91f31a5bce18957655cc9f\",\"dweb:/ipfs/QmSdJehhx1SwCWLSFFgHQTmUY2YwDTBQjTVjkmhXhA1srb\"]},\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol\":{\"keccak256\":\"0x83fe24f5c04a56091e50f4a345ff504c8bff658a76d4c43b16878c8f940c53b2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d4c3df1a7ca104b633a7d81c6c6f5192367d150cd5a32cba81f7f27012729013\",\"dweb:/ipfs/QmSim72e3ZVsfgZt8UceCvbiSuMRHR6WDsiamqNzZahGSY\"]},\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol\":{\"keccak256\":\"0x7d2b8ba4b256bfcac347991b75242f9bc37f499c5236af50cf09d0b35943dc0c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d8eeaf6afe00229af4c232ca058bb08b7a24cc3886f0b387159ac49ffd8b5312\",\"dweb:/ipfs/QmdnVKmDDWDvdRr6vtrxy3G6WafqA2TAhUZv1UFMsm4B4r\"]},\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0xf101e8720213560fab41104d53b3cc7ba0456ef3a98455aa7f022391783144a0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3e7820bcf567e6892d937c3cb10db263a4042e446799bca602535868d822384e\",\"dweb:/ipfs/QmPG2oeDjKncqsEeyYGjAN7CwAJmMgHterXGGnpzhha4z7\"]},\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0xd9517254724276e2e8de3769183c1f738f445f0095c26fd9b86d3c6687e887b9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0e604bcdcd5e5b2fb299ad09769cde6db19d5aa1929d1b5e939234a0f10d7eb8\",\"dweb:/ipfs/Qmd8hXE3GZfBHuWx3RNiYgFW2ci7KvHtib8DiwzJ2dgo9V\"]},\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Metadata.sol\":{\"keccak256\":\"0xd32fb7f530a914b1083d10a6bed3a586f2451952fec04fe542bcc670a82f7ba5\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://af63ab940a34687c45f0ad84960b048fc5f49330c92ccb422db7822a444733b9\",\"dweb:/ipfs/QmUShaQEu8HS1GjDnsMJQ8jkZEBrecn6NuDZ3pfjY1gVck\"]},\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/utils/Address.sol\":{\"keccak256\":\"0x3336baae5cf23e94274d75336e2d412193be508504aee185e61dc7d58cd05c8a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://39a05eec7083dfa0cc7e0cbfe6cd1bd085a340af1ede93fdff3ad047c5fb3d8e\",\"dweb:/ipfs/QmVApz5fCUq2QC8gKTsNNdCmcedJ3ETHp68zR5N3WUKS4r\"]},\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/utils/Context.sol\":{\"keccak256\":\"0x90565a39ae45c80f0468dc96c7b20d0afc3055f344c8203a0c9258239f350b9f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://26e8b38a7ac8e7b4463af00cf7fff1bf48ae9875765bf4f7751e100124d0bc8c\",\"dweb:/ipfs/QmWcsmkVr24xmmjfnBQZoemFniXjj3vwT78Cz6uqZW1Hux\"]},\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/utils/Counters.sol\":{\"keccak256\":\"0x78450f4e3b722cce467b21e285f72ce5eaf361e9ba9dd2241a413926246773cd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f103065051300cd995fd4599ba91188d4071b92175b52f26110e02db091617c0\",\"dweb:/ipfs/QmSyDz67R2HCypDE8Pacn3voVwxw9x17NM66q47YgBnGqc\"]},\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/utils/Strings.sol\":{\"keccak256\":\"0x391d3ba97ab6856a16b225d6ee29617ad15ff00db70f3b4df1ab5ea33aa47c9d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d636ba90bbbeed04a1ea7fe9ec2466757e30fd38ba2ca173636dbf69a518735e\",\"dweb:/ipfs/QmQwCB2BHnEuYR22PYt9HkpbgeFDhq4rHmaYqAZbX3WRC7\"]},\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/utils/introspection/ERC165.sol\":{\"keccak256\":\"0x5718c5df9bd67ac68a796961df938821bb5dc0cd4c6118d77e9145afb187409b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d10e1d9b26042424789246603906ad06143bf9a928f4e99de8b5e3bdc662f549\",\"dweb:/ipfs/Qmejonoaj5MLekPus229rJQHcC6E9dz2xorjHJR84fMfmn\"]},\"/home/tenten/Projects/upcgold.io/src/contracts/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0xa28007762d9da9db878dd421960c8cb9a10471f47ab5c1b3309bfe48e9e79ff4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://796ab6e88af7bf0e78def0f059310c903af6a312b565344e0ff524a0f26e81c6\",\"dweb:/ipfs/QmcsVgLgzWdor3UnAztUkXKNGcysm1MPneWksF72AvnwBx\"]},\"/home/tenten/Projects/upcgold.io/src/contracts/xUPC.sol\":{\"keccak256\":\"0xe85e71274c9be147491cd0c64c05e926d1957b6a59441fae7408b251333654c1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f64d6f688136619420d72c7b8c8a760ea4501edbe11fae0ee9add4c3a759c499\",\"dweb:/ipfs/QmPd39fsE77mrag27WbESQNnnZFZACPXzxkCpvw7e9kYJz\"]}},\"version\":1}",
@@ -18161,7 +17673,7 @@
     "137": {
       "events": {},
       "links": {},
-      "address": "0x591591B146f7754d8e9A45AAaA93D19Abb84129b",
+      "address": "0x3C421b6Ff2Fa3ef941D90C384aF05D3f36BD73f1",
       "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
     }
   },

@@ -2,7 +2,8 @@
 pragma solidity ^0.8.0;
 
 import "./Base64.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./RawMaterial.sol";
+//import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 contract MoneyPost {
@@ -12,6 +13,7 @@ contract MoneyPost {
     address public owner;
     string public baseURL;
     address public flipToken;
+    RawMaterial public rawMaterialContract;
 
     struct RewardToken {
         string name;
@@ -23,7 +25,8 @@ contract MoneyPost {
         bytes32 topicId;
         string name;
         uint256 createdAt;
-        address attachedToken; // New field to track which token this topic belongs to
+        address attachedToken;
+        string upcCode; // New field to store UPC code
     }
 
     struct Post {
@@ -43,7 +46,8 @@ contract MoneyPost {
     mapping(bytes32 => uint256) public topicPostCounts;
     mapping(bytes32 => Post[]) public topicPosts;
     mapping(bytes32 => bytes32) public postToTopic;
-    mapping(address => EnumerableSet.Bytes32Set) private tokenTopics; // New mapping to track topics per token
+    mapping(address => EnumerableSet.Bytes32Set) private tokenTopics;
+    mapping(string => EnumerableSet.Bytes32Set) private upcTopics; // New mapping for UPC to topics
 
     event RewardTokenAdded(address indexed tokenAddress, string name, uint256 rewardAmount, uint256 exchangeRate);
     event RewardTokenRemoved(address indexed tokenAddress);
@@ -59,10 +63,13 @@ contract MoneyPost {
     event PostSubmitted(bytes32 indexed urlHash, address indexed author, bytes32 indexed topicId, address rewardToken);
     event FlipTokensDeposited(address indexed depositor, uint256 amount);
     event TokensSwapped(address indexed user, address fromToken, uint256 fromAmount, uint256 flipAmount);
+    event TopicAttachedToUPC(bytes32 indexed topicId, string upcCode);
+    event TopicDetachedFromUPC(bytes32 indexed topicId, string upcCode);
 
-    constructor(address _flipToken) {
+    constructor(address _flipToken, address _rawMaterialContract) {
         owner = msg.sender;
         flipToken = _flipToken;
+        rawMaterialContract = RawMaterial(_rawMaterialContract);
     }
 
     modifier onlyOwner() {
@@ -171,7 +178,7 @@ contract MoneyPost {
     function addTopic(string calldata name, address tokenAddress) external onlyOwner returns (bytes32) {
         require(rewardTokenAddresses.contains(tokenAddress), "Token not registered");
         bytes32 topicId = keccak256(abi.encodePacked(name, block.timestamp));
-        topics[topicId] = Topic(topicId, name, block.timestamp, tokenAddress);
+        topics[topicId] = Topic(topicId, name, block.timestamp, tokenAddress, "");
         topicIds.add(topicId);
         tokenTopics[tokenAddress].add(topicId);
         emit TopicAdded(topicId, name, tokenAddress);
@@ -181,9 +188,13 @@ contract MoneyPost {
     function removeTopic(bytes32 topicId) external onlyOwner {
         require(topicIds.contains(topicId), "Topic not found");
         address tokenAddress = topics[topicId].attachedToken;
+        string memory upcCode = topics[topicId].upcCode;
         topicIds.remove(topicId);
         if (tokenAddress != address(0)) {
             tokenTopics[tokenAddress].remove(topicId);
+        }
+        if (bytes(upcCode).length > 0) {
+            upcTopics[upcCode].remove(topicId);
         }
         delete topics[topicId];
         emit TopicRemoved(topicId);
@@ -213,6 +224,40 @@ contract MoneyPost {
         emit TopicDetached(topicId, tokenAddress);
     }
 
+    function attachTopicToUPC(bytes32 topicId, string calldata upcCode) external {
+        require(topicIds.contains(topicId), "Topic not found");
+        require(bytes(upcCode).length == 12, "Invalid UPC code length");
+        
+        // Check if the caller owns the UPC code
+        address upcOwner = rawMaterialContract.getUpcOwner(upcCode);
+        require(upcOwner == msg.sender, "Caller does not own this UPC code");
+        
+        // Remove from previous UPC if any
+        string memory currentUPC = topics[topicId].upcCode;
+        if (bytes(currentUPC).length > 0) {
+            upcTopics[currentUPC].remove(topicId);
+        }
+        
+        // Attach to new UPC
+        topics[topicId].upcCode = upcCode;
+        upcTopics[upcCode].add(topicId);
+        emit TopicAttachedToUPC(topicId, upcCode);
+    }
+
+    function detachTopicFromUPC(bytes32 topicId) external {
+        require(topicIds.contains(topicId), "Topic not found");
+        string memory upcCode = topics[topicId].upcCode;
+        require(bytes(upcCode).length > 0, "Topic not attached to any UPC");
+        
+        // Check if the caller owns the UPC code
+        address upcOwner = rawMaterialContract.getUpcOwner(upcCode);
+        require(upcOwner == msg.sender, "Caller does not own this UPC code");
+        
+        upcTopics[upcCode].remove(topicId);
+        topics[topicId].upcCode = "";
+        emit TopicDetachedFromUPC(topicId, upcCode);
+    }
+
     function getTopicsForToken(address tokenAddress) external view returns (Topic[] memory) {
         uint256 length = tokenTopics[tokenAddress].length();
         Topic[] memory tokenTopicsList = new Topic[](length);
@@ -223,6 +268,18 @@ contract MoneyPost {
         }
         
         return tokenTopicsList;
+    }
+
+    function getTopicsForUPC(string calldata upcCode) external view returns (Topic[] memory) {
+        uint256 length = upcTopics[upcCode].length();
+        Topic[] memory upcTopicsList = new Topic[](length);
+        
+        for (uint256 i = 0; i < length; i++) {
+            bytes32 topicId = upcTopics[upcCode].at(i);
+            upcTopicsList[i] = topics[topicId];
+        }
+        
+        return upcTopicsList;
     }
 
     function submitPost(bytes32 urlHash, string calldata url, bytes32 topicId) external {
@@ -258,7 +315,6 @@ contract MoneyPost {
         emit PostSubmitted(urlHash, msg.sender, topicId, rewardToken);
     }
 
-
     function swapTokens(address fromToken, uint256 amount) external {
         require(rewardTokenAddresses.contains(fromToken), "From token not supported");
         require(fromToken != flipToken, "Cannot swap FLIP for FLIP");
@@ -279,12 +335,10 @@ contract MoneyPost {
         flipToken = _flipToken;
     }
 
-
     function getFlipBalance() external view returns (uint256) {
         require(flipToken != address(0), "FLIP token not set");
         return IERC20(flipToken).balanceOf(address(this));
     }
-
 
     function getRewardTokenData() private view returns (RewardToken[] memory, uint256[] memory) {
         uint256 length = rewardTokenAddresses.length();

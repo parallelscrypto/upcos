@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { ethers } from "ethers";
 import Terminal from 'react-console-emulator';
 import MoneyPostABI from '../etc/rawmaterial/MoneyPost.json';
+import RawMaterialABI from '../etc/rawmaterial/RawMaterial.json';
 
-const MONEYPOST_ADDRESS = "0x420dB1dA9e123C68D1cfc31461981F476685080a";
+const MONEYPOST_ADDRESS = "0x591591B146f7754d8e9A45AAaA93D19Abb84129b";
 var sha256 = require('js-sha256');
 
 class MoneyPostTerminal extends Component {
@@ -12,6 +13,7 @@ class MoneyPostTerminal extends Component {
     this.state = {
       account: '',
       moneyPost: null,
+      rawMaterial: null,
       provider: null,
       signer: null,
       isProgressing: false,
@@ -24,7 +26,8 @@ class MoneyPostTerminal extends Component {
       modalContent: null,
       showModal: false,
       baseURL: '',
-      flipToken: null
+      flipToken: null,
+      userUpcs: []
     };
     this.terminal = React.createRef();
     this.modalContainer = null;
@@ -247,11 +250,19 @@ class MoneyPostTerminal extends Component {
         signer
       );
 
+      const rawMaterialAddress = "0x2C343942548319cCfc05666FF15d73E8569FaEdf";
+      const rawMaterial = new ethers.Contract(
+        rawMaterialAddress,
+        RawMaterialABI.abi,
+        signer
+      );
+
       const baseURL = await moneyPost.baseURL();
       const flipToken = await moneyPost.flipToken();
 
       this.setState({ 
         moneyPost,
+        rawMaterial,
         provider,
         signer,
         account,
@@ -267,6 +278,7 @@ class MoneyPostTerminal extends Component {
       await this.loadRewardTokens();
       await this.loadTopics();
       await this.loadBlockedAddresses();
+      await this.loadUserUpcs();
       
     } catch (error) {
       this.setState({ connectionError: error.message });
@@ -276,6 +288,32 @@ class MoneyPostTerminal extends Component {
       console.error("Blockchain connection error:", error);
     } finally {
       this.setState({ isProgressing: false });
+    }
+  }
+
+  async loadUserUpcs() {
+    try {
+      const { rawMaterial, account } = this.state;
+      if (!rawMaterial || !account) return;
+
+      const id = await this.props.latestRawId();
+      var upcs = [];
+console.log(">>>>>>>>>>>>>>>LATEST<<<<<<<<<<<<");
+console.log(id);
+console.log(this.state.account);
+      for(var i=1; i<id; i++) {
+         var tempNft = await this.props.nftInfo(i);
+
+console.log(tempNft);
+         if(tempNft['staker'] == this.state.account) {
+            var upcHRN = tempNft['word'];
+            upcs.push(upcHRN);
+         }
+      }
+
+      this.setState({ userUpcs: upcs });
+    } catch (error) {
+      console.error("Error loading user UPCs:", error);
     }
   }
 
@@ -323,7 +361,6 @@ class MoneyPostTerminal extends Component {
       
       const topics = await moneyPost.listTopics();
       
-      // Get topics for each token
       const topicsWithToken = await Promise.all(
         topics.map(async topic => {
           const attachedToken = topic.attachedToken;
@@ -356,6 +393,48 @@ class MoneyPostTerminal extends Component {
       this.setState({ blockedAddresses });
     } catch (error) {
       console.error("Error loading blocked addresses:", error);
+    }
+  }
+
+  async attachTopicToUPC(topicId, upcCode) {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      const { moneyPost } = this.state;
+      
+      terminal.pushToStdout(`Attaching topic ${topicId} to UPC ${upcCode}...`);
+      const tx = await moneyPost.attachTopicToUPC(topicId, upcCode);
+      await tx.wait();
+      terminal.pushToStdout(`[[success]]Topic attached to UPC successfully![[/success]]`);
+      
+      await this.loadTopics();
+    } catch (error) {
+      terminal.pushToStdout(`[[error]]Error: ${error.reason || error.message}[[/error]]`);
+      console.error("Attach topic to UPC error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  }
+
+  async detachTopicFromUPC(topicId) {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+    
+    try {
+      const { moneyPost } = this.state;
+      
+      terminal.pushToStdout(`Detaching topic ${topicId} from UPC...`);
+      const tx = await moneyPost.detachTopicFromUPC(topicId);
+      await tx.wait();
+      terminal.pushToStdout(`[[success]]Topic detached from UPC successfully![[/success]]`);
+      
+      await this.loadTopics();
+    } catch (error) {
+      terminal.pushToStdout(`[[error]]Error: ${error.reason || error.message}[[/error]]`);
+      console.error("Detach topic from UPC error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
     }
   }
 
@@ -685,7 +764,7 @@ class MoneyPostTerminal extends Component {
       const formattedBalance = ethers.utils.formatEther(balance);
       
       terminal.pushToStdout(
-        `[[success]]Contract token balance: ${formattedBalance}[[/success]]`
+        `[[success]]Remaining Reward Balance: ${formattedBalance}[[/success]]`
       );
       
       return balance;
@@ -693,7 +772,7 @@ class MoneyPostTerminal extends Component {
       terminal.pushToStdout(
         `[[error]]Error: ${error.reason || error.message}[[/error]]`
       );
-      console.error("Contract token balance error:", error);
+      console.error("Remaining Reward Balance error:", error);
       return ethers.constants.Zero;
     } finally {
       this.setState({ isProgressing: false });
@@ -1292,34 +1371,70 @@ class MoneyPostTerminal extends Component {
     );
   }
 
-  showTokenBalanceGUI() {
-    const { rewardTokens, flipToken } = this.state;
+
+async getRewardTokenBalance(tokenAddress) {
+  const terminal = this.terminal.current;
+  this.setState({ isProgressing: true });
+  
+  try {
+    const { moneyPost } = this.state;
     
-    this.showCyberpunkModal(
-      "CHECK TOKEN BALANCE",
-      [
-        {
-          label: "Token",
-          name: "tokenAddress",
-          type: "select",
-          required: true,
-          options: [
-            ...rewardTokens.map(token => ({
-              value: token.tokenAddress,
-              label: `${token.name} (${token.tokenAddress})`
-            })),
-            ...(flipToken ? [{
-              value: flipToken,
-              label: `FLIP (${flipToken})`
-            }] : [])
-          ]
-        }
-      ],
-      ({ tokenAddress }) => {
-        this.getTokenBalance(tokenAddress);
-      }
+    const balance = await moneyPost.getRewardTokenBalance(tokenAddress);
+    const formattedBalance = ethers.utils.formatEther(balance);
+    
+    terminal.pushToStdout(
+      `[[success]]Remaining Reward Balance: ${formattedBalance}[[/success]]`
     );
+    
+    return balance;
+  } catch (error) {
+    terminal.pushToStdout(
+      `[[error]]Error: ${error.reason || error.message}[[/error]]`
+    );
+    console.error("Remaining Reward Balance error:", error);
+    return ethers.constants.Zero;
+  } finally {
+    this.setState({ isProgressing: false });
   }
+}
+
+// Update the showTokenBalanceGUI to use the new function
+showTokenBalanceGUI() {
+  const { rewardTokens, flipToken } = this.state;
+  
+  this.showCyberpunkModal(
+    "CHECK CONTRACT TOKEN BALANCE",
+    [
+      {
+        label: "Token",
+        name: "tokenAddress",
+        type: "select",
+        required: true,
+        options: [
+          ...rewardTokens.map(token => ({
+            value: token.tokenAddress,
+            label: `${token.name} (${token.tokenAddress})`
+          })),
+          ...(flipToken ? [{
+            value: flipToken,
+            label: `FLIP (${flipToken})`
+          }] : [])
+        ]
+      }
+    ],
+    ({ tokenAddress }) => {
+      this.getRewardTokenBalance(tokenAddress);
+    }
+  );
+}
+
+
+
+
+
+
+
+
 
   showFlipBalanceGUI() {
     this.showCyberpunkModal(
@@ -1327,6 +1442,62 @@ class MoneyPostTerminal extends Component {
       [],
       () => {
         this.getFlipBalance();
+      }
+    );
+  }
+
+  showAttachTopicToUPCGUI() {
+    const { topics, userUpcs } = this.state;
+    
+    this.showCyberpunkModal(
+      "ATTACH TOPIC TO UPC",
+      [
+        {
+          label: "Topic",
+          name: "topicId",
+          type: "select",
+          required: true,
+          options: topics.map(topic => ({
+            value: topic.topicId,
+            label: `${topic.name} (${topic.topicId})`
+          }))
+        },
+        {
+          label: "UPC Code",
+          name: "upcCode",
+          type: "select",
+          required: true,
+          options: userUpcs.map(upc => ({
+            value: upc,
+            label: upc
+          }))
+        }
+      ],
+      ({ topicId, upcCode }) => {
+        this.attachTopicToUPC(topicId, upcCode);
+      }
+    );
+  }
+
+  showDetachTopicFromUPCGUI() {
+    const { topics } = this.state;
+    
+    this.showCyberpunkModal(
+      "DETACH TOPIC FROM UPC",
+      [
+        {
+          label: "Topic",
+          name: "topicId",
+          type: "select",
+          required: true,
+          options: topics.filter(t => t.upcCode).map(topic => ({
+            value: topic.topicId,
+            label: `${topic.name} (Attached to: ${topic.upcCode})`
+          }))
+        }
+      ],
+      ({ topicId }) => {
+        this.detachTopicFromUPC(topicId);
       }
     );
   }
@@ -1341,15 +1512,21 @@ class MoneyPostTerminal extends Component {
         marginBottom: '20px',
         boxShadow: '0 0 20px rgba(0, 240, 255, 0.3)'
       }}>
-        <div style={{
-          display: 'flex',
-          marginBottom: '20px',
-          borderBottom: '1px solid #00f0ff',
-          paddingBottom: '10px',
-          overflowX: 'auto',
-          whiteSpace: 'nowrap',
-          WebkitOverflowScrolling: 'touch',
-        }}>
+      <div style={{
+        display: 'flex',
+        marginBottom: '20px',
+        borderBottom: '1px solid #00f0ff',
+        paddingBottom: '10px',
+        overflowX: 'auto',
+        whiteSpace: 'nowrap',
+        WebkitOverflowScrolling: 'touch',
+        scrollbarWidth: 'none', // For Firefox
+        msOverflowStyle: 'none', // For IE
+        '&::-webkit-scrollbar': { // For Chrome/Safari
+          display: 'none'
+        }
+      }}>
+
           {['submit', 'rewards', 'topics', 'admin'].map(tab => (
             <button
               key={tab}
@@ -1539,6 +1716,21 @@ class MoneyPostTerminal extends Component {
                   <div style={{ color: '#e0e0e0', fontSize: '12px' }}>{token.tokenAddress}</div>
                   <div style={{ color: '#FFC107' }}>Reward: {token.rewardAmount} ETH</div>
                   <div style={{ color: '#4CAF50' }}>Exchange Rate: {token.exchangeRate}</div>
+                  <button 
+                    onClick={() => this.getRewardTokenBalance(token.tokenAddress)}
+                    style={{
+                      background: 'transparent',
+                      border: '1px solid #00f0ff',
+                      color: '#00f0ff',
+                      padding: '5px 10px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      marginTop: '5px'
+                    }}
+                  >
+                    Check Remaining Rewards
+                  </button>
                 </div>
               ))}
             </div>
@@ -1592,6 +1784,34 @@ class MoneyPostTerminal extends Component {
                 DETACH TOKEN
               </button>
               <button
+                onClick={() => this.showAttachTopicToUPCGUI()}
+                style={{
+                  background: 'linear-gradient(45deg, #9C27B0 30%, #673AB7 90%)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                ATTACH TO UPC
+              </button>
+              <button
+                onClick={() => this.showDetachTopicFromUPCGUI()}
+                style={{
+                  background: 'linear-gradient(45deg, #607D8B 30%, #455A64 90%)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                DETACH FROM UPC
+              </button>
+              <button
                 onClick={() => this.showRemoveTopicGUI()}
                 style={{
                   background: 'linear-gradient(45deg, #F44336 30%, #FF5722 90%)',
@@ -1620,6 +1840,11 @@ class MoneyPostTerminal extends Component {
                   <div style={{ color: '#9C27B0' }}>
                     Token: {topic.tokenName || 'None'} ({topic.attachedToken || 'None'})
                   </div>
+                  {topic.upcCode && (
+                    <div style={{ color: '#4CAF50' }}>
+                      UPC: {topic.upcCode}
+                    </div>
+                  )}
                   <div style={{ color: '#607D8B' }}>
                     Created: {new Date(topic.createdAt * 1000).toLocaleString()}
                   </div>
@@ -1832,6 +2057,14 @@ class MoneyPostTerminal extends Component {
             detachtopic: {
               description: 'Detach topic from token (topicId)',
               fn: async (...args) => await this.detachTopicFromToken(...args)
+            },
+            attachupc: {
+              description: 'Attach topic to UPC (topicId, upcCode)',
+              fn: async (...args) => await this.attachTopicToUPC(...args)
+            },
+            detachupc: {
+              description: 'Detach topic from UPC (topicId)',
+              fn: async (...args) => await this.detachTopicFromUPC(...args)
             }
           }}
           dangerMode={true}

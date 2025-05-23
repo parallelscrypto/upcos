@@ -9,6 +9,7 @@ import SerialBoxTerminal from './SerialBoxTerminal'
 import MLBBettingTerminal from './MLBBettingTerminal'
 import MemecoinFactory from './MemecoinFactory';
 import MoneyPostTerminal from './MoneyPostTerminal';
+import WildfireTerminal from './WildfireTerminal';
 import TableSlideshow from './TableSlideshow'
 //import Popit from './Popit'
 import ReactCardFlip from 'react-card-flip';
@@ -592,11 +593,40 @@ export default class StaticCarouselExp extends Component {
 
             mp: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** open the memecoin generator </p>',
-              fn: (winNum=0) => {
+              fn: async (winNum=0) => {
 
                      const terminal = this.progressTerminal.current
+                     console.log(":::::::::::::search::::::::::");
+                     //var nfts = await this.props.getMyNfts();
+                     var latest = await this.props.latestRawId()
+                     //var nfts = await this.props.nftInfo("1");
+                     console.log(latest);
+                     var mplayer = <MoneyPostTerminal nftInfo={this.props.nftInfo} latestRawId={this.props.latestRawId} />;
 
-                     var mplayer = <MoneyPostTerminal/>;
+                      if(winNum == "1") {
+                        terminal.pushToStdout(mplayer);
+                      }
+                      else {
+ 		        this.setState(prevState => ({ fullIpfs: mplayer }));
+		        this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		        this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+ 
+              }
+            },
+
+
+            wild: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** burn tokens,  create a token wildfire  </p>',
+              fn: async (winNum=0) => {
+
+                     const terminal = this.progressTerminal.current
+                     console.log(":::::::::::::search::::::::::");
+                     //var nfts = await this.props.getMyNfts();
+                     var latest = await this.props.latestRawId()
+                     //var nfts = await this.props.nftInfo("1");
+                     console.log(latest);
+                     var mplayer = <WildfireTerminal />;
 
                       if(winNum == "1") {
                         terminal.pushToStdout(mplayer);
@@ -2027,6 +2057,7 @@ console.log(popArgs);
 
 
     this.loadOne= this.loadOne.bind(this);
+    this.getMyNfts= this.getMyNfts.bind(this);
     this.getMplayer= this.getMplayer.bind(this);
     this.showTerminal= this.showTerminal.bind(this);
     this.handleFlip= this.handleFlip.bind(this);
@@ -4071,6 +4102,16 @@ const fullPage = (
                 let infoOwned = await this.props.nftInfo(nft)
                 return infoOwned;
    }
+
+
+
+  getMyNfts = async () => {
+                let infoOwned = await this.props.getMyNfts()
+                return infoOwned;
+   }
+
+
+
 
    resolvePPLLink= async (id) => {
 
