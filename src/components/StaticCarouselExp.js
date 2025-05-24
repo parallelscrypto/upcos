@@ -601,7 +601,7 @@ export default class StaticCarouselExp extends Component {
                      var latest = await this.props.latestRawId()
                      //var nfts = await this.props.nftInfo("1");
                      console.log(latest);
-                     var mplayer = <MoneyPostTerminal nftInfo={this.props.nftInfo} latestRawId={this.props.latestRawId} />;
+                     var mplayer = <MoneyPostTerminal code={this.props.code} nftInfo={this.props.nftInfo} latestRawId={this.props.latestRawId} />;
 
                       if(winNum == "1") {
                         terminal.pushToStdout(mplayer);

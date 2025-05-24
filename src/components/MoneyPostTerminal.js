@@ -298,13 +298,9 @@ class MoneyPostTerminal extends Component {
 
       const id = await this.props.latestRawId();
       var upcs = [];
-console.log(">>>>>>>>>>>>>>>LATEST<<<<<<<<<<<<");
-console.log(id);
-console.log(this.state.account);
       for(var i=1; i<id; i++) {
          var tempNft = await this.props.nftInfo(i);
 
-console.log(tempNft);
          if(tempNft['staker'] == this.state.account) {
             var upcHRN = tempNft['word'];
             upcs.push(upcHRN);
@@ -353,6 +349,237 @@ console.log(tempNft);
       console.error("Error loading reward tokens:", error);
     }
   }
+
+
+    // Add this method to your MoneyPostTerminal class
+    showPostsGUI() {
+      const { topics } = this.state;
+      
+      this.showCyberpunkModal(
+        "SELECT TOPIC TO VIEW POSTS",
+        [
+          {
+            label: "Topic",
+            name: "topicId",
+            type: "select",
+            required: true,
+            options: topics.map(topic => ({
+              value: topic.topicId,
+              label: `${topic.name} (${topic.tokenName || 'No token'})`
+            }))
+          },
+          {
+            label: "Start Index",
+            name: "startIndex",
+            type: "number",
+            required: false,
+            placeholder: "0 (default)"
+          },
+          {
+            label: "End Index",
+            name: "endIndex",
+            type: "number",
+            required: false,
+            placeholder: "9 (default)"
+          }
+        ],
+        async ({ topicId, startIndex = 0, endIndex = 9 }) => {
+          try {
+            this.setState({ isProgressing: true });
+            const { moneyPost } = this.state;
+            
+            // Convert to numbers
+            startIndex = parseInt(startIndex) || 0;
+            endIndex = parseInt(endIndex) || startIndex + 9;
+            
+            // Get the total number of posts first
+            const totalPosts = await moneyPost.getTotalPostsByTopic(topicId);
+            
+            if (totalPosts === 0) {
+              this.showPostsResult([], 0, "No posts found for this topic");
+              return;
+            }
+            
+            // Adjust endIndex if it exceeds total posts
+            if (endIndex >= totalPosts) {
+              endIndex = totalPosts - 1;
+            }
+            
+            // Get the posts
+            const posts = await moneyPost.getPostsByTopic(topicId, startIndex, endIndex);
+            
+            // Find the topic name
+            const topic = topics.find(t => t.topicId === topicId);
+            const topicName = topic ? topic.name : "Unknown Topic";
+            
+            this.showPostsResult(posts, totalPosts, topicName, startIndex);
+          } catch (error) {
+            this.terminal.current.pushToStdout(
+              `[[error]]Error: ${error.reason || error.message}[[/error]]`
+            );
+            console.error("Error getting posts:", error);
+          } finally {
+            this.setState({ isProgressing: false });
+          }
+        }
+      );
+    }
+
+    // Add this method to your MoneyPostTerminal class
+    showPostsResult(posts, totalPosts, topicName, startIndex = 0) {
+      const content = `
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h2 style="color: #00f0ff; margin-bottom: 5px; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);">${topicName}</h2>
+          <div style="color: #e0e0e0; margin-bottom: 15px;">Total Posts: ${totalPosts}</div>
+        </div>
+        
+        <div style="max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+          ${posts.length > 0 ? 
+            posts.map((post, index) => `
+              <div style="
+                background: #1a1a2e;
+                border-left: 3px solid #00f0ff;
+                padding: 15px;
+                margin-bottom: 15px;
+                border-radius: 4px;
+                box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+              ">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                  <span style="color: #00f0ff; font-weight: bold;">Post #${startIndex + index + 1}</span>
+                  <span style="color: #FFC107;">${new Date(post.timestamp * 1000).toLocaleString()}</span>
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                  <div style="color: #e0e0e0; font-size: 14px; margin-bottom: 5px;">Author:</div>
+                  <div style="color: #9C27B0; word-break: break-all;">${post.author}</div>
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                  <div style="color: #e0e0e0; font-size: 14px; margin-bottom: 5px;">URL:</div>
+                  <div style="color: #4CAF50;">
+                    <a href="${post.url}" target="_blank" rel="noopener noreferrer" 
+                       style="color: #4CAF50; text-decoration: none; border-bottom: 1px dashed #4CAF50;">
+                      ${post.url}
+                    </a>
+                  </div>
+                </div>
+                
+                <div style="margin-bottom: 5px;">
+                  <div style="color: #e0e0e0; font-size: 14px; margin-bottom: 5px;">Reward Token:</div>
+                  <div style="color: #FF9800;">${post.rewardToken}</div>
+                </div>
+
+                <div style="margin-top: 15px;">
+                  <button onclick="document.getElementById('post-content-${index}').style.display = 
+                    document.getElementById('post-content-${index}').style.display === 'none' ? 'block' : 'none';
+                    this.textContent = document.getElementById('post-content-${index}').style.display === 'none' ? 'Show Content' : 'Hide Content'"
+                    style="
+                      background: #1a1a2e;
+                      border: 1px solid #00f0ff;
+                      color: #00f0ff;
+                      padding: 5px 10px;
+                      border-radius: 4px;
+                      cursor: pointer;
+                      margin-bottom: 10px;
+                    ">
+                    Show Content
+                  </button>
+                  
+                  <button onclick="window.open('${post.url}', '_blank', 'fullscreen=yes')"
+                    style="
+                      background: #1a1a2e;
+                      border: 1px solid #4CAF50;
+                      color: #4CAF50;
+                      padding: 5px 10px;
+                      border-radius: 4px;
+                      cursor: pointer;
+                      margin-left: 10px;
+                    ">
+                    Full Screen
+                  </button>
+                  
+                  <div id="post-content-${index}" style="display: none; margin-top: 10px;">
+                    <iframe 
+                      src="${post.url}" 
+                      style="
+                        width: 100%;
+                        height: 400px;
+                        border: 1px solid #333;
+                        border-radius: 4px;
+                        background: #121212;
+                      "
+                      frameborder="0"
+                      allowfullscreen
+                    ></iframe>
+                  </div>
+                </div>
+              </div>
+            `).join('')
+            : 
+            '<div style="text-align: center; color: #e0e0e0; padding: 20px;">No posts found</div>'
+          }
+        </div>
+      `;
+
+      this.showModal(content);
+    }
+
+
+
+  async getPostsByTopic(topicId, startIndex = 0, endIndex = 9) {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
+  
+    try {
+      const { moneyPost } = this.state;
+      
+      // Validate inputs
+      startIndex = parseInt(startIndex) || 0;
+      endIndex = parseInt(endIndex) || startIndex + 9;
+      
+      terminal.pushToStdout(`Fetching posts for topic ${topicId} (items ${startIndex}-${endIndex})...`);
+      
+      // Get the total number of posts first
+      const totalPosts = await moneyPost.getTotalPostsByTopic(topicId);
+      
+      if (totalPosts === 0) {
+        terminal.pushToStdout('[[info]]No posts found for this topic[[/info]]');
+        return;
+      }
+      
+      // Adjust endIndex if it exceeds total posts
+      if (endIndex >= totalPosts) {
+        endIndex = totalPosts - 1;
+      }
+      
+      // Get the posts
+      const posts = await moneyPost.getPostsByTopic(topicId, startIndex, endIndex);
+      
+      terminal.pushToStdout('[[header]]=== Posts ===[[/header]]');
+      terminal.pushToStdout(`Total posts: ${totalPosts}`);
+      
+      posts.forEach((post, index) => {
+        var link = '<a href=' + post.url + '>Visit UPC</a>';
+        const postNumber = startIndex + index + 1;
+        terminal.pushToStdout(
+          `${postNumber}. URL Hash: ${post.urlHash}\n` +
+          `   Author: ${post.author}\n` +
+          `   Url: ${link}\n` +
+          `   Timestamp: ${new Date(post.timestamp * 1000).toLocaleString()}\n` +
+          `   Reward Token: ${post.rewardToken}`
+        );
+      });
+      
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error: ${error.reason || error.message}[[/error]]`
+      );
+      console.error("Error getting posts by topic:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
+  }
+
 
   async loadTopics() {
     try {
@@ -1479,6 +1706,142 @@ showTokenBalanceGUI() {
     );
   }
 
+
+
+
+
+
+
+async showTopicsByUpcGUI(upcCode) {
+  const { userUpcs } = this.state;
+  
+
+
+      try {
+        this.setState({ isProgressing: true });
+        const { moneyPost } = this.state;
+        
+        const topics = await moneyPost.getTopicsForUPC(upcCode);
+        
+        if (topics.length === 0) {
+          this.showModal(`
+            <div style="text-align: center; padding: 20px;">
+              <h3 style="color: #00f0ff;">No topics found for UPC: ${upcCode}</h3>
+            </div>
+          `);
+          return;
+        }
+        
+        const content = `
+          <div style="text-align: center; margin-bottom: 20px;">
+            <h2 style="color: #00f0ff; margin-bottom: 5px; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);">Topics for UPC: ${upcCode}</h2>
+            <div style="color: #e0e0e0; margin-bottom: 15px;">Total Topics: ${topics.length}</div>
+          </div>
+          
+          <div style="max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+            ${topics.map((topic, index) => `
+              <div style="
+                background: #1a1a2e;
+                border-left: 3px solid #00f0ff;
+                padding: 15px;
+                margin-bottom: 15px;
+                border-radius: 4px;
+                box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+              ">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                  <span style="color: #00f0ff; font-weight: bold;">Topic #${index + 1}</span>
+                  <span style="color: #FFC107;">${new Date(topic.createdAt * 1000).toLocaleString()}</span>
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                  <div style="color: #e0e0e0; font-size: 14px; margin-bottom: 5px;">Name:</div>
+                  <div style="color: #9C27B0; word-break: break-all;">${topic.name}</div>
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                  <div style="color: #e0e0e0; font-size: 14px; margin-bottom: 5px;">Topic ID:</div>
+                  <div style="color: #4CAF50;">${topic.topicId}</div>
+                </div>
+                
+                <div style="margin-bottom: 5px;">
+                  <div style="color: #e0e0e0; font-size: 14px; margin-bottom: 5px;">Attached Token:</div>
+                  <div style="color: #FF9800;">${topic.attachedToken || 'None'}</div>
+                </div>
+
+                <div style="margin-top: 15px;">
+                  <button onclick="document.getElementById('topic-content-${index}').style.display = 
+                    document.getElementById('topic-content-${index}').style.display === 'none' ? 'block' : 'none';
+                    this.textContent = document.getElementById('topic-content-${index}').style.display === 'none' ? 'Show Posts' : 'Hide Posts'"
+                    style="
+                      background: #1a1a2e;
+                      border: 1px solid #00f0ff;
+                      color: #00f0ff;
+                      padding: 5px 10px;
+                      border-radius: 4px;
+                      cursor: pointer;
+                      margin-bottom: 10px;
+                    ">
+                    Show Posts
+                  </button>
+                  
+                  <button onclick="window.parent.postMessage({ type: 'showPostsForTopic', topicId: '${topic.topicId}' }, '*')"
+                    style="
+                      background: #1a1a2e;
+                      border: 1px solid #4CAF50;
+                      color: #4CAF50;
+                      padding: 5px 10px;
+                      border-radius: 4px;
+                      cursor: pointer;
+                      margin-left: 10px;
+                    ">
+                    View All Posts
+                  </button>
+                  
+                  <div id="topic-content-${index}" style="display: none; margin-top: 10px;">
+                    <div style="color: #e0e0e0; font-style: italic; margin-bottom: 10px;">
+                      Loading posts for this topic...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+
+        this.showModal(content);
+        
+        // Listen for messages from the iframe
+        window.addEventListener('message', (event) => {
+          if (event.data.type === 'showPostsForTopic') {
+            this.showPostsGUI(event.data.topicId);
+          }
+        });
+
+      } catch (error) {
+        this.terminal.current.pushToStdout(
+          `[[error]]Error: ${error.reason || error.message}[[/error]]`
+        );
+        console.error("Error getting topics for UPC:", error);
+      } finally {
+        this.setState({ isProgressing: false });
+      }
+    
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   showDetachTopicFromUPCGUI() {
     const { topics } = this.state;
     
@@ -1976,6 +2339,22 @@ showTokenBalanceGUI() {
             topics: {
               description: 'List topics',
               fn: async () => await this.loadTopics()
+            },
+            // Add this to your commands in the render() method:
+            gposts: {
+              description: 'Get posts by topic (GUI version)',
+              fn: async () => {
+                this.showPostsGUI();
+              }
+            },
+            forum: {
+              description: 'Get topics for a UPC (upcCode)',
+              fn: async (upcCode) => { 
+                   if(!upcCode) {
+                      upcCode = this.props.code;
+                   }   
+                   await this.showTopicsByUpcGUI(upcCode)
+              }
             },
             posts: {
               description: 'Get posts by topic (topicId, [start], [end])',
