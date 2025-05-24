@@ -9,7 +9,7 @@ contract WildfireBurn is Ownable {
     using Counters for Counters.Counter;
     
     address public constant DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
-    Counters.Counter private _wildfireIds;
+    Counters.Counter public _wildfireIds;
     
     struct Badge {
         uint256 threshold;

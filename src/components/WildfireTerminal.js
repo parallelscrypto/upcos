@@ -91,7 +91,7 @@ class WildfireTerminal extends Component {
       const account = await signer.getAddress();
       
       // Replace with your deployed contract address
-      const contractAddress = "0x3C421b6Ff2Fa3ef941D90C384aF05D3f36BD73f1";
+      const contractAddress = "0xC9a7De5aA25C0F00F9434b1003957C266acB3eE6";
       const wildfireContract = new ethers.Contract(
         contractAddress,
         WildfireBurnABI.abi,
@@ -127,7 +127,7 @@ class WildfireTerminal extends Component {
       const { wildfireContract } = this.state;
       const terminal = this.terminal.current;
       
-      const wildfireCount = await wildfireContract._wildfireIds();
+      const wildfireCount = await wildfireContract._wildfireIds;
       const wildfires = [];
       
       for (let i = 1; i <= wildfireCount; i++) {
