@@ -250,7 +250,7 @@ class MoneyPostTerminal extends Component {
         signer
       );
 
-      const rawMaterialAddress = "0x2C343942548319cCfc05666FF15d73E8569FaEdf";
+      const rawMaterialAddress = "0xC9a7De5aA25C0F00F9434b1003957C266acB3eE6";
       const rawMaterial = new ethers.Contract(
         rawMaterialAddress,
         RawMaterialABI.abi,
