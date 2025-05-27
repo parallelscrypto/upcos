@@ -506,7 +506,7 @@ class MemecoinTerminal extends Component {
               description: 'List all tokens you created',
               fn: async () => await this.listUserTokens()
             },
-            tokeninfo: {
+            ti: {
               description: 'Get token details by address',
               fn: async (address) => await this.getTokenDetails(address)
             }

@@ -265,52 +265,50 @@ class WildfireTerminal extends Component {
     }
   }
 
-loadWildfires = async () => {
-  try {
-    const { wildfireContract } = this.state;
+  loadWildfires = async () => {
     const terminal = this.terminal.current;
-    
-    const wildfireCount = await wildfireContract._wildfireIds();
+    try {
+      const { wildfireContract } = this.state;
 
-      console.log('Wildfires count:', wildfireCount); // Add this line
-    const wildfires = [];
-    
-    for (let i = 1; i <= wildfireCount; i++) {
-      const wildfire = await wildfireContract.wildfires(i);
-      wildfires.push({
-        id: i,
-        creator: wildfire.creator,
-        tokenAddress: wildfire.tokenAddress,
-        tokenName: wildfire.tokenName,
-        missionStatement: wildfire.missionStatement,
-        targetBurnAmount: wildfire.targetBurnAmount.toString(),
-        startDate: new Date(wildfire.startDate * 1000).toLocaleString(),
-        tokensPerMine: wildfire.tokensPerMine.toString(),
-        minePrice: ethers.utils.formatEther(wildfire.minePrice),
-        totalDeposited: wildfire.totalDeposited.toString(),
-        totalMined: wildfire.totalMined.toString(),
-        totalBurned: wildfire.totalBurned.toString(),
-        isActive: wildfire.isActive
-      });
-    }
-    
-    this.setState({ wildfires }, () => {
-      console.log('Wildfires loaded:', this.state.wildfires); // Add this line
-    });
+      const wildfireCount = await wildfireContract._wildfireIds();
+      const wildfires = [];
       
-      terminal.pushToStdout('[[header]]=== Active Wildfires ===[[/header]]');
-      wildfires.forEach(wildfire => {
-        terminal.pushToStdout(
-          `${wildfire.id}. ${wildfire.tokenName} (${wildfire.tokenAddress})\n` +
-          `   Mission: ${wildfire.missionStatement}\n` +
-          `   Target: ${wildfire.targetBurnAmount} tokens\n` +
-          `   Status: ${wildfire.isActive ? 'Active' : 'Inactive'}\n` +
-          `   Created: ${wildfire.startDate}`
-        );
-      });
+      for (let i = 1; i <= wildfireCount; i++) {
+        const wildfire = await wildfireContract.wildfires(i);
+        wildfires.push({
+          id: i,
+          creator: wildfire.creator,
+          tokenAddress: wildfire.tokenAddress,
+          tokenName: wildfire.tokenName,
+          missionStatement: wildfire.missionStatement,
+          targetBurnAmount: parseFloat(ethers.utils.formatUnits(wildfire.targetBurnAmount, 18)), // Changed to 18 decimals
+          startDate: new Date(wildfire.startDate * 1000).toLocaleString(),
+          tokensPerMine: parseFloat(ethers.utils.formatUnits(wildfire.tokensPerMine, 18)), // Changed to 18 decimals
+          minePrice: parseFloat(ethers.utils.formatEther(wildfire.minePrice)), // ETH uses 18 decimals
+          totalDeposited: parseFloat(ethers.utils.formatUnits(wildfire.totalDeposited, 18)), // Changed to 18 decimals
+          totalMined: parseFloat(ethers.utils.formatUnits(wildfire.totalMined, 18)), // Changed to 18 decimals
+          totalBurned: parseFloat(ethers.utils.formatUnits(wildfire.totalBurned, 18)), // Changed to 18 decimals
+          isActive: wildfire.isActive
+        });
+      }
       
+      this.setState({ wildfires }, () => {
+        terminal.pushToStdout('[[header]]=== Active Wildfires ===[[/header]]');
+        wildfires.forEach(wildfire => {
+          terminal.pushToStdout(
+            `${wildfire.id}. ${wildfire.tokenName} (${wildfire.tokenAddress})\n` +
+            `   Mission: ${wildfire.missionStatement}\n` +
+            `   Target: ${wildfire.targetBurnAmount} tokens\n` +
+            `   Status: ${wildfire.isActive ? 'Active' : 'Inactive'}\n` +
+            `   Mine Price: ${wildfire.minePrice} ETH\n` +
+            `   Tokens per Mine: ${wildfire.tokensPerMine}\n` +
+            `   Created: ${wildfire.startDate}`
+          );
+        });
+      });
+        
     } catch (error) {
-      this.terminal.current.pushToStdout(
+      terminal.pushToStdout(
         `[[error]]Error loading wildfires: ${error.message}[[/error]]`
       );
       console.error("Error loading wildfires:", error);
@@ -326,13 +324,18 @@ loadWildfires = async () => {
       
       terminal.pushToStdout(`Creating new Wildfire campaign for ${tokenName}...`);
       
+      // Convert human-readable numbers to contract units
+      const parsedTargetBurnAmount = ethers.utils.parseUnits(targetBurnAmount.toString(), 18);
+      const parsedTokensPerMine = ethers.utils.parseUnits(tokensPerMine.toString(), 18);
+      const parsedMinePrice = ethers.utils.parseEther(minePrice.toString());
+      
       const tx = await wildfireContract.createWildfire(
         tokenAddress,
         tokenName,
         missionStatement,
-        targetBurnAmount,
-        tokensPerMine,
-        ethers.utils.parseEther(minePrice)
+        parsedTargetBurnAmount,
+        parsedTokensPerMine,
+        parsedMinePrice
       );
       
       terminal.pushToStdout(`[[success]]Transaction sent! Waiting for confirmation...[[/success]]`);
@@ -369,15 +372,17 @@ loadWildfires = async () => {
         this.state.signer
       );
       
+      const parsedAmount = ethers.utils.parseUnits(amount.toString(), 18);
+      
       const approveTx = await tokenContract.approve(
         wildfireContract.address,
-        ethers.utils.parseEther(amount.toString())
+        parsedAmount
       );
       await approveTx.wait();
       
       const tx = await wildfireContract.depositTokens(
         wildfireId,
-        ethers.utils.parseEther(amount.toString())
+        parsedAmount
       );
       
       terminal.pushToStdout(`[[success]]Transaction sent! Waiting for confirmation...[[/success]]`);
@@ -421,7 +426,7 @@ loadWildfires = async () => {
       
       await tx.wait();
       
-      terminal.pushToStdout(`[[success]]Tokens mined successfully![[/success]]`);
+      terminal.pushToStdout(`[[success]]Successfully mined ${wildfire.tokensPerMine} tokens![[/success]]`);
       await this.loadWildfires();
       
     } catch (error) {
@@ -451,15 +456,17 @@ loadWildfires = async () => {
         this.state.signer
       );
       
+      const parsedAmount = ethers.utils.parseUnits(amount.toString(), 18);
+      
       const approveTx = await tokenContract.approve(
         wildfireContract.address,
-        ethers.utils.parseEther(amount.toString())
+        parsedAmount
       );
       await approveTx.wait();
       
       const tx = await wildfireContract.burnTokens(
         wildfireId,
-        ethers.utils.parseEther(amount.toString()),
+        parsedAmount,
         consoleUrl,
         consoleHash
       );
@@ -491,9 +498,11 @@ loadWildfires = async () => {
       
       terminal.pushToStdout(`Adding badge to Wildfire ${wildfireId}...`);
       
+      const parsedThreshold = ethers.utils.parseUnits(threshold.toString(), 18);
+      
       const tx = await wildfireContract.addBadge(
         wildfireId,
-        threshold,
+        parsedThreshold,
         imageUrl,
         description
       );
@@ -515,42 +524,135 @@ loadWildfires = async () => {
     }
   }
 
+  getWildfireStats = async (wildfireId) => {
+    const terminal = this.terminal.current;
+    this.setState({ isProgressing: true });
 
+    try {
+      const { wildfireContract } = this.state;
+      
+      // Ensure wildfireId is a number
+      const id = parseInt(wildfireId);
+      if (isNaN(id)) {
+        throw new Error("Invalid Wildfire ID");
+      }
 
-
-getWildfireStats = async (wildfireId) => {
-  const terminal = this.terminal.current;
-  this.setState({ isProgressing: true });
-  
-console.log("wildfireid:", wildfireId);
-  try {
-    const { wildfireContract } = this.state;
-    
-    const stats = await wildfireContract.getWildfireStats(wildfireId);
-    
-    terminal.pushToStdout('[[header]]=== Wildfire Stats ===[[/header]]');
-    terminal.pushToStdout(`Total Deposited: ${ethers.utils.formatUnits(stats.totalDeposited, 18)}`);
-    terminal.pushToStdout(`Total Mined: ${ethers.utils.formatUnits(stats.totalMined, 18)}`);
-    terminal.pushToStdout(`Total Burned: ${ethers.utils.formatUnits(stats.totalBurned, 18)}`);
-    terminal.pushToStdout(`Remaining to Target: ${ethers.utils.formatUnits(stats.remainingToTarget, 18)}`);
-    terminal.pushToStdout(`Target Reached: ${stats.targetReached ? 'Yes' : 'No'}`);
-    terminal.pushToStdout(`Mission: ${stats.missionStatement}`);
-    
-  } catch (error) {
-    terminal.pushToStdout(
-      `[[error]]Error: ${error.reason || error.message}[[/error]]`
-    );
-    console.error("Get stats error:", error);
-  } finally {
-    this.setState({ isProgressing: false });
+      const stats = await wildfireContract.getWildfireStats(id);
+      const wildfire = this.state.wildfires.find(w => w.id === id);
+      
+      terminal.pushToStdout('[[header]]=== Wildfire Stats ===[[/header]]');
+      terminal.pushToStdout(`Total Deposited: ${parseFloat(ethers.utils.formatUnits(stats.totalDeposited, 18))} tokens`);
+      terminal.pushToStdout(`Total Mined: ${parseFloat(ethers.utils.formatUnits(stats.totalMined, 18))} tokens`);
+      terminal.pushToStdout(`Total Burned: ${parseFloat(ethers.utils.formatUnits(stats.totalBurned, 18))} tokens`);
+      terminal.pushToStdout(`Remaining to Target: ${parseFloat(ethers.utils.formatUnits(stats.remainingToTarget, 18))} tokens`);
+      terminal.pushToStdout(`Target Reached: ${stats.targetReached ? 'Yes' : 'No'}`);
+      terminal.pushToStdout(`Mission: ${stats.missionStatement}`);
+      
+    } catch (error) {
+      terminal.pushToStdout(
+        `[[error]]Error: ${error.reason || error.message}[[/error]]`
+      );
+      console.error("Get stats error:", error);
+    } finally {
+      this.setState({ isProgressing: false });
+    }
   }
-}
 
+  showWildfireStatsGUI = () => {
+    const { wildfires } = this.state;
+    
+    this.showCyberpunkModal(
+      "VIEW WILDFIRE STATS",
+      [
+        {
+          label: "Wildfire Campaign",
+          name: "wildfireId",
+          type: "select",
+          required: true,
+          options: wildfires.map(wildfire => ({
+            value: wildfire.id,
+            label: `${wildfire.tokenName} (ID: ${wildfire.id})`
+          }))
+        }
+      ],
+      async ({ wildfireId }) => {
+        try {
+          this.setState({ isProgressing: true });
+          const { wildfireContract } = this.state;
+          
+          const id = parseInt(wildfireId);
+          if (isNaN(id)) {
+            throw new Error("Invalid Wildfire ID");
+          }
 
+          const stats = await wildfireContract.getWildfireStats(id);
+          const wildfire = this.state.wildfires.find(w => w.id === id);
+          
+          const content = `
+            <div style="text-align: center; margin-bottom: 20px;">
+              <h2 style="color: #00f0ff; margin-bottom: 5px; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);">${wildfire.tokenName}</h2>
+              <div style="color: #e0e0e0; margin-bottom: 15px;">${wildfire.missionStatement}</div>
+            </div>
+            
+            <div style="
+              background: #1a1a2e;
+              padding: 20px;
+              border-radius: 8px;
+              border-left: 3px solid #00f0ff;
+              margin-bottom: 20px;
+            ">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span style="color: #00f0ff;">Total Deposited:</span>
+                <span style="color: #e0e0e0;">${parseFloat(ethers.utils.formatUnits(stats.totalDeposited, 18))} tokens</span>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span style="color: #00f0ff;">Total Mined:</span>
+                <span style="color: #e0e0e0;">${parseFloat(ethers.utils.formatUnits(stats.totalMined, 18))} tokens</span>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span style="color: #00f0ff;">Total Burned:</span>
+                <span style="color: #e0e0e0;">${parseFloat(ethers.utils.formatUnits(stats.totalBurned, 18))} tokens</span>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span style="color: #00f0ff;">Remaining to Target:</span>
+                <span style="color: #e0e0e0;">${parseFloat(ethers.utils.formatUnits(stats.remainingToTarget, 18))} tokens</span>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span style="color: #00f0ff;">Target Reached:</span>
+                <span style="color: ${stats.targetReached ? '#4CAF50' : '#F44336'};">
+                  ${stats.targetReached ? 'Yes' : 'No'}
+                </span>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: #00f0ff;">Status:</span>
+                <span style="color: ${wildfire.isActive ? '#4CAF50' : '#F44336'};">
+                  ${wildfire.isActive ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+            </div>
+            
+            <div style="text-align: center; color: #e0e0e0; font-size: 14px;">
+              Created: ${wildfire.startDate}
+            </div>
+          `;
 
-
-
-
+          this.showModal(content);
+        } catch (error) {
+          this.terminal.current.pushToStdout(
+            `[[error]]Error: ${error.reason || error.message}[[/error]]`
+          );
+          console.error("Error getting wildfire stats:", error);
+        } finally {
+          this.setState({ isProgressing: false });
+        }
+      }
+    );
+  }
 
   getUserBadges = async (wildfireId, userAddress) => {
     const terminal = this.terminal.current;
@@ -571,7 +673,7 @@ console.log("wildfireid:", wildfireId);
           const badge = badges[index];
           terminal.pushToStdout(
             `Badge ${index + 1}:\n` +
-            `   Threshold: ${badge.threshold} tokens burned\n` +
+            `   Threshold: ${ethers.utils.formatUnits(badge.threshold, 18)} tokens burned\n` +
             `   Image: ${badge.imageUrl}\n` +
             `   Description: ${badge.description}`
           );
@@ -771,97 +873,6 @@ console.log("wildfireid:", wildfireId);
       ],
       ({ wildfireId, threshold, imageUrl, description }) => {
         this.addBadge(parseInt(wildfireId), threshold, imageUrl, description);
-      }
-    );
-  }
-
-  showWildfireStatsGUI = (id) => {
-    const { wildfires } = this.state;
-    
-    this.showCyberpunkModal(
-      "VIEW WILDFIRE STATS",
-      [
-        {
-          label: "Wildfire Campaign",
-          name: "wildfireId",
-          type: "select",
-          required: true,
-          options: wildfires.map(wildfire => ({
-            value: id,
-            label: `${wildfire.tokenName} (ID: ${wildfire.id})`
-          }))
-        }
-      ],
-      async ({ wildfireId }) => {
-        try {
-          this.setState({ isProgressing: true });
-          const { wildfireContract } = this.state;
-          
-          const stats = await wildfireContract.getWildfireStats(wildfireId);
-          const wildfire = this.state.wildfires.find(w => w.id === parseInt(wildfireId));
-          
-const content = `
-  <div style="text-align: center; margin-bottom: 20px;">
-    <h2 style="color: #00f0ff; margin-bottom: 5px; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);">${wildfire.tokenName}</h2>
-    <div style="color: #e0e0e0; margin-bottom: 15px;">${wildfire.missionStatement}</div>
-  </div>
-  
-  <div style="
-    background: #1a1a2e;
-    padding: 20px;
-    border-radius: 8px;
-    border-left: 3px solid #00f0ff;
-    margin-bottom: 20px;
-  ">
-    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-      <span style="color: #00f0ff;">Total Deposited:</span>
-      <span style="color: #e0e0e0;">${ethers.utils.formatUnits(stats.totalDeposited, 18)}</span>
-    </div>
-    
-    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-      <span style="color: #00f0ff;">Total Mined:</span>
-      <span style="color: #e0e0e0;">${ethers.utils.formatUnits(stats.totalMined, 18)}</span>
-    </div>
-    
-    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-      <span style="color: #00f0ff;">Total Burned:</span>
-      <span style="color: #e0e0e0;">${ethers.utils.formatUnits(stats.totalBurned, 18)}</span>
-    </div>
-    
-    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-      <span style="color: #00f0ff;">Remaining to Target:</span>
-      <span style="color: #e0e0e0;">${ethers.utils.formatUnits(stats.remainingToTarget, 18)}</span>
-    </div>
-    
-    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-      <span style="color: #00f0ff;">Target Reached:</span>
-      <span style="color: ${stats.targetReached ? '#4CAF50' : '#F44336'};">
-        ${stats.targetReached ? 'Yes' : 'No'}
-      </span>
-    </div>
-    
-    <div style="display: flex; justify-content: space-between;">
-      <span style="color: #00f0ff;">Status:</span>
-      <span style="color: ${wildfire.isActive ? '#4CAF50' : '#F44336'};">
-        ${wildfire.isActive ? 'Active' : 'Inactive'}
-      </span>
-    </div>
-  </div>
-  
-  <div style="text-align: center; color: #e0e0e0; font-size: 14px;">
-    Created: ${wildfire.startDate}
-  </div>
-`;
-
-          this.showModal(content);
-        } catch (error) {
-          this.terminal.current.pushToStdout(
-            `[[error]]Error: ${error.reason || error.message}[[/error]]`
-          );
-          console.error("Error getting wildfire stats:", error);
-        } finally {
-          this.setState({ isProgressing: false });
-        }
       }
     );
   }
@@ -1253,38 +1264,37 @@ const content = `
                 await this.getUserBadges(wildfireId, userAddress || this.state.account);
               }
             },
-    // Add this to your commands object in the render() method
-    listwildfires: {
-      description: 'List all wildfires from state',
-      fn: () => {
-        const terminal = this.terminal.current;
-        const { wildfires } = this.state;
-    
-        if (!wildfires || wildfires.length === 0) {
-          terminal.pushToStdout('[[warning]]No wildfires found in state[[/warning]]');
-          return;
-        }
-    
-        terminal.pushToStdout('[[header]]=== Wildfires in State ===[[/header]]');
-        wildfires.forEach(wildfire => {
-          terminal.pushToStdout(
-            `ID: ${wildfire.id}\n` +
-            `Token: ${wildfire.tokenName} (${wildfire.tokenAddress})\n` +
-            `Mission: ${wildfire.missionStatement}\n` +
-            `Target: ${wildfire.targetBurnAmount} tokens\n` +
-            `Burned: ${wildfire.totalBurned} tokens\n` +
-            `Status: ${wildfire.isActive ? 'Active' : 'Inactive'}\n` +
-            `Created: ${wildfire.startDate}\n` +
-            `Mine Price: ${wildfire.minePrice} ETH\n` +
-            `Tokens per Mine: ${wildfire.tokensPerMine}\n` +
-            `Total Deposited: ${wildfire.totalDeposited}\n` +
-            `Total Mined: ${wildfire.totalMined}\n` +
-            `----------------------------------------`
-          );
-        });
-        return '[[success]]Wildfires displayed from component state[[/success]]';
-      }
-    },
+            listwildfires: {
+              description: 'List all wildfires from state',
+              fn: () => {
+                const terminal = this.terminal.current;
+                const { wildfires } = this.state;
+            
+                if (!wildfires || wildfires.length === 0) {
+                  terminal.pushToStdout('[[warning]]No wildfires found in state[[/warning]]');
+                  return;
+                }
+            
+                terminal.pushToStdout('[[header]]=== Wildfires in State ===[[/header]]');
+                wildfires.forEach(wildfire => {
+                  terminal.pushToStdout(
+                    `ID: ${wildfire.id}\n` +
+                    `Token: ${wildfire.tokenName} (${wildfire.tokenAddress})\n` +
+                    `Mission: ${wildfire.missionStatement}\n` +
+                    `Target: ${wildfire.targetBurnAmount} tokens\n` +
+                    `Burned: ${wildfire.totalBurned} tokens\n` +
+                    `Status: ${wildfire.isActive ? 'Active' : 'Inactive'}\n` +
+                    `Created: ${wildfire.startDate}\n` +
+                    `Mine Price: ${wildfire.minePrice} ETH\n` +
+                    `Tokens per Mine: ${wildfire.tokensPerMine}\n` +
+                    `Total Deposited: ${wildfire.totalDeposited}\n` +
+                    `Total Mined: ${wildfire.totalMined}\n` +
+                    `----------------------------------------`
+                  );
+                });
+                return '[[success]]Wildfires displayed from component state[[/success]]';
+              }
+            },
             end: {
               description: 'End wildfire campaign (wildfireId)',
               fn: async (...args) => await this.endWildfire(...args)

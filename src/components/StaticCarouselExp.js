@@ -283,6 +283,35 @@ export default class StaticCarouselExp extends Component {
 
 
 
+
+
+            chat: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open tlk.io. pass the chat title as a param  (thank you and no affiliation) </p>',
+                    fn: (...title) => {
+                        // 1. Join all words into a single string
+                        const titleString = title.join(" "); // "this is my chat room"
+                        
+                        // 2. Compute SHA-256 hash (assuming `sha256` is available)
+                        const titleHash = sha256(titleString).toString('hex').substr(0, 10);
+                        
+                        // 3. Generate the URL
+                        const fullUrl = "https://tlk.io/" + titleHash;
+                        console.log(fullUrl); // e.g., "https://tlk.io/1a2b3c4d5e"
+                        
+                        // Rest of your code...
+                        var winNum = "0";
+                        var mplayer = this.getMplayer(fullUrl);
+                        if(winNum == "0") {
+                            this.setState(prevState => ({ pipVisibility: "true" }));
+                            this.setState(prevState => ({ pipDisplay: "block"}));
+                            this.setState({fullIpfs: mplayer});
+                            this.setState(prevState => ({ showBigShow: true}));
+                        }
+                    }
+               },
+
+
+
             anon: {
               description: '<p style="color:hotpink;font-size:1.1em">**  attempt to anon on the current upc. you can pass the upc as a param, and if the upc is available, the anon interface will appear.  you must anon upon an unowned upc code.  to see if a upc is unowned, run the xupc command.  </p>',
 
@@ -969,7 +998,7 @@ console.log(myPull);
 
 
 
-            chat: {
+            vchat: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open mirotalk in a window  (thank you and no affiliation) </p>',
               fn: (sheetNum) => {
 
