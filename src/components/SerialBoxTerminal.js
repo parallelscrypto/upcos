@@ -489,11 +489,16 @@ class SerialBoxTerminal extends Component {
         <Terminal
           style={{
             minHeight: "75vh",
-            backgroundColor: "#1a0404",
+            backgroundImage: "url('https://f466rquetugeijv3vcaq2nb2wylme5bndab2zuphrdchu74d4sya.arweave.net/Lz3owoSdDEQmu6iBDTQ6thbCdC0YA6zR54jEen-D5LA')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
             zIndex: "99",
             borderRadius: "5px",
             padding: "10px",
-            fontFamily: "monospace"
+            fontFamily: "monospace",
+            boxShadow: "0 0 20px rgba(0,0,0,0.8)",
+            border: "1px solid rgba(255,255,255,0.1)"
           }}
           ref={this.progressTerminal}
           commands={{

@@ -2229,9 +2229,6 @@ console.log(popArgs);
                 //var currentUrl = window.location.href;
                 var currentUrl = url;
 
-console.log("DYNAMMMMMMMMMMMMMICCCCCCCCCCCCCCC")
-console.log(popArgs)
-console.log(currentUrl)
                 var page = this.getMplayer(currentUrl);
  
 
@@ -2256,7 +2253,19 @@ console.log(currentUrl)
                 }
  
                if(containsHttp){
-                  terminal.pushToStdout(page);
+
+
+
+                  if(!cli) {
+	             this.setState({slidesOG: page})
+                  }
+                  else {
+                     terminal.pushToStdout(page);
+                  }
+console.log("DYNAMMMMMMMMMMMMMICCCCCCCCCCCCCCC")
+console.log(popArgs)
+console.log(currentUrl)
+console.log("CLI IS ",cli)
                   return page;
                }
 
@@ -2506,24 +2515,32 @@ console.log(pulls2);
                 if(!pullOutput)
                 {
 
+                    console.log("URRRRRRRRRRRLLLLL" + url);
+                    console.log("going to load in the mini");
+
                 const terminal = this.progressTerminal.current
                 //var currentUrl = window.location.href;
                 var currentUrl = url;
 
                 var page = this.getMplayer(currentUrl);
+
+                
+                console.log("didOutput is " , didOutput);
                 if(!didOutput) {
 
 
 
-                   if(cli == "false") {
+                console.log("out here cli " , cli);
+                console.log("page " , page);
+
+                   if(cli == false) {
+                console.log("in here cli " , cli);
                       this.setState({slidesOG: page})
                    }
-                   else if(cli == "true") {
+                   else if(cli == true) {
                       terminal.pushToStdout(page);
                    }
                    else if(cli == "mini") {
-                    console.log("URRRRRRRRRRRLLLLL" + url);
-                    console.log("going to load in the mini");
                     return this.getMplayer(url);
                    }
                 }
@@ -2853,7 +2870,10 @@ console.log("match shebang anon");
       currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
       currentUrl = currentUrl.replace('intel', 'export');
 
-      //currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
+
+      console.log("^^^^^^^^^^^^^^CURRENT URL " , currentUrl);
+
+      currentUrl= currentUrl.replace('http://localhost:3000', 'https://flipitup.cc');  //remember to comment out.  need to uncomment to get shortened test url when using localhost
       var encodedWeb2 = encodeURIComponent(currentUrl);
       var toShorten = "https://is.gd/create.php?format=json&url=" + currentUrl;
       if (!(humanReadableName === '' || humanReadableName === null)) {
@@ -2878,7 +2898,7 @@ console.log("match shebang anon");
         console.error('An error occurred:', error.message);
       }
 
-
+      console.log("^^^^^^^^^RESPONSE",response);
 
       var clipboard = 
       <CopyToClipboard text={currentUrl}>

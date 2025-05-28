@@ -174,6 +174,7 @@ class TrebleCleffExp extends Component {
     //console.log(`Position: ${button.position}, Title: ${button.title}, payload: ${button.payload}`);
 
 
+    console.log("^^^^^^^IS CONSOLE",isConsole);
     if(!isConsole) {
 
        data.buttons.forEach(button => {
@@ -185,6 +186,7 @@ class TrebleCleffExp extends Component {
                 button2CSS     = button.style;
                 button2Action  = this.props.dynamicPPL;
                 button2PPL  = button.payload.trim().split(" ");
+                console.log("^^^^^^^IS CONSOLE pos 2 no console",button2Action);
                 this.setState({button2Terminal: false})
                 this.setState({button2Label})
                 this.setState({button2CSS})
@@ -314,6 +316,7 @@ console.log("PPPPPPPPPPLLLLLLL" + button4PPL );
     this.setState({button1Action: this.props.showTerminal})
 
     
+console.log("############CURRENT STATE ##############3",this.state);
 
    }
 
@@ -464,6 +467,8 @@ console.log("MOOOOOOOO");
                         onClick={() => {
                                           let console2 = this.state.button2Terminal
                                           if( this.state.button2Custom ) {
+
+                                             console.log("^^^^^^^IS CONSOLE pos 2 no console",);
                                              this.state.button2Action(this.state.button2PPL,console2)
                                           }
                                           else { 
@@ -494,7 +499,6 @@ console.log("MOOOOOOOO");
                                           let console4 = this.state.button4Terminal
                                           if( this.state.button4Custom ) {
                                              this.state.button4Action(this.state.button4PPL,console4)
-console.log("the terminal var is " + console4);
                                           }
                                           else { 
                                              this.state.button4Action()
