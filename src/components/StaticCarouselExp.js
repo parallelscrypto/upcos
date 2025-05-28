@@ -116,13 +116,23 @@ export default class StaticCarouselExp extends Component {
 
 
     const lines = msg.split('\n');
-
+    var bgValue;
     const publicPacs = [];
     for (const line of lines) {
         const match = line.match(/\b\w+ pac (\d+)$/);
         if (match) {
             publicPacs.push(parseInt(match[1], 10));
         }
+        if (line.includes("config.bg")) {
+            const equalPos = line.indexOf('=');
+            if (equalPos !== -1) {
+                bgValue = line.substr(equalPos + 1).trim();
+                // Now you can use bgValue (the URL)
+                console.log("Background URL:", bgValue);
+                // Or store it: const bgUrl = bgValue;
+            }
+        }
+
     }
 
 
@@ -203,6 +213,7 @@ export default class StaticCarouselExp extends Component {
       scan: scan,
       msg: props.msg,
       upcscript: msg,
+      background: bgValue
     };
 
 
@@ -215,7 +226,16 @@ export default class StaticCarouselExp extends Component {
     var popArgs = [];
 
     var myTerm = <Terminal
-      style={{"minHeight":"75vh",backgroundColor: "#000",zIndex:"0",wordBreak:"break-word"}}
+      style={{
+           minHeight:"75vh",
+           backgroundColor: "#000",
+           zIndex:"0",
+           wordBreak:"break-word",
+           backgroundImage: `url('${bgValue}')`,  // Fixed: using backticks for template literal
+           backgroundSize: "cover",
+           backgroundPosition: "center",
+           backgroundRepeat: "no-repeat",
+      }}
       ref={this.progressTerminal}
       commands={{
 
