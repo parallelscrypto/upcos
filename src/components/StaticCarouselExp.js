@@ -8,6 +8,7 @@ import BassCleff from './BassCleff'
 import SerialBoxTerminal from './SerialBoxTerminal'
 import MLBBettingTerminal from './MLBBettingTerminal'
 import MemecoinFactory from './MemecoinFactory';
+import VideoArchiveTerminal from './VideoArchiveTerminal';
 import MoneyPostTerminal from './MoneyPostTerminal';
 import WildfireTerminal from './WildfireTerminal';
 import TableSlideshow from './TableSlideshow'
@@ -721,6 +722,28 @@ export default class StaticCarouselExp extends Component {
                      //var nfts = await this.props.nftInfo("1");
                      console.log(latest);
                      var mplayer = <WildfireTerminal />;
+
+                      if(winNum == "1") {
+                        terminal.pushToStdout(mplayer);
+                      }
+                      else {
+ 		        this.setState(prevState => ({ fullIpfs: mplayer }));
+		        this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		        this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+ 
+              }
+            },
+
+
+
+            binge: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** open the archives and binge watch </p>',
+              fn: (winNum=0) => {
+
+                     const terminal = this.progressTerminal.current
+
+                     var mplayer = <VideoArchiveTerminal />;
 
                       if(winNum == "1") {
                         terminal.pushToStdout(mplayer);
