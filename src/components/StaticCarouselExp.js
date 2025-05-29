@@ -117,6 +117,8 @@ export default class StaticCarouselExp extends Component {
 
     const lines = msg.split('\n');
     var bgValue;
+    var aiValue;
+    var hddValue = "https://app.ardrive.io/#/drives/8324c70e-a3c4-4dc5-b42c-1691464daef7?name=africans_unite_worldwide"; //default hdd
     const publicPacs = [];
     for (const line of lines) {
         const match = line.match(/\b\w+ pac (\d+)$/);
@@ -132,6 +134,25 @@ export default class StaticCarouselExp extends Component {
                 // Or store it: const bgUrl = bgValue;
             }
         }
+        if (line.includes("config.hdd")) {
+            const equalPos = line.indexOf('=');
+            if (equalPos !== -1) {
+                hddValue = line.substr(equalPos + 1).trim();
+                // Now you can use bgValue (the URL)
+                console.log("HDD URL:", bgValue);
+                // Or store it: const bgUrl = bgValue;
+            }
+        }
+        if (line.includes("config.ai")) {
+            const equalPos = line.indexOf('=');
+            if (equalPos !== -1) {
+                aiValue = line.substr(equalPos + 1).trim();
+                // Now you can use bgValue (the URL)
+                console.log("AI URL:", bgValue);
+                // Or store it: const bgUrl = bgValue;
+            }
+        }
+
 
     }
 
@@ -213,7 +234,9 @@ export default class StaticCarouselExp extends Component {
       scan: scan,
       msg: props.msg,
       upcscript: msg,
-      background: bgValue
+      background: bgValue,
+      hdd: hddValue,
+      ai:  aiValue
     };
 
 
@@ -268,6 +291,28 @@ export default class StaticCarouselExp extends Component {
                       }
               }
             },
+            hdd: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** View the disclaimer.</p>',
+              fn: () => {
+
+
+
+
+		      var fullUrl = this.state.hdd;
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
 
 
             fire: {
@@ -1134,10 +1179,10 @@ console.log(myPull);
 
 
             ai: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** open a window powered by deepai.org (thank you and no affiliation) </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** open an AI window </p>',
               fn: () => {
 
-		      var fullUrl = "https://deepai.org/chat";
+		      var fullUrl = this.state.ai;
                       var winNum = "0";
 
                       //this.cSearch.value = "";
@@ -2096,7 +2141,9 @@ console.log(popArgs);
        pplCommand: pplCommand,
        shebang: shebang,
        configUrl: configUrl,
-       publicPacs: publicPacs
+       publicPacs: publicPacs,
+       hdd: hddValue,
+       ai:  aiValue
     }
 
 
