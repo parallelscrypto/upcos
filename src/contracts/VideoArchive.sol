@@ -161,37 +161,41 @@ contract VideoArchive is Ownable {
         emit ContractOwnershipTransferred(msg.sender, newOwner);
     }
     
-    // Mining and rewards system
-    function mineTokens(uint256 _entryId, string memory _miningKey) public payable {
-        require(_entryId > 0 && _entryId <= archive.length, "Invalid ID");
-        uint256 index = _entryId - 1;
-        ArchiveEntry storage entry = archive[index];
 
-        require(bytes(entry.url).length > 0, "Entry not found");
-        require(entry.tokensRemaining > 0, "No tokens left");
-        require(tokenBalances[entry.tokenAddress] > 0, "No tokens available");
-
-        if (keccak256(bytes(entry.miningKey)) != keccak256(bytes(""))) {
-            if (keccak256(bytes(entry.miningKey)) != keccak256(bytes(_miningKey))) {
-                require(msg.value >= entry.priceIfNoKey, "Incorrect mining key and insufficient payment");
-            }
+function mineTokens(uint256 _entryId, string memory _miningKey) public payable {
+    require(_entryId > 0 && _entryId <= archive.length, "Invalid ID");
+    uint256 index = _entryId - 1;
+    ArchiveEntry storage entry = archive[index];
+    
+    require(bytes(entry.url).length > 0, "Entry not found");
+    require(entry.tokensRemaining > 0, "No tokens left");
+    require(tokenBalances[entry.tokenAddress] > 0, "No tokens available");
+    
+    if (keccak256(bytes(entry.miningKey)) != keccak256(bytes(""))) {
+        if (keccak256(bytes(entry.miningKey)) != keccak256(bytes(_miningKey))) {
+            require(msg.value >= entry.priceIfNoKey, "Incorrect mining key and insufficient payment");
         }
-
-        IERC20 token = IERC20(entry.tokenAddress);
-        uint256 oneEth = 1 ether; // 1 ETH = 10^18 wei
-        require(token.transfer(msg.sender, oneEth), "Token transfer failed");
-
-        entry.tokensMined += oneEth;
-        entry.tokensRemaining -= oneEth;
-        tokenBalances[entry.tokenAddress] -= oneEth;
-
-        UserStats storage stats = userStats[msg.sender];
-        stats.totalTokensMined += oneEth;
-        stats.tokensMinedPerToken[entry.tokenAddress] += oneEth;
-
-        _updateBadgeLevel(msg.sender);
-        emit TokensMined(_entryId, msg.sender, oneEth);
     }
+    
+    IERC20 token = IERC20(entry.tokenAddress);
+    uint256 oneToken = 1 ether; // Assuming standard 18 decimal places
+    require(token.transfer(msg.sender, oneToken), "Token transfer failed");
+    
+    entry.tokensMined += 1; // Track as whole tokens
+    entry.tokensRemaining -= 1;
+    tokenBalances[entry.tokenAddress] -= oneToken; // Subtract actual token amount
+    
+    UserStats storage stats = userStats[msg.sender];
+    stats.totalTokensMined += 1; // Track as whole tokens
+    stats.tokensMinedPerToken[entry.tokenAddress] += 1;
+    
+    _updateBadgeLevel(msg.sender);
+    emit TokensMined(_entryId, msg.sender, 1); // Emit as whole tokens
+}
+
+
+
+
     
     function rewardUser(address _tokenAddress, address _recipient, uint256 _numTokens) public onlyOwner {
         require(whitelistedTokens[_tokenAddress], "Token not whitelisted");
