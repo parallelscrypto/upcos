@@ -3,7 +3,8 @@ import { ethers } from "ethers";
 import Terminal from 'react-console-emulator';
 import VideoArchiveABI from '../etc/rawmaterial/Archive.json';
 
-const CONTRACT_ADDRESS = "0xE24b75C72874EB7CF1e8be1f17755C6500413513";
+const CONTRACT_ADDRESS = "0x78bF0F3689078077b8629425EcAd945a018dD436";
+const ITEMS_PER_PAGE = 5;
 
 class VideoArchiveTerminal extends Component {
   constructor(props) {
@@ -23,7 +24,9 @@ class VideoArchiveTerminal extends Component {
       flipToken: null,
       modalContent: null,
       showModal: false,
-      activeTab: 'archive'
+      activeTab: 'archive',
+      currentPage: 1,
+      expandedEntries: {} 
     };
     this.terminal = React.createRef();
     this.modalContainer = null;
@@ -453,11 +456,15 @@ class VideoArchiveTerminal extends Component {
     const terminal = this.terminal.current;
     this.setState({ isProgressing: true });
     
+    var ethVal = "0";
+    if(!miningKey) {
+       ethVal = "1";
+    }
     try {
       const { contract } = this.state;
       
       terminal.pushToStdout(`Mining tokens for entry ${entryId}...`);
-      const tx = await contract.mineTokens(entryId, miningKey, { value: ethers.utils.parseEther("0") });
+      const tx = await contract.mineTokens(entryId, miningKey, { value: ethers.utils.parseEther(ethVal) });
       await tx.wait();
       terminal.pushToStdout(`[[success]]Tokens mined successfully![[/success]]`);
       
@@ -997,348 +1004,359 @@ class VideoArchiveTerminal extends Component {
     );
   }
 
-  renderCyberpunkGUI() {
-    return (
-      <div style={{
+
+
+
+
+
+
+
+renderCyberpunkGUI() {
+    const { archiveEntries, currentPage, tokenBalances, activeTab } = this.state;
+    const totalPages = Math.ceil(archiveEntries.length / ITEMS_PER_PAGE);
+    const paginatedEntries = archiveEntries.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+    );
+
+    // Style objects
+    const containerStyle = {
         backgroundColor: '#1a1a2e',
         border: '2px solid #00f0ff',
         borderRadius: '8px',
         padding: '20px',
         marginBottom: '20px',
         boxShadow: '0 0 20px rgba(0, 240, 255, 0.3)'
-      }}>
-        <div style={{
-          display: 'flex',
-          marginBottom: '20px',
-          borderBottom: '1px solid #00f0ff',
-          paddingBottom: '10px',
-          overflowX: 'auto',
-          whiteSpace: 'nowrap',
-          WebkitOverflowScrolling: 'touch',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          '&::-webkit-scrollbar': { display: 'none' }
-        }}>
-          {['archive', 'tokens', 'badges', 'admin'].map(tab => (
-            <button
-              key={tab}
-              onClick={() => this.setState({ activeTab: tab })}
-              style={{
-                background: this.state.activeTab === tab ? '#00f0ff' : 'transparent',
-                color: this.state.activeTab === tab ? '#121212' : '#00f0ff',
-                border: 'none',
-                padding: '10px 20px',
-                marginRight: '10px',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                transition: 'all 0.3s',
-                flexShrink: 0
-              }}
-            >
-              {tab}
-            </button>
-          ))}
+    };
+
+    const tabContainerStyle = {
+        display: 'flex',
+        marginBottom: '20px',
+        borderBottom: '1px solid #00f0ff',
+        paddingBottom: '10px',
+        overflowX: 'auto',
+        whiteSpace: 'nowrap'
+    };
+
+    const tabButtonStyle = (isActive) => ({
+        background: isActive ? '#00f0ff' : 'transparent',
+        color: isActive ? '#121212' : '#00f0ff',
+        border: 'none',
+        padding: '10px 20px',
+        marginRight: '10px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        letterSpacing: '1px',
+        transition: 'all 0.3s',
+        flexShrink: 0
+    });
+
+    const entryStyle = {
+        background: '#121212',
+        padding: '15px',
+        marginBottom: '15px',
+        borderRadius: '4px',
+        borderLeft: '3px solid #00f0ff',
+        position: 'relative'
+    };
+
+    const createGradientButton = (color1, color2) => ({
+        background: `linear-gradient(45deg, ${color1} 30%, ${color2} 90%)`,
+        border: 'none',
+        color: 'white',
+        padding: '12px 24px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        fontWeight: 'bold',
+        boxShadow: `0 3px 5px rgba(0,0,0,0.2)`,
+        marginRight: '10px',
+        marginBottom: '10px'
+    });
+
+    const mineButtonStyle = {
+        background: 'linear-gradient(45deg, #4CAF50 30%, #8BC34A 90%)',
+        border: 'none',
+        color: 'white',
+        padding: '8px 16px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        fontWeight: 'bold',
+        marginTop: '10px',
+        fontSize: '12px'
+    };
+
+    const paginationButtonStyle = (disabled) => ({
+        background: disabled ? '#555' : 'linear-gradient(45deg, #2196F3 30%, #03A9F4 90%)',
+        border: 'none',
+        color: 'white',
+        padding: '8px 16px',
+        borderRadius: '4px',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        fontWeight: 'bold'
+    });
+
+    return (
+        <div style={containerStyle}>
+            {/* Tab Navigation */}
+            <div style={tabContainerStyle}>
+                {['archive', 'tokens', 'badges', 'admin'].map(tab => (
+                    <button
+                        key={tab}
+                        onClick={() => this.setState({ activeTab: tab, currentPage: 1 })}
+                        style={tabButtonStyle(activeTab === tab)}
+                    >
+                        {tab}
+                    </button>
+                ))}
+            </div>
+
+            {/* Archive Tab Content */}
+            {activeTab === 'archive' && (
+                <div>
+                    <h3 style={{ color: '#00f0ff', marginBottom: '15px' }}>ARCHIVE MANAGEMENT</h3>
+                    
+                    {/* Action Buttons */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '20px' }}>
+                        <button 
+                            onClick={() => this.showAddEntryGUI()} 
+                            style={createGradientButton('#FE6B8B', '#FF8E53')}
+                        >
+                            ADD ENTRY
+                        </button>
+                        <button 
+                            onClick={() => this.showRemoveEntryGUI()} 
+                            style={createGradientButton('#F44336', '#FF5722')}
+                        >
+                            REMOVE ENTRY
+                        </button>
+                        <button 
+                            onClick={() => this.showEditEntryGUI()} 
+                            style={createGradientButton('#2196F3', '#03A9F4')}
+                        >
+                            EDIT ENTRY
+                        </button>
+                    </div>
+
+{/* Entries List */}
+<div style={{ maxHeight: '400px', overflowY: 'auto', marginBottom: '20px' }}>
+    {paginatedEntries.map(entry => {
+        const tokenInfo = tokenBalances.find(t => t.tokenAddress === entry.tokenAddress);
+        const tokenName = tokenInfo ? tokenInfo.name : 'Unknown Token';
+        
+        return (
+            <div key={entry.id} style={entryStyle}>
+                <div style={{ color: '#00f0ff', fontWeight: 'bold' }}>
+                    {entry.id}. {entry.url}
+                    <button 
+                        onClick={() => this.setState(prev => ({
+                            expandedEntries: {
+                                ...prev.expandedEntries,
+                                [entry.id]: !prev.expandedEntries[entry.id]
+                            }
+                        }))}
+                        style={{
+                            background: 'transparent',
+                            border: '1px solid #00f0ff',
+                            color: '#00f0ff',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            marginLeft: '10px',
+                            fontSize: '12px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        {this.state.expandedEntries[entry.id] ? 'Hide' : 'Show'} Preview
+                    </button>
+                </div>
+                
+                {this.state.expandedEntries[entry.id] && (
+                    <div style={{ 
+                        marginTop: '10px',
+                        border: '1px solid #00f0ff',
+                        borderRadius: '4px',
+                        overflow: 'hidden'
+                    }}>
+                        <iframe
+                            src={entry.url}
+                            title={`Preview of ${entry.url}`}
+                            style={{
+                                width: '100%',
+                                height: '400px',
+                                border: 'none',
+                                background: '#121212'
+                            }}
+                            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                        />
+                    </div>
+                )}
+                <div style={{ color: 'red', fontSize: '14px' }}>
+                    link: <a href={entry.url}>VISIT</a>
+                </div>                
+                <div style={{ color: '#e0e0e0', fontSize: '12px' }}>
+                    Owner: {entry.owner}
+                </div>
+                <div style={{ color: '#FFC107' }}>
+                    Tokens: {entry.tokensMined}/{entry.initialTokenCount} ({entry.tokensRemaining} remaining)
+                </div>
+                <div style={{ color: '#9C27B0' }}>
+                    Token: {entry.tokenAddress}
+                </div>
+                <div style={{ color: '#607D8B' }}>
+                    Archived: {entry.dateArchived}
+                </div>
+                {entry.tokensRemaining > 0 && (
+                    <button
+                        onClick={() => this.showMineTokensGUI(entry.id, entry.miningKey)}
+                        style={mineButtonStyle}
+                    >
+                        MINE {tokenName.toUpperCase()}
+                    </button>
+                )}
+            </div>
+        );
+    })}
+</div>
+
+                    {/* Pagination - FIXED SYNTAX */}
+                    {archiveEntries.length > ITEMS_PER_PAGE && (
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                            <button
+                                onClick={() => this.setState(prev => ({ currentPage: Math.max(prev.currentPage - 1, 1) }))}
+                                disabled={currentPage === 1}
+                                style={paginationButtonStyle(currentPage === 1)}
+                            >
+                                Previous
+                            </button>
+                            <span style={{ color: '#e0e0e0', lineHeight: '35px' }}>
+                                Page {currentPage} of {totalPages}
+                            </span>
+                            <button
+                                onClick={() => this.setState(prev => ({ currentPage: Math.min(prev.currentPage + 1, totalPages) }))}
+                                disabled={currentPage === totalPages}
+                                style={paginationButtonStyle(currentPage === totalPages)}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Tokens Tab Content */}
+            {activeTab === 'tokens' && (
+                <div>
+                    <h3 style={{ color: '#00f0ff', marginBottom: '15px' }}>TOKEN MANAGEMENT</h3>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '20px' }}>
+                        <button 
+                            onClick={() => this.showAddTokenGUI()} 
+                            style={createGradientButton('#4CAF50', '#8BC34A')}
+                        >
+                            ADD TOKEN
+                        </button>
+                        <button 
+                            onClick={() => this.showRemoveTokenGUI()} 
+                            style={createGradientButton('#F44336', '#FF5722')}
+                        >
+                            REMOVE TOKEN
+                        </button>
+                        <button 
+                            onClick={() => this.showDepositTokensGUI()} 
+                            style={createGradientButton('#2196F3', '#03A9F4')}
+                        >
+                            DEPOSIT
+                        </button>
+                        <button 
+                            onClick={() => this.showRewardUserGUI()} 
+                            style={createGradientButton('#9C27B0', '#673AB7')}
+                        >
+                            REWARD USER
+                        </button>
+                    </div>
+                    <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                        {this.state.tokenBalances.map((token, index) => (
+                            <div key={index} style={entryStyle}>
+                                <div style={{ color: '#00f0ff', fontWeight: 'bold' }}>{token.name}</div>
+                                <div style={{ color: '#e0e0e0', fontSize: '12px' }}>{token.tokenAddress}</div>
+                                <div style={{ color: '#FFC107' }}>Balance: {ethers.utils.formatEther(token.balance)}</div>
+                                {this.state.flipToken && this.state.flipToken.address === token.tokenAddress && (
+                                    <div style={{ color: '#4CAF50' }}>FLIP Token</div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Badges Tab Content */}
+            {activeTab === 'badges' && (
+                <div>
+                    <h3 style={{ color: '#00f0ff', marginBottom: '15px' }}>BADGE SYSTEM</h3>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '20px' }}>
+                        <button 
+                            onClick={() => this.showAddBadgeLevelGUI()} 
+                            style={createGradientButton('#FE6B8B', '#FF8E53')}
+                        >
+                            ADD BADGE LEVEL
+                        </button>
+                        <button 
+                            onClick={() => this.showUserStatsGUI()} 
+                            style={createGradientButton('#2196F3', '#03A9F4')}
+                        >
+                            GET USER STATS
+                        </button>
+                    </div>
+                    <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                        {this.state.badgeLevels.length > 0 ? (
+                            this.state.badgeLevels.map((level, index) => (
+                                <div key={index} style={entryStyle}>
+                                    <div style={{ color: '#00f0ff', fontWeight: 'bold' }}>{level.name}</div>
+                                    <div style={{ color: '#FFC107' }}>Threshold: {level.threshold} tokens</div>
+                                </div>
+                            ))
+                        ) : (
+                            <div style={{ color: '#e0e0e0', textAlign: 'center', padding: '20px' }}>
+                                No badge levels defined
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Admin Tab Content */}
+            {activeTab === 'admin' && (
+                <div>
+                    <h3 style={{ color: '#00f0ff', marginBottom: '15px' }}>ADMIN FUNCTIONS</h3>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '20px' }}>
+                        <button 
+                            onClick={() => this.showTransferOwnershipGUI()} 
+                            style={createGradientButton('#F44336', '#D32F2F')}
+                        >
+                            TRANSFER OWNERSHIP
+                        </button>
+                    </div>
+                    <div style={entryStyle}>
+                        <div style={{ color: '#00f0ff', fontWeight: 'bold' }}>Current Owner</div>
+                        <div>{this.state.account || 'Not connected'}</div>
+                    </div>
+                </div>
+            )}
         </div>
-
-        {this.state.activeTab === 'archive' && (
-          <div>
-            <h3 style={{ color: '#00f0ff', marginBottom: '15px' }}>ARCHIVE MANAGEMENT</h3>
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
-              <button
-                onClick={() => this.showAddEntryGUI()}
-                style={{
-                  background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '12px 24px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  boxShadow: '0 3px 15px 2px rgba(255, 105, 135, 0.5)'
-                }}
-              >
-                ADD ENTRY
-              </button>
-              <button
-                onClick={() => this.showRemoveEntryGUI()}
-                style={{
-                  background: 'linear-gradient(45deg, #F44336 30%, #FF5722 90%)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '12px 24px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  boxShadow: '0 3px 15px 2px rgba(244, 67, 54, 0.5)'
-                }}
-              >
-                REMOVE ENTRY
-              </button>
-              <button
-                onClick={() => this.showEditEntryGUI()}
-                style={{
-                  background: 'linear-gradient(45deg, #2196F3 30%, #03A9F4 90%)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '12px 24px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  boxShadow: '0 3px 15px 2px rgba(33, 150, 243, 0.5)'
-                }}
-              >
-                EDIT ENTRY
-              </button>
-              <button
-                onClick={() => this.showMineTokensGUI()}
-                style={{
-                  background: 'linear-gradient(45deg, #4CAF50 30%, #8BC34A 90%)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '12px 24px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  boxShadow: '0 3px 15px 2px rgba(76, 175, 80, 0.5)'
-                }}
-              >
-                MINE TOKENS
-              </button>
-            </div>
-            <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
-              {this.state.archiveEntries.map(entry => (
-                <div key={entry.id} style={{
-                  background: '#121212',
-                  padding: '10px',
-                  marginBottom: '10px',
-                  borderRadius: '4px',
-                  borderLeft: '3px solid #00f0ff'
-                }}>
-                  <div style={{ color: '#00f0ff', fontWeight: 'bold' }}>{entry.id}. {entry.url}</div>
-                  <div style={{ color: '#e0e0e0', fontSize: '12px' }}>Owner: {entry.owner}</div>
-                  <div style={{ color: '#FFC107' }}>Tokens: {entry.tokensMined}/{entry.initialTokenCount} ({entry.tokensRemaining} remaining)</div>
-                  <div style={{ color: '#9C27B0' }}>Token: {entry.tokenAddress}</div>
-                  <div style={{ color: '#607D8B' }}>Archived: {entry.dateArchived}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {this.state.activeTab === 'tokens' && (
-          <div>
-            <h3 style={{ color: '#00f0ff', marginBottom: '15px' }}>TOKEN MANAGEMENT</h3>
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
-              <button
-                onClick={() => this.showAddTokenGUI()}
-                style={{
-                  background: 'linear-gradient(45deg, #4CAF50 30%, #8BC34A 90%)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                ADD TOKEN
-              </button>
-              <button
-                onClick={() => this.showRemoveTokenGUI()}
-                style={{
-                  background: 'linear-gradient(45deg, #F44336 30%, #FF5722 90%)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                REMOVE TOKEN
-              </button>
-              <button
-                onClick={() => this.showDepositTokensGUI()}
-                style={{
-                  background: 'linear-gradient(45deg, #2196F3 30%, #03A9F4 90%)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                DEPOSIT
-              </button>
-              <button
-                onClick={() => this.showRewardUserGUI()}
-                style={{
-                  background: 'linear-gradient(45deg, #9C27B0 30%, #673AB7 90%)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                REWARD USER
-              </button>
-              <button
-                onClick={() => this.showSetFlipTokenGUI()}
-                style={{
-                  background: 'linear-gradient(45deg, #FF9800 30%, #FFC107 90%)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                SET FLIP TOKEN
-              </button>
-              <button
-                onClick={() => this.showSetExchangeRateGUI()}
-                style={{
-                  background: 'linear-gradient(45deg, #00BCD4 30%, #009688 90%)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                SET EXCHANGE RATE
-              </button>
-              <button
-                onClick={() => this.showExchangeTokensGUI()}
-                style={{
-                  background: 'linear-gradient(45deg, #607D8B 30%, #455A64 90%)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                EXCHANGE TOKENS
-              </button>
-            </div>
-            <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
-              {this.state.tokenBalances.map((token, index) => (
-                <div key={index} style={{
-                  background: '#121212',
-                  padding: '10px',
-                  marginBottom: '10px',
-                  borderRadius: '4px',
-                  borderLeft: '3px solid #00f0ff'
-                }}>
-                  <div style={{ color: '#00f0ff', fontWeight: 'bold' }}>{token.name}</div>
-                  <div style={{ color: '#e0e0e0', fontSize: '12px' }}>{token.tokenAddress}</div>
-                  <div style={{ color: '#FFC107' }}>Balance: {ethers.utils.formatEther(token.balance)}</div>
-                  {this.state.flipToken && this.state.flipToken.address === token.tokenAddress && (
-                    <div style={{ color: '#4CAF50' }}>FLIP Token</div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {this.state.activeTab === 'badges' && (
-          <div>
-            <h3 style={{ color: '#00f0ff', marginBottom: '15px' }}>BADGE SYSTEM</h3>
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
-              <button
-                onClick={() => this.showAddBadgeLevelGUI()}
-                style={{
-                  background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '12px 24px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  boxShadow: '0 3px 15px 2px rgba(255, 105, 135, 0.5)'
-                }}
-              >
-                ADD BADGE LEVEL
-              </button>
-              <button
-                onClick={() => this.showUserStatsGUI()}
-                style={{
-                  background: 'linear-gradient(45deg, #2196F3 30%, #03A9F4 90%)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '12px 24px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  boxShadow: '0 3px 15px 2px rgba(33, 150, 243, 0.5)'
-                }}
-              >
-                GET USER STATS
-              </button>
-            </div>
-            <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
-              {this.state.badgeLevels.length > 0 ? (
-                this.state.badgeLevels.map((level, index) => (
-                  <div key={index} style={{
-                    background: '#121212',
-                    padding: '10px',
-                    marginBottom: '10px',
-                    borderRadius: '4px',
-                    borderLeft: '3px solid #00f0ff'
-                  }}>
-                    <div style={{ color: '#00f0ff', fontWeight: 'bold' }}>{level.name}</div>
-                    <div style={{ color: '#FFC107' }}>Threshold: {level.threshold} tokens</div>
-                  </div>
-                ))
-              ) : (
-                <div style={{ color: '#e0e0e0', textAlign: 'center', padding: '20px' }}>
-                  No badge levels defined
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {this.state.activeTab === 'admin' && (
-          <div>
-            <h3 style={{ color: '#00f0ff', marginBottom: '15px' }}>ADMIN FUNCTIONS</h3>
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
-              <button
-                onClick={() => this.showTransferOwnershipGUI()}
-                style={{
-                  background: 'linear-gradient(45deg, #F44336 30%, #D32F2F 90%)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '12px 24px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  boxShadow: '0 3px 15px 2px rgba(244, 67, 54, 0.5)'
-                }}
-              >
-                TRANSFER OWNERSHIP
-              </button>
-            </div>
-            <div style={{ color: '#e0e0e0', padding: '10px', background: '#121212', borderRadius: '4px' }}>
-              <div style={{ color: '#00f0ff', fontWeight: 'bold' }}>Current Owner</div>
-              <div>{this.state.account || 'Not connected'}</div>
-            </div>
-          </div>
-        )}
-      </div>
     );
-  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
   render() {
     const welcomeMsg = `
