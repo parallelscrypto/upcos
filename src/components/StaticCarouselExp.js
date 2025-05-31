@@ -120,6 +120,12 @@ export default class StaticCarouselExp extends Component {
     var bgValue;
     var aiValue;
     var hddValue = "https://app.ardrive.io/#/drives/8324c70e-a3c4-4dc5-b42c-1691464daef7?name=africans_unite_worldwide"; //default hdd
+    var archiveValue;
+    var pac0Value;
+    var pac1Value;
+    var pac2Value;
+    var pac3Value;
+
     const publicPacs = [];
     for (const line of lines) {
         const match = line.match(/\b\w+ pac (\d+)$/);
@@ -153,7 +159,100 @@ export default class StaticCarouselExp extends Component {
                 // Or store it: const bgUrl = bgValue;
             }
         }
+        if (line.includes("config.archive")) {
+            const equalPos = line.indexOf('=');
+            if (equalPos !== -1) {
+                archiveValue = line.substr(equalPos + 1).trim();
+                // Now you can use bgValue (the URL)
+                console.log("AI URL:", bgValue);
+                // Or store it: const bgUrl = bgValue;
+            }
+        }
+        if (line.includes("config.pac0")) {
+            const equalPos = line.indexOf('=');
+            if (equalPos !== -1) {
+                pac0Value = line.substr(equalPos + 1).trim();
+                // Now you can use bgValue (the URL)
+                console.log("AI URL:", bgValue);
+                // Or store it: const bgUrl = bgValue;
+            }
+        }
 
+        var pac0 = "config.pac0.yummy=https://gifer.com";
+        //if (line.includes("config.pac0.")) {
+        if (pac0.includes("config.pac0.")) {
+            const equalPos = line.indexOf('=');
+            if (equalPos !== -1) {
+                // Extract the command name (e.g., "yummy" from "config.pac0.yummy")
+                const startPos = line.indexOf("config.pac0.") + "config.pac0.".length;
+                const commandName = line.substring(startPos, equalPos).trim();
+                const url = line.substr(equalPos + 1).trim();
+                
+                this.setState(prevState => ({
+                    pac0: {
+                        ...prevState.pac0,
+                        [commandName]: url
+                    }
+                }));
+            }
+        }
+
+        // For pac1
+        var pac1 = "config.pac1.pizza=https://gifer.com/pac1";
+        //if (line.includes("config.pac1.")) {
+        if (pac1.includes("config.pac1.")) {
+            const equalPos = line.indexOf('=');
+            if (equalPos !== -1) {
+                const startPos = line.indexOf("config.pac1.") + "config.pac1.".length;
+                const commandName = line.substring(startPos, equalPos).trim();
+                const url = line.substr(equalPos + 1).trim();
+                
+                this.setState(prevState => ({
+                    pac1: {
+                        ...prevState.pac1,
+                        [commandName]: url
+                    }
+                }));
+            }
+        }
+
+        // For pac2
+        var pac2 = "config.pac2.third=https://gifer.com/pac2";
+        //if (line.includes("config.pac2.")) {
+        if (pac2.includes("config.pac2.")) {
+            const equalPos = line.indexOf('=');
+            if (equalPos !== -1) {
+                const startPos = line.indexOf("config.pac2.") + "config.pac2.".length;
+                const commandName = line.substring(startPos, equalPos).trim();
+                const url = line.substr(equalPos + 1).trim();
+                
+                this.setState(prevState => ({
+                    pac2: {
+                        ...prevState.pac2,
+                        [commandName]: url
+                    }
+                }));
+            }
+        }
+
+        // For pac3
+        var pac3 = "config.pac3.4pac=https://gifer.com/pac3";
+        //if (line.includes("config.pac3.")) {
+        if (pac3.includes("config.pac3.")) {
+            const equalPos = line.indexOf('=');
+            if (equalPos !== -1) {
+                const startPos = line.indexOf("config.pac3.") + "config.pac3.".length;
+                const commandName = line.substring(startPos, equalPos).trim();
+                const url = line.substr(equalPos + 1).trim();
+                
+                this.setState(prevState => ({
+                    pac3: {
+                        ...prevState.pac3,
+                        [commandName]: url
+                    }
+                }));
+            }
+        }
 
     }
 
@@ -242,26 +341,7 @@ export default class StaticCarouselExp extends Component {
 
 
 
-    this.progressTerminal = React.createRef()
-    var promptlabel =  '[[ AWAITING COMMAND@ ]] => ';
-    var welcomeMsg ="\n[[ \n you are now on upcOS privately owned property owned by \n " + owner + "\n on {polygon} \n";
-    welcomeMsg += "\n Type `d` to see the disclaimer.  By continuing use, you agree to the disclaimer";
-    welcomeMsg += "\n Welcome to @_" + upc + "\n]]";
-    var popArgs = [];
-
-    var myTerm = <Terminal
-      style={{
-           minHeight:"75vh",
-           backgroundColor: "#000",
-           zIndex:"0",
-           wordBreak:"break-word",
-           backgroundImage: `url('${bgValue}')`,  // Fixed: using backticks for template literal
-           backgroundSize: "cover",
-           backgroundPosition: "center",
-           backgroundRepeat: "no-repeat",
-      }}
-      ref={this.progressTerminal}
-      commands={{
+    var baseCommands = {
 
             d: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** View the disclaimer.</p>',
@@ -2122,7 +2202,36 @@ console.log(popArgs);
       	      this.search()
             }
           },
-        }}
+        }
+
+
+
+    var allCommands = baseCommands;
+ 
+    allCommands = this.generateDynamicCommands();
+    console.log("ALLLLLLLLLLLLL COMMMMMMMANDSSSSSSSSSSS");
+    console.log(allCommands);
+
+    this.progressTerminal = React.createRef()
+    var promptlabel =  '[[ AWAITING COMMAND@ ]] => ';
+    var welcomeMsg ="\n[[ \n you are now on upcOS privately owned property owned by \n " + owner + "\n on {polygon} \n";
+    welcomeMsg += "\n Type `d` to see the disclaimer.  By continuing use, you agree to the disclaimer";
+    welcomeMsg += "\n Welcome to @_" + upc + "\n]]";
+    var popArgs = [];
+
+    var myTerm = <Terminal
+      style={{
+           minHeight:"75vh",
+           backgroundColor: "#000",
+           zIndex:"0",
+           wordBreak:"break-word",
+           backgroundImage: `url('${bgValue}')`,  // Fixed: using backticks for template literal
+           backgroundSize: "cover",
+           backgroundPosition: "center",
+           backgroundRepeat: "no-repeat",
+      }}
+      ref={this.progressTerminal}
+      commands={allCommands}
       welcomeMessage={welcomeMsg}
       promptLabel={promptlabel}
       dangerMode={true}
@@ -2166,7 +2275,14 @@ console.log(popArgs);
        configUrl: configUrl,
        publicPacs: publicPacs,
        hdd: hddValue,
-       ai:  aiValue
+       ai:  aiValue,
+       archive: archiveValue,
+       // Initialize pac slots as empty objects
+       pac0: {},
+       pac1: {},
+       pac2: {},
+       pac3: {},
+       pac4: {}
     }
 
 
@@ -2185,7 +2301,54 @@ console.log(popArgs);
     this.firstLookup= this.firstLookup.bind(this);
     this.resolvePPL= this.resolvePPL.bind(this);
     this.dynamicPPL= this.dynamicPPL.bind(this);
+    this.generateDynamicCommands= this.generateDynamicCommands.bind(this);
   }
+
+
+
+    generateDynamicCommands() {
+      const commands = {};
+      
+      // Process each pac slot (0-4)
+      for (let i = 0; i <= 4; i++) {
+        const pacSlot = this.state[`pac${i}`];
+        if (pacSlot && typeof pacSlot === 'object') {
+          Object.entries(pacSlot).forEach(([commandName, url]) => {
+            // Only add command if URL is valid
+            if (url && typeof url === 'string' && url.startsWith('http')) {
+              commands[commandName] = {
+                description: `<p style="color:hotpink;font-size:1.1em">** Open ${commandName}</p>`,
+                fn: async (...args) => {
+                  // Clear search inputs if they exist
+                  if (this.cSearch) this.cSearch.value = "";
+                  if (this.cSearch3) this.cSearch3.value = args.join(" ");
+                  
+                  // Build URL with query parameters if provided
+                  const queryParams = args.map((arg, i) => 
+                    `${i}=${encodeURIComponent(arg)}`
+                  ).join('&');
+                  
+                  const fullUrl = queryParams ? `${url}?${queryParams}` : url;
+                  
+                  // Open in window
+                  const mplayer = this.getMplayer(fullUrl);
+                  this.setState({
+                    fullIpfs3: mplayer,
+                    pipVisibility3: "true",
+                    pipDisplay3: "block",
+                    showBigShow3: true
+                  });
+                }
+              };
+            }
+          });
+        }
+      }
+      
+      return commands;
+    }
+
+
 
 
   handleFlip(e) {
