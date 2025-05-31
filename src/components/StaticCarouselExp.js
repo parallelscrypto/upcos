@@ -193,74 +193,89 @@ export default class StaticCarouselExp extends Component {
             }
         }
 
-
-
-        this.state = { 
-          pac0: pac0Value,
-        };
-
-
-       var allCommands = this.generateDynamicCommands();
-
-
-
+       var pac0Command = this.generateDynamicCommands(0);
 
         // For pac1
         var pac1 = "config.pac1.pizza=https://gifer.com/pac1";
         //if (line.includes("config.pac1.")) {
         if (pac1.includes("config.pac1.")) {
-            const equalPos = line.indexOf('=');
+            const equalPos = pac1.indexOf('=');
             if (equalPos !== -1) {
-                const startPos = line.indexOf("config.pac1.") + "config.pac1.".length;
-                const commandName = line.substring(startPos, equalPos).trim();
-                const url = line.substr(equalPos + 1).trim();
+                // Extract the command name (e.g., "yummy" from "config.pac0.yummy")
+                const startPos = pac1.indexOf("pac1.") + 5; // +5 to skip "pac0."
+                const commandName = pac1.substring(startPos, equalPos).trim();
+                const url = pac1.substr(equalPos + 1).trim();
                 
-                this.setState(prevState => ({
-                    pac1: {
-                        ...prevState.pac1,
-                        [commandName]: url
-                    }
-                }));
+                var pac1Value = {
+                    [commandName]: url
+                };
+                
+                console.log("PAC0 VALUE IS =============");
+                console.log(pac1Value);
+                
+                this.state = { 
+                    pac1: pac1Value,
+                };
             }
         }
 
+
+
+       var pac1Command = this.generateDynamicCommands(1);
+
+
         // For pac2
         var pac2 = "config.pac2.third=https://gifer.com/pac2";
-        //if (line.includes("config.pac2.")) {
+        //if (line.includes("config.pac1.")) {
         if (pac2.includes("config.pac2.")) {
-            const equalPos = line.indexOf('=');
+            const equalPos = pac2.indexOf('=');
             if (equalPos !== -1) {
-                const startPos = line.indexOf("config.pac2.") + "config.pac2.".length;
-                const commandName = line.substring(startPos, equalPos).trim();
-                const url = line.substr(equalPos + 1).trim();
+                // Extract the command name (e.g., "yummy" from "config.pac0.yummy")
+                const startPos = pac2.indexOf("pac2.") + 5; // +5 to skip "pac0."
+                const commandName = pac2.substring(startPos, equalPos).trim();
+                const url = pac2.substr(equalPos + 1).trim();
                 
-                this.setState(prevState => ({
-                    pac2: {
-                        ...prevState.pac2,
-                        [commandName]: url
-                    }
-                }));
+                var pac2Value = {
+                    [commandName]: url
+                };
+                
+                console.log("PAC0 VALUE IS =============");
+                console.log(pac2Value);
+                
+                this.state = { 
+                    pac2: pac2Value,
+                };
             }
         }
+
+       var pac2Command = this.generateDynamicCommands(2);
+
 
         // For pac3
         var pac3 = "config.pac3.4pac=https://gifer.com/pac3";
         //if (line.includes("config.pac3.")) {
         if (pac3.includes("config.pac3.")) {
-            const equalPos = line.indexOf('=');
+            const equalPos = pac3.indexOf('=');
             if (equalPos !== -1) {
-                const startPos = line.indexOf("config.pac3.") + "config.pac3.".length;
-                const commandName = line.substring(startPos, equalPos).trim();
-                const url = line.substr(equalPos + 1).trim();
+                // Extract the command name (e.g., "yummy" from "config.pac0.yummy")
+                const startPos = pac3.indexOf("pac3.") + 5; // +5 to skip "pac0."
+                const commandName = pac3.substring(startPos, equalPos).trim();
+                const url = pac3.substr(equalPos + 1).trim();
                 
-                this.setState(prevState => ({
-                    pac3: {
-                        ...prevState.pac3,
-                        [commandName]: url
-                    }
-                }));
+                var pac3Value = {
+                    [commandName]: url
+                };
+                
+                console.log("PAC0 VALUE IS =============");
+                console.log(pac3Value);
+                
+                this.state = { 
+                    pac3: pac3Value,
+                };
             }
         }
+
+       var pac3Command = this.generateDynamicCommands(3);
 
     }
 
@@ -2200,7 +2215,19 @@ console.log(popArgs);
 
     //var allCommands = baseCommands;
  
-    //allCommands = this.generateDynamicCommands();
+    var allCommands = {};
+
+    // Safely merge each command object
+    [pac0Command, pac1Command, pac2Command, pac3Command].forEach(cmdObj => {
+      if (cmdObj && typeof cmdObj === 'object') {
+        allCommands = {
+          ...allCommands,
+          ...cmdObj
+        };
+      }
+    });
+
+
     console.log("ALLLLLLLLLLLLL COMMMMMMMANDSSSSSSSSSSS");
     console.log(allCommands);
 
@@ -2271,7 +2298,7 @@ console.log(popArgs);
        archive: archiveValue,
        // Initialize pac slots as empty objects
        pac0: pac0Value,
-       pac1: {},
+       pac1: pac1Value,
        pac2: {},
        pac3: {},
        pac4: {}
@@ -2298,46 +2325,49 @@ console.log(popArgs);
 
 
 
-    generateDynamicCommands() {
+    generateDynamicCommands(slotNumber) {
       const commands = {};
-      console.log("in dynamic")
-      // Process each pac slot (0-4)
-      for (let i = 0; i <= 4; i++) {
-        const pacSlot = this.state[`pac${i}`];
-        if (pacSlot && typeof pacSlot === 'object') {
-      console.log("is object")
-      console.log(this.state[`pac${i}`])
+      console.log(`Generating commands for pac${slotNumber}`);
+      
+      // Validate slot number
+      if (slotNumber < 0 || slotNumber > 3) {
+        console.error("Invalid slot number. Must be between 0-3");
+        return commands;
+      }
 
-          Object.entries(pacSlot).forEach(([commandName, url]) => {
-            // Only add command if URL is valid
-            if (url && typeof url === 'string' && url.startsWith('http')) {
-              commands[commandName] = {
-                description: `<p style="color:hotpink;font-size:1.1em">** Open ${commandName}</p>`,
-                fn: async (...args) => {
-                  // Clear search inputs if they exist
-                  if (this.cSearch) this.cSearch.value = "";
-                  if (this.cSearch3) this.cSearch3.value = args.join(" ");
-                  
-                  // Build URL with query parameters if provided
-                  const queryParams = args.map((arg, i) => 
-                    `${i}=${encodeURIComponent(arg)}`
-                  ).join('&');
-                  
-                  const fullUrl = queryParams ? `${url}?${queryParams}` : url;
-                  
-                  // Open in window
-                  const mplayer = this.getMplayer(fullUrl);
-                  this.setState({
-                    fullIpfs3: mplayer,
-                    pipVisibility3: "true",
-                    pipDisplay3: "block",
-                    showBigShow3: true
-                  });
-                }
-              };
-            }
-          });
-        }
+      const pacSlot = this.state[`pac${slotNumber}`];
+      console.log(`pac${slotNumber} content:`, pacSlot);
+
+      if (pacSlot && typeof pacSlot === 'object') {
+        Object.entries(pacSlot).forEach(([commandName, url]) => {
+          // Only add command if URL is valid
+          if (url && typeof url === 'string' && url.startsWith('http')) {
+            commands[commandName] = {
+              description: `<p style="color:hotpink;font-size:1.1em">** Open ${commandName}</p>`,
+              fn: async (...args) => {
+                // Clear search inputs if they exist
+                if (this.cSearch) this.cSearch.value = "";
+                if (this.cSearch3) this.cSearch3.value = args.join(" ");
+                
+                // Build URL with query parameters if provided
+                const queryParams = args.map((arg, i) => 
+                  `${i}=${encodeURIComponent(arg)}`
+                ).join('&');
+                
+                const fullUrl = queryParams ? `${url}?${queryParams}` : url;
+                
+                // Open in window
+                const mplayer = this.getMplayer(fullUrl);
+                this.setState({
+                  fullIpfs3: mplayer,
+                  pipVisibility3: "true",
+                  pipDisplay3: "block",
+                  showBigShow3: true
+                });
+              }
+            };
+          }
+        });
       }
       
       return commands;
