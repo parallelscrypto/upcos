@@ -128,9 +128,9 @@ export default class StaticCarouselExp extends Component {
 
     const publicPacs = [];
     for (const line of lines) {
-        const match = line.match(/\b\w+ pac (\d+)$/);
-        if (match) {
-            publicPacs.push(parseInt(match[1], 10));
+        const matchPac = line.match(/\b\w+ pac (\d+)$/);
+        if (matchPac) {
+            publicPacs.push(parseInt(matchPac[1], 10));
         }
         if (line.includes("config.bg")) {
             const equalPos = line.indexOf('=');
@@ -168,34 +168,42 @@ export default class StaticCarouselExp extends Component {
                 // Or store it: const bgUrl = bgValue;
             }
         }
-        if (line.includes("config.pac0")) {
-            const equalPos = line.indexOf('=');
+
+
+        var pac0 = "config.pac0.yummy=https://gifer.com";
+
+        if (pac0.includes("config.pac0.")) {
+            const equalPos = pac0.indexOf('=');
             if (equalPos !== -1) {
-                pac0Value = line.substr(equalPos + 1).trim();
-                // Now you can use bgValue (the URL)
-                console.log("AI URL:", bgValue);
-                // Or store it: const bgUrl = bgValue;
+                // Extract the command name (e.g., "yummy" from "config.pac0.yummy")
+                const startPos = pac0.indexOf("pac0.") + 5; // +5 to skip "pac0."
+                const commandName = pac0.substring(startPos, equalPos).trim();
+                const url = pac0.substr(equalPos + 1).trim();
+                
+                var pac0Value = {
+                    [commandName]: url
+                };
+                
+                console.log("PAC0 VALUE IS =============");
+                console.log(pac0Value);
+                
+                this.state = { 
+                    pac0: pac0Value,
+                };
             }
         }
 
-        var pac0 = "config.pac0.yummy=https://gifer.com";
-        //if (line.includes("config.pac0.")) {
-        if (pac0.includes("config.pac0.")) {
-            const equalPos = line.indexOf('=');
-            if (equalPos !== -1) {
-                // Extract the command name (e.g., "yummy" from "config.pac0.yummy")
-                const startPos = line.indexOf("config.pac0.") + "config.pac0.".length;
-                const commandName = line.substring(startPos, equalPos).trim();
-                const url = line.substr(equalPos + 1).trim();
-                
-                this.setState(prevState => ({
-                    pac0: {
-                        ...prevState.pac0,
-                        [commandName]: url
-                    }
-                }));
-            }
-        }
+
+
+        this.state = { 
+          pac0: pac0Value,
+        };
+
+
+       var allCommands = this.generateDynamicCommands();
+
+
+
 
         // For pac1
         var pac1 = "config.pac1.pizza=https://gifer.com/pac1";
@@ -323,22 +331,6 @@ export default class StaticCarouselExp extends Component {
 
     var owner = scan[1];
     //this.setState({owner: owner});
-    
-    this.state = { 
-      owner: owner,
-      assist: assist,
-      upc: upc,
-      pwd: upc,
-      payload: payload,
-      showModalExport: false,
-      scan: scan,
-      msg: props.msg,
-      upcscript: msg,
-      background: bgValue,
-      hdd: hddValue,
-      ai:  aiValue
-    };
-
 
 
     var baseCommands = {
@@ -2206,9 +2198,9 @@ console.log(popArgs);
 
 
 
-    var allCommands = baseCommands;
+    //var allCommands = baseCommands;
  
-    allCommands = this.generateDynamicCommands();
+    //allCommands = this.generateDynamicCommands();
     console.log("ALLLLLLLLLLLLL COMMMMMMMANDSSSSSSSSSSS");
     console.log(allCommands);
 
@@ -2278,7 +2270,7 @@ console.log(popArgs);
        ai:  aiValue,
        archive: archiveValue,
        // Initialize pac slots as empty objects
-       pac0: {},
+       pac0: pac0Value,
        pac1: {},
        pac2: {},
        pac3: {},
@@ -2308,11 +2300,14 @@ console.log(popArgs);
 
     generateDynamicCommands() {
       const commands = {};
-      
+      console.log("in dynamic")
       // Process each pac slot (0-4)
       for (let i = 0; i <= 4; i++) {
         const pacSlot = this.state[`pac${i}`];
         if (pacSlot && typeof pacSlot === 'object') {
+      console.log("is object")
+      console.log(this.state[`pac${i}`])
+
           Object.entries(pacSlot).forEach(([commandName, url]) => {
             // Only add command if URL is valid
             if (url && typeof url === 'string' && url.startsWith('http')) {
