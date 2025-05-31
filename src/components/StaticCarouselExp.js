@@ -125,6 +125,10 @@ export default class StaticCarouselExp extends Component {
     var pac1Value;
     var pac2Value;
     var pac3Value;
+    var pac0Command;
+    var pac1Command;
+    var pac2Command;
+    var pac3Command;
 
     const publicPacs = [];
     for (const line of lines) {
@@ -170,15 +174,15 @@ export default class StaticCarouselExp extends Component {
         }
 
 
-        var pac0 = "config.pac0.yummy=https://gifer.com";
+        //var pac0 = "config.pac0.yummy=https://gifer.com";
 
-        if (pac0.includes("config.pac0.")) {
-            const equalPos = pac0.indexOf('=');
+        if (line.includes("config.pac0.")) {
+            const equalPos = line.indexOf('=');
             if (equalPos !== -1) {
                 // Extract the command name (e.g., "yummy" from "config.pac0.yummy")
-                const startPos = pac0.indexOf("pac0.") + 5; // +5 to skip "pac0."
-                const commandName = pac0.substring(startPos, equalPos).trim();
-                const url = pac0.substr(equalPos + 1).trim();
+                const startPos = line.indexOf("pac0.") + 5; // +5 to skip "pac0."
+                const commandName = line.substring(startPos, equalPos).trim();
+                const url = line.substr(equalPos + 1).trim();
                 
                 var pac0Value = {
                     [commandName]: url
@@ -191,20 +195,21 @@ export default class StaticCarouselExp extends Component {
                     pac0: pac0Value,
                 };
             }
+            pac0Command = this.generateDynamicCommands(0);
         }
 
-       var pac0Command = this.generateDynamicCommands(0);
+
 
         // For pac1
-        var pac1 = "config.pac1.pizza=https://gifer.com/pac1";
+        //var pac1 = "config.pac1.pizza=https://gifer.com/pac1";
         //if (line.includes("config.pac1.")) {
-        if (pac1.includes("config.pac1.")) {
-            const equalPos = pac1.indexOf('=');
+        if (line.includes("config.pac1.")) {
+            const equalPos = line.indexOf('=');
             if (equalPos !== -1) {
                 // Extract the command name (e.g., "yummy" from "config.pac0.yummy")
-                const startPos = pac1.indexOf("pac1.") + 5; // +5 to skip "pac0."
-                const commandName = pac1.substring(startPos, equalPos).trim();
-                const url = pac1.substr(equalPos + 1).trim();
+                const startPos = line.indexOf("pac1.") + 5; // +5 to skip "pac0."
+                const commandName = line.substring(startPos, equalPos).trim();
+                const url = line.substr(equalPos + 1).trim();
                 
                 var pac1Value = {
                     [commandName]: url
@@ -217,23 +222,24 @@ export default class StaticCarouselExp extends Component {
                     pac1: pac1Value,
                 };
             }
+            pac1Command = this.generateDynamicCommands(1);
         }
 
 
 
-       var pac1Command = this.generateDynamicCommands(1);
+
 
 
         // For pac2
-        var pac2 = "config.pac2.third=https://gifer.com/pac2";
+        //var pac2 = "config.pac2.third=https://gifer.com/pac2";
         //if (line.includes("config.pac1.")) {
-        if (pac2.includes("config.pac2.")) {
-            const equalPos = pac2.indexOf('=');
+        if (line.includes("config.pac2.")) {
+            const equalPos = line.indexOf('=');
             if (equalPos !== -1) {
                 // Extract the command name (e.g., "yummy" from "config.pac0.yummy")
-                const startPos = pac2.indexOf("pac2.") + 5; // +5 to skip "pac0."
-                const commandName = pac2.substring(startPos, equalPos).trim();
-                const url = pac2.substr(equalPos + 1).trim();
+                const startPos = line.indexOf("pac2.") + 5; // +5 to skip "pac0."
+                const commandName = line.substring(startPos, equalPos).trim();
+                const url = line.substr(equalPos + 1).trim();
                 
                 var pac2Value = {
                     [commandName]: url
@@ -246,21 +252,22 @@ export default class StaticCarouselExp extends Component {
                     pac2: pac2Value,
                 };
             }
+            pac2Command = this.generateDynamicCommands(2);
         }
 
-       var pac2Command = this.generateDynamicCommands(2);
+
 
 
         // For pac3
-        var pac3 = "config.pac3.4pac=https://gifer.com/pac3";
+        //var pac3 = "config.pac3.4pac=https://gifer.com/pac3";
         //if (line.includes("config.pac3.")) {
-        if (pac3.includes("config.pac3.")) {
-            const equalPos = pac3.indexOf('=');
+        if (line.includes("config.pac3.")) {
+            const equalPos = line.indexOf('=');
             if (equalPos !== -1) {
                 // Extract the command name (e.g., "yummy" from "config.pac0.yummy")
-                const startPos = pac3.indexOf("pac3.") + 5; // +5 to skip "pac0."
-                const commandName = pac3.substring(startPos, equalPos).trim();
-                const url = pac3.substr(equalPos + 1).trim();
+                const startPos = line.indexOf("pac3.") + 5; // +5 to skip "pac0."
+                const commandName = line.substring(startPos, equalPos).trim();
+                const url = line.substr(equalPos + 1).trim();
                 
                 var pac3Value = {
                     [commandName]: url
@@ -273,9 +280,10 @@ export default class StaticCarouselExp extends Component {
                     pac3: pac3Value,
                 };
             }
+            pac3Command = this.generateDynamicCommands(3);
         }
 
-       var pac3Command = this.generateDynamicCommands(3);
+
 
     }
 
@@ -2213,19 +2221,20 @@ console.log(popArgs);
 
 
 
-    //var allCommands = baseCommands;
- 
-    var allCommands = {};
 
-    // Safely merge each command object
+    // 2. Initialize allCommands with baseCommands
+    let allCommands = {...baseCommands};
+
+    // 3. Merge dynamic pac commands
     [pac0Command, pac1Command, pac2Command, pac3Command].forEach(cmdObj => {
       if (cmdObj && typeof cmdObj === 'object') {
         allCommands = {
-          ...allCommands,
-          ...cmdObj
+          ...allCommands,    // Keep existing commands
+          ...cmdObj          // Add new commands
         };
       }
     });
+
 
 
     console.log("ALLLLLLLLLLLLL COMMMMMMMANDSSSSSSSSSSS");
@@ -2299,9 +2308,9 @@ console.log(popArgs);
        // Initialize pac slots as empty objects
        pac0: pac0Value,
        pac1: pac1Value,
-       pac2: {},
-       pac3: {},
-       pac4: {}
+       pac2: pac2Value,
+       pac3: pac3Value,
+
     }
 
 
