@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "./RawMaterial.sol" as UPCContract;
 
 contract MLBBetting {
@@ -95,8 +96,6 @@ contract MLBBetting {
     mapping(MLBTeam => uint256[]) public teamToMatchups;
     mapping(uint256 => Reward[]) public matchupRewards;
     mapping(uint256 => uint256[]) public dayToMatchups;
-    
-    // New mappings for user wager tracking
     mapping(address => uint256[]) public userWagers;
     mapping(address => uint256[]) public userWonWagers;
     mapping(address => uint256[]) public userLostWagers;
@@ -152,29 +151,6 @@ contract MLBBetting {
         userWagers[user].push(wagerId);
     }
 
-    function addAdmin(address _admin) external onlyOwner {
-        require(_admin != address(0), "Invalid address");
-        require(!admins[_admin], "Already admin");
-        admins[_admin] = true;
-        emit AdminAdded(_admin);
-    }
-
-    function removeAdmin(address _admin) external onlyOwner {
-        require(_admin != owner, "Cannot remove owner");
-        require(admins[_admin], "Not an admin");
-        admins[_admin] = false;
-        emit AdminRemoved(_admin);
-    }
-
-    function transferOwnership(address newOwner) external onlyOwner {
-        require(newOwner != address(0), "Invalid address");
-        require(newOwner != owner, "Already owner");
-        admins[owner] = false;
-        emit OwnershipTransferred(owner, newOwner);
-        owner = newOwner;
-        admins[newOwner] = true;
-    }
-
     function _initializeTeamNames() private {
         teamNames[MLBTeam.ARIZONA_DIAMONDBACKS] = "Arizona Diamondbacks";
         teamNames[MLBTeam.ATLANTA_BRAVES] = "Atlanta Braves";
@@ -206,6 +182,29 @@ contract MLBBetting {
         teamNames[MLBTeam.TEXAS_RANGERS] = "Texas Rangers";
         teamNames[MLBTeam.TORONTO_BLUE_JAYS] = "Toronto Blue Jays";
         teamNames[MLBTeam.WASHINGTON_NATIONALS] = "Washington Nationals";
+    }
+
+    function addAdmin(address _admin) external onlyOwner {
+        require(_admin != address(0), "Invalid address");
+        require(!admins[_admin], "Already admin");
+        admins[_admin] = true;
+        emit AdminAdded(_admin);
+    }
+
+    function removeAdmin(address _admin) external onlyOwner {
+        require(_admin != owner, "Cannot remove owner");
+        require(admins[_admin], "Not an admin");
+        admins[_admin] = false;
+        emit AdminRemoved(_admin);
+    }
+
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "Invalid address");
+        require(newOwner != owner, "Already owner");
+        admins[owner] = false;
+        emit OwnershipTransferred(owner, newOwner);
+        owner = newOwner;
+        admins[newOwner] = true;
     }
 
     function addMatchup(MLBTeam _homeTeam, MLBTeam _awayTeam, uint256 _gameDay) external onlyOwnerOrAdmin {
@@ -354,7 +353,14 @@ contract MLBBetting {
             totalContestantAmount += wager.contestants[i].amount;
         }
         
-        require(totalContestantAmount + msg.value <= wager.wagerAmount, "Exceeds wager");
+        uint256 remainingCapacity = wager.wagerAmount - totalContestantAmount;
+        require(msg.value <= remainingCapacity, 
+            string(abi.encodePacked(
+                "Only ", 
+                Strings.toString(remainingCapacity), 
+                " MATIC remaining to bet"
+            ))
+        );
         
         wager.contestants[wager.contestantCount] = Contestant({
             user: msg.sender,
@@ -378,7 +384,7 @@ contract MLBBetting {
         bool initiatorWon = (wager.predictedWinner == actualWinner);
         
         if (initiatorWon) {
-            uint256 totalWinnings = 0;
+            uint256 totalWinnings = wager.wagerAmount;
             for (uint i = 0; i < wager.contestantCount; i++) {
                 totalWinnings += wager.contestants[i].amount;
                 if (wager.isDoubleInsured) {
@@ -389,20 +395,34 @@ contract MLBBetting {
             }
             payable(wager.initiator).transfer(totalWinnings);
             
-            // Track won/lost wagers
             userWonWagers[wager.initiator].push(_wagerId);
             for (uint i = 0; i < wager.contestantCount; i++) {
                 userLostWagers[wager.contestants[i].user].push(_wagerId);
             }
         } else {
-            uint256 totalContestantAmount = 0;
-            for (uint i = 0; i < wager.contestantCount; i++) {
-                totalContestantAmount += wager.contestants[i].amount;
-            }
+            uint256[] memory winnerIndices = new uint256[](wager.contestantCount);
+            uint256 winnerCount = 0;
             
             for (uint i = 0; i < wager.contestantCount; i++) {
-                uint256 share = (wager.contestants[i].amount * wager.wagerAmount) / totalContestantAmount;
-                payable(wager.contestants[i].user).transfer(share);
+                if (wager.contestants[i].predictedWinner == actualWinner) {
+                    winnerIndices[winnerCount] = i;
+                    winnerCount++;
+                }
+            }
+            
+            require(winnerCount > 0, "No winners");
+            
+            for (uint i = 0; i < winnerCount; i++) {
+                uint256 index = winnerIndices[i];
+                payable(wager.contestants[index].user).transfer(wager.contestants[index].amount);
+            }
+            
+            uint256 initiatorSharePerWinner = wager.wagerAmount / winnerCount;
+            uint256 remainder = wager.wagerAmount % winnerCount;
+            
+            for (uint i = 0; i < winnerCount; i++) {
+                uint256 payout = initiatorSharePerWinner + (i < remainder ? 1 : 0);
+                payable(wager.contestants[winnerIndices[i]].user).transfer(payout);
             }
             
             if (wager.isDoubleInsured) {
@@ -411,7 +431,6 @@ contract MLBBetting {
                 emit FlipTokensSent(wager.initiator, flipAmount);
             }
             
-            // Track won/lost wagers
             userLostWagers[wager.initiator].push(_wagerId);
             for (uint i = 0; i < wager.contestantCount; i++) {
                 if (wager.contestants[i].predictedWinner == actualWinner) {
@@ -423,6 +442,15 @@ contract MLBBetting {
         }
         
         wager.isSettled = true;
+    }
+
+    function getRemainingWagerCapacity(uint256 _wagerId) public view returns (uint256) {
+        Wager storage wager = wagers[_wagerId];
+        uint256 totalContestantAmount = 0;
+        for (uint i = 0; i < wager.contestantCount; i++) {
+            totalContestantAmount += wager.contestants[i].amount;
+        }
+        return wager.wagerAmount - totalContestantAmount;
     }
 
     function depositFlipTokens(uint256 amount) external {
@@ -510,7 +538,6 @@ contract MLBBetting {
         );
     }
 
-    // New functions for user wager tracking
     function getUserWagers(address user) external view returns (uint256[] memory) {
         return userWagers[user];
     }

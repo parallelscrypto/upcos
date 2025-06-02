@@ -2,6 +2,42 @@
   "contractName": "MLBBetting",
   "abi": [
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_admin",
+				"type": "address"
+			}
+		],
+		"name": "addAdmin",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "enum MLBBetting.MLBTeam",
+				"name": "_homeTeam",
+				"type": "uint8"
+			},
+			{
+				"internalType": "enum MLBBetting.MLBTeam",
+				"name": "_awayTeam",
+				"type": "uint8"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_gameDay",
+				"type": "uint256"
+			}
+		],
+		"name": "addMatchup",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
@@ -31,6 +67,19 @@
 		],
 		"name": "AdminRemoved",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_wagerId",
+				"type": "uint256"
+			}
+		],
+		"name": "claimReward",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -64,6 +113,47 @@
 		"type": "event"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_matchupId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "enum MLBBetting.MLBTeam",
+				"name": "_predictedWinner",
+				"type": "uint8"
+			},
+			{
+				"internalType": "bool",
+				"name": "_isDoubleInsured",
+				"type": "bool"
+			},
+			{
+				"internalType": "string",
+				"name": "_upcId",
+				"type": "string"
+			}
+		],
+		"name": "createWager",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "depositFlipTokens",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -81,6 +171,24 @@
 		],
 		"name": "FlipTokensSent",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_wagerId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "enum MLBBetting.MLBTeam",
+				"name": "_predictedWinner",
+				"type": "uint8"
+			}
+		],
+		"name": "joinWager",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -201,6 +309,34 @@
 		"type": "event"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_matchupId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "enum MLBBetting.MLBTeam",
+				"name": "_homeTeam",
+				"type": "uint8"
+			},
+			{
+				"internalType": "enum MLBBetting.MLBTeam",
+				"name": "_awayTeam",
+				"type": "uint8"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_gameDay",
+				"type": "uint256"
+			}
+		],
+		"name": "modifyMatchup",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -218,6 +354,19 @@
 		],
 		"name": "OwnershipTransferred",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_admin",
+				"type": "address"
+			}
+		],
+		"name": "removeAdmin",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -243,6 +392,83 @@
 		],
 		"name": "RewardClaimed",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_matchupId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "_isFinished",
+				"type": "bool"
+			}
+		],
+		"name": "setMatchupFinishedStatus",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newAddress",
+				"type": "address"
+			}
+		],
+		"name": "setUPCNFT",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_matchupId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_homeScore",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_awayScore",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_currentInning",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "_isFinished",
+				"type": "bool"
+			}
+		],
+		"name": "updateMatchup",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -294,89 +520,14 @@
 		"type": "event"
 	},
 	{
-		"inputs": [],
-		"name": "CLAIM_PERIOD",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "FLIP_TOKEN_ADDRESS",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "INSURANCE_FEE_PERCENT",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "LOSER_REWARD_PERCENT",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "_admin",
-				"type": "address"
-			}
-		],
-		"name": "addAdmin",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "enum MLBBetting.MLBTeam",
-				"name": "_homeTeam",
-				"type": "uint8"
-			},
-			{
-				"internalType": "enum MLBBetting.MLBTeam",
-				"name": "_awayTeam",
-				"type": "uint8"
-			},
-			{
 				"internalType": "uint256",
-				"name": "_gameDay",
+				"name": "amount",
 				"type": "uint256"
 			}
 		],
-		"name": "addMatchup",
+		"name": "withdrawFlipTokens",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -401,44 +552,16 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
+		"inputs": [],
+		"name": "CLAIM_PERIOD",
+		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "_wagerId",
+				"name": "",
 				"type": "uint256"
 			}
 		],
-		"name": "claimReward",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_matchupId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "enum MLBBetting.MLBTeam",
-				"name": "_predictedWinner",
-				"type": "uint8"
-			},
-			{
-				"internalType": "bool",
-				"name": "_isDoubleInsured",
-				"type": "bool"
-			},
-			{
-				"internalType": "string",
-				"name": "_upcId",
-				"type": "string"
-			}
-		],
-		"name": "createWager",
-		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -466,16 +589,16 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
+		"inputs": [],
+		"name": "FLIP_TOKEN_ADDRESS",
+		"outputs": [
 			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
+				"internalType": "address",
+				"name": "",
+				"type": "address"
 			}
 		],
-		"name": "depositFlipTokens",
-		"outputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -627,6 +750,25 @@
 				"internalType": "uint256[]",
 				"name": "",
 				"type": "uint256[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_wagerId",
+				"type": "uint256"
+			}
+		],
+		"name": "getRemainingWagerCapacity",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -787,25 +929,6 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "wagerId",
-				"type": "uint256"
-			}
-		],
-		"name": "getWagerStatus",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
 				"internalType": "string",
 				"name": "_upcId",
 				"type": "string"
@@ -826,18 +949,45 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "_wagerId",
+				"name": "wagerId",
 				"type": "uint256"
-			},
-			{
-				"internalType": "enum MLBBetting.MLBTeam",
-				"name": "_predictedWinner",
-				"type": "uint8"
 			}
 		],
-		"name": "joinWager",
-		"outputs": [],
-		"stateMutability": "payable",
+		"name": "getWagerStatus",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "INSURANCE_FEE_PERCENT",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "LOSER_REWARD_PERCENT",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -939,34 +1089,6 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_matchupId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "enum MLBBetting.MLBTeam",
-				"name": "_homeTeam",
-				"type": "uint8"
-			},
-			{
-				"internalType": "enum MLBBetting.MLBTeam",
-				"name": "_awayTeam",
-				"type": "uint8"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_gameDay",
-				"type": "uint256"
-			}
-		],
-		"name": "modifyMatchup",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "owner",
 		"outputs": [
@@ -977,50 +1099,6 @@
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_admin",
-				"type": "address"
-			}
-		],
-		"name": "removeAdmin",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_matchupId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "bool",
-				"name": "_isFinished",
-				"type": "bool"
-			}
-		],
-		"name": "setMatchupFinishedStatus",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newAddress",
-				"type": "address"
-			}
-		],
-		"name": "setUPCNFT",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -1067,19 +1145,6 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "upcNFT",
 		"outputs": [
@@ -1114,39 +1179,6 @@
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_matchupId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_homeScore",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_awayScore",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_currentInning",
-				"type": "uint256"
-			},
-			{
-				"internalType": "bool",
-				"name": "_isFinished",
-				"type": "bool"
-			}
-		],
-		"name": "updateMatchup",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -1283,19 +1315,6 @@
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "withdrawFlipTokens",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ],
@@ -18138,7 +18157,7 @@
     "137": {
       "events": {},
       "links": {},
-      "address": "0xf101cd859D219ab6f728512Fe44B6097B9491821",
+      "address": "0x15a9f29BcC7caabF7A21C67E02A6bCE96B07B868",
       "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
     }
   },
