@@ -442,7 +442,47 @@ export default class StaticCarouselExp extends Component {
               }
             },
 
-
+            guerilla: {
+              description: '<p style="color:hotpink;font-size:1.1em">** Open upc hacking interface in a modal </p>',
+              fn: () => {
+                // Get current URL and split it at the first slash after index.html#
+                const currentUrl = window.location.href;
+                
+                // Find the position of index.html#
+                const indexPos = currentUrl.indexOf('index.html#');
+                
+                if (indexPos === -1) {
+                  console.error("Could not find index.html# in URL");
+                  return;
+                }
+                
+                // Find the next slash after index.html#
+                const nextSlashPos = currentUrl.indexOf('/', indexPos + 10); // +10 to skip "index.html#"
+                
+                // Extract base URL (everything before the first slash after index.html#)
+                const baseUrl = nextSlashPos === -1 
+                  ? currentUrl 
+                  : currentUrl.substring(0, nextSlashPos);
+                
+                // Construct final URL by appending the intel path
+                const finalUrl = `${baseUrl}/intel/eyJjb2RlIjoiMDAwMDAwMDAwMDAwIn0=`;
+                
+                console.log("Constructed HACK URL:", finalUrl);
+                
+                // Rest of your existing logic
+                var winNum = "0";
+                var mplayer = this.getMplayer(finalUrl); // Using finalUrl instead of currentUrl
+                
+                if (winNum == "0") {
+                  this.setState(prevState => ({ 
+                    pipVisibility: "true",
+                    pipDisplay: "block",
+                    fullIpfs: mplayer,
+                    showBigShow: true
+                  }));
+                }
+              }
+            },
 
 
 
