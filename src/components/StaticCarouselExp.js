@@ -7,6 +7,7 @@ import TrebleCleffExp from './TrebleCleffExp'
 import BassCleff from './BassCleff'
 import SerialBoxTerminal from './SerialBoxTerminal'
 import MLBBettingTerminal from './MLBBettingTerminal'
+import MonopolyCLI from './MonopolyCLI'
 import MemecoinFactory from './MemecoinFactory';
 import VideoArchiveTerminal from './VideoArchiveTerminal';
 import MoneyPostTerminal from './MoneyPostTerminal';
@@ -892,7 +893,25 @@ export default class StaticCarouselExp extends Component {
               }
             },
 
+            upcopoly: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** open the memecoin generator </p>',
+              fn: (winNum=0) => {
 
+                     const terminal = this.progressTerminal.current
+
+                     var mplayer = <MonopolyCLI/>;
+
+                      if(winNum == "1") {
+                        terminal.pushToStdout(mplayer);
+                      }
+                      else {
+ 		        this.setState(prevState => ({ fullIpfs: mplayer }));
+		        this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		        this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+ 
+              }
+            },
 
 
             mc: {
