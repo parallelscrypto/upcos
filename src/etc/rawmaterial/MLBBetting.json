@@ -38,6 +38,37 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_wagerId",
+				"type": "uint256"
+			}
+		],
+		"name": "claimReward",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_wagerId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "enum MLBBetting.MLBTeam",
+				"name": "_predictedWinner",
+				"type": "uint8"
+			}
+		],
+		"name": "joinWager",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
@@ -67,19 +98,6 @@
 		],
 		"name": "AdminRemoved",
 		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_wagerId",
-				"type": "uint256"
-			}
-		],
-		"name": "claimReward",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -173,24 +191,6 @@
 		"type": "event"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_wagerId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "enum MLBBetting.MLBTeam",
-				"name": "_predictedWinner",
-				"type": "uint8"
-			}
-		],
-		"name": "joinWager",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -269,6 +269,25 @@
 			}
 		],
 		"name": "MatchupModified",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "matchupId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "includeInTicker",
+				"type": "bool"
+			}
+		],
+		"name": "MatchupTickerStatusChanged",
 		"type": "event"
 	},
 	{
@@ -414,12 +433,48 @@
 	{
 		"inputs": [
 			{
+				"internalType": "uint256",
+				"name": "_matchupId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "_includeInTicker",
+				"type": "bool"
+			}
+		],
+		"name": "setMatchupTickerStatus",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "newAddress",
 				"type": "address"
 			}
 		],
 		"name": "setUPCNFT",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_wagerId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "_includeInTicker",
+				"type": "bool"
+			}
+		],
+		"name": "setWagerTickerStatus",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -520,6 +575,25 @@
 		"type": "event"
 	},
 	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "wagerId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "includeInTicker",
+				"type": "bool"
+			}
+		],
+		"name": "WagerTickerStatusChanged",
+		"type": "event"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -609,6 +683,365 @@
 				"internalType": "contract IERC20",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getActiveMatchupTicker",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "enum MLBBetting.MLBTeam",
+						"name": "homeTeam",
+						"type": "uint8"
+					},
+					{
+						"internalType": "enum MLBBetting.MLBTeam",
+						"name": "awayTeam",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "homeScore",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "awayScore",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "currentInning",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isFinished",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "creationTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "gameDay",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "includeInTicker",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct MLBBetting.Matchup[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getAllActiveMatchups",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "enum MLBBetting.MLBTeam",
+						"name": "homeTeam",
+						"type": "uint8"
+					},
+					{
+						"internalType": "enum MLBBetting.MLBTeam",
+						"name": "awayTeam",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "homeScore",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "awayScore",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "currentInning",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isFinished",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "creationTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "gameDay",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "includeInTicker",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct MLBBetting.Matchup[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getAllActiveWagers",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "matchupId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "initiator",
+						"type": "address"
+					},
+					{
+						"internalType": "enum MLBBetting.MLBTeam",
+						"name": "predictedWinner",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "wagerAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isDoubleInsured",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "insuranceFee",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "upcId",
+						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "isSettled",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "includeInTicker",
+						"type": "bool"
+					},
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "user",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "amount",
+								"type": "uint256"
+							},
+							{
+								"internalType": "enum MLBBetting.MLBTeam",
+								"name": "predictedWinner",
+								"type": "uint8"
+							}
+						],
+						"internalType": "struct MLBBetting.Contestant[]",
+						"name": "contestants",
+						"type": "tuple[]"
+					}
+				],
+				"internalType": "struct MLBBetting.WagerWithDetails[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getAllWagers",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "matchupId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "initiator",
+						"type": "address"
+					},
+					{
+						"internalType": "enum MLBBetting.MLBTeam",
+						"name": "predictedWinner",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "wagerAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isDoubleInsured",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "insuranceFee",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "upcId",
+						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "isSettled",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "includeInTicker",
+						"type": "bool"
+					},
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "user",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "amount",
+								"type": "uint256"
+							},
+							{
+								"internalType": "enum MLBBetting.MLBTeam",
+								"name": "predictedWinner",
+								"type": "uint8"
+							}
+						],
+						"internalType": "struct MLBBetting.Contestant[]",
+						"name": "contestants",
+						"type": "tuple[]"
+					}
+				],
+				"internalType": "struct MLBBetting.WagerWithDetails[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getAllWins",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "wagerId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "matchupId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "winner",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amountWon",
+						"type": "uint256"
+					},
+					{
+						"internalType": "enum MLBBetting.MLBTeam",
+						"name": "predictedWinner",
+						"type": "uint8"
+					},
+					{
+						"internalType": "enum MLBBetting.MLBTeam",
+						"name": "actualWinner",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "homeScore",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "awayScore",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct MLBBetting.WinningInfo[]",
+				"name": "",
+				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",
@@ -712,6 +1145,11 @@
 				"internalType": "uint256",
 				"name": "gameDay",
 				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "includeInTicker",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -901,6 +1339,11 @@
 				"type": "bool"
 			},
 			{
+				"internalType": "bool",
+				"name": "includeInTicker",
+				"type": "bool"
+			},
+			{
 				"components": [
 					{
 						"internalType": "address",
@@ -959,6 +1402,61 @@
 				"internalType": "string",
 				"name": "",
 				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getWinsTicker",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "wagerId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "matchupId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "winner",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amountWon",
+						"type": "uint256"
+					},
+					{
+						"internalType": "enum MLBBetting.MLBTeam",
+						"name": "predictedWinner",
+						"type": "uint8"
+					},
+					{
+						"internalType": "enum MLBBetting.MLBTeam",
+						"name": "actualWinner",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "homeScore",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "awayScore",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct MLBBetting.WinningInfo[]",
+				"name": "",
+				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",
@@ -1083,6 +1581,11 @@
 				"internalType": "uint256",
 				"name": "gameDay",
 				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "includeInTicker",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -1312,6 +1815,11 @@
 				"internalType": "uint256",
 				"name": "contestantCount",
 				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "includeInTicker",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -18157,7 +18665,7 @@
     "137": {
       "events": {},
       "links": {},
-      "address": "0x15a9f29BcC7caabF7A21C67E02A6bCE96B07B868",
+      "address": "0x973961cfbf703a4b42743075df5cd1d9c75eb34f",
       "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
     }
   },

@@ -59,6 +59,7 @@ contract MLBBetting {
         bool isFinished;
         uint256 creationTime;
         uint256 gameDay;
+        bool includeInTicker;
     }
     
     struct Contestant {
@@ -78,6 +79,7 @@ contract MLBBetting {
         string upcId;
         bool isSettled;
         uint256 contestantCount;
+        bool includeInTicker;
         mapping(uint256 => Contestant) contestants;
     }
     
@@ -86,6 +88,31 @@ contract MLBBetting {
         uint256 amount;
         bool claimed;
         uint256 claimDeadline;
+    }
+
+    struct WagerWithDetails {
+        uint256 id;
+        uint256 matchupId;
+        address initiator;
+        MLBTeam predictedWinner;
+        uint256 wagerAmount;
+        bool isDoubleInsured;
+        uint256 insuranceFee;
+        string upcId;
+        bool isSettled;
+        bool includeInTicker;
+        Contestant[] contestants;
+    }
+
+    struct WinningInfo {
+        uint256 wagerId;
+        uint256 matchupId;
+        address winner;
+        uint256 amountWon;
+        MLBTeam predictedWinner;
+        MLBTeam actualWinner;
+        uint256 homeScore;
+        uint256 awayScore;
     }
     
     Counters.Counter private _matchupIdCounter;
@@ -115,6 +142,8 @@ contract MLBBetting {
     event AdminAdded(address indexed admin);
     event AdminRemoved(address indexed admin);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event MatchupTickerStatusChanged(uint256 indexed matchupId, bool includeInTicker);
+    event WagerTickerStatusChanged(uint256 indexed wagerId, bool includeInTicker);
 
     constructor() {
         owner = msg.sender;
@@ -184,6 +213,293 @@ contract MLBBetting {
         teamNames[MLBTeam.WASHINGTON_NATIONALS] = "Washington Nationals";
     }
 
+    function setMatchupTickerStatus(uint256 _matchupId, bool _includeInTicker) external onlyOwnerOrAdmin {
+        require(_matchupId < _matchupIdCounter.current(), "Invalid matchup ID");
+        matchups[_matchupId].includeInTicker = _includeInTicker;
+        emit MatchupTickerStatusChanged(_matchupId, _includeInTicker);
+    }
+
+    function setWagerTickerStatus(uint256 _wagerId, bool _includeInTicker) external onlyOwnerOrAdmin {
+        require(_wagerId < _wagerIdCounter.current(), "Invalid wager ID");
+        wagers[_wagerId].includeInTicker = _includeInTicker;
+        emit WagerTickerStatusChanged(_wagerId, _includeInTicker);
+    }
+
+    function getAllWagers() external view returns (WagerWithDetails[] memory) {
+        uint256 totalWagers = _wagerIdCounter.current();
+        WagerWithDetails[] memory allWagers = new WagerWithDetails[](totalWagers);
+        
+        for (uint256 i = 0; i < totalWagers; i++) {
+            Wager storage wager = wagers[i];
+            Contestant[] memory contestants = new Contestant[](wager.contestantCount);
+            
+            for (uint256 j = 0; j < wager.contestantCount; j++) {
+                contestants[j] = wager.contestants[j];
+            }
+            
+            allWagers[i] = WagerWithDetails({
+                id: wager.id,
+                matchupId: wager.matchupId,
+                initiator: wager.initiator,
+                predictedWinner: wager.predictedWinner,
+                wagerAmount: wager.wagerAmount,
+                isDoubleInsured: wager.isDoubleInsured,
+                insuranceFee: wager.insuranceFee,
+                upcId: wager.upcId,
+                isSettled: wager.isSettled,
+                includeInTicker: wager.includeInTicker,
+                contestants: contestants
+            });
+        }
+        
+        return allWagers;
+    }
+
+    function getAllActiveWagers() external view returns (WagerWithDetails[] memory) {
+        uint256 totalWagers = _wagerIdCounter.current();
+        uint256 activeCount = 0;
+        
+        // First count how many are active
+        for (uint256 i = 0; i < totalWagers; i++) {
+            if (!wagers[i].isSettled && !matchups[wagers[i].matchupId].isFinished) {
+                activeCount++;
+            }
+        }
+        
+        WagerWithDetails[] memory activeWagers = new WagerWithDetails[](activeCount);
+        uint256 index = 0;
+        
+        for (uint256 i = 0; i < totalWagers; i++) {
+            Wager storage wager = wagers[i];
+            if (!wager.isSettled && !matchups[wager.matchupId].isFinished) {
+                Contestant[] memory contestants = new Contestant[](wager.contestantCount);
+                
+                for (uint256 j = 0; j < wager.contestantCount; j++) {
+                    contestants[j] = wager.contestants[j];
+                }
+                
+                activeWagers[index] = WagerWithDetails({
+                    id: wager.id,
+                    matchupId: wager.matchupId,
+                    initiator: wager.initiator,
+                    predictedWinner: wager.predictedWinner,
+                    wagerAmount: wager.wagerAmount,
+                    isDoubleInsured: wager.isDoubleInsured,
+                    insuranceFee: wager.insuranceFee,
+                    upcId: wager.upcId,
+                    isSettled: wager.isSettled,
+                    includeInTicker: wager.includeInTicker,
+                    contestants: contestants
+                });
+                index++;
+            }
+        }
+        
+        return activeWagers;
+    }
+
+    function getAllActiveMatchups() external view returns (Matchup[] memory) {
+        uint256 totalMatchups = _matchupIdCounter.current();
+        uint256 activeCount = 0;
+        
+        // First count how many are active
+        for (uint256 i = 0; i < totalMatchups; i++) {
+            if (!matchups[i].isFinished) {
+                activeCount++;
+            }
+        }
+        
+        Matchup[] memory activeMatchups = new Matchup[](activeCount);
+        uint256 index = 0;
+        
+        for (uint256 i = 0; i < totalMatchups; i++) {
+            if (!matchups[i].isFinished) {
+                activeMatchups[index] = matchups[i];
+                index++;
+            }
+        }
+        
+        return activeMatchups;
+    }
+
+    function getAllWins() external view returns (WinningInfo[] memory) {
+        uint256 totalWagers = _wagerIdCounter.current();
+        uint256 winCount = 0;
+        
+        // First count how many winning wagers there are
+        for (uint256 i = 0; i < totalWagers; i++) {
+            Wager storage wager = wagers[i];
+            if (wager.isSettled) {
+                Matchup storage matchup = matchups[wager.matchupId];
+                MLBTeam actualWinner = matchup.homeScore > matchup.awayScore ? matchup.homeTeam : matchup.awayTeam;
+                
+                // Check if initiator won
+                if (wager.predictedWinner == actualWinner) {
+                    winCount++;
+                }
+                
+                // Check contestants who won
+                for (uint256 j = 0; j < wager.contestantCount; j++) {
+                    if (wager.contestants[j].predictedWinner == actualWinner) {
+                        winCount++;
+                    }
+                }
+            }
+        }
+        
+        WinningInfo[] memory allWins = new WinningInfo[](winCount);
+        uint256 index = 0;
+        
+        for (uint256 i = 0; i < totalWagers; i++) {
+            Wager storage wager = wagers[i];
+            if (wager.isSettled) {
+                Matchup storage matchup = matchups[wager.matchupId];
+                MLBTeam actualWinner = matchup.homeScore > matchup.awayScore ? matchup.homeTeam : matchup.awayTeam;
+                
+                // Check if initiator won
+                if (wager.predictedWinner == actualWinner) {
+                    uint256 totalWinnings = wager.wagerAmount;
+                    for (uint256 j = 0; j < wager.contestantCount; j++) {
+                        totalWinnings += wager.contestants[j].amount;
+                    }
+                    
+                    allWins[index] = WinningInfo({
+                        wagerId: wager.id,
+                        matchupId: wager.matchupId,
+                        winner: wager.initiator,
+                        amountWon: totalWinnings,
+                        predictedWinner: wager.predictedWinner,
+                        actualWinner: actualWinner,
+                        homeScore: matchup.homeScore,
+                        awayScore: matchup.awayScore
+                    });
+                    index++;
+                }
+                
+                // Check contestants who won
+                for (uint256 j = 0; j < wager.contestantCount; j++) {
+                    if (wager.contestants[j].predictedWinner == actualWinner) {
+                        uint256 contestantWinnings = wager.contestants[j].amount + 
+                                                   (wager.wagerAmount / wager.contestantCount);
+                        
+                        allWins[index] = WinningInfo({
+                            wagerId: wager.id,
+                            matchupId: wager.matchupId,
+                            winner: wager.contestants[j].user,
+                            amountWon: contestantWinnings,
+                            predictedWinner: wager.contestants[j].predictedWinner,
+                            actualWinner: actualWinner,
+                            homeScore: matchup.homeScore,
+                            awayScore: matchup.awayScore
+                        });
+                        index++;
+                    }
+                }
+            }
+        }
+        
+        return allWins;
+    }
+
+    function getWinsTicker() external view returns (WinningInfo[] memory) {
+        uint256 totalWagers = _wagerIdCounter.current();
+        uint256 winCount = 0;
+        
+        // First count how many winning wagers there are that are marked for ticker
+        for (uint256 i = 0; i < totalWagers; i++) {
+            Wager storage wager = wagers[i];
+            if (wager.isSettled && wager.includeInTicker) {
+                Matchup storage matchup = matchups[wager.matchupId];
+                MLBTeam actualWinner = matchup.homeScore > matchup.awayScore ? matchup.homeTeam : matchup.awayTeam;
+                
+                if (wager.predictedWinner == actualWinner) {
+                    winCount++;
+                }
+                
+                for (uint256 j = 0; j < wager.contestantCount; j++) {
+                    if (wager.contestants[j].predictedWinner == actualWinner) {
+                        winCount++;
+                    }
+                }
+            }
+        }
+        
+        WinningInfo[] memory tickerWins = new WinningInfo[](winCount);
+        uint256 index = 0;
+        
+        for (uint256 i = 0; i < totalWagers; i++) {
+            Wager storage wager = wagers[i];
+            if (wager.isSettled && wager.includeInTicker) {
+                Matchup storage matchup = matchups[wager.matchupId];
+                MLBTeam actualWinner = matchup.homeScore > matchup.awayScore ? matchup.homeTeam : matchup.awayTeam;
+                
+                if (wager.predictedWinner == actualWinner) {
+                    uint256 totalWinnings = wager.wagerAmount;
+                    for (uint256 j = 0; j < wager.contestantCount; j++) {
+                        totalWinnings += wager.contestants[j].amount;
+                    }
+                    
+                    tickerWins[index] = WinningInfo({
+                        wagerId: wager.id,
+                        matchupId: wager.matchupId,
+                        winner: wager.initiator,
+                        amountWon: totalWinnings,
+                        predictedWinner: wager.predictedWinner,
+                        actualWinner: actualWinner,
+                        homeScore: matchup.homeScore,
+                        awayScore: matchup.awayScore
+                    });
+                    index++;
+                }
+                
+                for (uint256 j = 0; j < wager.contestantCount; j++) {
+                    if (wager.contestants[j].predictedWinner == actualWinner) {
+                        uint256 contestantWinnings = wager.contestants[j].amount + 
+                                                   (wager.wagerAmount / wager.contestantCount);
+                        
+                        tickerWins[index] = WinningInfo({
+                            wagerId: wager.id,
+                            matchupId: wager.matchupId,
+                            winner: wager.contestants[j].user,
+                            amountWon: contestantWinnings,
+                            predictedWinner: wager.contestants[j].predictedWinner,
+                            actualWinner: actualWinner,
+                            homeScore: matchup.homeScore,
+                            awayScore: matchup.awayScore
+                        });
+                        index++;
+                    }
+                }
+            }
+        }
+        
+        return tickerWins;
+    }
+
+    function getActiveMatchupTicker() external view returns (Matchup[] memory) {
+        uint256 totalMatchups = _matchupIdCounter.current();
+        uint256 activeTickerCount = 0;
+        
+        // First count how many are active and marked for ticker
+        for (uint256 i = 0; i < totalMatchups; i++) {
+            if (!matchups[i].isFinished && matchups[i].includeInTicker) {
+                activeTickerCount++;
+            }
+        }
+        
+        Matchup[] memory activeTickerMatchups = new Matchup[](activeTickerCount);
+        uint256 index = 0;
+        
+        for (uint256 i = 0; i < totalMatchups; i++) {
+            if (!matchups[i].isFinished && matchups[i].includeInTicker) {
+                activeTickerMatchups[index] = matchups[i];
+                index++;
+            }
+        }
+        
+        return activeTickerMatchups;
+    }
+
     function addAdmin(address _admin) external onlyOwner {
         require(_admin != address(0), "Invalid address");
         require(!admins[_admin], "Already admin");
@@ -220,7 +536,8 @@ contract MLBBetting {
             currentInning: 0,
             isFinished: false,
             creationTime: block.timestamp,
-            gameDay: _gameDay
+            gameDay: _gameDay,
+            includeInTicker: true // Default to true for ticker inclusion
         });
         
         teamToMatchups[_homeTeam].push(matchupId);
@@ -329,6 +646,7 @@ contract MLBBetting {
         newWager.upcId = _upcId;
         newWager.isSettled = false;
         newWager.contestantCount = 0;
+        newWager.includeInTicker = true; // Default to true for ticker inclusion
         
         if (bytes(_upcId).length > 0) {
             upcToWagers[_upcId].push(wagerId);
@@ -489,7 +807,8 @@ contract MLBBetting {
         uint256 currentInning,
         bool isFinished,
         uint256 creationTime,
-        uint256 gameDay
+        uint256 gameDay,
+        bool includeInTicker
     ) {
         require(_matchupId < _matchupIdCounter.current(), "Invalid matchup ID");
         Matchup storage matchup = matchups[_matchupId];
@@ -502,7 +821,8 @@ contract MLBBetting {
             matchup.currentInning,
             matchup.isFinished,
             matchup.creationTime,
-            matchup.gameDay
+            matchup.gameDay,
+            matchup.includeInTicker
         );
     }
 
@@ -515,6 +835,7 @@ contract MLBBetting {
         uint256 insuranceFee,
         string memory upcId,
         bool isSettled,
+        bool includeInTicker,
         Contestant[] memory contestants
     ) {
         require(_wagerId < _wagerIdCounter.current(), "Invalid wager ID");
@@ -534,6 +855,7 @@ contract MLBBetting {
             wager.insuranceFee,
             wager.upcId,
             wager.isSettled,
+            wager.includeInTicker,
             contestants
         );
     }
