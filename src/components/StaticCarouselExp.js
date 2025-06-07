@@ -914,7 +914,7 @@ export default class StaticCarouselExp extends Component {
               }
             },
 
-            donate: {
+            invest: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** donate to a upc code or instance.  </p>',
               fn: (winNum=0) => {
 
@@ -2043,6 +2043,29 @@ tempLink.click();
 		       //terminal.pushToStdout(`[[/band-topic]]`);
 
                     }
+            },
+
+
+            archive: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open codeverter.com window  (thank you and no affiliation) </p>',
+              fn: async () => {
+
+                      var data = await this.getUpc(upc);
+                      var lPayload = data[5]
+console.log("upc data is " , data)
+		      var fullUrl = "https://q3tequ7wmydcgk23k7b534zoyczewcmc4ffosjilcxirvyvpxgna.arweave.net/huZIU_ZmBiMrW1fD3fMuwLJLCYLhSuklCxXRGuKvuZo?0=" + lPayload;
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
             },
 
 
