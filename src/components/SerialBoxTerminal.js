@@ -489,7 +489,6 @@ class SerialBoxTerminal extends Component {
         <Terminal
           style={{
             minHeight: "75vh",
-            backgroundImage: "url('https://f466rquetugeijv3vcaq2nb2wylme5bndab2zuphrdchu74d4sya.arweave.net/Lz3owoSdDEQmu6iBDTQ6thbCdC0YA6zR54jEen-D5LA')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
