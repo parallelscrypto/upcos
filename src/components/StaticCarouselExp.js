@@ -123,6 +123,7 @@ export default class StaticCarouselExp extends Component {
     var aiValue;
     var hddValue = "https://app.ardrive.io/#/drives/8324c70e-a3c4-4dc5-b42c-1691464daef7?name=africans_unite_worldwide"; //default hdd
     var archiveValue;
+    var investValue;
     var pac0Value;
     var pac1Value;
     var pac2Value;
@@ -174,6 +175,20 @@ export default class StaticCarouselExp extends Component {
                 // Or store it: const bgUrl = bgValue;
             }
         }
+
+
+        if (line.includes("config.invest")) {
+            const equalPos = line.indexOf('=');
+            if (equalPos !== -1) {
+                investValue= line.substr(equalPos + 1).trim();
+                // Now you can use bgValue (the URL)
+                console.log("AI URL:", bgValue);
+                // Or store it: const bgUrl = bgValue;
+            }
+        }
+
+
+
 
 
         //var pac0 = "config.pac0.yummy=https://gifer.com";
@@ -916,12 +931,19 @@ export default class StaticCarouselExp extends Component {
 
             invest: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** donate to a upc code or instance.  </p>',
-              fn: (winNum=0) => {
+              fn: (address) => {
 
+                     if(!address) {
+                        address = this.state.invest;
+                     }
+
+
+console.log("INVEST IS ", address);
                      const terminal = this.progressTerminal.current
 
-                     var mplayer = <UPCInvestCLI/>;
+                     var mplayer = <UPCInvestCLI address={address}/>;
 
+                      var winNum=0
                       if(winNum == "1") {
                         terminal.pushToStdout(mplayer);
                       }
@@ -2047,7 +2069,7 @@ tempLink.click();
 
 
             archive: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open codeverter.com window  (thank you and no affiliation) </p>',
+		    description: '<p style="color:hotpink;font-size:1.1em">** </p>',
               fn: async () => {
 
                       var data = await this.getUpc(upc);
@@ -2409,6 +2431,7 @@ console.log(popArgs);
        hdd: hddValue,
        ai:  aiValue,
        archive: archiveValue,
+       invest: investValue,
        // Initialize pac slots as empty objects
        pac0: pac0Value,
        pac1: pac1Value,

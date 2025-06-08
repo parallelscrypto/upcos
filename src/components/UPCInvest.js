@@ -30,6 +30,7 @@ class UPCInvestCLI extends React.Component {
       account: '',
       upc: '',
       serialNumber: '',
+      investAddress: props.address,
       isConnected: false
     };
     this.terminal = React.createRef();
@@ -108,7 +109,9 @@ class UPCInvestCLI extends React.Component {
  
   loadContract = async (address) => {
     try {
-      
+      if(!address) {
+         address = this.state.investAddress;
+      }      
       this.pushToTerminal(`Loading investment contract at: ${address}`);
       
       const contract = new ethers.Contract(
