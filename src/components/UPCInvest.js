@@ -1,11 +1,9 @@
-// UPCInvestmentCLI.js
 import React from 'react';
 import Terminal from 'react-console-emulator';
 import { ethers } from 'ethers';
 import UPCInvestmentABI from '../etc/rawmaterial/UPCInvest.json';
 import UPCInvestFactoryABI from '../etc/rawmaterial/UPCInvestFactory.json';
 
-// Cyberpunk styling
 const CYBERPUNK = {
   primary: '#00f0ff',
   secondary: '#ff00ff',
@@ -40,13 +38,18 @@ class UPCInvestCLI extends React.Component {
     this.initConnection();
   }
 
-  initConnection = async () => {
+  componentWillUnmount() {
+    // Clean up any subscriptions or async tasks here
+    if (this.state.provider) {
+      this.state.provider.removeAllListeners();
+    }
+  }
 
+  initConnection = async () => {
     const CONTRACT_ADDRESSES = {
       INVESTMENT: '0xf98Fbb7A0B85de590D30f3970d25D45619cb25E3',
-      FACTORY: '0x966C0dD86c7b0198c0d4018d2E4eA1FD7062f95a'
+      FACTORY: '0x6c62df16846c55637bf2254618b0a0f89e5b53c3'
     };
- 
 
     try {
       if (window.ethereum) {
@@ -87,17 +90,91 @@ class UPCInvestCLI extends React.Component {
     }
   };
 
-  // ========== COMMAND HANDLERS ==========
-  createContract = async (upc) => {
+
+  // ========== INVESTMENT CONDITIONS ==========
+    setInvestmentConditions = async (min, max, isOpen) => {
+        try {
+            if (!this.state.currentContract) {
+                throw new Error('No contract loaded');
+            }
+
+            // Verify ownership
+            const owner = await this.state.currentContract.owner();
+            if (owner.toLowerCase() !== this.state.account.toLowerCase()) {
+                throw new Error('You must be the contract owner to set investment conditions');
+            }
+
+            const isOpenBool = isOpen.toLowerCase() === 'true' || isOpen === '1';
+            const minWei = ethers.utils.parseEther(min.toString());
+            const maxWei = ethers.utils.parseEther(max.toString());
+
+            this.pushToTerminal(`Setting investment conditions...`);
+            this.pushToTerminal(`Min: ${min} ETH (${minWei.toString()} wei)`);
+            this.pushToTerminal(`Max: ${max} ETH (${maxWei.toString()} wei)`);
+            this.pushToTerminal(`Open for investment: ${isOpenBool}`);
+
+            const tx = await this.state.currentContract.setInvestmentConditions(
+                minWei,
+                maxWei,
+                isOpenBool
+            );
+            
+            await tx.wait();
+            
+            this.setState({
+                investmentConditions: {
+                    min: minWei,
+                    max: maxWei,
+                    isOpen: isOpenBool
+                }
+            });
+
+            this.pushToTerminal('[[success]]Investment conditions updated successfully![[/success]]');
+        } catch (error) {
+            this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
+        }
+    };
+
+
+    transferOwnership = async (newOwner) => {
+        try {
+            if (!this.state.currentContract) {
+                throw new Error('No contract loaded');
+            }
+
+            // Verify current ownership
+            const owner = await this.state.currentContract.owner();
+            if (owner.toLowerCase() !== this.state.account.toLowerCase()) {
+                throw new Error('You must be the current owner to transfer ownership');
+            }
+
+            this.pushToTerminal(`Transferring ownership to: ${newOwner}`);
+            const tx = await this.state.currentContract.transferOwnership(newOwner);
+            await tx.wait();
+            
+            this.pushToTerminal('[[success]]Ownership transferred successfully![[/success]]');
+        } catch (error) {
+            this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
+        }
+    };
+
+
+  getInvestmentConditions = async () => {
     try {
-      this.pushToTerminal(`Creating new UPC Investment for ${upc}...`);
-      const tx = await this.state.factory.createUPCInvestment(upc);
-      await tx.wait();
-      
-      const contractAddress = await this.state.factory.upcToContract(upc);
-      this.pushToTerminal(
-        `[[success]]Contract created! Address: ${contractAddress}[[/success]]`
-      );
+      if (!this.state.currentContract) {
+        throw new Error('No contract loaded');
+      }
+
+      const [min, max, isOpen] = await Promise.all([
+        this.state.currentContract.minInvestment(),
+        this.state.currentContract.maxInvestment(),
+        this.state.currentContract.openForInvestment()
+      ]);
+
+      this.pushToTerminal('[[header]]=== Investment Conditions ===[[/header]]');
+      this.pushToTerminal(`Minimum Investment: ${ethers.utils.formatEther(min)} ETH`);
+      this.pushToTerminal(`Maximum Investment: ${ethers.utils.formatEther(max)} ETH`);
+      this.pushToTerminal(`Open for Investment: ${isOpen ? '[[success]]YES[[/success]]' : '[[error]]NO[[/error]]'}`);
     } catch (error) {
       this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
     }
@@ -105,69 +182,28 @@ class UPCInvestCLI extends React.Component {
 
 
 
-  
- 
-  loadContract = async (address) => {
-    try {
-      if(!address) {
-         address = this.state.investAddress;
-      }      
-      this.pushToTerminal(`Loading investment contract at: ${address}`);
-      
-      const contract = new ethers.Contract(
-        address,
-        UPCInvestmentABI.abi,
-        this.state.signer
-      );
-  
-      // Verify this is actually a UPCInvestment contract
-      try {
-        await contract.upc();
-      } catch (e) {
-        throw new Error('The specified address is not a valid UPCInvestment contract');
-      }
-  
-      const [upc, serial] = await Promise.all([
-        contract.upc(),
-        contract.serialNumber()
-      ]);
-      
-      this.setState({
-        currentContract: contract,
-        upc,
-        serialNumber: serial
-      });
-  
-      this.pushToTerminal(`[[success]]Successfully loaded investment contract[[/success]]`);
-      this.pushToTerminal(`Address: ${address}`);
-      this.pushToTerminal(`UPC: ${upc}`);
-      if (serial) {
-        this.pushToTerminal(`Serial Number: ${serial}`);
-      }
-    } catch (error) {
-      this.pushToTerminal(`[[error]]Error loading contract: ${error.message}[[/error]]`);
-    }
-  };
 
 
-
-
-
-
-
-
-  setSerialNumber = async (serial) => {
+  // ========== CONTRACT COMMAND HANDLERS ==========
+  getContractInfo = async () => {
     try {
       if (!this.state.currentContract) {
         throw new Error('No contract loaded');
       }
 
-      this.pushToTerminal(`Setting serial number to "${serial}"...`);
-      const tx = await this.state.currentContract.setSerialNumber(serial);
-      await tx.wait();
-      
-      this.setState({ serialNumber: serial });
-      this.pushToTerminal('[[success]]Serial number updated![[/success]]');
+      const [upc, serialNumber, owner, balance] = await Promise.all([
+        this.state.currentContract.upc(),
+        this.state.currentContract.serialNumber(),
+        this.state.currentContract.owner(),
+        this.state.provider.getBalance(this.state.currentContract.address)
+      ]);
+
+      this.pushToTerminal('[[header]]=== Contract Info ===[[/header]]');
+      this.pushToTerminal(`Address: ${this.state.currentContract.address}`);
+      this.pushToTerminal(`UPC: ${upc}`);
+      this.pushToTerminal(`Serial Number: ${serialNumber || 'Not set'}`);
+      this.pushToTerminal(`Owner: ${owner}`);
+      this.pushToTerminal(`Balance: ${ethers.utils.formatEther(balance)} ETH`);
     } catch (error) {
       this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
     }
@@ -179,13 +215,71 @@ class UPCInvestCLI extends React.Component {
         throw new Error('No contract loaded');
       }
 
-      const value = ethers.utils.parseEther(amount);
       this.pushToTerminal(`Investing ${amount} ETH...`);
-      
-      const tx = await this.state.currentContract.invest({ value });
+      const tx = await this.state.currentContract.invest({
+        value: ethers.utils.parseEther(amount.toString())
+      });
       await tx.wait();
+      this.pushToTerminal(`[[success]]Successfully invested ${amount} ETH[[/success]]`);
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
+    }
+  };
+
+  investWithToken = async (tokenAddress, amount) => {
+    try {
+      if (!this.state.currentContract) {
+        throw new Error('No contract loaded');
+      }
+
+      this.pushToTerminal(`Investing ${amount} tokens from ${tokenAddress}...`);
+      const tx = await this.state.currentContract.investWithToken(
+        tokenAddress,
+        ethers.utils.parseUnits(amount.toString(), 18) // Assuming 18 decimals
+      );
+      await tx.wait();
+      this.pushToTerminal(`[[success]]Successfully invested ${amount} tokens[[/success]]`);
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
+    }
+  };
+
+  whitelistToken = async (tokenAddress, symbol) => {
+    try {
+      if (!this.state.currentContract) {
+        throw new Error('No contract loaded');
+      }
+
+      this.pushToTerminal(`Whitelisting token ${symbol} at ${tokenAddress}...`);
+      const tx = await this.state.currentContract.whitelistToken(
+        tokenAddress,
+        symbol
+      );
+      await tx.wait();
+      this.pushToTerminal(`[[success]]Token ${symbol} whitelisted successfully[[/success]]`);
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
+    }
+  };
+
+  listWhitelistedTokens = async () => {
+    try {
+      if (!this.state.currentContract) {
+        throw new Error('No contract loaded');
+      }
+
+      const tokens = await this.state.currentContract.getWhitelistedTokens();
       
-      this.pushToTerminal('[[success]]Investment successful![[/success]]');
+      this.pushToTerminal('[[header]]=== Whitelisted Tokens ===[[/header]]');
+      
+      if (tokens.length === 0) {
+        this.pushToTerminal('No whitelisted tokens found');
+        return;
+      }
+
+      tokens.forEach((token, idx) => {
+        this.pushToTerminal(`  ${idx + 1}. ${token.symbol}: ${token.tokenAddress}`);
+      });
     } catch (error) {
       this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
     }
@@ -199,11 +293,10 @@ class UPCInvestCLI extends React.Component {
 
       this.pushToTerminal(`Releasing ${amount} ETH...`);
       const tx = await this.state.currentContract.releaseFunds(
-        ethers.utils.parseEther(amount)
+        ethers.utils.parseEther(amount.toString())
       );
       await tx.wait();
-      
-      this.pushToTerminal('[[success]]Funds released![[/success]]');
+      this.pushToTerminal(`[[success]]Successfully released ${amount} ETH[[/success]]`);
     } catch (error) {
       this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
     }
@@ -217,11 +310,26 @@ class UPCInvestCLI extends React.Component {
 
       this.pushToTerminal(`Withdrawing ${amount} ETH...`);
       const tx = await this.state.currentContract.withdraw(
-        ethers.utils.parseEther(amount)
+        ethers.utils.parseEther(amount.toString())
       );
       await tx.wait();
-      
-      this.pushToTerminal('[[success]]Withdrawal successful![[/success]]');
+      this.pushToTerminal(`[[success]]Successfully withdrew ${amount} ETH[[/success]]`);
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
+    }
+  };
+
+  setSerialNumber = async (number) => {
+    try {
+      if (!this.state.currentContract) {
+        throw new Error('No contract loaded');
+      }
+
+      this.pushToTerminal(`Setting serial number to ${number}...`);
+      const tx = await this.state.currentContract.setSerialNumber(number);
+      await tx.wait();
+      this.setState({ serialNumber: number });
+      this.pushToTerminal(`[[success]]Serial number set to ${number}[[/success]]`);
     } catch (error) {
       this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
     }
@@ -233,15 +341,14 @@ class UPCInvestCLI extends React.Component {
         throw new Error('No contract loaded');
       }
 
-      this.pushToTerminal(`Adding comrade ${address}...`);
+      this.pushToTerminal(`Adding comrade ${address} with ${percentage}% share...`);
       const tx = await this.state.currentContract.addComrade(
         address,
         percentage,
         description
       );
       await tx.wait();
-      
-      this.pushToTerminal('[[success]]Comrade added![[/success]]');
+      this.pushToTerminal(`[[success]]Comrade added successfully[[/success]]`);
     } catch (error) {
       this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
     }
@@ -261,49 +368,7 @@ class UPCInvestCLI extends React.Component {
         description
       );
       await tx.wait();
-      
-      this.pushToTerminal('[[success]]Comrade updated![[/success]]');
-    } catch (error) {
-      this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
-    }
-  };
-
-  disburse = async () => {
-    try {
-      if (!this.state.currentContract) {
-        throw new Error('No contract loaded');
-      }
-
-      this.pushToTerminal('Initiating disbursement...');
-      const tx = await this.state.currentContract.disburse();
-      await tx.wait();
-      
-      this.pushToTerminal('[[success]]Funds disbursed![[/success]]');
-    } catch (error) {
-      this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
-    }
-  };
-
-  getContractInfo = async () => {
-    try {
-      if (!this.state.currentContract) {
-        throw new Error('No contract loaded');
-      }
-
-      const [
-        totalInvested,
-        availableFunds,
-        releasedFunds,
-        isActive
-      ] = await this.state.currentContract.getInvestmentDetails();
-
-      this.pushToTerminal('[[header]]=== Contract Info ===[[/header]]');
-      this.pushToTerminal(`UPC: ${this.state.upc}`);
-      this.pushToTerminal(`Serial: ${this.state.serialNumber || 'None'}`);
-      this.pushToTerminal(`Active: ${isActive ? 'Yes' : 'No'}`);
-      this.pushToTerminal(`Total Invested: ${ethers.utils.formatEther(totalInvested)} ETH`);
-      this.pushToTerminal(`Available Funds: ${ethers.utils.formatEther(availableFunds)} ETH`);
-      this.pushToTerminal(`Released Funds: ${ethers.utils.formatEther(releasedFunds)} ETH`);
+      this.pushToTerminal(`[[success]]Comrade updated successfully[[/success]]`);
     } catch (error) {
       this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
     }
@@ -315,38 +380,205 @@ class UPCInvestCLI extends React.Component {
         throw new Error('No contract loaded');
       }
 
-      const count = await this.state.currentContract.getComradesCount();
-      this.pushToTerminal(`[[header]]=== Comrades (${count}) ===[[/header]]`);
+      const comrades = await this.state.currentContract.getComrades();
+      
+      this.pushToTerminal('[[header]]=== Comrades ===[[/header]]');
+      
+      if (comrades.length === 0) {
+        this.pushToTerminal('No comrades found');
+        return;
+      }
 
-      for (let i = 0; i < count; i++) {
-        const [address, percentage, description] = 
-          await this.state.currentContract.getComradeDetails(i);
-        
-        this.pushToTerminal(
-          `#${i} - ${address} (${percentage/100}%) - "${description}"`
-        );
+      comrades.forEach((comrade, idx) => {
+        this.pushToTerminal(`  ${idx + 1}. Address: ${comrade.addr}`);
+        this.pushToTerminal(`     Percentage: ${comrade.percentage}%`);
+        this.pushToTerminal(`     Description: ${comrade.description}`);
+      });
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
+    }
+  };
+
+  disburse = async () => {
+    try {
+      if (!this.state.currentContract) {
+        throw new Error('No contract loaded');
+      }
+
+      this.pushToTerminal('Disbursing funds to comrades...');
+      const tx = await this.state.currentContract.disburse();
+      await tx.wait();
+      this.pushToTerminal('[[success]]Funds disbursed successfully[[/success]]');
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
+    }
+  };
+
+  // ========== FACTORY COMMAND HANDLERS ==========
+  listAllContracts = async () => {
+    try {
+      if (!this.state.factory) {
+        throw new Error('Factory not connected');
+      }
+
+      const [upcs, addresses] = await this.state.factory.getAllInvestments();
+      
+      this.pushToTerminal('[[header]]=== All Contracts ===[[/header]]');
+      
+      if (upcs.length === 0) {
+        this.pushToTerminal('No contracts found');
+        return;
+      }
+
+      for (let i = 0; i < upcs.length; i++) {
+        this.pushToTerminal(`UPC: ${upcs[i]}`);
+        addresses[i].forEach((addr, idx) => {
+          this.pushToTerminal(`  ${idx + 1}. ${addr}`);
+        });
       }
     } catch (error) {
       this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
     }
   };
 
-  help = () => {
-    this.pushToTerminal('[[header]]=== Available Commands ===[[/header]]');
-    this.pushToTerminal('connect           - Connect wallet');
-    this.pushToTerminal('create <upc>      - Create new UPC contract');
-    this.pushToTerminal('load <upc>        - Load existing UPC contract');
-    this.pushToTerminal('info              - Show contract details');
-    this.pushToTerminal('invest <amount>   - Invest ETH');
-    this.pushToTerminal('release <amount>  - Release funds');
-    this.pushToTerminal('withdraw <amount> - Withdraw your funds');
-    this.pushToTerminal('serial <number>   - Set serial number');
-    this.pushToTerminal('addcom <addr> <%> <desc> - Add comrade');
-    this.pushToTerminal('updatecom <idx> <addr> <%> <desc> - Update comrade');
-    this.pushToTerminal('listcom           - List all comrades');
-    this.pushToTerminal('disburse          - Disburse released funds');
-    this.pushToTerminal('help              - Show this help');
+  listContractsByUPC = async (upc) => {
+    try {
+      if (!this.state.factory) {
+        throw new Error('Factory not connected');
+      }
+
+      const contracts = await this.state.factory.getContractsForUPC(upc);
+      
+      this.pushToTerminal(`[[header]]=== Contracts for UPC: ${upc} ===[[/header]]`);
+      
+      if (contracts.length === 0) {
+        this.pushToTerminal('No contracts found for this UPC');
+        return;
+      }
+
+      contracts.forEach((addr, idx) => {
+        this.pushToTerminal(`  ${idx + 1}. ${addr}`);
+      });
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
+    }
   };
+
+  listMyContracts = async () => {
+    try {
+      if (!this.state.factory) {
+        throw new Error('Factory not connected');
+      }
+
+      const contracts = await this.state.factory.getMyContracts();
+      
+      this.pushToTerminal('[[header]]=== My Contracts ===[[/header]]');
+      
+      if (contracts.length === 0) {
+        this.pushToTerminal('You have no contracts');
+        return;
+      }
+
+      contracts.forEach((addr, idx) => {
+        this.pushToTerminal(`  ${idx + 1}. ${addr}`);
+      });
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
+    }
+  };
+
+  listContractsByUser = async (userAddress) => {
+    try {
+      if (!this.state.factory) {
+        throw new Error('Factory not connected');
+      }
+
+      const contracts = await this.state.factory.getContractsByUser(userAddress);
+      
+      this.pushToTerminal(`[[header]]=== Contracts for User: ${userAddress} ===[[/header]]`);
+      
+      if (contracts.length === 0) {
+        this.pushToTerminal('No contracts found for this user');
+        return;
+      }
+
+      contracts.forEach((addr, idx) => {
+        this.pushToTerminal(`  ${idx + 1}. ${addr}`);
+      });
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
+    }
+  };
+
+  createContract = async (upc) => {
+    try {
+      this.pushToTerminal(`Creating new UPC Investment for ${upc}...`);
+      const tx = await this.state.factory.createUPCInvestment(upc);
+      await tx.wait();
+      
+      const contracts = await this.state.factory.getContractsForUPC(upc);
+      const contractAddress = contracts[contracts.length - 1];
+      
+      this.pushToTerminal(
+        `[[success]]Contract created! Address: ${contractAddress}[[/success]]`
+      );
+      return contractAddress;
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
+      throw error;
+    }
+  };
+
+    loadContract = async (address) => {
+        try {
+            if (!address) {
+                address = this.state.investAddress;
+            }      
+            this.pushToTerminal(`Loading investment contract at: ${address}`);
+            
+            const contract = new ethers.Contract(
+                address,
+                UPCInvestmentABI.abi,
+                this.state.signer
+            );
+        
+            try {
+                // Verify this is a valid contract first
+                await contract.upc();
+            } catch (e) {
+                throw new Error('The specified address is not a valid UPCInvestment contract');
+            }
+
+            // Check ownership
+            const owner = await contract.owner();
+            if (owner.toLowerCase() !== this.state.account.toLowerCase()) {
+                this.pushToTerminal('[[warning]]Warning: You are not the owner of this contract[[/warning]]');
+                this.pushToTerminal('[[warning]]Some functions may not be available[[/warning]]');
+            }
+        
+            const [upc, serial] = await Promise.all([
+                contract.upc(),
+                contract.serialNumber()
+            ]);
+            
+            this.setState({
+                currentContract: contract,
+                upc,
+                serialNumber: serial
+            });
+        
+            this.pushToTerminal(`[[success]]Successfully loaded investment contract[[/success]]`);
+            this.pushToTerminal(`Address: ${address}`);
+            this.pushToTerminal(`UPC: ${upc}`);
+            this.pushToTerminal(`Owner: ${owner}`);
+            if (serial) {
+                this.pushToTerminal(`Serial Number: ${serial}`);
+            }
+        } catch (error) {
+            this.pushToTerminal(`[[error]]Error loading contract: ${error.message}[[/error]]`);
+        }
+    };
+
 
   render() {
     return (
@@ -374,17 +606,6 @@ class UPCInvestCLI extends React.Component {
 
         <Terminal
           ref={this.terminal}
-          style={{
-            height: '90vh',
-            backgroundColor: CYBERPUNK.terminalBg,
-            borderRadius: '5px',
-            padding: '15px',
-            fontFamily: "'Courier New', monospace",
-            border: CYBERPUNK.terminalBorder,
-            boxShadow: CYBERPUNK.terminalShadow,
-            position: 'relative',
-            zIndex: 2
-          }}
           commands={{
             connect: {
               description: 'Connect wallet',
@@ -396,8 +617,8 @@ class UPCInvestCLI extends React.Component {
               fn: (upc) => this.createContract(upc)
             },
             load: {
-              description: 'Load existing UPC contract',
-              usage: 'load <upc>',
+              description: 'Load existing contract',
+              usage: 'load <address>',
               fn: (address) => this.loadContract(address)
             },
             info: {
@@ -408,6 +629,20 @@ class UPCInvestCLI extends React.Component {
               description: 'Invest ETH',
               usage: 'invest <amount>',
               fn: (amount) => this.invest(amount)
+            },
+            investtoken: {
+              description: 'Invest with tokens',
+              usage: 'investtoken <address> <amount>',
+              fn: (tokenAddress, amount) => this.investWithToken(tokenAddress, amount)
+            },
+            whitelist: {
+              description: 'Whitelist a token',
+              usage: 'whitelist <address> <symbol>',
+              fn: (tokenAddress, symbol) => this.whitelistToken(tokenAddress, symbol)
+            },
+            listtokens: {
+              description: 'List whitelisted tokens',
+              fn: this.listWhitelistedTokens
             },
             release: {
               description: 'Release funds',
@@ -441,6 +676,38 @@ class UPCInvestCLI extends React.Component {
             disburse: {
               description: 'Disburse released funds',
               fn: this.disburse
+            },
+            listall: {
+              description: 'List all contracts',
+              fn: this.listAllContracts
+            },
+            listupc: {
+              description: 'List contracts by UPC',
+              usage: 'listupc <upc>',
+              fn: (upc) => this.listContractsByUPC(upc)
+            },
+            listmy: {
+              description: 'List my contracts',
+              fn: this.listMyContracts
+            },
+            listuser: {
+              description: 'List contracts by user',
+              usage: 'listuser <address>',
+              fn: (address) => this.listContractsByUser(address)
+            },
+            transferowner: {
+                description: 'Transfer contract ownership',
+                usage: 'transferowner <address>',
+                fn: (newOwner) => this.transferOwnership(newOwner)
+            },
+            setconditions: {
+              description: 'Set investment conditions',
+              usage: 'setconditions <minETH> <maxETH> <true/false>',
+              fn: (min, max, isOpen) => this.setInvestmentConditions(min, max, isOpen)
+            },
+            getconditions: {
+              description: 'Get current investment conditions',
+              fn: this.getInvestmentConditions
             }
           }}
           dangerMode={true}
@@ -469,6 +736,7 @@ class UPCInvestCLI extends React.Component {
       </div>
     );
   }
+
 }
 
 export default UPCInvestCLI;

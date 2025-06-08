@@ -1433,10 +1433,10 @@ src={srcImg} height="200" width="200"/></p>
                            <option value="76">.scrap-bot</option>
                            <option value="77">.blog</option>
                            <option value="78">.kyc</option>
-                           <option value="79">.gps-data</option>
-                           <option value="79">.drone</option>
-                           <option value="79">.drone-swarm</option>
                            <option value="79">.black-power</option>
+                           <option value="80">.drone</option>
+                           <option value="81">.drone-swarm</option>
+                           <option value="82">.gps-data</option>
                            <option value="777">.coinbox</option>
                         </select>
 

@@ -1,11 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+interface IERC20 {
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+    function balanceOf(address account) external view returns (uint256);
+    function allowance(address owner, address spender) external view returns (uint256);
+    function transfer(address recipient, uint256 amount) external returns (bool);
+}
+
 contract UPCInvest {
     // Immutable core properties
     address public owner;
     string public upc;
-    address public  feeWallet = 0x464463AF2975bD0CA99199FCc8cc7761FE2E6051;
+    address public feeWallet = 0x464463AF2975bD0CA99199FCc8cc7761FE2E6051;
     uint256 public constant FEE_PERCENTAGE = 2;
 
     // UPC-specific properties
@@ -46,6 +53,25 @@ contract UPCInvest {
     }
     Disbursement[] public disbursements;
 
+    // Token whitelist management
+    struct TokenInfo {
+        address tokenAddress;
+        string symbol;
+        bool isActive;
+    }
+    
+    mapping(address => TokenInfo) public whitelistedTokens;
+    address[] public whitelistedTokenAddresses;
+    
+    // Token investment tracking
+    struct TokenInvestment {
+        address tokenAddress;
+        uint256 amount;
+    }
+    
+    mapping(address => mapping(address => uint256)) public tokenInvestments;
+    mapping(address => TokenInvestment[]) public investorTokenInvestments;
+
     // Events
     event Invested(address investor, uint256 amount, uint256 fee);
     event FundsReleased(address investor, uint256 amount);
@@ -56,6 +82,9 @@ contract UPCInvest {
     event ComradeRemoved(address comrade);
     event FundsDisbursed(uint256 ownerAmount, uint256 totalComradesAmount);
     event SerialNumberUpdated(string newSerialNumber);
+    event TokenWhitelisted(address tokenAddress, string symbol);
+    event TokenRemoved(address tokenAddress);
+    event TokenInvested(address investor, address tokenAddress, uint256 amount, uint256 fee);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this");
@@ -76,10 +105,6 @@ contract UPCInvest {
     function setSerialNumber(string memory _serialNumber) external onlyOwner {
         serialNumber = _serialNumber;
         emit SerialNumberUpdated(_serialNumber);
-    }
-
-    function getSerialNumber() external view returns (string memory) {
-        return serialNumber;
     }
 
     // ========== OWNER FUNCTIONS ==========
@@ -118,12 +143,9 @@ contract UPCInvest {
         require(_newAddress != address(0), "Invalid address");
 
         Comrade storage comrade = comrades[_index];
-        
-        // Calculate new total percentage
         uint256 newTotal = totalComradePercentage - comrade.percentage + _newPercentage;
         require(newTotal <= 10000, "Total percentage exceeded");
 
-        // Update values
         totalComradePercentage = newTotal;
         comrade.comradeAddress = _newAddress;
         comrade.percentage = _newPercentage;
@@ -143,7 +165,58 @@ contract UPCInvest {
         comrades.pop();
     }
 
-    // ========== INVESTOR FUNCTIONS ==========
+    // ========== TOKEN MANAGEMENT ==========
+    function whitelistToken(address _tokenAddress, string memory _symbol) external onlyOwner {
+        require(_tokenAddress != address(0), "Invalid token address");
+        require(!whitelistedTokens[_tokenAddress].isActive, "Token already whitelisted");
+        
+        whitelistedTokens[_tokenAddress] = TokenInfo({
+            tokenAddress: _tokenAddress,
+            symbol: _symbol,
+            isActive: true
+        });
+        
+        whitelistedTokenAddresses.push(_tokenAddress);
+        emit TokenWhitelisted(_tokenAddress, _symbol);
+    }
+    
+    function removeToken(address _tokenAddress) external onlyOwner {
+        require(whitelistedTokens[_tokenAddress].isActive, "Token not whitelisted");
+        
+        whitelistedTokens[_tokenAddress].isActive = false;
+        
+        for (uint256 i = 0; i < whitelistedTokenAddresses.length; i++) {
+            if (whitelistedTokenAddresses[i] == _tokenAddress) {
+                whitelistedTokenAddresses[i] = whitelistedTokenAddresses[whitelistedTokenAddresses.length - 1];
+                whitelistedTokenAddresses.pop();
+                break;
+            }
+        }
+        
+        emit TokenRemoved(_tokenAddress);
+    }
+    
+    function getWhitelistedTokens() external view returns (TokenInfo[] memory) {
+        TokenInfo[] memory activeTokens = new TokenInfo[](whitelistedTokenAddresses.length);
+        uint256 activeCount = 0;
+        
+        for (uint256 i = 0; i < whitelistedTokenAddresses.length; i++) {
+            address tokenAddress = whitelistedTokenAddresses[i];
+            if (whitelistedTokens[tokenAddress].isActive) {
+                activeTokens[activeCount] = whitelistedTokens[tokenAddress];
+                activeCount++;
+            }
+        }
+        
+        TokenInfo[] memory result = new TokenInfo[](activeCount);
+        for (uint256 i = 0; i < activeCount; i++) {
+            result[i] = activeTokens[i];
+        }
+        
+        return result;
+    }
+
+    // ========== INVESTMENT FUNCTIONS ==========
     function invest() external payable {
         require(openForInvestment, "Investments closed");
         require(msg.value >= minInvestment, "Below minimum");
@@ -163,6 +236,40 @@ contract UPCInvest {
         investors[msg.sender].availableBalance += investmentAmount;
 
         emit Invested(msg.sender, investmentAmount, fee);
+    }
+
+    function investWithToken(address _tokenAddress, uint256 _amount) external {
+        require(openForInvestment, "Investments closed");
+        require(whitelistedTokens[_tokenAddress].isActive, "Token not whitelisted");
+        require(_amount >= minInvestment, "Below minimum");
+        require(_amount <= maxInvestment, "Above maximum");
+        
+        IERC20 token = IERC20(_tokenAddress);
+        uint256 allowance = token.allowance(msg.sender, address(this));
+        require(allowance >= _amount, "Check token allowance");
+        
+        uint256 fee = (_amount * FEE_PERCENTAGE) / 100;
+        uint256 investmentAmount = _amount - fee;
+        
+        require(token.transferFrom(msg.sender, feeWallet, fee), "Fee transfer failed");
+        require(token.transferFrom(msg.sender, address(this), investmentAmount), "Transfer failed");
+        
+        totalInvested += investmentAmount;
+
+        if (investors[msg.sender].totalInvested == 0) {
+            investorAddresses.push(msg.sender);
+        }
+        
+        investors[msg.sender].totalInvested += investmentAmount;
+        investors[msg.sender].availableBalance += investmentAmount;
+        
+        tokenInvestments[msg.sender][_tokenAddress] += investmentAmount;
+        investorTokenInvestments[msg.sender].push(TokenInvestment({
+            tokenAddress: _tokenAddress,
+            amount: investmentAmount
+        }));
+        
+        emit TokenInvested(msg.sender, _tokenAddress, investmentAmount, fee);
     }
 
     function releaseFunds(uint256 _amount) external onlyInvestor {
@@ -202,7 +309,7 @@ contract UPCInvest {
         }
 
         disbursements.push(Disbursement({
-            investor: address(0), // Marks as owner-initiated
+            investor: address(0),
             amount: amount,
             timestamp: block.timestamp,
             ownerAmount: ownerAmount,
@@ -248,5 +355,13 @@ contract UPCInvest {
     ) {
         return (upc, serialNumber);
     }
-}
 
+    function getInvestorTokenInvestments(address _investor) external view returns (TokenInvestment[] memory) {
+        return investorTokenInvestments[_investor];
+    }
+
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "Invalid address");
+        owner = newOwner;
+    }
+}

@@ -85,6 +85,57 @@
 				"type": "string[]"
 			},
 			{
+				"internalType": "address[][]",
+				"name": "",
+				"type": "address[][]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "getContractsByUser",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_upc",
+				"type": "string"
+			}
+		],
+		"name": "getContractsForUPC",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getMyContracts",
+		"outputs": [
+			{
 				"internalType": "address[]",
 				"name": "",
 				"type": "address[]"
@@ -125,9 +176,38 @@
 				"internalType": "string",
 				"name": "",
 				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
-		"name": "upcToContract",
+		"name": "upcToContracts",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "userToContracts",
 		"outputs": [
 			{
 				"internalType": "address",
@@ -16978,7 +17058,7 @@
     "137": {
       "events": {},
       "links": {},
-      "address": "0x966C0dD86c7b0198c0d4018d2E4eA1FD7062f95a",
+      "address": "0x6c62df16846c55637bf2254618b0a0f89e5b53c3",
       "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
     }
   },
