@@ -794,62 +794,65 @@ class UPCInvestCLI extends React.Component {
     }
   };
 
-  loadContract = async (address) => {
+loadContract = async (address) => {
+  try {
+    if (!address) {
+      address = this.state.investAddress;
+    }      
+    this.pushToTerminal(`Loading funding contract at: ${address}`);
+    
+    const contract = new ethers.Contract(
+      address,
+      UPCInvestmentABI.abi,
+      this.state.signer
+    );
+
     try {
-      if (!address) {
-        address = this.state.investAddress;
-      }      
-      this.pushToTerminal(`Loading funding contract at: ${address}`);
-      
-      const contract = new ethers.Contract(
-        address,
-        UPCInvestmentABI.abi,
-        this.state.signer
-      );
-  
-      try {
-        await contract.upc();
-      } catch (e) {
-        throw new Error('The specified address is not a valid UPCInvestment contract');
-      }
-
-      const owner = await contract.owner();
-      if (owner.toLowerCase() !== this.state.account.toLowerCase()) {
-        this.pushToTerminal('[[warning]]Warning: You are not the owner of this contract[[/warning]]');
-        this.pushToTerminal('[[warning]]Some functions may not be available[[/warning]]');
-      }
-  
-      const [upc, serial] = await Promise.all([
-        contract.upc(),
-        contract.serialNumber()
-      ]);
-      
-      this.setState({
-        currentContract: contract,
-        upc,
-        serialNumber: serial,
-        serialNumberInput: serial || ''
-      });
-  
-      this.pushToTerminal(`[[success]]Successfully loaded funding contract[[/success]]`);
-      this.pushToTerminal(`Address: ${address}`);
-      this.pushToTerminal(`UPC: ${upc}`);
-      this.pushToTerminal(`Owner: ${owner}`);
-      if (serial) {
-        this.pushToTerminal(`Serial Number: ${serial}`);
-      }
-
-      return {
-        address,
-        upc,
-        owner,
-        serialNumber: serial
-      };
-    } catch (error) {
-      this.pushToTerminal(`[[error]]Error loading contract: ${error.message}[[/error]]`);
-      throw error;
+      await contract.upc();
+    } catch (e) {
+      throw new Error('The specified address is not a valid UPCInvestment contract');
     }
-  };
+
+    const owner = await contract.owner();
+    if (owner.toLowerCase() !== this.state.account.toLowerCase()) {
+      this.pushToTerminal('[[warning]]Warning: You are not the owner of this contract[[/warning]]');
+      this.pushToTerminal('[[warning]]Some functions may not be available[[/warning]]');
+    }
+
+    const [upc, serial] = await Promise.all([
+      contract.upc(),
+      contract.serialNumber()
+    ]);
+    
+    this.setState({
+      currentContract: contract,
+      upc,
+      serialNumber: serial,
+      serialNumberInput: serial || ''
+    });
+
+    // Format the output as strings instead of returning an object
+    this.pushToTerminal(`[[success]]Successfully loaded funding contract[[/success]]`);
+    this.pushToTerminal(`Address: ${address}`);
+    this.pushToTerminal(`UPC: ${upc}`);
+    this.pushToTerminal(`Owner: ${owner}`);
+    if (serial) {
+      this.pushToTerminal(`Serial Number: ${serial}`);
+    }
+
+    // Return the contract details as formatted strings for the terminal
+    return [
+      `[[success]]Successfully loaded funding contract[[/success]]`,
+      `Address: ${address}`,
+      `UPC: ${upc}`,
+      `Owner: ${owner}`,
+      serial ? `Serial Number: ${serial}` : 'Serial Number: Not set'
+    ].join('\n');
+  } catch (error) {
+    this.pushToTerminal(`[[error]]Error loading contract: ${error.message}[[/error]]`);
+    throw error;
+  }
+};
 
   renderDashboardPanel = () => {
     return (
@@ -1477,48 +1480,44 @@ renderComradesPanel = () => {
               flexDirection: 'column'
             }}>
               {/* Navigation */}
-              <div style={{
-                display: 'flex',
-                marginBottom: '20px',
-                borderBottom: `1px solid ${CYBERPUNK.primary}`
-              }}>
-                <button 
-                  onClick={() => this.setActivePanel('dashboard')}
-                  style={{
-                    ...styles.navButton,
-                    borderBottom: activePanel === 'dashboard' ? `2px solid ${CYBERPUNK.primary}` : 'none'
-                  }}
-                >
-                  DASHBOARD
-                </button>
-                <button 
-                  onClick={() => this.setActivePanel('contract')}
-                  style={{
-                    ...styles.navButton,
-                    borderBottom: activePanel === 'contract' ? `2px solid ${CYBERPUNK.primary}` : 'none'
-                  }}
-                >
-                  CONTRACTS
-                </button>
-                <button 
-                  onClick={() => this.setActivePanel('investor')}
-                  style={{
-                    ...styles.navButton,
-                    borderBottom: activePanel === 'investor' ? `2px solid ${CYBERPUNK.primary}` : 'none'
-                  }}
-                >
-                  INVESTORS
-                </button>
-                <button 
-                  onClick={() => this.setActivePanel('comrades')}
-                  style={{
-                    ...styles.navButton,
-                    borderBottom: activePanel === 'comrades' ? `2px solid ${CYBERPUNK.primary}` : 'none'
-                  }}
-                >
-                  COMRADES
-                </button>
-              </div>
+                <div style={styles.navContainer}>
+                  <button 
+                    onClick={() => this.setActivePanel('dashboard')}
+                    style={{
+                      ...styles.navButton,
+                      borderBottom: activePanel === 'dashboard' ? `2px solid ${CYBERPUNK.primary}` : 'none'
+                    }}
+                  >
+                    DASHBOARD
+                  </button>
+                  <button 
+                    onClick={() => this.setActivePanel('contract')}
+                    style={{
+                      ...styles.navButton,
+                      borderBottom: activePanel === 'contract' ? `2px solid ${CYBERPUNK.primary}` : 'none'
+                    }}
+                  >
+                    CONTRACTS
+                  </button>
+                  <button 
+                    onClick={() => this.setActivePanel('investor')}
+                    style={{
+                      ...styles.navButton,
+                      borderBottom: activePanel === 'investor' ? `2px solid ${CYBERPUNK.primary}` : 'none'
+                    }}
+                  >
+                    INVESTORS
+                  </button>
+                  <button 
+                    onClick={() => this.setActivePanel('comrades')}
+                    style={{
+                      ...styles.navButton,
+                      borderBottom: activePanel === 'comrades' ? `2px solid ${CYBERPUNK.primary}` : 'none'
+                    }}
+                  >
+                    COMRADES
+                  </button>
+                </div>
 
               {/* Panel content */}
               <div style={{
@@ -1757,7 +1756,11 @@ const styles = {
     fontWeight: 'bold',
     textTransform: 'uppercase',
     fontSize: '14px',
-    marginRight: '10px'
+    marginRight: '10px',
+  '@media (max-width: 480px)': {
+    padding: '10px 15px',
+    fontSize: '12px'
+  }
   },
   divider: {
     height: '1px',
@@ -1780,6 +1783,31 @@ const styles = {
     marginLeft: '10px',
     width: '15px',
     height: '15px'
+  },
+  navContainer: {
+    display: 'flex',
+    marginBottom: '20px',
+    borderBottom: `1px solid ${CYBERPUNK.primary}`,
+    overflowX: 'auto',
+    whiteSpace: 'nowrap',
+    WebkitOverflowScrolling: 'touch', // For smooth scrolling on iOS
+    scrollbarWidth: 'none', // Hide scrollbar for Firefox
+    '&::-webkit-scrollbar': {
+      display: 'none' // Hide scrollbar for Chrome/Safari
+    }
+  },
+  navButton: {
+    padding: '10px 20px',
+    backgroundColor: 'transparent',
+    color: CYBERPUNK.primary,
+    border: 'none',
+    cursor: 'pointer',
+    fontFamily: 'monospace',
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    fontSize: '14px',
+    marginRight: '10px',
+    flexShrink: 0 // Prevent buttons from shrinking
   }
 };
 
