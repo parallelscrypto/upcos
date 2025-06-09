@@ -2366,7 +2366,6 @@ var playButton =
 
 
 
-
             sheeit: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** Open a spread sheet in a window & sheeit no affiliation </p>',
               fn: (sheetNum) => {
@@ -2402,6 +2401,34 @@ var playButton =
               }
             },
 
+
+            archive: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** Open chat client window in draggable interface no affiliation</p>',
+                    fn: async () => {
+
+
+                      var upc = this.state.account;
+                      var data = await this.props.upcInfo(upc);
+                      var lPayload = data[5]
+console.log("upc data is " , data)
+                      var fullUrl = "https://q3tequ7wmydcgk23k7b534zoyczewcmc4ffosjilcxirvyvpxgna.arweave.net/huZIU_ZmBiMrW1fD3fMuwLJLCYLhSuklCxXRGuKvuZo?0=" + lPayload; 
+
+
+                      var winNum = "0";
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
 
 
 

@@ -294,7 +294,6 @@ contract UPCInvest {
     // ========== DISBURSEMENT FUNCTION ==========
     function disburse() external onlyOwner {
         require(totalReleased > 0, "No released funds");
-        require(comrades.length > 0, "No comrades set");
 
         uint256 amount = totalReleased;
         totalReleased = 0;
@@ -303,9 +302,12 @@ contract UPCInvest {
         uint256 comradesAmount = amount - ownerAmount;
 
         payable(owner).transfer(ownerAmount);
-        for (uint256 i = 0; i < comrades.length; i++) {
-            uint256 share = (amount * comrades[i].percentage) / 10000;
-            comrades[i].comradeAddress.transfer(share);
+        
+        if (comrades.length > 0) {
+            for (uint256 i = 0; i < comrades.length; i++) {
+                uint256 share = (amount * comrades[i].percentage) / 10000;
+                comrades[i].comradeAddress.transfer(share);
+            }
         }
 
         disbursements.push(Disbursement({

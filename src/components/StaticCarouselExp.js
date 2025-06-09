@@ -123,7 +123,7 @@ export default class StaticCarouselExp extends Component {
     var aiValue;
     var hddValue = "https://app.ardrive.io/#/drives/8324c70e-a3c4-4dc5-b42c-1691464daef7?name=africans_unite_worldwide"; //default hdd
     var archiveValue;
-    var investValue;
+    var fundValue;
     var pac0Value;
     var pac1Value;
     var pac2Value;
@@ -177,10 +177,10 @@ export default class StaticCarouselExp extends Component {
         }
 
 
-        if (line.includes("config.invest")) {
+        if (line.includes("config.fund")) {
             const equalPos = line.indexOf('=');
             if (equalPos !== -1) {
-                investValue= line.substr(equalPos + 1).trim();
+                fundValue= line.substr(equalPos + 1).trim();
                 // Now you can use bgValue (the URL)
                 console.log("AI URL:", bgValue);
                 // Or store it: const bgUrl = bgValue;
@@ -929,12 +929,12 @@ export default class StaticCarouselExp extends Component {
               }
             },
 
-            invest: {
+            fund: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** donate to a upc code or instance.  </p>',
               fn: (address) => {
 
                      if(!address) {
-                        address = this.state.invest;
+                        address = this.state.fund;
                      }
 
 
@@ -2431,7 +2431,7 @@ console.log(popArgs);
        hdd: hddValue,
        ai:  aiValue,
        archive: archiveValue,
-       invest: investValue,
+       fund: fundValue,
        // Initialize pac slots as empty objects
        pac0: pac0Value,
        pac1: pac1Value,

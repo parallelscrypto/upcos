@@ -48,7 +48,7 @@ class UPCInvestCLI extends React.Component {
   initConnection = async () => {
     const CONTRACT_ADDRESSES = {
       INVESTMENT: '0xf98Fbb7A0B85de590D30f3970d25D45619cb25E3',
-      FACTORY: '0x6c62df16846c55637bf2254618b0a0f89e5b53c3'
+      FACTORY: '0xD73046C401Da590E2d1CeFf9572621410782D590'
     };
 
     try {
@@ -101,17 +101,17 @@ class UPCInvestCLI extends React.Component {
             // Verify ownership
             const owner = await this.state.currentContract.owner();
             if (owner.toLowerCase() !== this.state.account.toLowerCase()) {
-                throw new Error('You must be the contract owner to set investment conditions');
+                throw new Error('You must be the contract owner to set funding conditions');
             }
 
             const isOpenBool = isOpen.toLowerCase() === 'true' || isOpen === '1';
             const minWei = ethers.utils.parseEther(min.toString());
             const maxWei = ethers.utils.parseEther(max.toString());
 
-            this.pushToTerminal(`Setting investment conditions...`);
+            this.pushToTerminal(`Setting funding conditions...`);
             this.pushToTerminal(`Min: ${min} ETH (${minWei.toString()} wei)`);
             this.pushToTerminal(`Max: ${max} ETH (${maxWei.toString()} wei)`);
-            this.pushToTerminal(`Open for investment: ${isOpenBool}`);
+            this.pushToTerminal(`Open for funding: ${isOpenBool}`);
 
             const tx = await this.state.currentContract.setInvestmentConditions(
                 minWei,
@@ -184,6 +184,88 @@ class UPCInvestCLI extends React.Component {
 
 
 
+  // ========== INVESTOR COMMAND HANDLERS ==========
+  listInvestors = async () => {
+    try {
+      if (!this.state.currentContract) {
+        throw new Error('No contract loaded');
+      }
+  
+      const investors = await this.state.currentContract.getInvestors();
+      
+      this.pushToTerminal('[[header]]=== Investors ===[[/header]]');
+      
+      if (investors.length === 0) {
+        this.pushToTerminal('No investors found');
+        return;
+      }
+  
+      investors.forEach((investor, idx) => {
+        this.pushToTerminal(`  ${idx + 1}. ${investor}`);
+      });
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
+    }
+  };
+  
+  getInvestorDetails = async (investorAddress) => {
+    try {
+      if (!this.state.currentContract) {
+        throw new Error('No contract loaded');
+      }
+  
+      const [details, tokenInvestments] = await Promise.all([
+        this.state.currentContract.getInvestorDetails(investorAddress),
+        this.state.currentContract.getInvestorTokenInvestments(investorAddress)
+      ]);
+  
+      const [totalInvested, availableBalance, releasedBalance] = details;
+  
+      this.pushToTerminal(`[[header]]=== Investor Details (${investorAddress}) ===[[/header]]`);
+      this.pushToTerminal(`Total Invested: ${ethers.utils.formatEther(totalInvested)} ETH`);
+      this.pushToTerminal(`Available Balance: ${ethers.utils.formatEther(availableBalance)} ETH`);
+      this.pushToTerminal(`Released Balance: ${ethers.utils.formatEther(releasedBalance)} ETH`);
+  
+      if (tokenInvestments.length > 0) {
+        this.pushToTerminal('\n[[header]]Token Investments:[[/header]]');
+        tokenInvestments.forEach((investment, idx) => {
+          this.pushToTerminal(`  ${idx + 1}. ${investment.symbol || 'Unknown'}: ${ethers.utils.formatUnits(investment.amount, 18)}`);
+        });
+      } else {
+        this.pushToTerminal('\nNo token investments found');
+      }
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
+    }
+  };
+  
+  getInvestorTokenInvestments = async (investorAddress) => {
+    try {
+      if (!this.state.currentContract) {
+        throw new Error('No contract loaded');
+      }
+  
+      const investments = await this.state.currentContract.getInvestorTokenInvestments(investorAddress);
+      
+      this.pushToTerminal(`[[header]]=== Token Investments (${investorAddress}) ===[[/header]]`);
+      
+      if (investments.length === 0) {
+        this.pushToTerminal('No token investments found');
+        return;
+      }
+  
+      investments.forEach((investment, idx) => {
+        this.pushToTerminal(`  ${idx + 1}. Token: ${investment.tokenAddress}`);
+        this.pushToTerminal(`     Amount: ${ethers.utils.formatUnits(investment.amount, 18)}`);
+      });
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
+    }
+  };
+
+
+
+
   // ========== CONTRACT COMMAND HANDLERS ==========
   getContractInfo = async () => {
     try {
@@ -220,7 +302,7 @@ class UPCInvestCLI extends React.Component {
         value: ethers.utils.parseEther(amount.toString())
       });
       await tx.wait();
-      this.pushToTerminal(`[[success]]Successfully invested ${amount} ETH[[/success]]`);
+      this.pushToTerminal(`[[success]]Successfully funded ${amount} ETH[[/success]]`);
     } catch (error) {
       this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
     }
@@ -238,7 +320,7 @@ class UPCInvestCLI extends React.Component {
         ethers.utils.parseUnits(amount.toString(), 18) // Assuming 18 decimals
       );
       await tx.wait();
-      this.pushToTerminal(`[[success]]Successfully invested ${amount} tokens[[/success]]`);
+      this.pushToTerminal(`[[success]]Successfully funded ${amount} tokens[[/success]]`);
     } catch (error) {
       this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
     }
@@ -340,7 +422,7 @@ class UPCInvestCLI extends React.Component {
       if (!this.state.currentContract) {
         throw new Error('No contract loaded');
       }
-
+      percentage = percentage * 100; 
       this.pushToTerminal(`Adding comrade ${address} with ${percentage}% share...`);
       const tx = await this.state.currentContract.addComrade(
         address,
@@ -360,6 +442,7 @@ class UPCInvestCLI extends React.Component {
         throw new Error('No contract loaded');
       }
 
+      percentage = percentage * 100; 
       this.pushToTerminal(`Updating comrade at index ${index}...`);
       const tx = await this.state.currentContract.updateComrade(
         index,
@@ -390,8 +473,8 @@ class UPCInvestCLI extends React.Component {
       }
 
       comrades.forEach((comrade, idx) => {
-        this.pushToTerminal(`  ${idx + 1}. Address: ${comrade.addr}`);
-        this.pushToTerminal(`     Percentage: ${comrade.percentage}%`);
+        this.pushToTerminal(`  ${idx + 1}. Address: ${comrade.comradeAddress}`);
+        this.pushToTerminal(`     Percentage: ${comrade.percentage/100}%`);
         this.pushToTerminal(`     Description: ${comrade.description}`);
       });
     } catch (error) {
@@ -534,7 +617,7 @@ class UPCInvestCLI extends React.Component {
             if (!address) {
                 address = this.state.investAddress;
             }      
-            this.pushToTerminal(`Loading investment contract at: ${address}`);
+            this.pushToTerminal(`Loading funding contract at: ${address}`);
             
             const contract = new ethers.Contract(
                 address,
@@ -567,7 +650,7 @@ class UPCInvestCLI extends React.Component {
                 serialNumber: serial
             });
         
-            this.pushToTerminal(`[[success]]Successfully loaded investment contract[[/success]]`);
+            this.pushToTerminal(`[[success]]Successfully loaded funding contract[[/success]]`);
             this.pushToTerminal(`Address: ${address}`);
             this.pushToTerminal(`UPC: ${upc}`);
             this.pushToTerminal(`Owner: ${owner}`);
@@ -625,14 +708,14 @@ class UPCInvestCLI extends React.Component {
               description: 'Show contract details',
               fn: this.getContractInfo
             },
-            invest: {
-              description: 'Invest ETH',
-              usage: 'invest <amount>',
+            fund: {
+              description: 'fund ETH',
+              usage: 'fund <amount>',
               fn: (amount) => this.invest(amount)
             },
-            investtoken: {
-              description: 'Invest with tokens',
-              usage: 'investtoken <address> <amount>',
+            fundtoken: {
+              description: 'Fund with tokens',
+              usage: 'fundtoken <address> <amount>',
               fn: (tokenAddress, amount) => this.investWithToken(tokenAddress, amount)
             },
             whitelist: {
@@ -701,20 +784,34 @@ class UPCInvestCLI extends React.Component {
                 fn: (newOwner) => this.transferOwnership(newOwner)
             },
             setconditions: {
-              description: 'Set investment conditions',
+              description: 'Set funding conditions',
               usage: 'setconditions <minETH> <maxETH> <true/false>',
               fn: (min, max, isOpen) => this.setInvestmentConditions(min, max, isOpen)
             },
             getconditions: {
-              description: 'Get current investment conditions',
+              description: 'Get current funding conditions',
               fn: this.getInvestmentConditions
+            },
+            listinvestors: {
+              description: 'List all investors',
+              fn: this.listInvestors
+            },
+            investor: {
+              description: 'Get investor details',
+              usage: 'investor <address>',
+              fn: (address) => this.getInvestorDetails(address)
+            },
+            investortokens: {
+              description: 'Get investor token investments',
+              usage: 'investortokens <address>',
+              fn: (address) => this.getInvestorTokenInvestments(address)
             }
           }}
           dangerMode={true}
           welcomeMessage={`
             [[header]]
             ===================================
-            UPC Investment CyberTerm v2.4.1
+            UPC Funding CyberTerm v2.4.1
             ===================================
             [[/header]]
             [[secondary]]Type 'help' for command list[[/secondary]]
@@ -723,7 +820,7 @@ class UPCInvestCLI extends React.Component {
               '\n[[error]]Not connected[[/error]]'}
           `}
           ignoreCommandCase={true}
-          promptLabel={'user@upc-invest:~$'}
+          promptLabel={'user@upc-fund:~$'}
           promptLabelStyle={{
             color: CYBERPUNK.primary,
             fontWeight: 'bold'
