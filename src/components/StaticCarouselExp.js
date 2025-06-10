@@ -2643,23 +2643,21 @@ console.log(popArgs);
                 //var currentUrl = window.location.href;
                 var currentUrl = url;
 
-                var page = this.getMplayer(currentUrl);
  
 
                 var yt = false;
-                if(url.includes('https://youtu.be')) {
-                   //https://youtu.be/uxRIuKVh5u4?si=KzSVl4tsPzMas_C9
-                   url = url.replace('.be/','be.com/embed/');
-                   yt = true;
-                }
-                else if(url.includes("https://youtube.com/shorts")) {
-                   url = url.replace('shorts','embed');
-                   yt = true;
-                }
-                else if(url.includes("live")) {
-                   url = url.replace('live','embed');
-                   yt = true;
-                }
+
+
+if (currentUrl.includes('https://youtu.be')) {
+    currentUrl = 'https://www.youtube.com/embed/' + currentUrl.slice(17, 28); // Extract 11 chars after "youtu.be/"
+} 
+else if (currentUrl.includes("https://youtube.com/shorts")) {
+    currentUrl = 'https://www.youtube.com/embed/' + currentUrl.slice(24, 35); // Extract 11 chars after "shorts/"
+} 
+else if (currentUrl.includes("live")) {
+    currentUrl = 'https://www.youtube.com/embed/' + currentUrl.slice(20, 31); // Extract 11 chars after "live/"
+}
+                var page = this.getMplayer(currentUrl);
 
                 let containsHttp = false;
                 if(url.includes("https://")) {
@@ -3856,15 +3854,16 @@ src={srcImg} height="200" width="200"/></p>
 
   getMplayer = (fullUrl) => {
 
+    console.log("< IN GET MPLAYER >");
       var mplayer = 
-      <iframe className='video'
-
-              allowFullScreen="allowfullscreen"
-              frameBorder="0"
-              style={{height:"80vh",width:"100vw"}}
-              allow='camera;microphone;fullscreen'
-              title='upcOS-init'
-              sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+          <iframe 
+            className='video'
+            allowFullScreen={true}
+            frameBorder="0"
+            style={{height: "100vh", width: "100vw"}}
+            allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen'
+            title='upcOS-init'
+            sandbox='allow-downloads allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation allow-fullscreen'
               src={fullUrl}>
       </iframe>
 
@@ -3878,14 +3877,14 @@ src={srcImg} height="200" width="200"/></p>
       else if(fullUrl.length == 11 && !fullUrl.includes('http')) {
          const youtubeID = fullUrl
          mplayer =
-         <iframe className='video'
-
-                 allowFullScreen="allowfullscreen"
-                 frameBorder="0"
-                 style={{height:"100vh",width:"100vw"}}
-		 allow="camera; microphone; fullscreen"
-                 title='Youtube player'
-                 sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-fullscreen allow-popups allow-scripts allow-presentation'
+          <iframe 
+            className='video'
+            allowFullScreen={true}
+            frameBorder="0"
+            style={{height: "100vh", width: "100vw"}}
+            allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen'
+            title='upcOS-init'
+            sandbox='allow-downloads allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation allow-fullscreen'
                  src={`https://youtube.com/embed/${youtubeID}?autoplay=0`} >
          </iframe>
       }
@@ -3894,15 +3893,17 @@ src={srcImg} height="200" width="200"/></p>
          && !fullUrl.includes('soundcloud') && !fullUrl.includes('vimeo') 
          && !fullUrl.includes('whistia') && !fullUrl.includes('mixcloud') 
          && !fullUrl.includes('dailymotion') && !fullUrl.includes('twitch')) {
-            mplayer = <iframe className='video'
+            mplayer = 
+          <iframe 
+            className='video'
+            allowFullScreen={true}
+            frameBorder="0"
+            style={{height: "100vh", width: "100vw"}}
+            allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen'
+            title='upcOS-init'
+            sandbox='allow-downloads allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation allow-fullscreen'
 
-                    allowFullScreen="allowfullscreen"
-                    frameBorder="0"
-                    style={{height:"100vh",width:"96vw"}}
-		    allow="camera; microphone; fullscreen"
-                    title='3 upc dj player'
-                    sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
-                    src={fullUrl}>
+                   src={fullUrl}>
             </iframe>
 
       }
@@ -3911,28 +3912,28 @@ src={srcImg} height="200" width="200"/></p>
 
       else {
 
-     if(fullUrl.includes('https://youtu.be')) {
-        //https://youtu.be/uxRIuKVh5u4?si=KzSVl4tsPzMas_C9
-        fullUrl = fullUrl.replace('.be/','be.com/embed/');
-     }
-     else if(fullUrl.includes("https://youtube.com/shorts")) {
-        fullUrl = fullUrl.replace('shorts','embed');
-     }
-     else if(fullUrl.includes("live")) {
-        fullUrl = fullUrl.replace('live','embed');
-     }
+if (fullUrl.includes('https://youtu.be')) {
+    fullUrl = 'https://www.youtube.com/embed/' + fullUrl.slice(17, 28); // Extract 11 chars after "youtu.be/"
+} 
+else if (fullUrl.includes("https://youtube.com/shorts")) {
+    fullUrl = 'https://www.youtube.com/embed/' + fullUrl.slice(24, 35); // Extract 11 chars after "shorts/"
+} 
+else if (fullUrl.includes("live")) {
+    fullUrl = 'https://www.youtube.com/embed/' + fullUrl.slice(20, 31); // Extract 11 chars after "live/"
+}
 
 
+console.log("FULL YOUTUBE URL IS ",fullUrl);
 
       mplayer = 
-      <iframe className='video'
-
-              allowFullScreen="allowfullscreen"
-              frameBorder="0"
-              style={{height:"80vh",width:"100vw"}}
-              allow='camera;microphone;fullscreen'
-              title='upcOS-init'
-              sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
+          <iframe 
+            className='video'
+            allowFullScreen={true}
+            frameBorder="0"
+            style={{height: "100vh", width: "100vw"}}
+            allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen'
+            title='upcOS-init'
+            sandbox='allow-downloads allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation allow-fullscreen'
               src={fullUrl}>
       </iframe>
       }
@@ -4667,7 +4668,7 @@ console.log(hrn);
                                        style={{height:"80vh",width:"90vw"}}
                                        allow='camera;microphone;fullscreen'
                                        title='upcOS-init'
-                                       sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popuAllallow-scripts allow-presentation'
+                                       sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
                                        src={vr}>
                                </iframe>
                             </div>
@@ -5658,18 +5659,20 @@ alert("clicked term");
           vr = vr.replace('live','embed');
        }
 
+console.log("CONSOLE FULLLLLLLLSCREEN<<<<<<<<<<<<<<");
 
        mplayer = 
                 <div>
-                   <iframe className='video'
-                           allowFullScreen="allowfullscreen"
-                           frameBorder="0"
-                           style={{height:"100vh",width:"100vw"}}
-                           allow='camera;microphone;fullscreen'
-                           title='upcOS-init'
-                           sandbox='allow-downloads allow-modals allow-same-origin allow-forms allow-popups allow-scripts allow-presentation'
-                           src={vr}>
-                   </iframe>
+                    <iframe 
+                      className='video'
+                      allowFullScreen={true}
+                      frameBorder="0"
+                      style={{height: "100vh", width: "100vw"}}
+                      allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen'
+                      title='upcOS-init'
+                      sandbox='allow-downloads allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation allow-fullscreen'
+                      src={vr}>
+                    </iframe>
                 </div>
     }
 

@@ -203,7 +203,7 @@ class UPCInvestCLI extends React.Component {
     }));
   };
 
-  // ========== INVESTMENT CONDITIONS ==========
+  // ========== FUNDING CONDITIONS ==========
   setInvestmentConditions = async (min, max, isOpen) => {
     try {
       if (!this.state.currentContract) {
@@ -240,7 +240,7 @@ class UPCInvestCLI extends React.Component {
         }
       });
 
-      this.pushToTerminal('[[success]]Investment conditions updated successfully![[/success]]');
+      this.pushToTerminal('[[success]]Funding conditions updated successfully![[/success]]');
     } catch (error) {
       this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
     }
@@ -287,10 +287,10 @@ class UPCInvestCLI extends React.Component {
         }
       });
 
-      this.pushToTerminal('[[header]]=== Investment Conditions ===[[/header]]');
-      this.pushToTerminal(`Minimum Investment: ${ethers.utils.formatEther(min)} ETH`);
-      this.pushToTerminal(`Maximum Investment: ${ethers.utils.formatEther(max)} ETH`);
-      this.pushToTerminal(`Open for Investment: ${isOpen ? '[[success]]YES[[/success]]' : '[[error]]NO[[/error]]'}`);
+      this.pushToTerminal('[[header]]=== Funding Conditions ===[[/header]]');
+      this.pushToTerminal(`Minimum Funding: ${ethers.utils.formatEther(min)} ETH`);
+      this.pushToTerminal(`Maximum Funding: ${ethers.utils.formatEther(max)} ETH`);
+      this.pushToTerminal(`Open for Funding: ${isOpen ? '[[success]]YES[[/success]]' : '[[error]]NO[[/error]]'}`);
     } catch (error) {
       this.pushToTerminal(`[[error]]Error: ${error.message}[[/error]]`);
     }
@@ -305,10 +305,10 @@ class UPCInvestCLI extends React.Component {
   
       const investors = await this.state.currentContract.getInvestors();
       
-      this.pushToTerminal('[[header]]=== Investors ===[[/header]]');
+      this.pushToTerminal('[[header]]=== Funders ===[[/header]]');
       
       if (investors.length === 0) {
-        this.pushToTerminal('No investors found');
+        this.pushToTerminal('No funders found');
         return [];
       }
   
@@ -337,17 +337,17 @@ class UPCInvestCLI extends React.Component {
       const [totalInvested, availableBalance, releasedBalance] = details;
   
       this.pushToTerminal(`[[header]]=== Investor Details (${investorAddress}) ===[[/header]]`);
-      this.pushToTerminal(`Total Invested: ${ethers.utils.formatEther(totalInvested)} ETH`);
+      this.pushToTerminal(`Total Fundeded: ${ethers.utils.formatEther(totalInvested)} ETH`);
       this.pushToTerminal(`Available Balance: ${ethers.utils.formatEther(availableBalance)} ETH`);
       this.pushToTerminal(`Released Balance: ${ethers.utils.formatEther(releasedBalance)} ETH`);
   
       if (tokenInvestments.length > 0) {
-        this.pushToTerminal('\n[[header]]Token Investments:[[/header]]');
+        this.pushToTerminal('\n[[header]]Token Fundings:[[/header]]');
         tokenInvestments.forEach((investment, idx) => {
           this.pushToTerminal(`  ${idx + 1}. ${investment.symbol || 'Unknown'}: ${ethers.utils.formatUnits(investment.amount, 18)}`);
         });
       } else {
-        this.pushToTerminal('\nNo token investments found');
+        this.pushToTerminal('\nNo token fundings found');
       }
 
       return {
@@ -370,10 +370,10 @@ class UPCInvestCLI extends React.Component {
   
       const investments = await this.state.currentContract.getInvestorTokenInvestments(investorAddress);
       
-      this.pushToTerminal(`[[header]]=== Token Investments (${investorAddress}) ===[[/header]]`);
+      this.pushToTerminal(`[[header]]=== Token Fundings (${investorAddress}) ===[[/header]]`);
       
       if (investments.length === 0) {
-        this.pushToTerminal('No token investments found');
+        this.pushToTerminal('No token fundings found');
         return [];
       }
   
@@ -454,7 +454,7 @@ class UPCInvestCLI extends React.Component {
         throw new Error('No contract loaded');
       }
 
-      this.pushToTerminal(`Investing ${amount} tokens from ${tokenAddress}...`);
+      this.pushToTerminal(`Funding ${amount} tokens from ${tokenAddress}...`);
       const tx = await this.state.currentContract.investWithToken(
         tokenAddress,
         ethers.utils.parseUnits(amount.toString(), 18)
@@ -777,7 +777,7 @@ class UPCInvestCLI extends React.Component {
 
   createContract = async (upc) => {
     try {
-      this.pushToTerminal(`Creating new UPC Investment for ${upc}...`);
+      this.pushToTerminal(`Creating new UPC funding for ${upc}...`);
       const tx = await this.state.factory.createUPCInvestment(upc);
       await tx.wait();
       
@@ -810,7 +810,7 @@ loadContract = async (address) => {
     try {
       await contract.upc();
     } catch (e) {
-      throw new Error('The specified address is not a valid UPCInvestment contract');
+      throw new Error('The specified address is not a valid funding contract');
     }
 
     const owner = await contract.owner();
@@ -957,7 +957,7 @@ loadContract = async (address) => {
             </div>
           </div>
           <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>INVESTOR ACTIONS</h3>
+            <h3 style={styles.subTitle}>FUNDER ACTIONS</h3>
             <div style={styles.infoBox}>
               <input
                 type="text"
@@ -1104,10 +1104,10 @@ loadContract = async (address) => {
   renderInvestorPanel = () => {
     return (
       <div style={styles.panel}>
-        <h2 style={styles.panelTitle}>INVESTOR MANAGEMENT</h2>
+        <h2 style={styles.panelTitle}>FUNDER MANAGEMENT</h2>
         <div style={styles.gridContainer}>
           <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>LIST INVESTORS</h3>
+            <h3 style={styles.subTitle}>LIST FUNDERS</h3>
             <div style={styles.infoBox}>
               <button 
                 style={styles.button}
@@ -1118,7 +1118,7 @@ loadContract = async (address) => {
             </div>
           </div>
           <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>INVESTOR DETAILS</h3>
+            <h3 style={styles.subTitle}>FUNDER DETAILS</h3>
             <div style={styles.infoBox}>
               <input
                 type="text"
@@ -1137,7 +1137,7 @@ loadContract = async (address) => {
             </div>
           </div>
           <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>TOKEN INVESTMENTS</h3>
+            <h3 style={styles.subTitle}>TOKEN FUNDINGS</h3>
             <div style={styles.infoBox}>
               <button 
                 style={styles.button}
@@ -1174,7 +1174,7 @@ loadContract = async (address) => {
             </div>
           </div>
           <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>INVESTMENT CONDITIONS</h3>
+            <h3 style={styles.subTitle}>FUNDING CONDITIONS</h3>
             <div style={styles.infoBox}>
               <input
                 type="text"
@@ -1443,7 +1443,7 @@ renderComradesPanel = () => {
               fontSize: '24px',
               textShadow: `0 0 5px ${CYBERPUNK.primary}`
             }}>
-              UPC INVESTMENT TERMINAL
+              UPC FUNDING TERMINAL
             </h1>
             <div>
               <button 
@@ -1506,7 +1506,7 @@ renderComradesPanel = () => {
                       borderBottom: activePanel === 'investor' ? `2px solid ${CYBERPUNK.primary}` : 'none'
                     }}
                   >
-                    INVESTORS
+                    FUNDERS
                   </button>
                   <button 
                     onClick={() => this.setActivePanel('comrades')}
@@ -1646,7 +1646,7 @@ renderComradesPanel = () => {
                   fn: (address) => this.getInvestorDetails(address)
                 },
                 investortokens: {
-                  description: 'Get investor token investments',
+                  description: 'Get funder token fundings',
                   usage: 'investortokens <address>',
                   fn: (address) => this.getInvestorTokenInvestments(address)
                 }
