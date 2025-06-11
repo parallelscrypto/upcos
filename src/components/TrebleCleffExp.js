@@ -68,7 +68,7 @@ class TrebleCleffExp extends Component {
   }
 
    fetchConfig = async (url) => {
-     
+            console.log("json config is ", url);
        // Fetch the data from the URL
        const response = await fetch(url);
        
@@ -79,8 +79,9 @@ class TrebleCleffExp extends Component {
        
        // Parse the JSON data
        const data = await response.json();
+              console.log("data config is ", data);
        this.setState({ buttonConfig: data})
-       
+       return data;
 
    }
 
@@ -109,10 +110,6 @@ class TrebleCleffExp extends Component {
 
 
     let button0Label, button0Action, button0PPL,button0Custom=false, button1Label, button1Action, button1PPL, button1Custom=false, button2Label, button2Action, button2PPL, button2Custom=false,button3Action,button3Label, button3PPL, button3Custom=false,button4Action,button4Label, button4Custom=false,button4PPL, button0CSS, button1CSS, button2CSS, button3CSS, button4CSS;
-
-    if(!data) {
-        data = this.state.buttonConfig;
-    }
 
 
     let isTerm = this.props.terminal;
@@ -346,26 +343,21 @@ console.log("############CURRENT STATE ##############3",this.state);
     let jsonUrl;
 
     let config;
+    let finalConfig="";
+
+    console.log("config url is " , this.props.configUrl)
 
     if(this.props.configUrl) {
        //check if any config.button entries are set.  if so, the config will be completely ignored
        jsonUrl = this.props.configUrl;
        config  = await this.fetchConfig(jsonUrl);
+       finalConfig = config;
     }
+
+
 
     var middleButton = this.props.showPops
     var showPost = this.props.showPost
-
-
-
-
-    console.log("Button Configuration 777:", JSON.stringify(this.props.configRaw, null, 2));
-
-    var buttonsStr = JSON.stringify(this.props.configRaw, null, 2);
-
-
-
-
 
 
     this.state = {
@@ -373,7 +365,6 @@ console.log("############CURRENT STATE ##############3",this.state);
        upcStatus: upcStatus,
        channelNum: channelNum,
        middleButton: middleButton,
-       buttonConfig: buttonsStr
     }
 
     let button0Action = this.props.showHome;
@@ -390,14 +381,18 @@ console.log("############CURRENT STATE ##############3",this.state);
     this.setState({ button4Action})
     this.setState({ buttonConfig: this.props.configRaw})
 
-    let isSet = await this.setButtons(false,this.props.configRaw);
-    if(this.props.terminal==='true') {
-       isSet = await this.setButtons(true,this.props.configRaw);
+
+    if(finalConfig == "") {
+       finalConfig=this.props.configRaw;
     }
 
 
-console.log("CONFIGGGGGZZZZZZZ");
-console.log(this.props.configRaw);
+    let isSet = await this.setButtons(false,finalConfig);
+    if(this.props.terminal==='true') {
+       isSet = await this.setButtons(true,finalConfig);
+    }
+
+
 
     var upcNum  = this.props.account;
 
@@ -473,7 +468,7 @@ console.log(this.props.configRaw);
                         onClick={(e) => {
                                           let console1 = this.state.button1Terminal
                                           if( this.state.button1Custom ) {
-console.log("MOOOOOOOO");
+
                                              this.state.button1Action(this.state.button1PPL, console1)
                                           }
                                           else { 
@@ -489,7 +484,7 @@ console.log("MOOOOOOOO");
                                           let console2 = this.state.button2Terminal
                                           if( this.state.button2Custom ) {
 
-                                             console.log("^^^^^^^IS CONSOLE pos 2 no console",);
+
                                              this.state.button2Action(this.state.button2PPL,console2)
                                           }
                                           else { 
