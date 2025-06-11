@@ -133,6 +133,22 @@ export default class StaticCarouselExp extends Component {
     var pac2Command;
     var pac3Command;
 
+
+
+    // Initialize configRaw as an object to store button properties
+    var configRaw = {
+        buttons: []
+    };
+    
+    // Default style for buttons
+    const defaultButtonStyle = {
+        background: "#000000",
+        color: "green",
+        height: "10vh",
+        width: "20vw",
+        fontSize: "15px"
+    };
+
     const publicPacs = [];
     for (const line of lines) {
         const matchPac = line.match(/\b\w+ pac (\d+)$/);
@@ -186,6 +202,39 @@ export default class StaticCarouselExp extends Component {
                 // Or store it: const bgUrl = bgValue;
             }
         }
+
+
+        // Handle button configurations (positions 2,3,4,7,8,9)
+        const buttonMatch = line.match(/config\.button\.([2-4789])\.(.+?)=(.+)/);
+        if (buttonMatch) {
+            const position = parseInt(buttonMatch[1], 10);
+            const property = buttonMatch[2].trim();
+            const value = buttonMatch[3].trim();
+            
+            // Find or create the button config for this position
+            let button = configRaw.buttons.find(b => b.position === position);
+            if (!button) {
+                button = {
+                    position: position,
+                    title: "",
+                    payload: "",
+                    style: {...defaultButtonStyle} // Clone the default style
+                };
+                configRaw.buttons.push(button);
+            }
+            
+            // Update the button properties
+            if (property === "title") {
+                button.title = value;
+            } else if (property === "payload") {
+                button.payload = value;
+            } else if (Object.keys(defaultButtonStyle).includes(property)) {
+                // Update style property if it's one of the style properties
+                button.style[property] = value;
+            }
+        }
+
+
 
 
 
@@ -305,8 +354,7 @@ export default class StaticCarouselExp extends Component {
     }
 
 
-
-
+    
     // Define default values
     var shell = "upc";
     var pplCommand = "ppl";
@@ -2437,7 +2485,7 @@ console.log(popArgs);
        pac1: pac1Value,
        pac2: pac2Value,
        pac3: pac3Value,
-
+       configRaw: configRaw,
     }
 
 
@@ -5686,13 +5734,13 @@ render () {
 var show =
 <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
   <div>
-    <TrebleCleffExp dynamicPPL={this.dynamicPPL} resolvePPL={this.resolvePPL} showHome={this.showHome} showPost={this.showPost} middleButton={this.heroScan} showLoad={this.showLoad} handleFlip={this.handleFlip} showMission={this.showMission} showTerminal={this.handleFlip} terminal={"false"} configUrl={this.state.configUrl}/>
+    <TrebleCleffExp dynamicPPL={this.dynamicPPL} resolvePPL={this.resolvePPL} showHome={this.showHome} showPost={this.showPost} middleButton={this.heroScan} showLoad={this.showLoad} handleFlip={this.handleFlip} showMission={this.showMission} showTerminal={this.handleFlip} terminal={"false"} configUrl={this.state.configUrl} configRaw={this.state.configRaw}/>
     <Carousel maxTurns={'0'}>
       {this.state.slidesOG}
     </Carousel>
   </div>
   <div>
-    <TrebleCleffExp dynamicPPL={this.dynamicPPL} resolvePPL={this.resolvePPL} upc={this.state.account} doEtc={this.doEtc} showPostTerminal={this.showPostTerminal} doHack={this.doHack}  showHome={this.handleFlip} handleFlip={this.handleFlip} middleButton={this.doEtc} showPopsWithCode={this.showPopsWithCode}  showTerminal={this.showPopsWithCode}  execute={this.parsePop} showMission={this.handleFlip} msg={this.state.msg} terminal={"true"} configUrl={this.state.configUrl} />
+    <TrebleCleffExp dynamicPPL={this.dynamicPPL} resolvePPL={this.resolvePPL} upc={this.state.account} doEtc={this.doEtc} showPostTerminal={this.showPostTerminal} doHack={this.doHack}  showHome={this.handleFlip} handleFlip={this.handleFlip} middleButton={this.doEtc} showPopsWithCode={this.showPopsWithCode}  showTerminal={this.showPopsWithCode}  execute={this.parsePop} showMission={this.handleFlip} msg={this.state.msg} terminal={"true"} configUrl={this.state.configUrl} configRaw={this.state.configRaw} />
     {this.state.terminal}
 
 

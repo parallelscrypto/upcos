@@ -36,6 +36,7 @@ class TrebleCleffExp extends Component {
 
 
 
+
     this.state = {
        upcStatus: "",
        buttonBg: "#000000",
@@ -55,7 +56,8 @@ class TrebleCleffExp extends Component {
        showTerminal: showTerminal,
        upc: "",
        msg: props.msg,
-       handleFlip: flipFunction
+       handleFlip: flipFunction,
+       buttonConfig: props.configRaw || null, 
     }
   }
 
@@ -83,7 +85,7 @@ class TrebleCleffExp extends Component {
    }
 
    //position 0-4 as params
-   setButtons = async (isConsole=false) => {
+   setButtons = async (isConsole=false,data) => {
 
 
     const ogStyle = {
@@ -108,11 +110,14 @@ class TrebleCleffExp extends Component {
 
     let button0Label, button0Action, button0PPL,button0Custom=false, button1Label, button1Action, button1PPL, button1Custom=false, button2Label, button2Action, button2PPL, button2Custom=false,button3Action,button3Label, button3PPL, button3Custom=false,button4Action,button4Label, button4Custom=false,button4PPL, button0CSS, button1CSS, button2CSS, button3CSS, button4CSS;
 
+    if(!data) {
+        data = this.state.buttonConfig;
+    }
 
-    let data = this.state.buttonConfig;
 
     let isTerm = this.props.terminal;
 
+    console.log("in set BUTTONS ",data);
     button0CSS = button1CSS = button2CSS = button3CSS = ogStyle;
     button4CSS = ogMission;
     if( !data ) {
@@ -341,7 +346,9 @@ console.log("############CURRENT STATE ##############3",this.state);
     let jsonUrl;
 
     let config;
+
     if(this.props.configUrl) {
+       //check if any config.button entries are set.  if so, the config will be completely ignored
        jsonUrl = this.props.configUrl;
        config  = await this.fetchConfig(jsonUrl);
     }
@@ -349,11 +356,24 @@ console.log("############CURRENT STATE ##############3",this.state);
     var middleButton = this.props.showPops
     var showPost = this.props.showPost
 
+
+
+
+    console.log("Button Configuration 777:", JSON.stringify(this.props.configRaw, null, 2));
+
+    var buttonsStr = JSON.stringify(this.props.configRaw, null, 2);
+
+
+
+
+
+
     this.state = {
        account: this.props.account,
        upcStatus: upcStatus,
        channelNum: channelNum,
-       middleButton: middleButton
+       middleButton: middleButton,
+       buttonConfig: buttonsStr
     }
 
     let button0Action = this.props.showHome;
@@ -368,15 +388,16 @@ console.log("############CURRENT STATE ##############3",this.state);
     this.setState({ button2Action})
     this.setState({ button3Action})
     this.setState({ button4Action})
+    this.setState({ buttonConfig: this.props.configRaw})
 
-    let isSet = await this.setButtons();
+    let isSet = await this.setButtons(false,this.props.configRaw);
     if(this.props.terminal==='true') {
-       isSet = await this.setButtons(true);
+       isSet = await this.setButtons(true,this.props.configRaw);
     }
 
 
-console.log("STATE");
-console.log(this.state);
+console.log("CONFIGGGGGZZZZZZZ");
+console.log(this.props.configRaw);
 
     var upcNum  = this.props.account;
 
