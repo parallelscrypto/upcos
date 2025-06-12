@@ -7,6 +7,7 @@ import TrebleCleffExp from './TrebleCleffExp'
 import BassCleff from './BassCleff'
 import SerialBoxTerminal from './SerialBoxTerminal'
 import MLBBettingTerminal from './MLBBettingTerminal'
+import TradingBotTerminal from './TradingBotTerminal'
 import MonopolyCLI from './MonopolyCLI'
 import MemecoinFactory from './MemecoinFactory';
 import VideoArchiveTerminal from './VideoArchiveTerminal';
@@ -992,6 +993,29 @@ console.log("INVEST IS ", address);
                      var mplayer = <UPCInvestCLI address={address}/>;
 
                       var winNum=0
+                      if(winNum == "1") {
+                        terminal.pushToStdout(mplayer);
+                      }
+                      else {
+ 		        this.setState(prevState => ({ fullIpfs: mplayer }));
+		        this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		        this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+ 
+              }
+            },
+
+
+
+
+            bots: {
+		    description: '<p style="color:hotpink;font-size:1.1em">** open the memecoin generator </p>',
+              fn: (winNum=0) => {
+
+                     const terminal = this.progressTerminal.current
+
+                     var mplayer = <TradingBotTerminal/>;
+
                       if(winNum == "1") {
                         terminal.pushToStdout(mplayer);
                       }
