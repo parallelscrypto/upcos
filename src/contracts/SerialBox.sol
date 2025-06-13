@@ -3,349 +3,292 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-contract SerialBox is Ownable {
-    using EnumerableSet for EnumerableSet.Bytes32Set;
+interface IRawMaterial {
+    function getUpcOwner(string memory _upc) external view returns (address);
+}
 
-    // Token contract address
+contract SerialBox {
     address public constant REWARD_TOKEN = 0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118;
     
-    struct Reward {
-        string serialNumber;
-        address recipient;
-        string upc;
-        uint256 numTokens;
-        uint256 issueDate;
-        uint256 deadline;
-        bool claimed;
-        bool invalidated;
-    }
-
-    // Reward tracking
-    mapping(bytes32 => Reward) public rewards;
-    EnumerableSet.Bytes32Set private serialNumbers;
-    mapping(bytes32 => EnumerableSet.Bytes32Set) private upcToSerialNumbers;
+    address public owner;
+    string public upc;
+    string public serialNumber;
+    string public fullURL;
+    string public message;
+    uint256 public createdAt;
+    bytes32 private passwordHash;
     
-    // Statistics
-    uint256 public totalRewardsPaid;
-    uint256 public totalTokensDistributed;
-    uint256 public totalRewardsCreated;
-    uint256 public totalTokensReserved;
-
-    // UPC Analytics
-    struct UPCStats {
-        uint256 totalRewards;
-        uint256 totalTokens;
-        uint256 claimedRewards;
-        uint256 claimedTokens;
-        uint256 activeRewards;
-        uint256 activeTokens;
-        uint256 lastActivity;
+    event TokensDeposited(address indexed depositor, uint256 amount);
+    event TokensClaimed(address indexed claimer, uint256 amount);
+    event MessageUpdated(string newMessage);
+    event SerialNumberUpdated(string newSerialNumber);
+    event PasswordHashUpdated();
+    
+    constructor(address _owner, string memory _upc) {
+        owner = _owner;
+        upc = _upc;
+        createdAt = block.timestamp;
     }
-    mapping(bytes32 => UPCStats) public upcStatistics;
-    EnumerableSet.Bytes32Set private upcCodes;
+    
+    function deposit(uint256 _amount) external {
+        IERC20 token = IERC20(REWARD_TOKEN);
+        require(token.transferFrom(msg.sender, address(this), _amount), "Transfer failed");
+        emit TokensDeposited(msg.sender, _amount);
+    }
+    
+    function claim(string memory _password) external {
+        require(passwordHash != bytes32(0), "Password not set");
+        require(sha256(abi.encodePacked(_password)) == passwordHash, "Incorrect password");
+        
+        uint256 balance = IERC20(REWARD_TOKEN).balanceOf(address(this));
+        require(balance > 0, "No tokens to claim");
+        
+        IERC20 token = IERC20(REWARD_TOKEN);
+        require(token.transfer(msg.sender, balance), "Transfer failed");
+        emit TokensClaimed(msg.sender, balance);
+    }
+    
+    function setMessage(string memory _newMessage) external {
+        require(msg.sender == owner, "Only owner can update message");
+        message = _newMessage;
+        emit MessageUpdated(_newMessage);
+    }
+    
+    function setSerialNumber(string memory _newSerial) external {
+        serialNumber = _newSerial;
+        emit SerialNumberUpdated(_newSerial);
+    }
 
-    // Events
-    event RewardCreated(
-        string indexed serialNumber,
-        address indexed recipient,
+    function _bytes32ToString(bytes32 _bytes) internal pure returns (string memory) {
+        bytes memory bytesArray = new bytes(32);
+        for (uint256 i = 0; i < 32; i++) {
+            bytesArray[i] = _bytes[i];
+        }
+        return string(bytesArray);
+    }
+
+    function updateURL(string memory _newURL) external {
+        require(msg.sender == owner, "Only owner can update");
+        fullURL = _newURL;
+        serialNumber = _bytes32ToString(sha256(bytes(_newURL)));
+        emit SerialNumberUpdated(serialNumber);
+    }
+
+    function setPasswordHash(bytes32 _passwordHash) external {
+        require(msg.sender == owner, "Only owner can set password");
+        passwordHash = _passwordHash;
+        emit PasswordHashUpdated();
+    }
+    
+    function getPasswordHash() external view returns (bytes32) {
+        require(msg.sender == owner, "Only owner can view password hash");
+        return passwordHash;
+    }
+    
+    function getInfo() external view returns (
+        string memory _upc,
+        string memory _serialNumber,
+        string memory _fullURL,
+        string memory _message,
+        uint256 _balance,
+        uint256 _createdAt,
+        bool _hasPassword
+    ) {
+        return (
+            upc,
+            serialNumber,
+            fullURL,
+            message,
+            IERC20(REWARD_TOKEN).balanceOf(address(this)),
+            createdAt,
+            passwordHash != bytes32(0)
+        );
+    }
+    
+    function balance() external view returns (uint256) {
+        return IERC20(REWARD_TOKEN).balanceOf(address(this));
+    }
+}
+
+contract SerialBoxFactory is Ownable {
+    address public constant REWARD_TOKEN = 0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118;
+    address public constant RAW_MATERIAL_ADDRESS = 0x2C343942548319cCfc05666FF15d73E8569FaEdf;
+    
+    uint256 public rewardTokens = 1 ether;
+    uint256 public creationPrice = 0.1 ether;
+    uint256 public factoryCreatedAt;
+    
+    struct SerialBoxInfo {
+        address owner;
+        string upc;
+        string serialNumber;
+        string url;
+        address contractAddress;
+        uint256 createdAt;
+    }
+    
+    mapping(string => SerialBoxInfo) public serialBoxes;
+    mapping(address => string[]) public ownerToSerialNumbers;
+    mapping(string => string[]) public upcToSerialNumbers;
+    
+    event SerialBoxCreated(
+        address indexed owner,
         string upc,
-        uint256 numTokens,
-        uint256 issueDate,
-        uint256 deadline
+        string serialNumber,
+        address contractAddress,
+        uint256 createdAt
     );
-    event RewardClaimed(
+    
+    event URLUpdated(
         string indexed serialNumber,
-        address indexed recipient,
-        uint256 numTokens
+        string newUrl,
+        uint256 rewardAmount
     );
-    event RewardInvalidated(
-        string indexed serialNumber,
-        string reason
-    );
-    event TokensDeposited(
-        address indexed depositor,
-        uint256 amount
-    );
-
-    constructor() Ownable(msg.sender) {}
-
-    // Helper function to hash strings
-    function _hashString(string memory s) private pure returns (bytes32) {
-        return keccak256(bytes(s));
+    
+    event RewardTokensUpdated(uint256 newAmount);
+    event CreationPriceUpdated(uint256 newPrice);
+    event TokensDeposited(uint256 amount);
+    
+    constructor() Ownable(msg.sender) {
+        factoryCreatedAt = block.timestamp;
     }
 
-    // Modifiers
-    modifier rewardExists(string memory serialNumber) {
-        require(serialNumbers.contains(_hashString(serialNumber)), "Reward does not exist");
-        _;
-    }
-
-    // Reward Management
-    function addReward(
-        string memory serialNumber,
-        address recipient,
-        string memory upc,
-        uint256 numTokens
-    ) external {
-        bytes32 serialHash = _hashString(serialNumber);
-        require(!serialNumbers.contains(serialHash), "Serial number exists");
-        require(numTokens > 0, "Token amount must be positive");
-        require(recipient != address(0), "Invalid recipient");
-        require(bytes(upc).length > 0, "UPC cannot be empty");
+    function createSerialBox(string memory _upc) external payable {
+        require(bytes(_upc).length > 0, "UPC cannot be empty");
         
-        uint256 currentBalance = IERC20(REWARD_TOKEN).balanceOf(address(this));
-        require(currentBalance >= totalTokensReserved + numTokens, "Insufficient tokens");
-
-        uint256 issueDate = block.timestamp;
-        uint256 deadline = issueDate + 30 days;
+        IRawMaterial rawMaterial = IRawMaterial(RAW_MATERIAL_ADDRESS);
+        address upcOwner = rawMaterial.getUpcOwner(_upc);
         
-        rewards[serialHash] = Reward({
-            serialNumber: serialNumber,
-            recipient: recipient,
-            upc: upc,
-            numTokens: numTokens,
-            issueDate: issueDate,
-            deadline: deadline,
-            claimed: false,
-            invalidated: false
+        uint256 requiredPayment = creationPrice;
+        
+        if (upcOwner != address(0)) {
+            require(upcOwner == msg.sender, "UPC owned by another address");
+            requiredPayment = (creationPrice * 5) / 100;
+        }
+        
+        require(msg.value >= requiredPayment, "Insufficient payment");
+        
+        payable(owner()).transfer(requiredPayment);
+        
+        if (msg.value > requiredPayment) {
+            payable(msg.sender).transfer(msg.value - requiredPayment);
+        }
+        
+        string memory initialSerial = string(abi.encodePacked(
+            _upc, "-", 
+            _toString(uint160(msg.sender)), "-", 
+            _toString(block.timestamp)
+        ));
+        
+        SerialBox newSerialBox = new SerialBox(msg.sender, _upc);
+        uint256 boxCreatedAt = block.timestamp;
+        
+        SerialBoxInfo memory info = SerialBoxInfo({
+            owner: msg.sender,
+            upc: _upc,
+            serialNumber: initialSerial,
+            url: "",
+            contractAddress: address(newSerialBox),
+            createdAt: boxCreatedAt
         });
         
-        serialNumbers.add(serialHash);
-        upcToSerialNumbers[_hashString(upc)].add(serialHash);
-        _updateUPCStats(upc, numTokens, false);
+        serialBoxes[initialSerial] = info;
+        ownerToSerialNumbers[msg.sender].push(initialSerial);
+        upcToSerialNumbers[_upc].push(initialSerial);
         
-        totalTokensReserved += numTokens;
-        totalRewardsCreated++;
-        
-        emit RewardCreated(
-            serialNumber,
-            recipient,
-            upc,
-            numTokens,
-            issueDate,
-            deadline
-        );
+        emit SerialBoxCreated(msg.sender, _upc, initialSerial, address(newSerialBox), boxCreatedAt);
     }
 
-    function claimReward(string memory serialNumber) external rewardExists(serialNumber) {
-        bytes32 serialHash = _hashString(serialNumber);
-        Reward storage reward = rewards[serialHash];
+    function updateURL(string memory _newURL) external {
+        require(bytes(_newURL).length > 0, "URL cannot be empty");
         
-        require(msg.sender == reward.recipient, "Only recipient can claim");
-        require(!reward.claimed, "Reward already claimed");
-        require(!reward.invalidated, "Reward invalidated");
-        require(block.timestamp <= reward.deadline, "Claim period expired");
+        string[] storage serials = ownerToSerialNumbers[msg.sender];
+        require(serials.length > 0, "No boxes found");
         
-        IERC20 token = IERC20(REWARD_TOKEN);
-        require(token.transfer(reward.recipient, reward.numTokens), "Transfer failed");
+        string storage currentSerial = serials[0];
+        SerialBoxInfo storage info = serialBoxes[currentSerial];
+        require(info.contractAddress != address(0), "SerialBox not found");
+
+        SerialBox(info.contractAddress).updateURL(_newURL);
         
-        reward.claimed = true;
-        totalTokensReserved -= reward.numTokens;
-        totalRewardsPaid++;
-        totalTokensDistributed += reward.numTokens;
-        _updateUPCStats(reward.upc, reward.numTokens, true);
+        string memory newSerialNumber = _bytes32ToString(sha256(bytes(_newURL)));
         
-        emit RewardClaimed(serialNumber, reward.recipient, reward.numTokens);
+        info.serialNumber = newSerialNumber;
+        info.url = _newURL;
+        
+        emit URLUpdated(newSerialNumber, _newURL, 0);
     }
 
-    function invalidateExpiredRewards() external {
-        uint256 currentTime = block.timestamp;
-        uint256 count = 0;
-        
-        for (uint256 i = 0; i < serialNumbers.length(); i++) {
-            bytes32 serialHash = serialNumbers.at(i);
-            Reward storage reward = rewards[serialHash];
-            
-            if (!reward.claimed && !reward.invalidated && currentTime > reward.deadline) {
-                reward.invalidated = true;
-                totalTokensReserved -= reward.numTokens;
-                count++;
-                emit RewardInvalidated(reward.serialNumber, "Claim period expired");
-            }
+    function _bytes32ToString(bytes32 _bytes) internal pure returns (string memory) {
+        bytes memory bytesArray = new bytes(32);
+        for (uint256 i = 0; i < 32; i++) {
+            bytesArray[i] = _bytes[i];
         }
+        return string(bytesArray);
     }
 
-    // Token Management
-    function depositTokens(uint256 amount) external {
-        IERC20 token = IERC20(REWARD_TOKEN);
-        require(token.transferFrom(msg.sender, address(this), amount), "Transfer failed");
-        emit TokensDeposited(msg.sender, amount);
+    function _toString(uint256 value) internal pure returns (string memory) {
+        if (value == 0) return "0";
+        uint256 temp = value;
+        uint256 digits;
+        while (temp != 0) {
+            digits++;
+            temp /= 10;
+        }
+        bytes memory buffer = new bytes(digits);
+        while (value != 0) {
+            digits -= 1;
+            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
+            value /= 10;
+        }
+        return string(buffer);
     }
 
-    function getAvailableTokens() external view returns (uint256) {
-        return IERC20(REWARD_TOKEN).balanceOf(address(this)) - totalTokensReserved;
+    function _toString(address addr) internal pure returns (string memory) {
+        return _toString(uint160(addr));
     }
 
-    // Statistics
-    function getStats() external view returns (
-        uint256 availableTokens,
-        uint256 reservedTokens,
-        uint256 rolling5DayBalance,
-        uint256 rolling10DayBalance,
-        uint256 rolling20DayBalance,
-        uint256 rolling30DayBalance,
-        uint256 totalPaidRewards,
-        uint256 totalPaidTokens,
-        uint256 totalCreatedRewards
-    ) {
-        availableTokens = IERC20(REWARD_TOKEN).balanceOf(address(this)) - totalTokensReserved;
-        reservedTokens = totalTokensReserved;
-        totalPaidRewards = totalRewardsPaid;
-        totalPaidTokens = totalTokensDistributed;
-        totalCreatedRewards = totalRewardsCreated;
+    function getSerialBoxesByUPC(string memory _upc) external view returns (SerialBoxInfo[] memory) {
+        string[] memory serials = upcToSerialNumbers[_upc];
+        SerialBoxInfo[] memory result = new SerialBoxInfo[](serials.length);
         
-        (rolling5DayBalance, rolling10DayBalance, rolling20DayBalance, rolling30DayBalance) = 
-            _calculateRollingBalances(block.timestamp);
-    }
-
-    // UPC Analytics
-    function _updateUPCStats(string memory upc, uint256 tokenAmount, bool isClaim) private {
-        bytes32 upcHash = _hashString(upc);
-        if (!upcCodes.contains(upcHash)) {
-            upcCodes.add(upcHash);
+        for (uint i = 0; i < serials.length; i++) {
+            result[i] = serialBoxes[serials[i]];
         }
-
-        UPCStats storage stats = upcStatistics[upcHash];
-        if (isClaim) {
-            stats.claimedRewards++;
-            stats.claimedTokens += tokenAmount;
-            stats.activeRewards--;
-            stats.activeTokens -= tokenAmount;
-        } else {
-            stats.totalRewards++;
-            stats.totalTokens += tokenAmount;
-            stats.activeRewards++;
-            stats.activeTokens += tokenAmount;
-        }
-        stats.lastActivity = block.timestamp;
-    }
-
-    struct UPCRanking {
-        string upc;
-        uint256 value;
-    }
-
-    function getTop10ByTotalTokens(uint256 minDate) public view returns (UPCRanking[] memory) {
-        return _getTop10(minDate, 0);
-    }
-
-    function getTop10ByClaimedTokens(uint256 minDate) public view returns (UPCRanking[] memory) {
-        return _getTop10(minDate, 1);
-    }
-
-    function getTop10ByActiveTokens(uint256 minDate) public view returns (UPCRanking[] memory) {
-        return _getTop10(minDate, 2);
-    }
-
-    function getTop10ByRewardCount(uint256 minDate) public view returns (UPCRanking[] memory) {
-        return _getTop10(minDate, 3);
-    }
-
-    function _getTop10(uint256 minDate, uint8 sortBy) private view returns (UPCRanking[] memory) {
-        UPCRanking[] memory allUpcs = new UPCRanking[](upcCodes.length());
-        uint256 count = 0;
-
-        for (uint256 i = 0; i < upcCodes.length(); i++) {
-            bytes32 upcHash = upcCodes.at(i);
-            UPCStats storage stats = upcStatistics[upcHash];
-            
-            if (stats.lastActivity >= minDate) {
-                uint256 value;
-                if (sortBy == 0) value = stats.totalTokens;
-                else if (sortBy == 1) value = stats.claimedTokens;
-                else if (sortBy == 2) value = stats.activeTokens;
-                else if (sortBy == 3) value = stats.totalRewards;
-                
-                allUpcs[count] = UPCRanking(string(abi.encodePacked(upcHash)), value);
-                count++;
-            }
-        }
-
-        UPCRanking[] memory filteredUpcs = new UPCRanking[](count);
-        for (uint256 i = 0; i < count; i++) {
-            filteredUpcs[i] = allUpcs[i];
-        }
-
-        for (uint256 i = 0; i < filteredUpcs.length; i++) {
-            for (uint256 j = i + 1; j < filteredUpcs.length; j++) {
-                if (filteredUpcs[i].value < filteredUpcs[j].value) {
-                    UPCRanking memory temp = filteredUpcs[i];
-                    filteredUpcs[i] = filteredUpcs[j];
-                    filteredUpcs[j] = temp;
-                }
-            }
-        }
-
-        uint256 resultSize = filteredUpcs.length > 10 ? 10 : filteredUpcs.length;
-        UPCRanking[] memory top10 = new UPCRanking[](resultSize);
-        
-        for (uint256 i = 0; i < resultSize; i++) {
-            top10[i] = filteredUpcs[i];
-        }
-
-        return top10;
-    }
-
-    // Helper Functions
-    function _calculateRollingBalances(uint256 currentTime) private view returns (
-        uint256 rolling5Day,
-        uint256 rolling10Day,
-        uint256 rolling20Day,
-        uint256 rolling30Day
-    ) {
-        uint256 currentBalance = IERC20(REWARD_TOKEN).balanceOf(address(this));
-        
-        for (uint256 i = 0; i < serialNumbers.length(); i++) {
-            bytes32 serialHash = serialNumbers.at(i);
-            Reward storage reward = rewards[serialHash];
-            
-            if (!reward.claimed && !reward.invalidated) {
-                uint256 daysToExpire = (reward.deadline - currentTime) / 1 days;
-                
-                if (daysToExpire <= 5) rolling5Day += reward.numTokens;
-                if (daysToExpire <= 10) rolling10Day += reward.numTokens;
-                if (daysToExpire <= 20) rolling20Day += reward.numTokens;
-                if (daysToExpire <= 30) rolling30Day += reward.numTokens;
-            }
-        }
-        
-        rolling5Day += currentBalance;
-        rolling10Day += currentBalance;
-        rolling20Day += currentBalance;
-        rolling30Day += currentBalance;
-    }
-
-    function getSerialNumbersForUPC(string memory upc) external view returns (string[] memory) {
-        EnumerableSet.Bytes32Set storage upcRewards = upcToSerialNumbers[_hashString(upc)];
-        string[] memory result = new string[](upcRewards.length());
-        
-        for (uint256 i = 0; i < upcRewards.length(); i++) {
-            result[i] = rewards[upcRewards.at(i)].serialNumber;
-        }
-        
         return result;
     }
-
-    function getRewardDetails(string memory serialNumber) external view rewardExists(serialNumber) returns (
-        address recipient,
-        string memory upc,
-        uint256 numTokens,
-        uint256 issueDate,
-        uint256 deadline,
-        bool claimed,
-        bool invalidated
-    ) {
-        Reward storage reward = rewards[_hashString(serialNumber)];
-        return (
-            reward.recipient,
-            reward.upc,
-            reward.numTokens,
-            reward.issueDate,
-            reward.deadline,
-            reward.claimed,
-            reward.invalidated
-        );
+    
+    function getSerialBoxesByOwner(address _owner) external view returns (SerialBoxInfo[] memory) {
+        string[] memory serials = ownerToSerialNumbers[_owner];
+        SerialBoxInfo[] memory result = new SerialBoxInfo[](serials.length);
+        
+        for (uint i = 0; i < serials.length; i++) {
+            result[i] = serialBoxes[serials[i]];
+        }
+        return result;
+    }
+    
+    function setRewardTokens(uint256 _newAmount) external onlyOwner {
+        rewardTokens = _newAmount;
+        emit RewardTokensUpdated(_newAmount);
+    }
+    
+    function setCreationPrice(uint256 _newPrice) external onlyOwner {
+        creationPrice = _newPrice;
+        emit CreationPriceUpdated(_newPrice);
+    }
+    
+    function depositTokens(uint256 _amount) external {
+        IERC20(REWARD_TOKEN).transferFrom(msg.sender, address(this), _amount);
+        emit TokensDeposited(_amount);
+    }
+    
+    function withdraw() external onlyOwner {
+        payable(owner()).transfer(address(this).balance);
+        uint256 tokenBalance = IERC20(REWARD_TOKEN).balanceOf(address(this));
+        if (tokenBalance > 0) {
+            IERC20(REWARD_TOKEN).transfer(owner(), tokenBalance);
+        }
     }
 }

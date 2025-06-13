@@ -241,8 +241,7 @@ class TradingBotTerminal extends React.Component {
         tokenName,
         tokenSymbol,
         { 
-          value: price,
-          gasLimit: 500000 // Sufficient gas limit
+          value: price
         }
       );
   
