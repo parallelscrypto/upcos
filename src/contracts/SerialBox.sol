@@ -71,9 +71,23 @@ contract SerialBox {
     function updateURL(string memory _newURL) external {
         require(msg.sender == owner, "Only owner can update");
         fullURL = _newURL;
-        serialNumber = _bytes32ToString(sha256(bytes(_newURL)));
+        serialNumber = toHexString(sha256(bytes(_newURL)));
         emit SerialNumberUpdated(serialNumber);
     }
+
+    function toHexString(bytes32 _bytes) internal pure returns (string memory) {
+        bytes memory hexString = new bytes(64);
+        bytes memory alphabet = "0123456789abcdef";
+        
+        for (uint i = 0; i < 32; i++) {
+            hexString[i*2] = alphabet[uint8(_bytes[i] >> 4)];
+            hexString[i*2+1] = alphabet[uint8(_bytes[i] & 0x0f)];
+        }
+        
+        return string(hexString);
+    }
+
+
 
     function setPasswordHash(bytes32 _passwordHash) external {
         require(msg.sender == owner, "Only owner can set password");

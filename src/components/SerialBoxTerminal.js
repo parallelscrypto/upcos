@@ -47,6 +47,7 @@ class SerialBoxTerminal extends React.Component {
       factoryOutput: [],
       password: '',
       passwordHash: '',
+      serialAddress: props.address,
       claimPassword: ''
     };
     this.terminal = React.createRef();
@@ -54,6 +55,7 @@ class SerialBoxTerminal extends React.Component {
 
   componentDidMount() {
     this.initConnection();
+console.log("serialbox is ", this.state.serialAddress);
   }
 
   initConnection = async () => {
@@ -65,7 +67,7 @@ class SerialBoxTerminal extends React.Component {
         const account = await signer.getAddress();
         
         const factory = new ethers.Contract(
-          '0xaad6180aDaa73938AB1a63Ba8Ccfff3FA65B92DF', // Replace with your factory address
+          '0x953131F7cD8811dA5991bBECFaF6dF8225a8c212', // Replace with your factory address
           SerialBoxFactoryABI.abi,
           signer
         );
@@ -176,44 +178,72 @@ class SerialBoxTerminal extends React.Component {
     }
   };
 
-    loadBox = async (address) => {
+
+  loadBox = async (address) => {
+    if(!address) {
+       address = this.state.serialAddress;
+    }
+    try {
+      this.pushToTerminal(`Loading SerialBox at: ${address}`);
+      
+      const box = new ethers.Contract(
+        address,
+        SerialBoxABI.abi,
+        this.state.signer
+      );
+  
+      // Get box info
+      const info = await box.getInfo();
+      
+      // Handle potential hex string conversion
+      let displaySerial = info._serialNumber;
       try {
-        this.pushToTerminal(`Loading SerialBox at: ${address}`);
-        
-        const box = new ethers.Contract(
-          address,
-          SerialBoxABI.abi,
-          this.state.signer
-        );
-
-        // Get box info
-        const info = await box.getInfo();
-        
-        this.setState({
-          currentBox: box,
-          upc: info._upc,
-          serialNumber: info._serialNumber,
-          fullURL: info._fullURL,
-          message: info._message,
-          passwordHash: await box.getPasswordHash()
-        });
-
-        const successMessage = `[[success]]Loaded SerialBox:
-    Address: ${address}
-    UPC: ${info._upc}
-    Serial: ${info._serialNumber}
-    URL: ${info._fullURL}
-    Message: ${info._message}
-    Balance: ${ethers.utils.formatEther(info._balance)} tokens[[/success]]`;
-        
-        this.pushToTerminal(successMessage);
-        return successMessage; // Return string instead of contract object
-      } catch (error) {
-        const errorMessage = `[[error]]Error loading box: ${error.message}[[/error]]`;
-        this.pushToTerminal(errorMessage);
-        throw error;
+        // Try to convert if it's in hex format
+        if (info._serialNumber.startsWith('0x')) {
+          displaySerial = ethers.utils.toUtf8String(info._serialNumber);
+        }
+      } catch (e) {
+        // If conversion fails, keep the raw value
+        displaySerial = info._serialNumber;
       }
-    };
+  
+      // Try to get password hash, but don't fail if we can't
+      let passwordHash = '';
+      try {
+        passwordHash = await box.getPasswordHash();
+      } catch (e) {
+        this.pushToTerminal('[[secondary]]Note: Could not retrieve password hash (owner-only)[[/secondary]]');
+      }
+  
+      this.setState({
+        currentBox: box,
+        upc: info._upc,
+        serialNumber: displaySerial,
+        fullURL: info._fullURL,
+        message: info._message,
+        passwordHash: passwordHash
+      });
+  
+      const successMessage = `[[success]]Loaded SerialBox:
+  Address: ${address}
+  UPC: ${info._upc}
+  Serial: ${displaySerial}
+  URL: ${info._fullURL}
+  Message: ${info._message}
+  Balance: ${ethers.utils.formatEther(info._balance)} tokens[[/success]]`;
+      
+      this.pushToTerminal(successMessage);
+      return successMessage;
+    } catch (error) {
+      const errorMessage = `[[error]]Error loading box: ${error.message}[[/error]]`;
+      this.pushToTerminal(errorMessage);
+      throw error;
+    }
+  };
+
+
+
+
 
   fundBox = async (amount) => {
     try {
@@ -300,10 +330,11 @@ class SerialBoxTerminal extends React.Component {
   };
 
 
+
   updateURL = async () => {
     try {
-      if (!this.state.currentBox || !this.state.factory) {
-        throw new Error('No box or factory loaded');
+      if (!this.state.currentBox) {
+        throw new Error('No box loaded');
       }
   
       if (!this.state.fullURL) {
@@ -312,7 +343,8 @@ class SerialBoxTerminal extends React.Component {
   
       this.pushToTerminal(`Updating URL to: ${this.state.fullURL}`);
       
-      const tx = await this.state.factory.updateURL(this.state.fullURL, {
+      // Call the updateURL function directly on the box contract
+      const tx = await this.state.currentBox.updateURL(this.state.fullURL, {
         gasLimit: 500000 // Set appropriate gas limit
       });
       
@@ -335,6 +367,7 @@ class SerialBoxTerminal extends React.Component {
       return false;
     }
   };
+
 
 
 

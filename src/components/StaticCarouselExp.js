@@ -125,6 +125,7 @@ export default class StaticCarouselExp extends Component {
     var hddValue = "https://app.ardrive.io/#/drives/8324c70e-a3c4-4dc5-b42c-1691464daef7?name=africans_unite_worldwide"; //default hdd
     var archiveValue;
     var fundValue;
+    var serialbox;
     var pac0Value;
     var pac1Value;
     var pac2Value;
@@ -192,6 +193,18 @@ export default class StaticCarouselExp extends Component {
                 // Or store it: const bgUrl = bgValue;
             }
         }
+
+
+        if (line.includes("config.serialbox")) {
+            const equalPos = line.indexOf('=');
+            if (equalPos !== -1) {
+                serialbox= line.substr(equalPos + 1).trim();
+                // Now you can use bgValue (the URL)
+                console.log("serialbox URL:", bgValue);
+                // Or store it: const bgUrl = bgValue;
+            }
+        }
+
 
 
         if (line.includes("config.fund")) {
@@ -1054,12 +1067,17 @@ console.log("INVEST IS ", address);
 
             sb: {
 		    description: '<p style="color:hotpink;font-size:1.1em">** open the serial box console</p>',
-              fn: () => {
+              fn: (address) => {
+
+                     if(!address) {
+                        address = this.state.serial;
+                     }
+                     console.log("serialbox is ", this.state.serial);
 
                      var winNum = 0;
 
 
-                      var mplayer = <SerialBoxTerminal />;
+                      var mplayer = <SerialBoxTerminal address={address}/>;
                       if(winNum == "0") {
 		         this.setState(prevState => ({ fullIpfs: mplayer }));
 		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
@@ -2501,6 +2519,7 @@ console.log(popArgs);
        configUrl: configUrl,
        publicPacs: publicPacs,
        hdd: hddValue,
+       serial: serialbox,
        ai:  aiValue,
        archive: archiveValue,
        fund: fundValue,
