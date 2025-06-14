@@ -636,8 +636,24 @@ export default class StaticCarouselExp extends Component {
 
 
 
+            hash: {
+              description: 'Compute SHA256 hash of input',
+              usage: 'hash <text>',
+              fn: (...args) => this.computeHash(args.join(' '))
+            },
 
 
+            verifyHash: {
+              description: 'Verify text against a hash',
+              usage: 'verify <text> <hash>',
+              fn: (text, hash) => {
+                const computed = '0x' + sha256(text);
+                const match = computed === hash.toLowerCase();
+                return match 
+                  ? '[[success]]Hashes match![[/success]]' 
+                  : '[[error]]Hashes do not match![[/error]]';
+              }
+            },
 
             xi : {
 		    description: '<p style="color:hotpink;font-size:1.1em">** check the information on a raw material nft number.</p>',
@@ -2619,6 +2635,26 @@ console.log(popArgs);
     this.setState({offerState: 'video'});
     this.setState(prevState => ({ player: mplayer }));
   }
+
+
+  computeHash = (input) => {
+    const terminal = this.progressTerminal.current
+    try {
+      if (!input || input.trim() === '') {
+        throw new Error('Input cannot be empty');
+      }
+      
+      const hash = '0x' + sha256(input);
+      const result = `[[primary]]SHA256 Hash of "${input}":[[/primary]]\n[[secondary]]${hash}[[/secondary]]`;
+      terminal.pushToStdout(result);
+      return hash;
+    } catch (error) {
+      const errorMessage = `[[error]]Hash computation failed: ${error.message}[[/error]]`;
+      terminal.pushToStdout(errorMessage);
+      throw error;
+    }
+  };
+
 
 
   convertToWeb2Config = async (configUrl) => {
