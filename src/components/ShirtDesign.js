@@ -18,7 +18,6 @@ class ShirtDesign extends Component {
       account: ''
     };
     
-
     this.designTemplates = {
       cyberCircle: {
         name: "Cyber Circle",
@@ -48,7 +47,7 @@ class ShirtDesign extends Component {
           ctx.lineWidth = 30;
           ctx.stroke();
           
-          // Text (white for readability)
+          // Text
           ctx.textAlign = 'center';
           ctx.fillStyle = 'white';
           ctx.font = 'bold 20px Orbitron';
@@ -108,7 +107,6 @@ class ShirtDesign extends Component {
       this.generateFront();
       window.addEventListener('resize', this.resizeCanvas);
       this.resizeCanvas();
-      this.fetchUpcData(this.state.upcNumber)
     } catch (error) {
       this.setState({ 
         isLoading: false,
@@ -148,6 +146,47 @@ class ShirtDesign extends Component {
     }
   };
 
+  initDesignThumbnails = () => {
+    console.log('Initializing design thumbnails');
+    console.log('Available designs:', Object.keys(this.designTemplates));
+    
+    setTimeout(() => {
+      const container = document.getElementById('frontDesignOptions');
+      if (!container) {
+        console.error('Design options container not found');
+        return;
+      }
+      
+      container.innerHTML = '';
+      
+      Object.keys(this.designTemplates).forEach(key => {
+        const design = this.designTemplates[key];
+        const thumbCanvas = document.createElement('canvas');
+        thumbCanvas.className = 'design-thumbnail';
+        thumbCanvas.width = 100;
+        thumbCanvas.height = 100;
+        thumbCanvas.dataset.template = key;
+        thumbCanvas.title = design.name;
+        
+        const thumbCtx = thumbCanvas.getContext('2d');
+        design.generator(thumbCtx, thumbCanvas, 'UPC');
+        
+        thumbCanvas.onclick = () => {
+          this.setState({ currentDesign: key }, this.generateFront);
+          document.querySelectorAll('.design-thumbnail').forEach(t => t.classList.remove('active'));
+          thumbCanvas.classList.add('active');
+        };
+        
+        container.appendChild(thumbCanvas);
+      });
+      
+      if (container.firstChild && !this.state.currentDesign) {
+        container.firstChild.classList.add('active');
+        this.setState({ currentDesign: Object.keys(this.designTemplates)[0] });
+      }
+    }, 100);
+  }
+
   drawHexagon = (ctx, x, y, size) => {
     ctx.beginPath();
     for (let i = 0; i < 6; i++) {
@@ -166,40 +205,6 @@ class ShirtDesign extends Component {
     });
   }
 
-  initDesignThumbnails = () => {
-    const container = document.getElementById('frontDesignOptions');
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    Object.keys(this.designTemplates).forEach(key => {
-      const design = this.designTemplates[key];
-      const thumbCanvas = document.createElement('canvas');
-      thumbCanvas.className = 'design-thumbnail';
-      thumbCanvas.width = 100;
-      thumbCanvas.height = 100;
-      thumbCanvas.dataset.template = key;
-      thumbCanvas.title = design.name;
-      
-      // Generate thumbnail preview
-      const thumbCtx = thumbCanvas.getContext('2d');
-      design.generator(thumbCtx, thumbCanvas, 'UPC');
-      
-      thumbCanvas.onclick = () => {
-        this.setState({ currentDesign: key }, this.generateFront);
-        document.querySelectorAll('.design-thumbnail').forEach(t => t.classList.remove('active'));
-        thumbCanvas.classList.add('active');
-      };
-      
-      container.appendChild(thumbCanvas);
-    });
-    
-    // Activate first design by default
-    if (container.firstChild) {
-      container.firstChild.classList.add('active');
-    }
-  }
-
   generateFront = () => {
     const canvas = document.getElementById('tshirtFrontCanvas');
     if (!canvas) return;
@@ -207,191 +212,162 @@ class ShirtDesign extends Component {
     const ctx = canvas.getContext('2d');
     const upcNumber = this.state.upcNumber || '850645008653';
     
-    // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Use selected template
     if (this.designTemplates[this.state.currentDesign]) {
       this.designTemplates[this.state.currentDesign].generator(ctx, canvas, upcNumber);
     }
   }
 
+  fetchUpcData = async () => {
+    const { upcNumber, provider } = this.state;
+    if (!upcNumber || !provider) return;
 
+    this.setState({ isLoading: true, error: null });
 
+    try {
+      const signer = this.state.signer;
+      
+      const rawMaterial = new ethers.Contract(
+        '0x2C343942548319cCfc05666FF15d73E8569FaEdf',
+        [
+          {
+            "inputs": [
+              {
+                "internalType": "string",
+                "name": "upcId",
+                "type": "string"
+              }
+            ],
+            "name": "upcInfo",
+            "outputs": [
+              {
+                "components": [
+                  {
+                    "internalType": "uint256",
+                    "name": "tokenId",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "staker",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "og",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "bytes32",
+                    "name": "upcHash",
+                    "type": "bytes32"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "word",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "ipfs",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "vr",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "humanReadableName",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "minted",
+                    "type": "bool"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "bought",
+                    "type": "bool"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "tld",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "createdTimestamp",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "latestTimestamp",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct UPCNFT.NFTMeta",
+                "name": "",
+                "type": "tuple"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          }
+        ],
+        signer
+      );
 
+      const upcString = upcNumber.toString();
+      const data = await rawMaterial.upcInfo(upcString);
+      
+      const tmpStamp = parseInt(data.createdTimestamp);
+      const newDate = new Date(tmpStamp * 1000);
+      const tmpStampMod = parseInt(data.latestTimestamp);
+      const newDateMod = new Date(tmpStampMod * 1000);
+      
+      const formattedData = [
+        `[[intel]]`,
+        `token_id: ${data.tokenId}`,
+        `=====`,
+        `og_owner: ${data.og}`,
+        `=====`,
+        `owner: ${data.staker}`,
+        `=====`,
+        `human_readable_name: ${data.humanReadableName}`,
+        `=====`,
+        `upc: ${upcNumber}`,
+        `=====`,
+        `stage: ${data.word}`,
+        `=====`,
+        `payload: ${data.ipfs}`,
+        `=====`,
+        `created: ${newDate.toString()}`,
+        `=====`,
+        `updated: ${newDateMod.toString()}`,
+        `=====`,
+        `[[/intel]]`
+      ].join('\n');
 
-fetchUpcData = async () => {
-  const { upcNumber, provider } = this.state;
-  if (!upcNumber || !provider) return;
-
-  this.setState({ isLoading: true, error: null });
-
-  console.log("Fetching data for UPC:", upcNumber);
-
-  try {
-    const signer = this.state.signer;
-    
-    const rawMaterial = new ethers.Contract(
-      '0x2C343942548319cCfc05666FF15d73E8569FaEdf', // Your contract address
-      [
-        {
-          "inputs": [
-            {
-              "internalType": "string",
-              "name": "upcId",
-              "type": "string"
-            }
-          ],
-          "name": "upcInfo",
-          "outputs": [
-            {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "tokenId",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "address",
-                  "name": "staker",
-                  "type": "address"
-                },
-                {
-                  "internalType": "address",
-                  "name": "og",
-                  "type": "address"
-                },
-                {
-                  "internalType": "bytes32",
-                  "name": "upcHash",
-                  "type": "bytes32"
-                },
-                {
-                  "internalType": "string",
-                  "name": "word",
-                  "type": "string"
-                },
-                {
-                  "internalType": "string",
-                  "name": "ipfs",
-                  "type": "string"
-                },
-                {
-                  "internalType": "string",
-                  "name": "vr",
-                  "type": "string"
-                },
-                {
-                  "internalType": "string",
-                  "name": "humanReadableName",
-                  "type": "string"
-                },
-                {
-                  "internalType": "bool",
-                  "name": "minted",
-                  "type": "bool"
-                },
-                {
-                  "internalType": "bool",
-                  "name": "bought",
-                  "type": "bool"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "tld",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "createdTimestamp",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "latestTimestamp",
-                  "type": "uint256"
-                }
-              ],
-              "internalType": "struct UPCNFT.NFTMeta",
-              "name": "",
-              "type": "tuple"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        }
-      ],
-      signer
-    );
-
-    const upcString = upcNumber.toString();
-    const data = await rawMaterial.upcInfo(upcString);
-    
-    console.log("Raw contract data:", data);
-
-    // Format the data
-    const tmpStamp = parseInt(data.createdTimestamp);
-    const newDate = new Date(tmpStamp * 1000);
-    const tmpStampMod = parseInt(data.latestTimestamp);
-    const newDateMod = new Date(tmpStampMod * 1000);
-    
-    const formattedData = [
-      `[[intel]]`,
-      `token_id: ${data.tokenId}`,
-      `=====`,
-      `og_owner: ${data.og}`,
-      `=====`,
-      `owner: ${data.staker}`,
-      `=====`,
-      `human_readable_name: ${data.humanReadableName}`,
-      `=====`,
-      `upc: ${upcNumber}`,
-      `=====`,
-      `stage: ${data.word}`,  // Note: Changed from data[6] to data.word
-      `=====`,
-      `payload: ${data.ipfs}`, // Note: Changed from data[5] to data.ipfs
-      `=====`,
-      `created: ${newDate.toString()}`,
-      `=====`,
-      `updated: ${newDateMod.toString()}`,
-      `=====`,
-      `[[/intel]]`
-    ].join('\n');
-
-    this.setState({ 
-      userData: formattedData,
-      isLoading: false,
-      error: null
-    }, this.generateBack);
-    
-  } catch (error) {
-    console.error('Detailed error:', error);
-    const errorMessage = error.message || "Unknown error occurred";
-    
-    this.setState({ 
-      error: `Failed to fetch UPC data: ${errorMessage}`,
-      isLoading: false 
-    });
+      this.setState({ 
+        userData: formattedData,
+        isLoading: false,
+        error: null
+      }, this.generateBack);
+      
+    } catch (error) {
+      console.error('Detailed error:', error);
+      const errorMessage = error.message || "Unknown error occurred";
+      
+      this.setState({ 
+        error: `Failed to fetch UPC data: ${errorMessage}`,
+        isLoading: false 
+      });
+    }
   }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   generateBack = () => {
     const canvas = document.getElementById('tshirtBackCanvas');
@@ -400,11 +376,9 @@ fetchUpcData = async () => {
     const ctx = canvas.getContext('2d');
     const rawData = this.state.userData;
 
-    // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     if (!rawData) {
-      // Show placeholder if no data
       ctx.fillStyle = '#121212';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
@@ -415,14 +389,12 @@ fetchUpcData = async () => {
       return;
     }
     
-    // Cyberpunk background
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
     gradient.addColorStop(0, '#121212');
     gradient.addColorStop(1, '#002244');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Add scanlines
     ctx.strokeStyle = 'rgba(0, 240, 255, 0.1)';
     ctx.lineWidth = 1;
     for (let i = 0; i < canvas.height; i += 4) {
@@ -432,7 +404,6 @@ fetchUpcData = async () => {
       ctx.stroke();
     }
 
-    // Format the text
     const lines = rawData.trim().split('\n');
     const textBlockHeight = lines.length * 30 + 40;
     const startY = (canvas.height - textBlockHeight) / 2;
@@ -451,11 +422,9 @@ fetchUpcData = async () => {
         ctx.fillStyle = 'white';
         ctx.font = '16px Orbitron';
         
-        // Draw label
         ctx.fillText(label + ':', canvas.width / 2, yPos);
         yPos += 30;
         
-        // Draw value on new line if it's an address
         if (label === 'og_owner' || label === 'owner') {
           ctx.fillText(value, canvas.width / 2, yPos);
           yPos += 30;
@@ -476,7 +445,6 @@ fetchUpcData = async () => {
       }
     }
 
-    // Add border effect
     ctx.strokeStyle = 'var(--cyber-orange)';
     ctx.lineWidth = 3;
     ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
@@ -493,14 +461,11 @@ fetchUpcData = async () => {
     mergedCanvas.height = frontCanvas.height + backCanvas.height + 40;
     const ctx = mergedCanvas.getContext('2d');
 
-    // Dark background
     ctx.fillStyle = '#121212';
     ctx.fillRect(0, 0, mergedCanvas.width, mergedCanvas.height);
 
-    // Add front design
     ctx.drawImage(frontCanvas, (mergedCanvas.width - frontCanvas.width) / 2, 20);
 
-    // Add divider
     ctx.strokeStyle = 'var(--cyber-orange)';
     ctx.lineWidth = 2;
     ctx.setLineDash([5, 5]);
@@ -510,16 +475,13 @@ fetchUpcData = async () => {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Add back design
     ctx.drawImage(backCanvas, (mergedCanvas.width - backCanvas.width) / 2, frontCanvas.height + 40);
 
-    // Add title
     ctx.fillStyle = 'var(--cyber-orange)';
     ctx.font = 'bold 24px Orbitron';
     ctx.textAlign = 'center';
     ctx.fillText('CYBERPUNK UPCSCRIPT SHIRT DESIGN', mergedCanvas.width / 2, 30);
 
-    // Download
     const link = document.createElement('a');
     link.href = mergedCanvas.toDataURL('image/png');
     link.download = 'cyberpunk-upcscript-shirt.png';
@@ -763,6 +725,7 @@ fetchUpcData = async () => {
               overflow-x: auto;
               padding: 10px 0;
               margin: 15px 0;
+              min-height: 120px;
             }
             
             .design-thumbnail {
@@ -771,6 +734,7 @@ fetchUpcData = async () => {
               border: 2px solid var(--cyber-orange);
               cursor: pointer;
               transition: all 0.3s;
+              flex-shrink: 0;
             }
             
             .design-thumbnail:hover {
@@ -822,7 +786,6 @@ fetchUpcData = async () => {
             <h1>CYBERPUNK UPCSCRIPT</h1>
             <h2>T-Shirt Designer</h2>
             
-            {/* Tab Buttons */}
             <div className="tab-buttons">
               <button 
                 className={`tab-button ${this.state.currentTab === 'front' ? 'active' : ''}`} 
@@ -838,11 +801,10 @@ fetchUpcData = async () => {
               </button>
             </div>
 
-            {/* Front Tab */}
             <div id="front" className={`tab-content ${this.state.currentTab === 'front' ? 'active' : ''}`}>
               <h3>SELECT FRONT DESIGN:</h3>
               <div className="design-options" id="frontDesignOptions">
-                {/* Thumbnails will be added by JavaScript */}
+                {/* Thumbnails will be added here by JavaScript */}
               </div>
               
               <input 
@@ -863,7 +825,6 @@ fetchUpcData = async () => {
               <canvas id="tshirtFrontCanvas" width="600" height="600"></canvas>
             </div>
 
-            {/* Back Tab */}
             <div id="back" className={`tab-content ${this.state.currentTab === 'back' ? 'active' : ''}`}>
               {this.state.isLoading && <div className="loading">LOADING UPC DATA...</div>}
               
