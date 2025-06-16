@@ -10,6 +10,7 @@ import MLBBettingTerminal from './MLBBettingTerminal'
 import TradingBotTerminal from './TradingBotTerminal'
 import MonopolyCLI from './MonopolyCLI'
 import MemecoinFactory from './MemecoinFactory';
+import ShirtDesign from './ShirtDesign';
 import VideoArchiveTerminal from './VideoArchiveTerminal';
 import MoneyPostTerminal from './MoneyPostTerminal';
 import UPCInvestCLI from './UPCInvest';
@@ -438,7 +439,7 @@ export default class StaticCarouselExp extends Component {
     var baseCommands = {
 
             d: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** View the disclaimer.</p>',
+		    description: '<p style="color:orange;font-size:1.1em">** View the disclaimer.</p>',
               fn: (sheetNum) => {
 
 
@@ -467,7 +468,7 @@ export default class StaticCarouselExp extends Component {
               }
             },
             hdd: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** View the disclaimer.</p>',
+		    description: '<p style="color:orange;font-size:1.1em">** View the disclaimer.</p>',
               fn: () => {
 
 
@@ -491,7 +492,7 @@ export default class StaticCarouselExp extends Component {
 
 
             fire: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open shrib notebook in a window.  pass a param  (thank you and no affiliation) </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open shrib notebook in a window.  pass a param  (thank you and no affiliation) </p>',
               fn: (sheetNum=0) => {
 
 
@@ -522,7 +523,7 @@ export default class StaticCarouselExp extends Component {
             },
 
             guerilla: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Open upc hacking interface in a modal </p>',
+              description: '<p style="color:orange;font-size:1.1em">** Open upc hacking interface in a modal </p>',
               fn: () => {
                 // Get current URL and split it at the first slash after index.html#
                 const currentUrl = window.location.href;
@@ -566,7 +567,7 @@ export default class StaticCarouselExp extends Component {
 
 
             chat: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open tlk.io. pass the chat title as a param  (thank you and no affiliation) </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open tlk.io. pass the chat title as a param  (thank you and no affiliation) </p>',
                     fn: (...title) => {
                         // 1. Join all words into a single string
                         const titleString = title.join(" "); // "this is my chat room"
@@ -593,7 +594,7 @@ export default class StaticCarouselExp extends Component {
 
 
             anon: {
-              description: '<p style="color:hotpink;font-size:1.1em">**  attempt to anon on the current upc. you can pass the upc as a param, and if the upc is available, the anon interface will appear.  you must anon upon an unowned upc code.  to see if a upc is unowned, run the xupc command.  </p>',
+              description: '<p style="color:orange;font-size:1.1em">**  attempt to anon on the current upc. you can pass the upc as a param, and if the upc is available, the anon interface will appear.  you must anon upon an unowned upc code.  to see if a upc is unowned, run the xupc command.  </p>',
 
               fn: async (upc) => {
                   this.hackScan(upc);
@@ -602,7 +603,7 @@ export default class StaticCarouselExp extends Component {
 
 
             feed: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open /etcVerse attached to current instance  </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open /etcVerse attached to current instance  </p>',
               fn: async (onOff,newFeed) => {
                  let feedman = await this.feedManager(onOff, newFeed);
               }
@@ -617,7 +618,7 @@ export default class StaticCarouselExp extends Component {
 
 
             etc: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open /etcVerse attached to current instance  </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open /etcVerse attached to current instance  </p>',
               fn: () => {
                       this.doEtc(scan);
               }
@@ -627,7 +628,7 @@ export default class StaticCarouselExp extends Component {
 
 
             exe: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** If a upcscript was originally programmed into the console message, this command will execute the script</p>',
+		    description: '<p style="color:orange;font-size:1.1em">** If a upcscript was originally programmed into the console message, this command will execute the script</p>',
               fn: () => {
                       this.parsePop(this.state.msg);
               }
@@ -656,7 +657,7 @@ export default class StaticCarouselExp extends Component {
             },
 
             xi : {
-		    description: '<p style="color:hotpink;font-size:1.1em">** check the information on a raw material nft number.</p>',
+		    description: '<p style="color:orange;font-size:1.1em">** check the information on a raw material nft number.</p>',
               fn: async (id) => {
                  var data = await this.getNft(id);
 
@@ -709,7 +710,7 @@ export default class StaticCarouselExp extends Component {
 
 
             xupc: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** check the information on a upc number.  see if it is owned before trying to hack it</p>',
+		    description: '<p style="color:orange;font-size:1.1em">** check the information on a upc number.  see if it is owned before trying to hack it</p>',
               fn: async (upc) => {
                  var data = await this.getUpc(upc);
 
@@ -758,7 +759,7 @@ export default class StaticCarouselExp extends Component {
 
 
             cd: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** change to new upc code if the upc code is unowned.  this is the precursor to hacking a upc</p>',
+		    description: '<p style="color:orange;font-size:1.1em">** change to new upc code if the upc code is unowned.  this is the precursor to hacking a upc</p>',
               fn: async (upc) => {
                    var done;
                    var didCd = await this.cd(upc);
@@ -772,7 +773,7 @@ export default class StaticCarouselExp extends Component {
 
 
             pwd: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** display the upc that you are currently on. use this command before hacking a upc to make sure you are where you think you are</p>',
+		    description: '<p style="color:orange;font-size:1.1em">** display the upc that you are currently on. use this command before hacking a upc to make sure you are where you think you are</p>',
               fn: async (upc) => {
                      const terminal = this.progressTerminal.current
 		     const response = "currently @" + this.state.pwd;
@@ -788,7 +789,7 @@ export default class StaticCarouselExp extends Component {
 
 
             hero: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open a scanner to scan a upc code</p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open a scanner to scan a upc code</p>',
               fn: async (upc) => {
 
                  if(upc) {
@@ -816,7 +817,7 @@ export default class StaticCarouselExp extends Component {
 
 
             xppl: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** update a ppll that you own. only original owner can update, and they can only update the link field </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** update a ppll that you own. only original owner can update, and they can only update the link field </p>',
               fn: async (id,link) => {
 
                      const terminal = this.progressTerminal.current
@@ -830,7 +831,7 @@ export default class StaticCarouselExp extends Component {
 
 
             api: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** use the api from this cli</p>',
+		    description: '<p style="color:orange;font-size:1.1em">** use the api from this cli</p>',
               fn: async (...popArgs) => {
                      const terminal = this.progressTerminal.current
                      let finalUrl = this.prepareForApi(popArgs);
@@ -873,7 +874,7 @@ export default class StaticCarouselExp extends Component {
 
 
             whoami: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC from go upc  (thank you and no affiliation)  </p>',
+              description: '<p style="color:orange;font-size:1.1em">** Display product information for UPC from go upc  (thank you and no affiliation)  </p>',
               fn: async () => {
                  let who = await this.whoAmI();
               }
@@ -884,7 +885,7 @@ export default class StaticCarouselExp extends Component {
 
 
             ser: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display product information for UPC from go upc  (thank you and no affiliation)  </p>',
+              description: '<p style="color:orange;font-size:1.1em">** Display product information for UPC from go upc  (thank you and no affiliation)  </p>',
               fn: async (num,display) => {
                  let pacNum = await this.doSerial(num,true);
               }
@@ -893,7 +894,7 @@ export default class StaticCarouselExp extends Component {
 
 
             bet: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** open the betting console. you can pass mlb, nba, nfl, nhl, ncaaf, ncaabb as the options.  the second param will allow you to open the console in a modal by passing 1 as the second param.  for example, to open the mlb betting console, type `bet mlb` and to open  it in a modal `bet mlb 1`  NOT AFFILIATED WITH OR ENDORSED BY ANY PROFESSIONAL SPORT ORGANIZATION OR ENTITY IN ANY WAY</p>',
+		    description: '<p style="color:orange;font-size:1.1em">** open the betting console. you can pass mlb, nba, nfl, nhl, ncaaf, ncaabb as the options.  the second param will allow you to open the console in a modal by passing 1 as the second param.  for example, to open the mlb betting console, type `bet mlb` and to open  it in a modal `bet mlb 1`  NOT AFFILIATED WITH OR ENDORSED BY ANY PROFESSIONAL SPORT ORGANIZATION OR ENTITY IN ANY WAY</p>',
               fn: (sport,winNum=0) => {
 
                      const terminal = this.progressTerminal.current
@@ -917,7 +918,7 @@ export default class StaticCarouselExp extends Component {
 
 
             mp: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** open the memecoin generator </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** open the memecoin generator </p>',
               fn: async (winNum=0) => {
 
                      const terminal = this.progressTerminal.current
@@ -942,7 +943,7 @@ export default class StaticCarouselExp extends Component {
 
 
             wild: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** burn tokens,  create a token wildfire  </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** burn tokens,  create a token wildfire  </p>',
               fn: async (winNum=0) => {
 
                      const terminal = this.progressTerminal.current
@@ -968,7 +969,7 @@ export default class StaticCarouselExp extends Component {
 
 
             binge: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** open the archives and binge watch </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** open the archives and binge watch </p>',
               fn: (winNum=0) => {
 
                      const terminal = this.progressTerminal.current
@@ -988,7 +989,7 @@ export default class StaticCarouselExp extends Component {
             },
 
             upcopoly: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** open the memecoin generator </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** open the memecoin generator </p>',
               fn: (winNum=0) => {
 
                      const terminal = this.progressTerminal.current
@@ -1008,7 +1009,7 @@ export default class StaticCarouselExp extends Component {
             },
 
             fund: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** donate to a upc code or instance.  </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** donate to a upc code or instance.  </p>',
               fn: (address) => {
 
                      if(!address) {
@@ -1038,7 +1039,7 @@ console.log("INVEST IS ", address);
 
 
             bots: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** open the memecoin generator </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** open the memecoin generator </p>',
               fn: (winNum=0) => {
 
                      const terminal = this.progressTerminal.current
@@ -1059,8 +1060,35 @@ console.log("INVEST IS ", address);
 
 
 
+            shirt: {
+		    description: '<p style="color:orange;font-size:1.1em">** create a shirt from this upc code</p>',
+              fn: () => {
+
+                     var upc = this.state.pwd;
+                     const terminal = this.progressTerminal.current
+
+                     var mplayer = <ShirtDesign upcNumber={upc} getUpc={this.props.upcInfo}/>;
+
+                      var winNum = 0
+                      if(winNum == "1") {
+                        terminal.pushToStdout(mplayer);
+                      }
+                      else {
+ 		        this.setState(prevState => ({ fullIpfs: mplayer }));
+		        this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		        this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+ 
+              }
+            },
+
+
+
+
+
+
             mc: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** open the memecoin generator </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** open the memecoin generator </p>',
               fn: (winNum=0) => {
 
                      const terminal = this.progressTerminal.current
@@ -1082,7 +1110,7 @@ console.log("INVEST IS ", address);
 
 
             sb: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** open the serial box console</p>',
+		    description: '<p style="color:orange;font-size:1.1em">** open the serial box console</p>',
               fn: (address) => {
 
                      if(!address) {
@@ -1116,7 +1144,7 @@ console.log("INVEST IS ", address);
 
 
             push: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** push a link to the popit repository </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** push a link to the popit repository </p>',
               fn: async () => {
 
                      const terminal = this.progressTerminal.current
@@ -1131,7 +1159,7 @@ console.log("INVEST IS ", address);
 
 
             pull: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** pull from the upcOS popit repository.  here is an example: pull ACTION ID, where ACTION can be one of the follwing values: `ppl` (private protocol link), `upc` (look up a push by upc code), `hash` (lookup pushes by hash) and then the corresponding ppl, upc or hash is substituted for ID. so if you want to search for ppl king-pac://king-pac-10, the command would be `pull ppl king-pac://king-pac-10` </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** pull from the upcOS popit repository.  here is an example: pull ACTION ID, where ACTION can be one of the follwing values: `ppl` (private protocol link), `upc` (look up a push by upc code), `hash` (lookup pushes by hash) and then the corresponding ppl, upc or hash is substituted for ID. so if you want to search for ppl king-pac://king-pac-10, the command would be `pull ppl king-pac://king-pac-10` </p>',
               fn: async (type,id,end,grep) => {
 
 
@@ -1279,7 +1307,7 @@ console.log(myPull);
 
 
             cook: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open sketchpad in a window  (thank you and no affiliation to any unless explicitly stated) </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open sketchpad in a window  (thank you and no affiliation to any unless explicitly stated) </p>',
               fn: (sheetNum) => {
 
 
@@ -1301,8 +1329,54 @@ console.log(myPull);
 
 
 
+
+
+            weave: {
+		    description: '<p style="color:orange;font-size:1.1em">** write a webpage to web3 (arweave)</p>',
+              fn: (sheetNum) => {
+
+
+		      var fullUrl = "https://7yo7pnyc45trdccgjueov3su7ei7bf5qajltx3edqawo5najldwa.arweave.net/_h33twLnZxGIRk0I6u5U-RHwl7ACVzvsg4As7rQJWOw";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+            burn: {
+		    description: '<p style="color:orange;font-size:1.1em">** write a webpage to web3 (arweave)</p>',
+              fn: (sheetNum) => {
+
+
+		      var fullUrl = "https://7yo7pnyc45trdccgjueov3su7ei7bf5qajltx3edqawo5najldwa.arweave.net/_h33twLnZxGIRk0I6u5U-RHwl7ACVzvsg4As7rQJWOw";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+
+
             draw: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open sketchpad in a window  (thank you and no affiliation to any unless explicitly stated) </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open sketchpad in a window  (thank you and no affiliation to any unless explicitly stated) </p>',
               fn: (sheetNum) => {
 
 
@@ -1323,7 +1397,7 @@ console.log(myPull);
 
 
             beats: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** get free beats for your rhymes (thank you and no affiliation) </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** get free beats for your rhymes (thank you and no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -1345,7 +1419,7 @@ console.log(myPull);
 
 
             calc: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open graphing calculator in a window  (thank you and no affiliation) </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open graphing calculator in a window  (thank you and no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -1367,7 +1441,7 @@ console.log(myPull);
 
 
             ad: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** programatically create seal advertisements </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** programatically create seal advertisements </p>',
               fn: (sheetNum) => {
 
 
@@ -1391,7 +1465,7 @@ console.log(myPull);
 
 
             vchat: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open mirotalk in a window  (thank you and no affiliation) </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open mirotalk in a window  (thank you and no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -1415,7 +1489,7 @@ console.log(myPull);
 
 
             vc: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open voicechanger in a window  (thank you and no affiliation) </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open voicechanger in a window  (thank you and no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -1436,7 +1510,7 @@ console.log(myPull);
 
 
             speak: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** use this command for text to speech tts tool (thank you and no affiliation)  </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** use this command for text to speech tts tool (thank you and no affiliation)  </p>',
               fn: (sheetNum) => {
 
 
@@ -1462,7 +1536,7 @@ console.log(myPull);
 
 
             gif: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open wick suite in a window  (thank you and no affiliation) </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open wick suite in a window  (thank you and no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -1484,7 +1558,7 @@ console.log(myPull);
 
 
             nostr : {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open coracle nostr client in a window  (thank you and no affiliation) </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open coracle nostr client in a window  (thank you and no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -1506,7 +1580,7 @@ console.log(myPull);
 
 
             ai: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** open an AI window </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** open an AI window </p>',
               fn: () => {
 
 		      var fullUrl = this.state.ai;
@@ -1527,7 +1601,7 @@ console.log(myPull);
 
 
             unseal: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** unseal a sha256 sealed upcOS experience</p>',
+		    description: '<p style="color:orange;font-size:1.1em">** unseal a sha256 sealed upcOS experience</p>',
               fn: () => {
 
 		      var fullUrl = "https://iwt24fbqean5a4txesfxzik63m5penrfeoekwq5gdhih6pge3pra.arweave.net/RaeuFDAgG9BydySLfKFe2zryNiUjiKtDphnQfzzE2-I";
@@ -1550,7 +1624,7 @@ console.log(myPull);
 
 
             foss: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** download core upcos zip file from 12-23-2023.  Thank you to all foss developers.</p>',
+		    description: '<p style="color:orange;font-size:1.1em">** download core upcos zip file from 12-23-2023.  Thank you to all foss developers.</p>',
               fn: () => {
 
 		      var fullUrl = "https://gtixptuq3s5k35cek7h34monodq3bu2y4fbssb6mqqsmbzhsw7sq.arweave.net/NNF3zpDcuq30RFfPvjHNcOGw01jhQykHzIQkwOTyt-U/upcos-flipitup.zip";
@@ -1572,7 +1646,7 @@ console.log(myPull);
 
 
             tio: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open tio.run collab suite in a window & sheeit  (thank you and no affiliation) </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open tio.run collab suite in a window & sheeit  (thank you and no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -1606,7 +1680,7 @@ console.log(myPull);
 
 
             blank: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open blank html viewer in a window< (thank you and no affiliation) /p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open blank html viewer in a window< (thank you and no affiliation) /p>',
               fn: (sheetNum) => {
 
 
@@ -1626,7 +1700,7 @@ console.log(myPull);
             },
 
             batch: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** create a UPCScript for a batch of url/resources from a UI.  replace the ss with {dj} to use as a player, or {x} to create slideshow from the resulting string </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** create a UPCScript for a batch of url/resources from a UI.  replace the ss with {dj} to use as a player, or {x} to create slideshow from the resulting string </p>',
               fn: () => {
 
 
@@ -1649,7 +1723,7 @@ console.log(myPull);
 
 
             book: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open librivox in draggable interface (thank you and no affiliation) </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open librivox in draggable interface (thank you and no affiliation) </p>',
               fn: (bookUrl) => {
 
                           if(!bookUrl) {
@@ -1673,7 +1747,7 @@ console.log(myPull);
 
 
             com: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open chat client window in draggable interface (thank you and no affiliation) </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open chat client window in draggable interface (thank you and no affiliation) </p>',
               fn: (fullUrl,winNum) => {
 
 		      fullUrl = "https://chatcrypt.com";
@@ -1696,7 +1770,7 @@ console.log(myPull);
 
 
             bg: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Open YouTube video/live/shorts in new tab so that video can be played in background or with screen off</p>',
+              description: '<p style="color:orange;font-size:1.1em">** Open YouTube video/live/shorts in new tab so that video can be played in background or with screen off</p>',
               fn: (url) => {
                 let embedUrl = url;
                 
@@ -1730,7 +1804,7 @@ console.log(myPull);
 
 
             is: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open shortened link inside terminal  </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open shortened link inside terminal  </p>',
               fn: (slug) => {
 
                       var fullUrl;
@@ -1743,7 +1817,7 @@ console.log(myPull);
 
 
             web2cli: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open shortened link inside terminal  </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open shortened link inside terminal  </p>',
               fn: async (config) => {
 
                       var fullUrl;
@@ -1773,7 +1847,7 @@ console.log(myPull);
 
 
     web2: {
-        description: '<p style="color:hotpink;font-size:1.1em">** Transform Web3 config to Web2</p>',
+        description: '<p style="color:orange;font-size:1.1em">** Transform Web3 config to Web2</p>',
         fn: async (config) => {
             try {
                 // Convert the config
@@ -1827,7 +1901,7 @@ console.log(myPull);
 
 
             upcms : {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open upcms window in draggable interface (deprecated)  </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open upcms window in draggable interface (deprecated)  </p>',
               fn: (fullUrl,winNum) => {
 
                       fullUrl = "https://pitrgclmhs7vogwhp5twz44y4p4jswq2dmihll2navrv5adfg4wq.arweave.net/eicTCWw8v1cax39nbPOY4_iZWhobEHWvTQVjXoBlNy0/index.html#/upload/" + upc;
@@ -1849,7 +1923,7 @@ console.log(myPull);
 
 
             localhost: {
-              description: '<p style="color:hotpink;font-size:1.1em">** download html/css/js for this upcOS instance to run locally**</p>',
+              description: '<p style="color:orange;font-size:1.1em">** download html/css/js for this upcOS instance to run locally**</p>',
 
               fn: async () => {
 
@@ -1882,7 +1956,7 @@ tempLink.click();
 
 
             upc: {
-              description: '<p style="color:hotpink;font-size:1.1em">** poppin a terminal already in your terminal**</p>',
+              description: '<p style="color:orange;font-size:1.1em">** poppin a terminal already in your terminal**</p>',
               //fn: async (url,param,id) => {
               //fn: async (popArgs) => {
               fn: async (...popArgs) => {
@@ -1893,7 +1967,7 @@ tempLink.click();
 
 
             [shell]: {
-              description: '<p style="color:hotpink;font-size:1.1em">** poppin a terminal already in your terminal**</p>',
+              description: '<p style="color:orange;font-size:1.1em">** poppin a terminal already in your terminal**</p>',
               //fn: async (url,param,id) => {
               //fn: async (popArgs) => {
               fn: async (...popArgs) => {
@@ -1904,7 +1978,7 @@ tempLink.click();
 
 
             url: {
-              description: '<p style="color:hotpink;font-size:1.1em">** create a shortened url from a given url.  takes in one param, and use as such: `url https://sample.website` , and this will return a shortened url**</p>',
+              description: '<p style="color:orange;font-size:1.1em">** create a shortened url from a given url.  takes in one param, and use as such: `url https://sample.website` , and this will return a shortened url**</p>',
 
               fn: async (currentUrl, slug) => {
 
@@ -1940,7 +2014,7 @@ tempLink.click();
 
 
             post: {
-              description: '<p style="color:hotpink;font-size:1.1em">** open a post lookup dialog.  enter the key of the conversation that you wish to load</p>',
+              description: '<p style="color:orange;font-size:1.1em">** open a post lookup dialog.  enter the key of the conversation that you wish to load</p>',
               fn: (key) => {
 
                       var currentUrl = window.location.href;
@@ -1954,7 +2028,7 @@ tempLink.click();
             },
 
             share: {
-              description: '<p style="color:hotpink;font-size:1.1em">** share this upc instance with a friend </p>',
+              description: '<p style="color:orange;font-size:1.1em">** share this upc instance with a friend </p>',
               fn: (key) => {
 
                       var currentUrl = window.location.href;
@@ -1975,7 +2049,7 @@ tempLink.click();
 
 
             drop: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Publish a anon to a front end.  The shebang to your upcscript will determine which fromtends the anon will be published to</p>',
+              description: '<p style="color:orange;font-size:1.1em">** Publish a anon to a front end.  The shebang to your upcscript will determine which fromtends the anon will be published to</p>',
               fn: async (num,display='private') => {
                  let didPac = await this.doDrop();
               }
@@ -1985,7 +2059,7 @@ tempLink.click();
 
 
             pac: {
-              description: '<p style="color:hotpink;font-size:1.1em">** create an encrypted text PACage C/O protectedtext.com (thank you, no affiliation). by default, we use the serial to name the pac (page 0), and you can pass an integer as a parameter to write to a different page.  so to write to pac page 2, the command would be pac 2  </p>',
+              description: '<p style="color:orange;font-size:1.1em">** create an encrypted text PACage C/O protectedtext.com (thank you, no affiliation). by default, we use the serial to name the pac (page 0), and you can pass an integer as a parameter to write to a different page.  so to write to pac page 2, the command would be pac 2  </p>',
               fn: async (num,display='private') => {
                  let didPac = await this.doPac(num,display);
               }
@@ -1994,7 +2068,7 @@ tempLink.click();
 
 
             showscript: {
-              description: '<p style="color:hotpink;font-size:1.1em">** Display embeded upcscript </p>',
+              description: '<p style="color:orange;font-size:1.1em">** Display embeded upcscript </p>',
               fn: () => {
                       const terminal = this.progressTerminal.current
                       terminal.pushToStdout(this.state.msg);
@@ -2006,7 +2080,7 @@ tempLink.click();
 
 
             open: {
-              description: '<p style="color:hotpink;font-size:1.1em">** open up a new url</p>',
+              description: '<p style="color:orange;font-size:1.1em">** open up a new url</p>',
 
               fn: async (url,param) => {
 
@@ -2132,7 +2206,7 @@ tempLink.click();
 
 
             c: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open client window in draggable interface</p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open client window in draggable interface</p>',
               fn: (fullUrl,winNum) => {
 
 
@@ -2157,7 +2231,7 @@ tempLink.click();
 
 
             x: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** execute arbitrary upcscript starting with >>> characters delimited by > characters </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** execute arbitrary upcscript starting with >>> characters delimited by > characters </p>',
                     fn: async (upcscript) => {
                       if(!upcscript) {
                          upcscript = this.state.upcscript;
@@ -2175,7 +2249,7 @@ tempLink.click();
 
 
             archive: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** </p>',
               fn: async () => {
 
                       var data = await this.getUpc(upc);
@@ -2199,7 +2273,7 @@ console.log("upc data is " , data)
 
 
             wurdup: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open codeverter.com window  (thank you and no affiliation) </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open codeverter.com window  (thank you and no affiliation) </p>',
               fn: () => {
 
 
@@ -2220,7 +2294,7 @@ console.log("upc data is " , data)
             },
 
             upcs: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open POPScript interpreter </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open POPScript interpreter </p>',
               fn: () => {
 
 
@@ -2242,7 +2316,7 @@ console.log("upc data is " , data)
 
 
             reconppl: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** approve your flip token to be spent for a PPL</p>',
+		    description: '<p style="color:orange;font-size:1.1em">** approve your flip token to be spent for a PPL</p>',
               fn: async () => {
 
 
@@ -2259,7 +2333,7 @@ console.log("upc data is " , data)
 
 
             i: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** display the highest ppl id </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** display the highest ppl id </p>',
               fn: async () => {
 
 
@@ -2276,7 +2350,7 @@ console.log("upc data is " , data)
 
 
             last: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** display the highest raw material nft id </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** display the highest raw material nft id </p>',
               fn: async () => {
 
 
@@ -2294,7 +2368,7 @@ console.log("upc data is " , data)
 
 
             pplast: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** display the highest ppl id </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** display the highest ppl id </p>',
               fn: async () => {
 
 
@@ -2312,7 +2386,7 @@ console.log("upc data is " , data)
 
 
             ppl: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open PPL (private protocol link) minibrowser </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open PPL (private protocol link) minibrowser </p>',
               fn: async (url) => {
 
 
@@ -2339,7 +2413,7 @@ console.log("upc data is " , data)
 
 
             [pplCommand]: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open PPL (private protocol link) minibrowser </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open PPL (private protocol link) minibrowser </p>',
               fn: async (...popArgs) => {
 
 var url;
@@ -2382,7 +2456,7 @@ console.log(popArgs);
 
 
             sheeit: {
-		    description: '<p style="color:hotpink;font-size:1.1em">** Open ethercalc collab suite in a window & sheeit  (thank you and no affiliation) </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open ethercalc collab suite in a window & sheeit  (thank you and no affiliation) </p>',
               fn: (sheetNum) => {
 
 
@@ -2415,7 +2489,7 @@ console.log(popArgs);
 
 
             djx: {
-              description: '<p style="color:hotpink;font-size:1.1em">**  instantiate the dj upc to perform a substring extraction, and play spinz for all of the resulting videos in succession</p>',
+              description: '<p style="color:orange;font-size:1.1em">**  instantiate the dj upc to perform a substring extraction, and play spinz for all of the resulting videos in succession</p>',
               fn: (upcScript) => {
                       if(!upcScript) {
                          upcScript = this.state.upcscript.substr(3);
@@ -2428,7 +2502,7 @@ console.log(popArgs);
 
 
             dj: {
-              description: '<p style="color:hotpink;font-size:1.1em">**  instantiate the dj upc to perform a substring extraction, and play spinz for all of the resulting videos in succession</p>',
+              description: '<p style="color:orange;font-size:1.1em">**  instantiate the dj upc to perform a substring extraction, and play spinz for all of the resulting videos in succession</p>',
               fn: async (command, arg)  => {
                  let response = await this.doDj(command,arg);
               }
@@ -2444,7 +2518,7 @@ console.log(popArgs);
 
 
           search: {
-      	    description: '<p style="color:hotpink;font-size:1.1em">** Search upcs for content.  Fields searched are owner, human readable name, vr, and ipfs.  No spaces in the search term, use dashes or underscores depending on how the owner named the file/human readable name**</p>',
+      	    description: '<p style="color:orange;font-size:1.1em">** Search upcs for content.  Fields searched are owner, human readable name, vr, and ipfs.  No spaces in the search term, use dashes or underscores depending on how the owner named the file/human readable name**</p>',
             fn: (humanReadableName) => {
       	      this.search()
             }
@@ -2586,7 +2660,7 @@ console.log(popArgs);
           // Only add command if URL is valid
           if (url && typeof url === 'string' && url.startsWith('http')) {
             commands[commandName] = {
-              description: `<p style="color:hotpink;font-size:1.1em">** Open ${commandName}</p>`,
+              description: `<p style="color:orange;font-size:1.1em">** Open ${commandName}</p>`,
               fn: async (...args) => {
                 // Clear search inputs if they exist
                 if (this.cSearch) this.cSearch.value = "";
