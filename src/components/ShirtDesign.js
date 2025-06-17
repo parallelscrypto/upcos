@@ -50,40 +50,90 @@ class ShirtDesign extends Component {
           ctx.lineWidth = 30;
           ctx.stroke();
           
-          // King's Crown (wider and properly positioned)
-          ctx.save();
-          ctx.translate(centerX, centerY - 180);
-          ctx.beginPath();
-          ctx.moveTo(-120, 0);  // Made wider
-          ctx.lineTo(-80, -60);
-          ctx.lineTo(-40, -30);
-          ctx.lineTo(0, -80);
-          ctx.lineTo(40, -30);
-          ctx.lineTo(80, -60);
-          ctx.lineTo(120, 0);  // Made wider
-          ctx.lineTo(100, 0);
-          ctx.lineTo(100, 40);
-          ctx.lineTo(-100, 40);
-          ctx.lineTo(-100, 0);
-          ctx.closePath();
-          ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
-          ctx.fill();
-          ctx.strokeStyle = 'rgba(255, 255, 0, 0.9)';
-          ctx.lineWidth = 2;
-          ctx.stroke();
-          
-          // Crown jewels (enlarged)
-          ctx.fillStyle = 'rgba(255, 50, 50, 0.9)';
-          ctx.beginPath();
-          ctx.arc(-80, -20, 8, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(0, -40, 10, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(80, -20, 8, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.restore();
+
+
+
+
+// Double-W Royal Crown with Perfectly Placed Jewels
+ctx.save();
+ctx.translate(centerX, centerY - 180);
+
+// Dimensions
+const totalWidth = 360;
+const peakHeight = 100;
+const dipDepth = 40;
+const baseHeight = 30;
+const peakWidth = 80;
+
+// Draw crown shape (same as before)
+ctx.beginPath();
+ctx.moveTo(-totalWidth/2, 0);
+ctx.lineTo(-totalWidth/2 + peakWidth*0.7, -peakHeight*0.8);
+ctx.lineTo(-totalWidth/2 + peakWidth*1.3, -dipDepth);
+ctx.lineTo(-totalWidth/2 + peakWidth*2, -peakHeight);
+ctx.lineTo(-totalWidth/2 + peakWidth*3, -dipDepth);
+ctx.lineTo(-totalWidth/2 + peakWidth*3.7, -peakHeight*0.8);
+ctx.lineTo(totalWidth/2, 0);
+ctx.lineTo(totalWidth/2, baseHeight);
+ctx.lineTo(-totalWidth/2, baseHeight);
+ctx.closePath();
+
+// Crown styling
+ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
+ctx.fill();
+ctx.strokeStyle = 'rgba(255, 255, 0, 0.9)';
+ctx.lineWidth = 2;
+ctx.stroke();
+
+// ----- PERFECTLY POSITIONED JEWELS -----
+const jewels = [
+  // Left W jewels
+  { x: -totalWidth/2 + peakWidth*0.7, y: -peakHeight*0.8, color: '#FF0000', size: 10 }, // First peak
+  { x: -totalWidth/2 + peakWidth*2, y: -peakHeight, color: '#FF0000', size: 12 },       // Highest peak
+  
+  // Right W jewels
+  { x: -totalWidth/2 + peakWidth*3.7, y: -peakHeight*0.8, color: '#FF0000', size: 10 }, // Last peak
+
+];
+
+jewels.forEach(jewel => {
+  // Jewel glow
+  const glow = ctx.createRadialGradient(
+    jewel.x, jewel.y, 0,
+    jewel.x, jewel.y, jewel.size*2
+  );
+  glow.addColorStop(0, jewel.color);
+  glow.addColorStop(1, 'transparent');
+  
+  ctx.beginPath();
+  ctx.arc(jewel.x, jewel.y, jewel.size*2, 0, Math.PI * 2);
+  ctx.fillStyle = glow;
+  ctx.fill();
+  
+  // Jewel core
+  ctx.beginPath();
+  ctx.arc(jewel.x, jewel.y, jewel.size, 0, Math.PI * 2);
+  ctx.fillStyle = jewel.color;
+  ctx.fill();
+  
+  // Jewel highlight
+  ctx.beginPath();
+  ctx.arc(jewel.x - jewel.size/3, jewel.y - jewel.size/3, jewel.size/3, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.fill();
+});
+
+ctx.restore();
+
+
+
+
+
+
+
+
+
+
           
           // Text
           ctx.textAlign = 'center';
@@ -217,6 +267,7 @@ class ShirtDesign extends Component {
         // Force initial render after everything is ready
         await new Promise(resolve => this.setState({ componentReady: true }, resolve));
         
+        this.setState({currentDesign: 'cyberCircle'});
         // Now generate the design
         this.generateFront();
         
@@ -484,7 +535,7 @@ class ShirtDesign extends Component {
 
       this.setState({ 
         userData: formattedData,
-        qrData: data[5], // Using the ipfs URL from blockchain for QR code
+        qrData: data[6], // Using the ipfs URL from blockchain for QR code
         isLoading: false,
         error: null
       }, this.generateBack);
@@ -611,7 +662,7 @@ class ShirtDesign extends Component {
     ctx.fillStyle = 'var(--cyber-orange)';
     ctx.font = 'bold 24px Orbitron';
     ctx.textAlign = 'center';
-    ctx.fillText('CYBERPUNK UPCSCRIPT SHIRT DESIGN', mergedCanvas.width / 2, 30);
+    ctx.fillText('UPCSCRIPT SHIRT DESIGN', mergedCanvas.width / 2, 30);
 
     const link = document.createElement('a');
     link.href = mergedCanvas.toDataURL('image/png');
@@ -924,7 +975,7 @@ class ShirtDesign extends Component {
             <div className="account-info">
               Connected: {this.state.account.substring(0, 8)}...{this.state.account.substring(36)}
             </div>
-            <h1>CYBERPUNK UPCSCRIPT</h1>
+            <h1>UPCSCRIPT</h1>
             <h2>T-Shirt Designer</h2>
             
             <div className="tab-buttons">
