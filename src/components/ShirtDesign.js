@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { ethers } from 'ethers';
 import { sha256 } from 'js-sha256';
+import { toDataURL } from 'qrcode';
 
 class ShirtDesign extends Component {
   constructor(props) {
@@ -15,13 +16,14 @@ class ShirtDesign extends Component {
       isConnected: false,
       provider: null,
       signer: null,
-      account: ''
+      account: '',
+      qrData: ''
     };
     
     this.designTemplates = {
       cyberCircle: {
-        name: "Cyber Circle",
-        generator: (ctx, canvas, upcNumber) => {
+        name: "Cyber Circle Crown",
+        generator: async (ctx, canvas, upcNumber, qrData) => {
           // Background
           ctx.fillStyle = 'rgba(0,0,0,0.7)';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -36,7 +38,7 @@ class ShirtDesign extends Component {
             ctx.stroke();
           }
 
-          // Main design
+          // Main circle design
           const centerX = canvas.width / 2;
           const centerY = canvas.height / 2;
           
@@ -46,6 +48,41 @@ class ShirtDesign extends Component {
           ctx.strokeStyle = 'rgba(255, 140, 0, 0.3)';
           ctx.lineWidth = 30;
           ctx.stroke();
+          
+          // King's Crown (wider and properly positioned)
+          ctx.save();
+          ctx.translate(centerX, centerY - 180);
+          ctx.beginPath();
+          ctx.moveTo(-120, 0);  // Made wider
+          ctx.lineTo(-80, -60);
+          ctx.lineTo(-40, -30);
+          ctx.lineTo(0, -80);
+          ctx.lineTo(40, -30);
+          ctx.lineTo(80, -60);
+          ctx.lineTo(120, 0);  // Made wider
+          ctx.lineTo(100, 0);
+          ctx.lineTo(100, 40);
+          ctx.lineTo(-100, 40);
+          ctx.lineTo(-100, 0);
+          ctx.closePath();
+          ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255, 255, 0, 0.9)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          
+          // Crown jewels (enlarged)
+          ctx.fillStyle = 'rgba(255, 50, 50, 0.9)';
+          ctx.beginPath();
+          ctx.arc(-80, -20, 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(0, -40, 10, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(80, -20, 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
           
           // Text
           ctx.textAlign = 'center';
@@ -63,38 +100,106 @@ class ShirtDesign extends Component {
           ctx.font = 'bold 24px Orbitron';
           ctx.fillStyle = 'var(--cyber-light)';
           ctx.fillText('[FLIP] for [INTEL]', centerX, centerY + 70);
+          ctx.fillText('HIGH-IQ.BLACK/NETWORK', centerX, centerY + 110);
+
+          // QR Code - using the blockchain data[5] URL
+          if (qrData) {
+            const qrDataURL = await toDataURL(qrData, {
+              width: 128,
+              margin: 1,
+              color: {
+                dark: '#00F0FF',
+                light: '#00000000'
+              }
+            });
+            
+            const qrImg = new Image();
+            qrImg.src = qrDataURL;
+            await new Promise((resolve) => { qrImg.onload = resolve; });
+            ctx.drawImage(qrImg, centerX - 64, centerY + 150, 128, 128);
+          }
         }
       },
-      hexGrid: {
-        name: "Hex Grid",
-        generator: (ctx, canvas, upcNumber) => {
+      cyberHex: {
+        name: "Cyber Hex Grid",
+        generator: async (ctx, canvas, upcNumber, qrData) => {
           // Background
-          ctx.fillStyle = '#0a0a1a';
+          ctx.fillStyle = 'rgba(0,0,0,0.9)';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           
           // Hex grid pattern
-          ctx.strokeStyle = 'rgba(0, 200, 255, 0.15)';
-          ctx.lineWidth = 1;
           const hexSize = 40;
-          for (let y = 0; y < canvas.height; y += hexSize * 1.5) {
-            for (let x = 0; x < canvas.width; x += hexSize * Math.sqrt(3)) {
-              this.drawHexagon(ctx, x + (y % (hexSize * 3) ? hexSize * Math.sqrt(3)/2 : 0), y, hexSize);
+          const rows = Math.ceil(canvas.height / (hexSize * Math.sqrt(3))) + 1;
+          const cols = Math.ceil(canvas.width / (hexSize * 1.5)) + 1;
+          
+          ctx.strokeStyle = 'rgba(0, 240, 255, 0.1)';
+          ctx.lineWidth = 1;
+          
+          for (let row = -1; row < rows; row++) {
+            for (let col = -1; col < cols; col++) {
+              const x = col * hexSize * 1.5;
+              const y = row * hexSize * Math.sqrt(3) + (col % 2) * hexSize * Math.sqrt(3) / 2;
+              
+              this.drawHexagon(ctx, x, y, hexSize);
             }
           }
+          
+          // Center hexagon with glow
+          const centerX = canvas.width / 2;
+          const centerY = canvas.height / 2;
+          
+          // Glow effect
+          const gradient = ctx.createRadialGradient(
+            centerX, centerY, 100,
+            centerX, centerY, 180
+          );
+          gradient.addColorStop(0, 'rgba(255, 140, 0, 0.5)');
+          gradient.addColorStop(1, 'rgba(255, 140, 0, 0)');
+          
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, 180, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Main hexagon
+          ctx.strokeStyle = 'rgba(255, 215, 0, 0.8)';
+          ctx.lineWidth = 4;
+          this.drawHexagon(ctx, centerX, centerY, 120);
           
           // Text
           ctx.textAlign = 'center';
           ctx.fillStyle = 'white';
-          ctx.font = 'bold 22px Orbitron';
-          ctx.fillText('<upcscript race="black" continent="afrika"/>', canvas.width/2, canvas.height/2 - 60);
+          ctx.font = 'bold 20px Orbitron';
+          ctx.fillText('<upcscript race="black" continent="afrika"/>', centerX, centerY - 50);
           
-          ctx.font = 'bold 38px Orbitron';
-          ctx.fillStyle = 'var(--cyber-orange)';
-          ctx.fillText(`[${upcNumber}]`, canvas.width/2, canvas.height/2);
+          ctx.font = 'bold 36px Orbitron';
+          ctx.fillText(`[${upcNumber}]`, centerX, centerY + 10);
+          ctx.shadowBlur = 15;
+          ctx.shadowColor = 'var(--cyber-orange)';
+          ctx.fillText(`[${upcNumber}]`, centerX, centerY + 10);
+          ctx.shadowBlur = 0;
           
-          ctx.font = 'bold 26px Orbitron';
+          ctx.font = 'bold 24px Orbitron';
           ctx.fillStyle = 'var(--cyber-light)';
-          ctx.fillText('[FLIP] for [INTEL]', canvas.width/2, canvas.height/2 + 70);
+          ctx.fillText('[FLIP] for [INTEL]', centerX, centerY + 70);
+          ctx.fillText('HIGH-IQ.BLACK/NETWORK', centerX, centerY + 110);
+
+          // QR Code
+          if (qrData) {
+            const qrDataURL = await toDataURL(qrData, {
+              width: 128,
+              margin: 1,
+              color: {
+                dark: '#00F0FF',
+                light: '#00000000'
+              }
+            });
+            
+            const qrImg = new Image();
+            qrImg.src = qrDataURL;
+            await new Promise((resolve) => { qrImg.onload = resolve; });
+            ctx.drawImage(qrImg, centerX - 64, centerY + 150, 128, 128);
+          }
         }
       }
     };
@@ -107,6 +212,11 @@ class ShirtDesign extends Component {
       this.generateFront();
       window.addEventListener('resize', this.resizeCanvas);
       this.resizeCanvas();
+      
+      // Automatically fetch UPC data if upcNumber is provided
+      if (this.state.upcNumber) {
+        await this.fetchUpcData();
+      }
     } catch (error) {
       this.setState({ 
         isLoading: false,
@@ -169,7 +279,7 @@ class ShirtDesign extends Component {
         thumbCanvas.title = design.name;
         
         const thumbCtx = thumbCanvas.getContext('2d');
-        design.generator(thumbCtx, thumbCanvas, 'UPC');
+        design.generator(thumbCtx, thumbCanvas, 'UPC', '');
         
         thumbCanvas.onclick = () => {
           this.setState({ currentDesign: key }, this.generateFront);
@@ -215,7 +325,7 @@ class ShirtDesign extends Component {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     if (this.designTemplates[this.state.currentDesign]) {
-      this.designTemplates[this.state.currentDesign].generator(ctx, canvas, upcNumber);
+      this.designTemplates[this.state.currentDesign].generator(ctx, canvas, upcNumber, this.state.qrData);
     }
   }
 
@@ -331,29 +441,18 @@ class ShirtDesign extends Component {
       
       const formattedData = [
         `[[intel]]`,
-        `token_id: ${data.tokenId}`,
-        `=====`,
-        `og_owner: ${data.og}`,
-        `=====`,
         `owner: ${data.staker}`,
         `=====`,
         `human_readable_name: ${data.humanReadableName}`,
         `=====`,
-        `upc: ${upcNumber}`,
-        `=====`,
-        `stage: ${data.word}`,
-        `=====`,
-        `payload: ${data.ipfs}`,
-        `=====`,
         `created: ${newDate.toString()}`,
-        `=====`,
-        `updated: ${newDateMod.toString()}`,
         `=====`,
         `[[/intel]]`
       ].join('\n');
 
       this.setState({ 
         userData: formattedData,
+        qrData: data[5], // Using the ipfs URL from blockchain for QR code
         isLoading: false,
         error: null
       }, this.generateBack);
