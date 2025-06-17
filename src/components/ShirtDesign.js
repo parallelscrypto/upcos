@@ -10,6 +10,7 @@ class ShirtDesign extends Component {
       currentTab: 'front',
       currentDesign: 'cyberCircle',
       upcNumber: props.upcNumber,
+      componentReady: false,
       userData: '',
       isLoading: true,
       error: null,
@@ -205,25 +206,51 @@ class ShirtDesign extends Component {
     };
   }
 
-  async componentDidMount() {
-    try {
-      await this.initConnection();
-      this.initDesignThumbnails();
-      this.generateFront();
-      window.addEventListener('resize', this.resizeCanvas);
-      this.resizeCanvas();
-      
-      // Automatically fetch UPC data if upcNumber is provided
-      if (this.state.upcNumber) {
-        await this.fetchUpcData();
+
+
+    async componentDidMount() {
+      try {
+        await this.initConnection();
+        window.addEventListener('resize', this.resizeCanvas);
+        this.resizeCanvas();
+        
+        // Force initial render after everything is ready
+        await new Promise(resolve => this.setState({ componentReady: true }, resolve));
+        
+        // Now generate the design
+        this.generateFront();
+        
+        if (this.state.upcNumber) {
+          await this.fetchUpcData();
+        }
+      } catch (error) {
+        this.setState({ 
+          isLoading: false,
+          error: error.message
+        });
       }
-    } catch (error) {
-      this.setState({ 
-        isLoading: false,
-        error: error.message
-      });
+    }
+
+  componentDidUpdate(prevProps, prevState) {
+    // Regenerate front when design changes
+    if (prevState.currentDesign !== this.state.currentDesign && 
+        this.state.currentTab === 'front') {
+      this.generateFront();
+    }
+    
+    // Regenerate when tab changes
+    if (prevState.currentTab !== this.state.currentTab) {
+      if (this.state.currentTab === 'front') {
+        this.generateFront();
+      } else {
+        this.generateBack();
+      }
     }
   }
+
+
+
+
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.resizeCanvas);
@@ -256,46 +283,30 @@ class ShirtDesign extends Component {
     }
   };
 
-  initDesignThumbnails = () => {
-    console.log('Initializing design thumbnails');
-    console.log('Available designs:', Object.keys(this.designTemplates));
-    
-    setTimeout(() => {
-      const container = document.getElementById('frontDesignOptions');
-      if (!container) {
-        console.error('Design options container not found');
-        return;
-      }
-      
-      container.innerHTML = '';
-      
-      Object.keys(this.designTemplates).forEach(key => {
-        const design = this.designTemplates[key];
-        const thumbCanvas = document.createElement('canvas');
-        thumbCanvas.className = 'design-thumbnail';
-        thumbCanvas.width = 100;
-        thumbCanvas.height = 100;
-        thumbCanvas.dataset.template = key;
-        thumbCanvas.title = design.name;
-        
-        const thumbCtx = thumbCanvas.getContext('2d');
-        design.generator(thumbCtx, thumbCanvas, 'UPC', '');
-        
-        thumbCanvas.onclick = () => {
-          this.setState({ currentDesign: key }, this.generateFront);
-          document.querySelectorAll('.design-thumbnail').forEach(t => t.classList.remove('active'));
-          thumbCanvas.classList.add('active');
-        };
-        
-        container.appendChild(thumbCanvas);
-      });
-      
-      if (container.firstChild && !this.state.currentDesign) {
-        container.firstChild.classList.add('active');
-        this.setState({ currentDesign: Object.keys(this.designTemplates)[0] });
-      }
-    }, 100);
+
+  renderDesignThumbnails() {
+    return Object.keys(this.designTemplates).map(key => {
+      const design = this.designTemplates[key];
+      return (
+        <canvas
+          key={key}
+          className={`design-thumbnail ${this.state.currentDesign === key ? 'active' : ''}`}
+          width="100"
+          height="100"
+          title={design.name}
+          onClick={() => this.setState({ currentDesign: key }, this.generateFront)}
+          ref={canvas => {
+            if (canvas) {
+              const ctx = canvas.getContext('2d');
+              design.generator(ctx, canvas, 'UPC', '');
+            }
+          }}
+        />
+      );
+    });
   }
+
+
 
   drawHexagon = (ctx, x, y, size) => {
     ctx.beginPath();
@@ -315,19 +326,40 @@ class ShirtDesign extends Component {
     });
   }
 
-  generateFront = () => {
-    const canvas = document.getElementById('tshirtFrontCanvas');
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
-    const upcNumber = this.state.upcNumber || '850645008653';
-    
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    if (this.designTemplates[this.state.currentDesign]) {
-      this.designTemplates[this.state.currentDesign].generator(ctx, canvas, upcNumber, this.state.qrData);
-    }
-  }
+    generateFront = async () => {
+      const canvas = document.getElementById('tshirtFrontCanvas');
+      if (!canvas) {
+        console.warn('Front canvas not found');
+        return;
+      }
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        console.warn('Could not get canvas context');
+        return;
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      const design = this.designTemplates[this.state.currentDesign];
+      if (!design) {
+        console.warn('Design template not found:', this.state.currentDesign);
+        return;
+      }
+
+      try {
+        await design.generator(ctx, canvas, this.state.upcNumber || '850645008653', this.state.qrData);
+      } catch (error) {
+        console.error('Error generating design:', error);
+        // Fallback design
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'white';
+        ctx.font = '20px Orbitron';
+        ctx.textAlign = 'center';
+        ctx.fillText('DESIGN GENERATION ERROR', canvas.width/2, canvas.height/2);
+      }
+    };
 
   fetchUpcData = async () => {
     const { upcNumber, provider } = this.state;
@@ -617,6 +649,10 @@ class ShirtDesign extends Component {
     this.setState({ userData: e.target.value });
   }
 
+
+
+
+
   render() {
     const { isLoading, error, isConnected } = this.state;
 
@@ -767,13 +803,7 @@ class ShirtDesign extends Component {
               display: block;
             }
             
-            canvas {
-              background: black;
-              border: 2px solid var(--cyber-orange);
-              max-width: 100%;
-              margin-top: 15px;
-            }
-            
+
             #tshirtFrontCanvas {
               height: 600px;
             }
@@ -846,12 +876,24 @@ class ShirtDesign extends Component {
               box-shadow: 0 0 15px var(--cyber-light);
             }
             
+
+            canvas {
+              display: block;
+              background: black;
+              border: 2px solid var(--cyber-orange);
+              max-width: 100%;
+              margin-top: 15px;
+              transition: opacity 0.3s;
+            }
+
             .loading {
               color: var(--cyber-light);
               text-align: center;
-              margin: 20px 0;
+              padding: 40px;
+              font-family: 'Orbitron', sans-serif;
+              font-size: 1.2em;
             }
-            
+                        
             .error {
               color: #ff4444;
               text-align: center;
@@ -902,9 +944,12 @@ class ShirtDesign extends Component {
 
             <div id="front" className={`tab-content ${this.state.currentTab === 'front' ? 'active' : ''}`}>
               <h3>SELECT FRONT DESIGN:</h3>
-              <div className="design-options" id="frontDesignOptions">
-                {/* Thumbnails will be added here by JavaScript */}
-              </div>
+                <div className="design-options">
+                  {this.renderDesignThumbnails()}
+                </div>
+
+
+
               
               <input 
                 type="text" 
