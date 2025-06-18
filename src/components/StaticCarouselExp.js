@@ -11,6 +11,7 @@ import TradingBotTerminal from './TradingBotTerminal'
 import MonopolyCLI from './MonopolyCLI'
 import MemecoinFactory from './MemecoinFactory';
 import ShirtDesign from './ShirtDesign';
+import WalletMessengerTerminal from './WalletMessenger';
 import VideoArchiveTerminal from './VideoArchiveTerminal';
 import MoneyPostTerminal from './MoneyPostTerminal';
 import UPCInvestCLI from './UPCInvest';
@@ -1127,6 +1128,25 @@ console.log("INVEST IS ", address);
             },
 
 
+            mail: {
+		    description: '<p style="color:orange;font-size:1.1em">** open the secure messaage center </p>',
+              fn: (winNum=0) => {
+
+                     const terminal = this.progressTerminal.current
+
+                     var mplayer = <WalletMessengerTerminal/>;
+
+                      if(winNum == "1") {
+                        terminal.pushToStdout(mplayer);
+                      }
+                      else {
+ 		        this.setState(prevState => ({ fullIpfs: mplayer }));
+		        this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		        this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+ 
+              }
+            },
 
 
 
