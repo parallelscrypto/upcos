@@ -490,9 +490,42 @@ export default class StaticCarouselExp extends Component {
             },
 
 
+            bin: {
+		    description: '<p style="color:orange;font-size:1.1em">** Open global shrib notebook in a window.  pass a param  (thank you and no affiliation) </p>',
+              fn: (sheetNum=0) => {
+
+
+                      if (Number.isInteger(sheetNum) && sheetNum < 0) {
+                         sheetNum = 0;
+                      }
+
+                      var currentUrl = window.location.href;
+                      var upcHash  = sha256(sheetNum)
+                      for(var i=0; i<sheetNum; i++) {
+                          upcHash = sha256(upcHash);
+                      } 
+
+
+		      var fullUrl = "https://shrib.com/#" + upcHash;
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+
 
             fire: {
-		    description: '<p style="color:orange;font-size:1.1em">** Open shrib notebook in a window.  pass a param  (thank you and no affiliation) </p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open upc localized shrib notebook in a window.  pass a param  (thank you and no affiliation) </p>',
               fn: (sheetNum=0) => {
 
 
@@ -600,6 +633,17 @@ export default class StaticCarouselExp extends Component {
                   this.hackScan(upc);
               }
             },
+
+
+            seal: {
+              description: '<p style="color:orange;font-size:1.1em">**  same as anon, only do not shorten the link.  raw url with no is.gd for more privacy</p>',
+
+              fn: async (upc) => {
+                  this.sealScan(upc);
+              }
+            },
+
+
 
 
             feed: {
@@ -1067,7 +1111,7 @@ console.log("INVEST IS ", address);
                      var upc = this.state.pwd;
                      const terminal = this.progressTerminal.current
 
-                     var mplayer = <ShirtDesign upcNumber={upc} getUpc={this.props.upcInfo}/>;
+                     var mplayer = <ShirtDesign upcNumber={upc} designsUrl={'https://phbweusyen357ty5lv4hzvpk3eh3lubtisy6njyk75sgm4rrgcpa.arweave.net/ecNiUlgjd9_PHV14fNXq2Q-10DNEseanCv9kZnIxMJ4'}/>;
 
                       var winNum = 0
                       if(winNum == "1") {
@@ -3320,6 +3364,306 @@ doDrop = async () => {
   }
 
 
+
+
+
+  doSeal = async (upc) => { 
+
+	    const terminal = this.progressTerminal.current
+
+            let rejectCustomShell = false;
+            const wallet = await this.props.getMyAddress();
+            let info = await this.props.upcInfo(this.state.pwd)
+            let assistInfo = await this.props.upcInfo(this.state.code)
+            var qOwner = info['staker'];
+            var tokenId= info['tokenId'];
+            var assistOwner = assistInfo['staker'];
+            console.log(info);
+
+            //reject custom shell if upc has no owner, or if the current user is not the upc codes owner.  an owner can create shells anywhere from their anones
+            if(tokenId != 0) {
+               if( (qOwner != wallet) ) {
+	          terminal.pushToStdout("You must cd or scan into a anon-able upc code. A anon-able UPC code is a upc that no one owns.  You can check upcs with the xupc command.  For example, to check ownership info 000000000000 type 'xupc 000000000000'");
+                  rejectCustomShell = true;
+                  return false;
+               }
+            }
+            else {
+               rejectCustomShell = true;
+            }
+
+            if( wallet == assistOwner ) {
+               rejectCustomShell = false;
+            }
+
+            if(!upc) {
+               upc = this.state.pwd
+            }
+
+      console.log("========== ASSIST INFO ==========");
+
+
+  let heroImg = await this.getHero(upc);
+
+  var exportForm = <div>
+    {heroImg}
+    <Barcode value={this.state.pwd} format="UPC" />
+    <form className="mb-3" onSubmit={async (event) => { // Make the onSubmit function async
+      event.preventDefault()
+      let upcId = this.state.pwd
+      let humanReadableName = this.humanReadableName.value.toString()
+      let exportMsg= this.exportMsg.value.toString()
+
+      const lines = exportMsg.split('\n');
+      const firstLine = lines[0].trim();
+      let parentShell;
+      console.log("CHECKING SHEBANG");
+      console.log(firstLine);
+      console.log("shebang == " + this.state.shebang );
+      console.log("rejectShell == " + rejectCustomShell );
+
+      //if an unowned upc is being anoned, the shell must be the same as the parent. if the parent does not define a shell, default to /bin/upc and add to the top of the anoned code
+      if( rejectCustomShell == true ) {
+
+         let parentMsg = this.state.msg;
+         const linesParent = parentMsg.split('\n');
+
+         let shebangParent = "#!/bin/upc";
+         const shebangRegex = /^#!\/bin\/([^\/]+)(?:\/([^\/]+))?$/;
+         
+         // Extract the first line and trim it
+         const firstLineParent = linesParent[0].trim();
+         
+         // Check if the first line matches the shebang pattern
+         const matchShebangParent = shebangRegex.exec(firstLineParent);
+         
+         let addNewShebang = true;
+         if (matchShebangParent) {
+           // Capture the parameters from the regex match
+           shebangParent = firstLineParent;
+         }
+
+         //if the first line of the anon upcscript is not a shebang, substitute it with the parents shebang, or default shebang
+         const matchShebangFlex = shebangRegex.exec(firstLine);
+         if (!matchShebangFlex) {
+console.log("no match shebang anon");
+           lines.unshift(shebangParent); 
+           exportMsg = lines.join('\n');
+         }
+         else {
+console.log("match shebang anon");
+           lines[0] = shebangParent;
+           exportMsg = lines.join('\n');
+         }
+
+      }
+
+
+
+      let upcscript= this.upcscript.value.toString()
+      let payload = this.payload.value.toString()
+      let missionUrl = this.missionUrl.value.toString()
+      let configUrl= this.configUrl.value.toString()
+
+      const terminal = this.progressTerminal.current
+      var currentUrl = window.location.href;
+
+      //let info = await this.props.upcInfo(this.state.pwd)
+
+      let infoSanit = btoa(info);
+      var showString = upcscript;
+
+
+      const hackerAddress = await this.props.getMyAddress();
+      const currTime = Math.floor(Date.now() / 1000);
+      const hrn = "anoned-upc-" + this.state.pwd + "-" + currTime;
+
+/*
+      const manifestJson = {
+          "tokenId"   : "1337", 
+          "staker"   : owner, 
+          "og" : owner,
+          "upcHash"   :"1337", 
+          "word"   : this.state.pwd, 
+          "ipfs"   : payload, 
+          "vr"   : upcscript, 
+          "humanReadableName" : hrn, 
+          "minted"   : false, 
+          "bought"   : false, 
+          "tld"   : "0", 
+          "createdTimestamp"   : currTime, 
+          "latestTimestamp"   :currTime, 
+      }
+*/
+
+
+      var manifestAr = [hackerAddress,qOwner,0,0,0,payload,upcscript,hrn,0,0,0,currTime,currTime,this.state.code,currentUrl];
+
+
+      //var manifestAr = Object.entries(manifestJson);
+
+
+      var manifestEncoded = btoa(manifestAr);
+
+      console.log("manifestEncoded ar ");
+      console.log(manifestAr);
+
+
+      exportMsg = btoa(exportMsg);
+      missionUrl = btoa(missionUrl);
+
+
+      //var upcJson = '{"show":"' + upcscript + '","code":"' + this.state.pwd + '","assist":"' + this.state.code + '","manifest":"' + manifestEncoded + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
+
+
+      var upcJson = {
+        show: upcscript,
+        code: this.state.pwd,
+        assist: this.state.code,
+        manifest: manifestEncoded,
+        msg: exportMsg,
+        missionUrl: missionUrl,
+        configUrl: configUrl
+      };
+
+      var upcEncoded = btoa(JSON.stringify(upcJson));
+      currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
+      currentUrl = currentUrl.replace('intel', 'export');
+
+
+      console.log("^^^^^^^^^^^^^^CURRENT URL " , currentUrl);
+
+      var encodedWeb2 = encodeURIComponent(currentUrl);
+      var toShorten = "https://is.gd/create.php?format=json&url=" + currentUrl;
+      if (!(humanReadableName === '' || humanReadableName === null)) {
+        toShorten += "&shorturl=" + humanReadableName;
+      }
+
+      let response;
+      var shortUrl;
+      console.log("^^^^^^^^^RESPONSE",response);
+
+      var clipboard = 
+      <CopyToClipboard text={currentUrl}>
+        <button>Copy Raw URL</button>
+      </CopyToClipboard>
+
+
+
+
+
+
+      this.setState({ showModalExport: false });
+
+
+     var urlLink = <a href={currentUrl} >{currentUrl}</a>
+      terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser `);
+      terminal.pushToStdout(urlLink);
+
+      terminal.pushToStdout(`copy full link to your clipboard `);
+      terminal.pushToStdout(clipboard);
+
+
+
+      terminal.pushToStdout("=================================");
+      terminal.pushToStdout("=================================");
+      terminal.pushToStdout("=================================");
+  
+
+
+
+      //this.setState({ showModalExport: false });
+
+    }}>
+      <div className="input-group mb-4">
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
+          className="form-control form-control-lg break"
+          placeholder="https://is.gd/[your-shortlink])"
+        />
+
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(missionUrl) => { this.missionUrl= missionUrl}}
+          className="form-control form-control-lg break"
+          placeholder="link for mission button"
+          required />
+
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(upcscript) => { this.upcscript=upcscript}}
+          className="form-control form-control-lg break"
+          placeholder="Content for front stage. (UPCScript is allowed)"
+          required />
+
+
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(payload) => { this.payload=payload}}
+          className="form-control form-control-lg break"
+          placeholder="payload (etc button)"
+          required />
+
+
+        <input
+          type="text"
+          style={{width:"100vw"}}
+          ref={(configUrl) => { this.configUrl=configUrl}}
+          className="form-control form-control-lg break"
+          placeholder="json config file url"
+          />
+
+
+
+        <br/>
+        <textarea
+          style={{minHeight:"60vh",width:"100vw"}}
+          ref={(exportMsg) => { this.exportMsg = exportMsg}}
+          className="form-control form-control-lg break"
+          placeholder="this text will be displayed in the exported terminal welcome message. if you put a upcscript in this box, you can execute it with the exe command"
+          />
+
+      </div>
+      <button
+        type="submit"
+        className="btn btn-primary btn-block btn-lg"
+      >
+       anon
+      </button>
+    </form>
+
+
+  </div>
+
+   this.setState({ exportModalContent: exportForm });
+
+   this.setState({ showModalExport: true });
+
+
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   doHack = async (upc) => { 
 
 	    const terminal = this.progressTerminal.current
@@ -4263,6 +4607,28 @@ console.log("in heroscan");
           didCd = await this.cd(upc);
           if(didCd) {
              this.doHack(upc);
+          }
+          return;
+       }
+       else {
+          terminal.pushToStdout("You must specify a upc code that you want to hack.  for example, to hack upc 121212121212, type 'hack 121212121212'");
+          //const terminal = this.progressTerminal.current
+          //const scanForm = <ScanWizard firstLookup={this.cdScan} setAccount={this.setAccount} />
+          //this.setState(prevState => ({ fullIpfs: scanForm }));
+          //this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+          //this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+       }
+  }
+
+
+  sealScan = async (upc) => {
+
+       const terminal = this.progressTerminal.current
+       var didCd;
+       if(upc) {
+          didCd = await this.cd(upc);
+          if(didCd) {
+             this.doSeal(upc);
           }
           return;
        }

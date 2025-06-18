@@ -1,16 +1,157 @@
 import React, { Component } from 'react';
 import { ethers } from 'ethers';
-import { sha256 } from 'js-sha256';
 import { toDataURL } from 'qrcode';
+
+class GenericDesignRenderer {
+  static safeEval(expr, variables) {
+    const allowedVars = Object.keys(variables).join('|');
+    const sanitized = expr
+      .replace(new RegExp(`\\b(${allowedVars}|Math\\.\\w+)\\b`, 'g'), '$$$1')
+      .replace(/[^0-9+\-*\/\s().,$$]/g, '');
+    
+    try {
+      return new Function('$', `return ${sanitized}`)(variables);
+    } catch {
+      console.warn(`Evaluation error: ${expr}`);
+      return 0;
+    }
+  }
+
+  static async render(ctx, design, centerX, centerY) {
+    if (!ctx || !design) {
+      console.error('Invalid parameters to render');
+      return;
+    }
+
+    const variables = Object.assign({}, design.variables || {}, {
+      centerX,
+      centerY,
+      canvasWidth: ctx.canvas.width,
+      canvasHeight: ctx.canvas.height
+    });
+
+    ctx.save();
+    
+    // Ensure operations exists and is iterable
+    const operations = Array.isArray(design.operations) ? design.operations : [];
+    
+    for (const op of operations) {
+      try {
+        await this.executeOperation(ctx, op, variables);
+      } catch (error) {
+        console.error(`Error executing ${op.type}:`, error);
+      }
+    }
+    
+    ctx.restore();
+  }
+
+  static async executeOperation(ctx, op, variables) {
+    if (!op || typeof op !== 'object') return;
+
+    const resolveArgs = function(args) {
+      if (!Array.isArray(args)) return [];
+      return args.map(function(arg) {
+        return typeof arg === 'string' ? 
+          this.safeEval(arg, variables) : 
+          arg;
+      }.bind(this));
+    }.bind(this);
+
+    switch (op.type) {
+      case 'save': ctx.save(); break;
+      case 'restore': ctx.restore(); break;
+      case 'setStyle': 
+        if (op.properties && typeof op.properties === 'object') {
+          Object.keys(op.properties).forEach(function(prop) {
+            const value = op.properties[prop];
+            ctx[prop] = typeof value === 'string' ? 
+              this.safeEval(value, variables) : 
+              value;
+          }.bind(this));
+        }
+        break;
+      case 'beginPath': ctx.beginPath(); break;
+      case 'closePath': ctx.closePath(); break;
+      case 'moveTo': 
+        const moveToArgs = resolveArgs(op.args);
+        if (moveToArgs.length >= 2) ctx.moveTo(...moveToArgs); 
+        break;
+      case 'lineTo': 
+        const lineToArgs = resolveArgs(op.args);
+        if (lineToArgs.length >= 2) ctx.lineTo(...lineToArgs);
+        break;
+      case 'arc': 
+        const arcArgs = resolveArgs(op.args);
+        if (arcArgs.length >= 5) ctx.arc(...arcArgs);
+        break;
+      case 'rect': 
+        const rectArgs = resolveArgs(op.args);
+        if (rectArgs.length >= 4) ctx.rect(...rectArgs);
+        break;
+      case 'fill': 
+        if (op.style && op.style.fillStyle) {
+          ctx.fillStyle = op.style.fillStyle;
+        }
+        ctx.fill(op.fillRule); 
+        break;
+      case 'stroke': 
+        if (op.style && op.style.strokeStyle) {
+          ctx.strokeStyle = op.style.strokeStyle;
+        }
+        ctx.stroke(); 
+        break;
+      case 'applyGradient':
+        if (op.gradient && typeof op.gradient === 'object') {
+          const params = resolveArgs(op.gradient.params);
+          const grad = op.gradient.type === 'linear' ?
+            ctx.createLinearGradient(...params) :
+            ctx.createRadialGradient(...params);
+          
+          if (Array.isArray(op.gradient.stops)) {
+            op.gradient.stops.forEach(function(stop) {
+              if (stop && typeof stop === 'object') {
+                grad.addColorStop(
+                  this.safeEval(stop.position, variables),
+                  typeof stop.color === 'string' ? 
+                    this.safeEval(stop.color, variables) : stop.color
+                );
+              }
+            }.bind(this));
+          }
+          
+          ctx.fillStyle = grad;
+          ctx.fill();
+        }
+        break;
+      case 'drawImage':
+        if (op.imageUrl) {
+          const img = new Image();
+          img.src = op.imageUrl;
+          await new Promise(function(resolve) { img.onload = resolve; });
+          const drawArgs = resolveArgs(op.args);
+          if (drawArgs.length >= 2) {
+            ctx.drawImage(img, ...drawArgs);
+          }
+        }
+        break;
+      default:
+        if (op.type && ctx[op.type] && typeof ctx[op.type] === 'function') {
+          const args = resolveArgs(op.args);
+          ctx[op.type](...args);
+        }
+    }
+  }
+}
 
 class ShirtDesign extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      designs: {},
+      currentDesign: null,
       currentTab: 'front',
-      currentDesign: 'cyberCircle',
-      upcNumber: props.upcNumber,
-      componentReady: false,
+      upcNumber: props.upcNumber || '',
       userData: '',
       isLoading: true,
       error: null,
@@ -21,562 +162,135 @@ class ShirtDesign extends Component {
       qrData: ''
     };
     
-    this.designTemplates = {
-      cyberCircle: {
-        name: "Cyber Circle Crown",
-        generator: async (ctx, canvas, upcNumber, qrData) => {
-          // Background
-          ctx.fillStyle = 'rgba(0,0,0,0.7)';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          
-          // Grid pattern
-          ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
-          ctx.lineWidth = 1;
-          for (let i = 0; i < canvas.width; i += 40) {
-            ctx.beginPath();
-            ctx.moveTo(i, 0);
-            ctx.lineTo(i, canvas.height);
-            ctx.stroke();
-          }
-
-          // Main circle design
-          const centerX = canvas.width / 2;
-          const centerY = canvas.height / 2;
-          
-          // Outer glow
-          ctx.beginPath();
-          ctx.arc(centerX, centerY, 180, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(255, 140, 0, 0.3)';
-          ctx.lineWidth = 30;
-          ctx.stroke();
-          
-
-
-
-
-// Double-W Royal Crown with Perfectly Placed Jewels
-ctx.save();
-ctx.translate(centerX, centerY - 180);
-
-// Dimensions
-const totalWidth = 360;
-const peakHeight = 100;
-const dipDepth = 40;
-const baseHeight = 30;
-const peakWidth = 80;
-
-// Draw crown shape (same as before)
-ctx.beginPath();
-ctx.moveTo(-totalWidth/2, 0);
-ctx.lineTo(-totalWidth/2 + peakWidth*0.7, -peakHeight*0.8);
-ctx.lineTo(-totalWidth/2 + peakWidth*1.3, -dipDepth);
-ctx.lineTo(-totalWidth/2 + peakWidth*2, -peakHeight);
-ctx.lineTo(-totalWidth/2 + peakWidth*3, -dipDepth);
-ctx.lineTo(-totalWidth/2 + peakWidth*3.7, -peakHeight*0.8);
-ctx.lineTo(totalWidth/2, 0);
-ctx.lineTo(totalWidth/2, baseHeight);
-ctx.lineTo(-totalWidth/2, baseHeight);
-ctx.closePath();
-
-// Crown styling
-ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
-ctx.fill();
-ctx.strokeStyle = 'rgba(255, 255, 0, 0.9)';
-ctx.lineWidth = 2;
-ctx.stroke();
-
-// ----- PERFECTLY POSITIONED JEWELS -----
-const jewels = [
-  // Left W jewels
-  { x: -totalWidth/2 + peakWidth*0.7, y: -peakHeight*0.8, color: '#FF0000', size: 10 }, // First peak
-  { x: -totalWidth/2 + peakWidth*2, y: -peakHeight, color: '#FF0000', size: 12 },       // Highest peak
-  
-  // Right W jewels
-  { x: -totalWidth/2 + peakWidth*3.7, y: -peakHeight*0.8, color: '#FF0000', size: 10 }, // Last peak
-
-];
-
-jewels.forEach(jewel => {
-  // Jewel glow
-  const glow = ctx.createRadialGradient(
-    jewel.x, jewel.y, 0,
-    jewel.x, jewel.y, jewel.size*2
-  );
-  glow.addColorStop(0, jewel.color);
-  glow.addColorStop(1, 'transparent');
-  
-  ctx.beginPath();
-  ctx.arc(jewel.x, jewel.y, jewel.size*2, 0, Math.PI * 2);
-  ctx.fillStyle = glow;
-  ctx.fill();
-  
-  // Jewel core
-  ctx.beginPath();
-  ctx.arc(jewel.x, jewel.y, jewel.size, 0, Math.PI * 2);
-  ctx.fillStyle = jewel.color;
-  ctx.fill();
-  
-  // Jewel highlight
-  ctx.beginPath();
-  ctx.arc(jewel.x - jewel.size/3, jewel.y - jewel.size/3, jewel.size/3, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(255,255,255,0.8)';
-  ctx.fill();
-});
-
-ctx.restore();
-
-
-
-
-
-
-
-
-
-
-          
-          // Text
-          ctx.textAlign = 'center';
-          ctx.fillStyle = 'white';
-          ctx.font = 'bold 20px Orbitron';
-          ctx.fillText('<upcscript race="black" continent="afrika"/>', centerX, centerY - 50);
-          
-          ctx.font = 'bold 36px Orbitron';
-          ctx.fillText(`[${upcNumber}]`, centerX, centerY + 10);
-          ctx.shadowBlur = 15;
-          ctx.shadowColor = 'var(--cyber-orange)';
-          ctx.fillText(`[${upcNumber}]`, centerX, centerY + 10);
-          ctx.shadowBlur = 0;
-          
-          ctx.font = 'bold 24px Orbitron';
-          ctx.fillStyle = 'var(--cyber-light)';
-          ctx.fillText('[FLIP] for [INTEL]', centerX, centerY + 70);
-          ctx.fillText('HIGH-IQ.BLACK/NETWORK', centerX, centerY + 110);
-
-          // QR Code - using the blockchain data[5] URL
-          if (qrData) {
-            const qrDataURL = await toDataURL(qrData, {
-              width: 128,
-              margin: 1,
-              color: {
-                dark: '#00F0FF',
-                light: '#00000000'
-              }
-            });
-            
-            const qrImg = new Image();
-            qrImg.src = qrDataURL;
-            await new Promise((resolve) => { qrImg.onload = resolve; });
-            ctx.drawImage(qrImg, centerX - 64, centerY + 150, 128, 128);
-          }
-        }
-      },
-      cyberHex: {
-        name: "Cyber Hex Grid",
-        generator: async (ctx, canvas, upcNumber, qrData) => {
-          // Background
-          ctx.fillStyle = 'rgba(0,0,0,0.9)';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          
-          // Hex grid pattern
-          const hexSize = 40;
-          const rows = Math.ceil(canvas.height / (hexSize * Math.sqrt(3))) + 1;
-          const cols = Math.ceil(canvas.width / (hexSize * 1.5)) + 1;
-          
-          ctx.strokeStyle = 'rgba(0, 240, 255, 0.1)';
-          ctx.lineWidth = 1;
-          
-          for (let row = -1; row < rows; row++) {
-            for (let col = -1; col < cols; col++) {
-              const x = col * hexSize * 1.5;
-              const y = row * hexSize * Math.sqrt(3) + (col % 2) * hexSize * Math.sqrt(3) / 2;
-              
-              this.drawHexagon(ctx, x, y, hexSize);
-            }
-          }
-          
-          // Center hexagon with glow
-          const centerX = canvas.width / 2;
-          const centerY = canvas.height / 2;
-          
-          // Glow effect
-          const gradient = ctx.createRadialGradient(
-            centerX, centerY, 100,
-            centerX, centerY, 180
-          );
-          gradient.addColorStop(0, 'rgba(255, 140, 0, 0.5)');
-          gradient.addColorStop(1, 'rgba(255, 140, 0, 0)');
-          
-          ctx.fillStyle = gradient;
-          ctx.beginPath();
-          ctx.arc(centerX, centerY, 180, 0, Math.PI * 2);
-          ctx.fill();
-          
-          // Main hexagon
-          ctx.strokeStyle = 'rgba(255, 215, 0, 0.8)';
-          ctx.lineWidth = 4;
-          this.drawHexagon(ctx, centerX, centerY, 120);
-          
-          // Text
-          ctx.textAlign = 'center';
-          ctx.fillStyle = 'white';
-          ctx.font = 'bold 20px Orbitron';
-          ctx.fillText('<upcscript race="black" continent="afrika"/>', centerX, centerY - 50);
-          
-          ctx.font = 'bold 36px Orbitron';
-          ctx.fillText(`[${upcNumber}]`, centerX, centerY + 10);
-          ctx.shadowBlur = 15;
-          ctx.shadowColor = 'var(--cyber-orange)';
-          ctx.fillText(`[${upcNumber}]`, centerX, centerY + 10);
-          ctx.shadowBlur = 0;
-          
-          ctx.font = 'bold 24px Orbitron';
-          ctx.fillStyle = 'var(--cyber-light)';
-          ctx.fillText('[FLIP] for [INTEL]', centerX, centerY + 70);
-          ctx.fillText('HIGH-IQ.BLACK/NETWORK', centerX, centerY + 110);
-
-          // QR Code
-          if (qrData) {
-            const qrDataURL = await toDataURL(qrData, {
-              width: 128,
-              margin: 1,
-              color: {
-                dark: '#00F0FF',
-                light: '#00000000'
-              }
-            });
-            
-            const qrImg = new Image();
-            qrImg.src = qrDataURL;
-            await new Promise((resolve) => { qrImg.onload = resolve; });
-            ctx.drawImage(qrImg, centerX - 64, centerY + 150, 128, 128);
-          }
-        }
-      }
-    };
+    this.frontCanvasRef = React.createRef();
+    this.backCanvasRef = React.createRef();
+    this.handleResize = this.handleResize.bind(this);
+    this.initConnection = this.initConnection.bind(this);
+    this.generateFront = this.generateFront.bind(this);
+    this.generateBack = this.generateBack.bind(this);
+    this.fetchUpcData = this.fetchUpcData.bind(this);
+    this.downloadMerged = this.downloadMerged.bind(this);
+    this.handleDesignChange = this.handleDesignChange.bind(this);
   }
 
-
-
-    async componentDidMount() {
-      try {
-        await this.initConnection();
-        window.addEventListener('resize', this.resizeCanvas);
-        this.resizeCanvas();
-        
-        // Force initial render after everything is ready
-        await new Promise(resolve => this.setState({ componentReady: true }, resolve));
-        
-        this.setState({currentDesign: 'cyberCircle'});
-        // Now generate the design
-        this.generateFront();
-        
-        if (this.state.upcNumber) {
-          await this.fetchUpcData();
-        }
-      } catch (error) {
-        this.setState({ 
-          isLoading: false,
-          error: error.message
-        });
-      }
-    }
-
-  componentDidUpdate(prevProps, prevState) {
-    // Regenerate front when design changes
-    if (prevState.currentDesign !== this.state.currentDesign && 
-        this.state.currentTab === 'front') {
+  async componentDidMount() {
+    try {
+      await this.initConnection();
+      await this.loadDesigns(this.props.designsUrl);
       this.generateFront();
-    }
-    
-    // Regenerate when tab changes
-    if (prevState.currentTab !== this.state.currentTab) {
-      if (this.state.currentTab === 'front') {
-        this.generateFront();
-      } else {
-        this.generateBack();
-      }
+      window.addEventListener('resize', this.handleResize);
+    } catch (error) {
+      this.setState({ error: error.message, isLoading: false });
     }
   }
-
-
-
-
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.resizeCanvas);
+    window.removeEventListener('resize', this.handleResize);
   }
 
-  initConnection = async () => {
+  handleResize() {
+    this.generateFront();
+    this.generateBack();
+  }
+
+  async initConnection() {
+    if (!window.ethereum) {
+      throw new Error('Please install MetaMask!');
+    }
+    
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = provider.getSigner();
+    const account = await signer.getAddress();
+    
+    this.setState({
+      provider: provider,
+      signer: signer,
+      account: account,
+      isConnected: true,
+      isLoading: false
+    });
+  }
+
+  async loadDesigns(url) {
     try {
-      if (window.ethereum) {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        await window.ethereum.enable();
-        const signer = provider.getSigner();
-        const account = await signer.getAddress();
-        
-        this.setState({
-          provider,
-          signer,
-          account,
-          isConnected: true,
-          isLoading: false
-        });
-      } else {
-        throw new Error('No Ethereum provider detected. Please install MetaMask!');
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error('Failed to load designs');
       }
+      
+      const designs = await response.json();
+      
+      // Validate designs structure
+      if (typeof designs !== 'object' || designs === null) {
+        throw new Error('Invalid designs format');
+      }
+      
+      const designIds = Object.keys(designs);
+      if (designIds.length === 0) {
+        throw new Error('No designs found');
+      }
+      
+      this.setState({ 
+        designs: designs,
+        currentDesign: designIds[0],
+        isLoading: false 
+      });
     } catch (error) {
-      this.setState({
-        isLoading: false,
-        error: error.message
+      console.error('Design loading error:', error);
+      this.setState({ 
+        error: 'Design loading failed: ' + error.message,
+        isLoading: false 
       });
       throw error;
     }
-  };
-
-
-  renderDesignThumbnails() {
-    return Object.keys(this.designTemplates).map(key => {
-      const design = this.designTemplates[key];
-      return (
-        <canvas
-          key={key}
-          className={`design-thumbnail ${this.state.currentDesign === key ? 'active' : ''}`}
-          width="100"
-          height="100"
-          title={design.name}
-          onClick={() => this.setState({ currentDesign: key }, this.generateFront)}
-          ref={canvas => {
-            if (canvas) {
-              const ctx = canvas.getContext('2d');
-              design.generator(ctx, canvas, 'UPC', '');
-            }
-          }}
-        />
-      );
-    });
   }
 
-
-
-  drawHexagon = (ctx, x, y, size) => {
-    ctx.beginPath();
-    for (let i = 0; i < 6; i++) {
-      const angle = Math.PI / 3 * i;
-      ctx.lineTo(x + size * Math.cos(angle), y + size * Math.sin(angle));
-    }
-    ctx.closePath();
-    ctx.stroke();
-  }
-
-  openTab = (tabName) => {
-    this.setState({ currentTab: tabName }, () => {
-      if (tabName === 'front') {
-        this.generateFront();
-      }
-    });
-  }
-
-    generateFront = async () => {
-      const canvas = document.getElementById('tshirtFrontCanvas');
-      if (!canvas) {
-        console.warn('Front canvas not found');
-        return;
-      }
-
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        console.warn('Could not get canvas context');
-        return;
-      }
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      const design = this.designTemplates[this.state.currentDesign];
-      if (!design) {
-        console.warn('Design template not found:', this.state.currentDesign);
-        return;
-      }
-
-      try {
-        await design.generator(ctx, canvas, this.state.upcNumber || '850645008653', this.state.qrData);
-      } catch (error) {
-        console.error('Error generating design:', error);
-        // Fallback design
-        ctx.fillStyle = 'black';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'white';
-        ctx.font = '20px Orbitron';
-        ctx.textAlign = 'center';
-        ctx.fillText('DESIGN GENERATION ERROR', canvas.width/2, canvas.height/2);
-      }
-    };
-
-  fetchUpcData = async () => {
-    const { upcNumber, provider } = this.state;
-    if (!upcNumber || !provider) return;
-
-    this.setState({ isLoading: true, error: null });
-
-    try {
-      const signer = this.state.signer;
-      
-      const rawMaterial = new ethers.Contract(
-        '0x2C343942548319cCfc05666FF15d73E8569FaEdf',
-        [
-          {
-            "inputs": [
-              {
-                "internalType": "string",
-                "name": "upcId",
-                "type": "string"
-              }
-            ],
-            "name": "upcInfo",
-            "outputs": [
-              {
-                "components": [
-                  {
-                    "internalType": "uint256",
-                    "name": "tokenId",
-                    "type": "uint256"
-                  },
-                  {
-                    "internalType": "address",
-                    "name": "staker",
-                    "type": "address"
-                  },
-                  {
-                    "internalType": "address",
-                    "name": "og",
-                    "type": "address"
-                  },
-                  {
-                    "internalType": "bytes32",
-                    "name": "upcHash",
-                    "type": "bytes32"
-                  },
-                  {
-                    "internalType": "string",
-                    "name": "word",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "string",
-                    "name": "ipfs",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "string",
-                    "name": "vr",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "string",
-                    "name": "humanReadableName",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "bool",
-                    "name": "minted",
-                    "type": "bool"
-                  },
-                  {
-                    "internalType": "bool",
-                    "name": "bought",
-                    "type": "bool"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "tld",
-                    "type": "uint256"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "createdTimestamp",
-                    "type": "uint256"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "latestTimestamp",
-                    "type": "uint256"
-                  }
-                ],
-                "internalType": "struct UPCNFT.NFTMeta",
-                "name": "",
-                "type": "tuple"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          }
-        ],
-        signer
-      );
-
-      const upcString = upcNumber.toString();
-      const data = await rawMaterial.upcInfo(upcString);
-      
-      const tmpStamp = parseInt(data.createdTimestamp);
-      const newDate = new Date(tmpStamp * 1000);
-      const tmpStampMod = parseInt(data.latestTimestamp);
-      const newDateMod = new Date(tmpStampMod * 1000);
-      
-      const formattedData = [
-        `[[intel]]`,
-        `owner: ${data.staker}`,
-        `=====`,
-        `human_readable_name: ${data.humanReadableName}`,
-        `=====`,
-        `created: ${newDate.toString()}`,
-        `=====`,
-        `[[/intel]]`
-      ].join('\n');
-
-      this.setState({ 
-        userData: formattedData,
-        qrData: data[6], // Using the ipfs URL from blockchain for QR code
-        isLoading: false,
-        error: null
-      }, this.generateBack);
-      
-    } catch (error) {
-      console.error('Detailed error:', error);
-      const errorMessage = error.message || "Unknown error occurred";
-      
-      this.setState({ 
-        error: `Failed to fetch UPC data: ${errorMessage}`,
-        isLoading: false 
-      });
-    }
-  }
-
-  generateBack = () => {
-    const canvas = document.getElementById('tshirtBackCanvas');
+  async generateFront() {
+    const canvas = this.frontCanvasRef.current;
     if (!canvas) return;
     
     const ctx = canvas.getContext('2d');
-    const rawData = this.state.userData;
-
+    if (!ctx) return;
+    
+    const design = this.state.designs[this.state.currentDesign];
+    if (!design) return;
+    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    if (!rawData) {
-      ctx.fillStyle = '#121212';
+    try {
+      await GenericDesignRenderer.render(
+        ctx,
+        design,
+        canvas.width / 2,
+        canvas.height / 2
+      );
+    } catch (error) {
+      console.error('Render error:', error);
+      // Fallback rendering
+      ctx.fillStyle = 'black';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      ctx.fillStyle = 'var(--cyber-orange)';
-      ctx.font = 'bold 24px Orbitron';
-      ctx.textAlign = 'center';
-      ctx.fillText('ENTER UPC NUMBER AND CLICK "FETCH DATA"', canvas.width / 2, canvas.height / 2);
-      return;
+      ctx.fillStyle = 'white';
+      ctx.font = '16px Arial';
+      ctx.fillText('Design rendering failed', 20, 30);
     }
+  }
+
+  generateBack() {
+    const canvas = this.backCanvasRef.current;
+    if (!canvas) return;
     
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Background
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
     gradient.addColorStop(0, '#121212');
     gradient.addColorStop(1, '#002244');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
+    // Grid pattern
     ctx.strokeStyle = 'rgba(0, 240, 255, 0.1)';
     ctx.lineWidth = 1;
     for (let i = 0; i < canvas.height; i += 4) {
@@ -586,56 +300,87 @@ ctx.restore();
       ctx.stroke();
     }
 
-    const lines = rawData.trim().split('\n');
-    const textBlockHeight = lines.length * 30 + 40;
-    const startY = (canvas.height - textBlockHeight) / 2;
-    let yPos = startY;
+    // Text rendering
+    if (this.state.userData) {
+      const lines = this.state.userData.trim().split('\n');
+      const textBlockHeight = lines.length * 30 + 40;
+      const startY = (canvas.height - textBlockHeight) / 2;
+      let yPos = startY;
 
-    ctx.textAlign = 'center';
+      ctx.textAlign = 'center';
+      ctx.font = '16px Orbitron';
 
-    for (const line of lines) {
-      if (line.startsWith('=====')) {
-        ctx.fillStyle = 'white';
-        ctx.font = '16px Orbitron';
-        ctx.fillText(line, canvas.width / 2, yPos);
-        yPos += 30;
-      } else if (line.includes(':')) {
-        const [label, value] = line.split(':').map(s => s.trim());
-        ctx.fillStyle = 'white';
-        ctx.font = '16px Orbitron';
-        
-        ctx.fillText(label + ':', canvas.width / 2, yPos);
-        yPos += 30;
-        
-        if (label === 'og_owner' || label === 'owner') {
+      for (const line of lines) {
+        if (line.startsWith('=====')) {
+          ctx.fillStyle = 'white';
+          ctx.fillText(line, canvas.width / 2, yPos);
+          yPos += 30;
+        } else if (line.includes(':')) {
+          const [label, value] = line.split(':').map(function(s) { return s.trim(); });
+          ctx.fillStyle = 'white';
+          ctx.fillText(label + ':', canvas.width / 2, yPos);
+          yPos += 30;
           ctx.fillText(value, canvas.width / 2, yPos);
           yPos += 30;
         } else {
-          ctx.fillText(value, canvas.width / 2, yPos);
+          ctx.fillStyle = 'white';
+          ctx.fillText(line, canvas.width / 2, yPos);
           yPos += 30;
         }
-      } else if (line.startsWith('[[')) {
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 20px Orbitron';
-        ctx.fillText(line, canvas.width / 2, yPos);
-        yPos += 40;
-      } else {
-        ctx.fillStyle = 'white';
-        ctx.font = '16px Orbitron';
-        ctx.fillText(line, canvas.width / 2, yPos);
-        yPos += 30;
       }
     }
 
+    // Border
     ctx.strokeStyle = 'var(--cyber-orange)';
     ctx.lineWidth = 3;
     ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
   }
 
-  downloadMerged = () => {
-    const frontCanvas = document.getElementById('tshirtFrontCanvas');
-    const backCanvas = document.getElementById('tshirtBackCanvas');
-    
+  async fetchUpcData() {
+    if (!this.state.upcNumber || !this.state.provider) return;
+
+    this.setState({ isLoading: true, error: null });
+
+    try {
+      const contract = new ethers.Contract(
+        '0x2C343942548319cCfc05666FF15d73E8569FaEdf',
+        [
+          "function upcInfo(string) view returns (tuple(uint256,address,address,bytes32,string,string,string,string,bool,bool,uint256,uint256,uint256))"
+        ],
+        this.state.signer
+      );
+
+      const data = await contract.upcInfo(this.state.upcNumber.toString());
+      const createdDate = new Date(parseInt(data.createdTimestamp) * 1000);
+      
+      const formattedData = [
+        '[[intel]]',
+        'owner: ' + data.staker,
+        '=====',
+        'name: ' + data.humanReadableName,
+        '=====',
+        'created: ' + createdDate.toString(),
+        '=====',
+        '[[/intel]]'
+      ].join('\n');
+
+      this.setState({ 
+        userData: formattedData,
+        qrData: data[5], // IPFS URL
+        isLoading: false
+      }, this.generateBack);
+      
+    } catch (error) {
+      this.setState({ 
+        error: 'Failed to fetch UPC data: ' + error.message,
+        isLoading: false 
+      });
+    }
+  }
+
+  downloadMerged() {
+    const frontCanvas = this.frontCanvasRef.current;
+    const backCanvas = this.backCanvasRef.current;
     if (!frontCanvas || !backCanvas) return;
     
     const mergedCanvas = document.createElement('canvas');
@@ -645,7 +390,6 @@ ctx.restore();
 
     ctx.fillStyle = '#121212';
     ctx.fillRect(0, 0, mergedCanvas.width, mergedCanvas.height);
-
     ctx.drawImage(frontCanvas, (mergedCanvas.width - frontCanvas.width) / 2, 20);
 
     ctx.strokeStyle = 'var(--cyber-orange)';
@@ -662,7 +406,7 @@ ctx.restore();
     ctx.fillStyle = 'var(--cyber-orange)';
     ctx.font = 'bold 24px Orbitron';
     ctx.textAlign = 'center';
-    ctx.fillText('UPCSCRIPT SHIRT DESIGN', mergedCanvas.width / 2, 30);
+    ctx.fillText('CYBERPUNK UPCSCRIPT SHIRT DESIGN', mergedCanvas.width / 2, 30);
 
     const link = document.createElement('a');
     link.href = mergedCanvas.toDataURL('image/png');
@@ -672,145 +416,87 @@ ctx.restore();
     document.body.removeChild(link);
   }
 
-  resizeCanvas = () => {
-    const frontCanvas = document.getElementById('tshirtFrontCanvas');
-    const backCanvas = document.getElementById('tshirtBackCanvas');
+  handleDesignChange(designId) {
+    this.setState({ currentDesign: designId }, this.generateFront);
+  }
+
+  renderDesignThumbnails() {
+    const designs = this.state.designs;
+    const currentDesign = this.state.currentDesign;
     
-    if (!frontCanvas || !backCanvas) return;
-    
-    if (window.innerWidth < 768) {
-      const scale = window.innerWidth / 600;
-      frontCanvas.style.width = (600 * scale) + 'px';
-      frontCanvas.style.height = (600 * scale) + 'px';
-      backCanvas.style.width = (600 * scale) + 'px';
-      backCanvas.style.height = (800 * scale) + 'px';
-    } else {
-      frontCanvas.style.width = '';
-      frontCanvas.style.height = '';
-      backCanvas.style.width = '';
-      backCanvas.style.height = '';
-    }
+    return Object.keys(designs).map(function(id) {
+      return (
+        <canvas
+          key={id}
+          className={'design-thumbnail ' + (currentDesign === id ? 'active' : '')}
+          width={100}
+          height={100}
+          title={designs[id].designName}
+          onClick={function() { this.handleDesignChange(id); }.bind(this)}
+          ref={function(canvas) {
+            if (canvas && designs[id]) {
+              GenericDesignRenderer.render(
+                canvas.getContext('2d'),
+                designs[id],
+                50,
+                50
+              );
+            }
+          }.bind(this)}
+        />
+      );
+    }.bind(this));
   }
-
-  handleUPCChange = (e) => {
-    this.setState({ upcNumber: e.target.value });
-  }
-
-  handleDataChange = (e) => {
-    this.setState({ userData: e.target.value });
-  }
-
-
-
-
 
   render() {
-    const { isLoading, error, isConnected } = this.state;
-
-    if (isLoading) {
+    if (this.state.isLoading) {
       return (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '40px',
-          color: '#00F0FF',
-          fontFamily: "'Orbitron', sans-serif"
-        }}>
+        <div className="loading-screen">
           <h2>CONNECTING TO BLOCKCHAIN...</h2>
-          <p>Please approve the connection in your wallet</p>
+          <div className="spinner"></div>
         </div>
       );
     }
-
-    if (error) {
+    
+    if (this.state.error) {
       return (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '40px',
-          color: '#FF3D3D',
-          fontFamily: "'Orbitron', sans-serif"
-        }}>
-          <h2>CONNECTION ERROR</h2>
-          <p>{error}</p>
-          <button 
-            onClick={this.initConnection}
-            style={{
-              background: 'transparent',
-              color: '#FF8C00',
-              border: '2px solid #FF8C00',
-              padding: '10px 20px',
-              fontFamily: "'Orbitron', sans-serif",
-              cursor: 'pointer',
-              marginTop: '20px'
-            }}
-          >
-            RETRY CONNECTION
-          </button>
+        <div className="error-screen">
+          <h2>ERROR</h2>
+          <p>{this.state.error}</p>
+          <button onClick={this.initConnection}>RETRY</button>
         </div>
       );
     }
-
-    if (!isConnected) {
+    
+    if (!this.state.isConnected) {
       return (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '40px',
-          color: '#FF8C00',
-          fontFamily: "'Orbitron', sans-serif"
-        }}>
-          <h2>WALLET NOT CONNECTED</h2>
-          <p>Please connect your wallet to continue</p>
-          <button 
-            onClick={this.initConnection}
-            style={{
-              background: 'transparent',
-              color: '#00F0FF',
-              border: '2px solid #00F0FF',
-              padding: '10px 20px',
-              fontFamily: "'Orbitron', sans-serif",
-              cursor: 'pointer',
-              marginTop: '20px'
-            }}
-          >
-            CONNECT WALLET
-          </button>
+        <div className="connect-screen">
+          <h2>CONNECT WALLET</h2>
+          <button onClick={this.initConnection}>CONNECT</button>
         </div>
       );
     }
 
     return (
-      <div>
+      <div className="cyberpunk-container">
         <style>
           {`
-            @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-            
             :root {
               --cyber-orange: #FF8C00;
               --cyber-dark: #121212;
               --cyber-light: #00F0FF;
             }
-            
             .cyberpunk-container {
               font-family: 'Orbitron', sans-serif;
-              margin: 0;
-              padding: 15px;
               background-color: var(--cyber-dark);
               color: white;
-              line-height: 1.5;
+              padding: 20px;
             }
-            
-            .cyberpunk-container h1, 
-            .cyberpunk-container h2 {
-              color: var(--cyber-orange);
-              text-shadow: 0 0 5px var(--cyber-orange);
-            }
-            
             .cyber-border {
               border: 1px solid var(--cyber-orange);
               padding: 15px;
-              margin: 15px 0;
               position: relative;
             }
-            
             .cyber-border::before {
               content: "";
               position: absolute;
@@ -822,219 +508,154 @@ ctx.restore();
               pointer-events: none;
               z-index: -1;
             }
-            
-            .tab-buttons {
-              display: flex;
-              gap: 10px;
-              margin-bottom: 20px;
-              flex-wrap: wrap;
-            }
-            
-            .tab-button {
-              flex: 1;
-              min-width: 120px;
-              background: var(--cyber-dark);
-              color: var(--cyber-orange);
+            canvas {
+              background: black;
               border: 2px solid var(--cyber-orange);
-              padding: 10px;
-              font-family: 'Orbitron', sans-serif;
-              cursor: pointer;
+              max-width: 100%;
+              margin: 15px 0;
             }
-            
-            .tab-button.active {
-              background: var(--cyber-orange);
-              color: black;
-            }
-            
-            .tab-content {
-              display: none;
-            }
-            
-            .tab-content.active {
-              display: block;
-            }
-            
-
-            #tshirtFrontCanvas {
-              height: 600px;
-            }
-            
-            #tshirtBackCanvas {
-              height: 800px;
-            }
-            
-            input, textarea {
-              width: 100%;
-              padding: 10px;
-              margin: 10px 0;
-              background: rgba(0,0,0,0.5);
-              border: 1px solid var(--cyber-orange);
-              color: white;
-              font-family: 'Orbitron', sans-serif;
-            }
-            
-            textarea {
-              min-height: 200px;
-            }
-            
-            button {
-              background: var(--cyber-dark);
-              color: var(--cyber-orange);
-              border: 2px solid var(--cyber-orange);
-              padding: 10px 15px;
-              font-family: 'Orbitron', sans-serif;
-              margin: 10px 0;
-              cursor: pointer;
-              transition: all 0.3s;
-            }
-            
-            button:hover {
-              background: var(--cyber-orange);
-              color: black;
-              box-shadow: 0 0 15px var(--cyber-orange);
-            }
-            
-            button:disabled {
-              opacity: 0.5;
-              cursor: not-allowed;
-            }
-            
+            #tshirtFrontCanvas { height: 600px; }
+            #tshirtBackCanvas { height: 800px; }
             .design-options {
               display: flex;
               gap: 15px;
               overflow-x: auto;
               padding: 10px 0;
               margin: 15px 0;
-              min-height: 120px;
             }
-            
             .design-thumbnail {
               width: 100px;
               height: 100px;
               border: 2px solid var(--cyber-orange);
               cursor: pointer;
-              transition: all 0.3s;
               flex-shrink: 0;
             }
-            
-            .design-thumbnail:hover {
-              transform: scale(1.05);
-              box-shadow: 0 0 10px var(--cyber-orange);
-            }
-            
             .design-thumbnail.active {
               border-color: var(--cyber-light);
-              box-shadow: 0 0 15px var(--cyber-light);
+              box-shadow: 0 0 10px var(--cyber-light);
             }
-            
-
-            canvas {
-              display: block;
-              background: black;
-              border: 2px solid var(--cyber-orange);
-              max-width: 100%;
-              margin-top: 15px;
-              transition: opacity 0.3s;
-            }
-
-            .loading {
-              color: var(--cyber-light);
-              text-align: center;
-              padding: 40px;
+            button, input, textarea {
               font-family: 'Orbitron', sans-serif;
-              font-size: 1.2em;
+              margin: 10px 0;
+              display: block;
+              width: 100%;
+              padding: 10px;
+              background: rgba(0,0,0,0.5);
+              border: 1px solid var(--cyber-orange);
+              color: white;
             }
-                        
-            .error {
-              color: #ff4444;
-              text-align: center;
-              margin: 20px 0;
+            button {
+              cursor: pointer;
+              transition: all 0.3s;
             }
-            
+            button:hover {
+              background: var(--cyber-orange);
+              color: black;
+            }
+            .tab-buttons {
+              display: flex;
+              gap: 10px;
+              margin-bottom: 20px;
+            }
+            .tab-button {
+              flex: 1;
+              background: var(--cyber-dark);
+              color: var(--cyber-orange);
+              border: 2px solid var(--cyber-orange);
+              padding: 10px;
+              cursor: pointer;
+            }
+            .tab-button.active {
+              background: var(--cyber-orange);
+              color: black;
+            }
             .account-info {
               color: var(--cyber-light);
               text-align: right;
               margin-bottom: 10px;
               font-size: 0.9em;
             }
-            
-            @media (max-width: 768px) {
-              #tshirtFrontCanvas {
-                height: 400px;
-              }
-              
-              #tshirtBackCanvas {
-                height: 600px;
-              }
-            }
           `}
         </style>
-        
-        <div className="cyberpunk-container">
-          <div className="cyber-border">
-            <div className="account-info">
-              Connected: {this.state.account.substring(0, 8)}...{this.state.account.substring(36)}
-            </div>
-            <h1>UPCSCRIPT</h1>
-            <h2>T-Shirt Designer</h2>
-            
-            <div className="tab-buttons">
-              <button 
-                className={`tab-button ${this.state.currentTab === 'front' ? 'active' : ''}`} 
-                onClick={() => this.openTab('front')}
-              >
-                FRONT DESIGN
-              </button>
-              <button 
-                className={`tab-button ${this.state.currentTab === 'back' ? 'active' : ''}`} 
-                onClick={() => this.openTab('back')}
-              >
-                BACK DESIGN
-              </button>
-            </div>
 
-            <div id="front" className={`tab-content ${this.state.currentTab === 'front' ? 'active' : ''}`}>
-              <h3>SELECT FRONT DESIGN:</h3>
-                <div className="design-options">
-                  {this.renderDesignThumbnails()}
-                </div>
-
-
-
-              
-              <input 
-                type="text" 
-                id="upcNumber" 
-                placeholder="ENTER UPC NUMBER" 
-                value={this.state.upcNumber}
-                onChange={this.handleUPCChange}
-              />
-              <button onClick={this.generateFront}>UPDATE FRONT DESIGN</button>
-              <button 
-                onClick={this.fetchUpcData}
-                disabled={this.state.isLoading}
-              >
-                {this.state.isLoading ? 'FETCHING DATA...' : 'FETCH UPC DATA'}
-              </button>
-              {this.state.error && <div className="error">{this.state.error}</div>}
-              <canvas id="tshirtFrontCanvas" width="600" height="600"></canvas>
-            </div>
-
-            <div id="back" className={`tab-content ${this.state.currentTab === 'back' ? 'active' : ''}`}>
-              {this.state.isLoading && <div className="loading">LOADING UPC DATA...</div>}
-              
-              <textarea 
-                id="userData" 
-                placeholder="UPC data will appear here after fetching or paste custom data here..." 
-                value={this.state.userData}
-                onChange={this.handleDataChange}
-              ></textarea>
-              <button onClick={this.generateBack}>UPDATE BACK DESIGN</button>
-              <canvas id="tshirtBackCanvas" width="600" height="800"></canvas>
-            </div>
-
-            <button onClick={this.downloadMerged}>DOWNLOAD FULL SHIRT DESIGN</button>
+        <div className="cyber-border">
+          <div className="account-info">
+            Connected: {this.state.account.substring(0, 6)}...{this.state.account.slice(-4)}
           </div>
+          
+          <h1>DYNAMIC SHIRT DESIGNER</h1>
+          
+          <div className="tab-buttons">
+            <button 
+              className={'tab-button ' + (this.state.currentTab === 'front' ? 'active' : '')}
+              onClick={function() { 
+                this.setState({ currentTab: 'front' }, this.generateFront); 
+              }.bind(this)}
+            >
+              FRONT DESIGN
+            </button>
+            <button 
+              className={'tab-button ' + (this.state.currentTab === 'back' ? 'active' : '')}
+              onClick={function() { 
+                this.setState({ currentTab: 'back' }, this.generateBack); 
+              }.bind(this)}
+            >
+              BACK DESIGN
+            </button>
+          </div>
+
+          {this.state.currentTab === 'front' ? (
+            <div id="front">
+              <h3>SELECT DESIGN:</h3>
+              <div className="design-options">
+                {this.renderDesignThumbnails()}
+              </div>
+              
+              <input
+                type="text"
+                value={this.state.upcNumber}
+                onChange={function(e) { 
+                  this.setState({ upcNumber: e.target.value }); 
+                }.bind(this)}
+                placeholder="ENTER UPC NUMBER"
+              />
+              
+              <button onClick={this.generateFront}>REFRESH DESIGN</button>
+              <button 
+                onClick={this.fetchUpcData} 
+                disabled={!this.state.upcNumber}
+              >
+                FETCH UPC DATA
+              </button>
+              
+              <canvas 
+                id="tshirtFrontCanvas" 
+                ref={this.frontCanvasRef}
+                width={600}
+                height={600}
+              />
+            </div>
+          ) : (
+            <div id="back">
+              <textarea
+                value={this.state.userData}
+                onChange={function(e) { 
+                  this.setState({ userData: e.target.value }); 
+                }.bind(this)}
+                placeholder="Back design data..."
+                rows={8}
+              />
+              <button onClick={this.generateBack}>UPDATE BACK DESIGN</button>
+              <canvas 
+                id="tshirtBackCanvas" 
+                ref={this.backCanvasRef}
+                width={600}
+                height={800}
+              />
+            </div>
+          )}
+          
+          <button onClick={this.downloadMerged}>DOWNLOAD FULL DESIGN</button>
         </div>
       </div>
     );
