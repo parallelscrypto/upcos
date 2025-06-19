@@ -101,343 +101,79 @@ const Carousel = makeCarousel(CarouselUI);
 
 export default class StaticCarouselExp extends Component {
 
+constructor(props) {
+  super(props);
+  this.state = {
+    bg: '', // Initialize as empty string
+  };
+
+  this.progressTerminal = React.createRef();
+  // Extract props with fallbacks
+  const channel = props.upcId || '';
+  const upc = props.code || '';
+  const assist = props.assist || false;
+  const configUrl = props.configUrl || '';
+  const missionUrl = props.missionUrl ? atob(props.missionUrl) : '';
+  const manifest = props.manifest || '';
+  const msg = props.msg ? atob(props.msg) : '';
+
+  // Load config with fallbacks
+  const config = props.config || {};
+  
+  // Initialize configRaw
+  const configRaw = {
+    buttons: config.buttons && Array.isArray(config.buttons) ? config.buttons : []
+  };
+
+  // Extract values from config with fallbacks
+  const bgValue = config.background || '';
+  const hddValue = config.hdd || "https://app.ardrive.io/#/drives/8324c70e-a3c4-4dc5-b42c-1691464daef7?name=africans_unite_worldwide";
+  const aiValue = config.ai || '';
+  const archiveValue = config.archive || '';
+  const fundValue = config.fund || '';
+  const serialbox = config.serialbox || '';
 
 
-  constructor(props) {
-    super(props);
-    var channel = props.upcId;
-    var upc = props.code;
-    var assist = props.assist;
-    var configUrl= props.configUrl;
+console.log("INSIDE >>> CONSTRUCTOR TEST", config)
 
 
-    console.log("config url is " );
-    console.log(configUrl);
+  // Extract PAC commands safely
+  const pacs = config.pacs || {};
+  const pac0Value = pacs.pac0 || {};
+  const pac1Value = pacs.pac1 || {};
+  const pac2Value = pacs.pac2 || {};
+  const pac3Value = pacs.pac3 || {};
 
-        
+  // Parse shebang from message
+  const lines = msg.split('\n');
+  const firstLine = lines[0] ? lines[0].trim() : '';
+  const shebangRegex = /^#!\/bin\/([^\/]+)(?:\/([^\/]+))?$/;
+  const matchShebang = shebangRegex.exec(firstLine);
+  
+  let shell = "upc";
+  let pplCommand = "ppl";
+  let shebang = "#!/bin/upc/ppl";
+  
+  if (matchShebang) {
+    shell = matchShebang[1] || "upc";
+    pplCommand = matchShebang[2] || "ppl";
+    shebang = firstLine;
+  }
 
-    this.setState({assist: assist});
-    var missionUrl = atob(props.missionUrl);
-    var manifest= props.manifest;
-    var msg = atob(props.msg);
+  // Handle upcrss URL
+  const regex = /upcrss\s+(https?:\/\/[^\s]+)/;
+  const match = msg.match(regex);
+  let upcrss = "https://rebrand.ly/upcrss?defaultdate=" + new Date().getTime();
+  if (match && match[1]) {
+    upcrss = match[1];
+  }
 
+  // Parse manifest
+  const scan = atob(manifest).split(',');
+  const owner = scan[1] || '';
+  const payload = scan[5] || '';
 
-    const lines = msg.split('\n');
-    var bgValue;
-    var aiValue;
-    var hddValue = "https://app.ardrive.io/#/drives/8324c70e-a3c4-4dc5-b42c-1691464daef7?name=africans_unite_worldwide"; //default hdd
-    var archiveValue;
-    var fundValue;
-    var serialbox;
-    var pac0Value;
-    var pac1Value;
-    var pac2Value;
-    var pac3Value;
-    var pac0Command;
-    var pac1Command;
-    var pac2Command;
-    var pac3Command;
-
-
-
-    // Initialize configRaw as an object to store button properties
-    var configRaw = {
-        buttons: []
-    };
-    
-    // Default style for buttons
-    const defaultButtonStyle = {
-        background: "#000000",
-        color: "green",
-        height: "10vh",
-        width: "20vw",
-        fontSize: "15px"
-    };
-
-    const publicPacs = [];
-    for (const line of lines) {
-        const matchPac = line.match(/\b\w+ pac (\d+)$/);
-        if (matchPac) {
-            publicPacs.push(parseInt(matchPac[1], 10));
-        }
-        if (line.includes("config.bg")) {
-            const equalPos = line.indexOf('=');
-            if (equalPos !== -1) {
-                bgValue = line.substr(equalPos + 1).trim();
-                // Now you can use bgValue (the URL)
-                console.log("Background URL:", bgValue);
-                // Or store it: const bgUrl = bgValue;
-            }
-        }
-        if (line.includes("config.hdd")) {
-            const equalPos = line.indexOf('=');
-            if (equalPos !== -1) {
-                hddValue = line.substr(equalPos + 1).trim();
-                // Now you can use bgValue (the URL)
-                console.log("HDD URL:", bgValue);
-                // Or store it: const bgUrl = bgValue;
-            }
-        }
-        if (line.includes("config.ai")) {
-            const equalPos = line.indexOf('=');
-            if (equalPos !== -1) {
-                aiValue = line.substr(equalPos + 1).trim();
-                // Now you can use bgValue (the URL)
-                console.log("AI URL:", bgValue);
-                // Or store it: const bgUrl = bgValue;
-            }
-        }
-        if (line.includes("config.archive")) {
-            const equalPos = line.indexOf('=');
-            if (equalPos !== -1) {
-                archiveValue = line.substr(equalPos + 1).trim();
-                // Now you can use bgValue (the URL)
-                console.log("AI URL:", bgValue);
-                // Or store it: const bgUrl = bgValue;
-            }
-        }
-
-
-        if (line.includes("config.serialbox")) {
-            const equalPos = line.indexOf('=');
-            if (equalPos !== -1) {
-                serialbox= line.substr(equalPos + 1).trim();
-                // Now you can use bgValue (the URL)
-                console.log("serialbox URL:", bgValue);
-                // Or store it: const bgUrl = bgValue;
-            }
-        }
-
-
-
-        if (line.includes("config.fund")) {
-            const equalPos = line.indexOf('=');
-            if (equalPos !== -1) {
-                fundValue= line.substr(equalPos + 1).trim();
-                // Now you can use bgValue (the URL)
-                console.log("AI URL:", bgValue);
-                // Or store it: const bgUrl = bgValue;
-            }
-        }
-
-
-        // Handle button configurations (positions 2,3,4,7,8,9)
-        const buttonMatch = line.match(/config\.button\.([2-4789])\.(.+?)=(.+)/);
-        if (buttonMatch) {
-            const position = parseInt(buttonMatch[1], 10);
-            const property = buttonMatch[2].trim();
-            const value = buttonMatch[3].trim();
-            
-            // Find or create the button config for this position
-            let button = configRaw.buttons.find(b => b.position === position);
-            if (!button) {
-                button = {
-                    position: position,
-                    title: "",
-                    payload: "",
-                    style: {...defaultButtonStyle} // Clone the default style
-                };
-                configRaw.buttons.push(button);
-            }
-            
-            // Update the button properties
-            if (property === "title") {
-                button.title = value;
-            } else if (property === "payload") {
-                button.payload = value;
-            } else if (Object.keys(defaultButtonStyle).includes(property)) {
-                // Update style property if it's one of the style properties
-                button.style[property] = value;
-            }
-        }
-
-
-
-
-
-
-
-        //var pac0 = "config.pac0.yummy=https://gifer.com";
-
-        if (line.includes("config.pac0.")) {
-            const equalPos = line.indexOf('=');
-            if (equalPos !== -1) {
-                // Extract the command name (e.g., "yummy" from "config.pac0.yummy")
-                const startPos = line.indexOf("pac0.") + 5; // +5 to skip "pac0."
-                const commandName = line.substring(startPos, equalPos).trim();
-                const url = line.substr(equalPos + 1).trim();
-                
-                var pac0Value = {
-                    [commandName]: url
-                };
-                
-                console.log("PAC0 VALUE IS =============");
-                console.log(pac0Value);
-                
-                this.state = { 
-                    pac0: pac0Value,
-                };
-            }
-            pac0Command = this.generateDynamicCommands(0);
-        }
-
-
-
-        // For pac1
-        //var pac1 = "config.pac1.pizza=https://gifer.com/pac1";
-        //if (line.includes("config.pac1.")) {
-        if (line.includes("config.pac1.")) {
-            const equalPos = line.indexOf('=');
-            if (equalPos !== -1) {
-                // Extract the command name (e.g., "yummy" from "config.pac0.yummy")
-                const startPos = line.indexOf("pac1.") + 5; // +5 to skip "pac0."
-                const commandName = line.substring(startPos, equalPos).trim();
-                const url = line.substr(equalPos + 1).trim();
-                
-                var pac1Value = {
-                    [commandName]: url
-                };
-                
-                console.log("PAC0 VALUE IS =============");
-                console.log(pac1Value);
-                
-                this.state = { 
-                    pac1: pac1Value,
-                };
-            }
-            pac1Command = this.generateDynamicCommands(1);
-        }
-
-
-
-
-
-
-        // For pac2
-        //var pac2 = "config.pac2.third=https://gifer.com/pac2";
-        //if (line.includes("config.pac1.")) {
-        if (line.includes("config.pac2.")) {
-            const equalPos = line.indexOf('=');
-            if (equalPos !== -1) {
-                // Extract the command name (e.g., "yummy" from "config.pac0.yummy")
-                const startPos = line.indexOf("pac2.") + 5; // +5 to skip "pac0."
-                const commandName = line.substring(startPos, equalPos).trim();
-                const url = line.substr(equalPos + 1).trim();
-                
-                var pac2Value = {
-                    [commandName]: url
-                };
-                
-                console.log("PAC0 VALUE IS =============");
-                console.log(pac2Value);
-                
-                this.state = { 
-                    pac2: pac2Value,
-                };
-            }
-            pac2Command = this.generateDynamicCommands(2);
-        }
-
-
-
-
-        // For pac3
-        //var pac3 = "config.pac3.4pac=https://gifer.com/pac3";
-        //if (line.includes("config.pac3.")) {
-        if (line.includes("config.pac3.")) {
-            const equalPos = line.indexOf('=');
-            if (equalPos !== -1) {
-                // Extract the command name (e.g., "yummy" from "config.pac0.yummy")
-                const startPos = line.indexOf("pac3.") + 5; // +5 to skip "pac0."
-                const commandName = line.substring(startPos, equalPos).trim();
-                const url = line.substr(equalPos + 1).trim();
-                
-                var pac3Value = {
-                    [commandName]: url
-                };
-                
-                console.log("PAC0 VALUE IS =============");
-                console.log(pac3Value);
-                
-                this.state = { 
-                    pac3: pac3Value,
-                };
-            }
-            pac3Command = this.generateDynamicCommands(3);
-        }
-
-
-
-    }
-
-
-    
-    // Define default values
-    var shell = "upc";
-    var pplCommand = "ppl";
-    var shebang = "#!/bin/upc/ppl";
-    // Define the regular expression to capture the parameters from the shebang
-    const shebangRegex = /^#!\/bin\/([^\/]+)(?:\/([^\/]+))?$/;
-    
-    // Extract the first line and trim it
-    const firstLine = lines[0].trim();
-    
-    // Check if the first line matches the shebang pattern
-    const matchShebang = shebangRegex.exec(firstLine);
-    
-    if (matchShebang) {
-        // Capture the parameters from the regex match
-        shell = matchShebang[1] || "upc";  // Default to "upc" if not present
-        pplCommand = matchShebang[2] || "ppl";   // Default to "ppl" if not present
-        shebang = firstLine;
-    }
-    
-    // Now shell and pplCommand are either set to the values from the shebang or remain as their default values
-
-
-
-
-    console.log("shell is " + shell);
-    console.log("ppl is " + pplCommand);
-
-    const regex = /upcrss\s+(https?:\/\/[^\s]+)/;
-    
-    // Test the regular expression against the input string
-    const match = msg.match(regex);
-    let upcrss; 
-    if (match) {
-      // If there's a match, `match[1]` contains the URL
-      upcrss = match[1];
-      console.log('URL found:', upcrss);
-    } else {
-      console.log('No URL found for upcrss.');
-      var milliseconds = new Date().getTime();
-      upcrss = "https://rebrand.ly/upcrss?defaultdate=" + milliseconds;
-      this.setState({upcrss: upcrss});
-    }
-
-
-//    var upcrss = false;
-//    if(msg.includes('upcrss')) {
-//       upcrss = true;
-//       rssUrl = upcScript = this.state.upcscript.substr(3);
-//    }
-
-    console.log("^^^^^^^^^^^^^^^^^^^  UPC");
-    console.log(upc);
-
-
-    var scan;
-    scan = atob(manifest);
-    var payload = scan[5];
-
-    scan = scan.split(',');
-    console.log(scan);
-
-    var owner = scan[1];
-    //this.setState({owner: owner});
-
-
+  // Define base commands (first few examples)
     var baseCommands = {
 
             d: {
@@ -2255,9 +1991,6 @@ tempLink.click();
                    case "calc":
 		    url = "https://desmos.com/calculator";
                     break;
-                   case "ad":
-		      var url = "https://tio.run/#%23rXtrd5vIuub3/hU@OfvDOWt2OoCMJ@6d9KzIBiQckFVAFdSXWcWlg0QhYQlbiL32b9/zvDjJ6aST9Nkzk@61umUEVe/tuRROV3f//Oeb/9XV3U8//fa4K/rNfndRHCrVV4u@1ffqQ/UffzlWSt9V579e/KVTZ71X5V//8uFQVf1m9@E/L/7@08XFxV9qfPni7cWbN28WcfCefvTm325XN3F271zQtV@nH03f0mr34e2Lavdi@tn040qVnz7Q57bq1UVRq8Ox6t@@SGL35esXf7i@U2319sXTpjp1@0P/4qLY7/pqh@@fNmVfvy2rp01RvZw@/PVis9v0G6VfHgulq7fmz8YXz@s3va5@feyKVfTm1fOH31099ucvfoA/@b48Pwf@@c9vWP7lb6rd6PMvF@8OWOyvF0e1O748VofNb3/78nZVNB8O@8dd@bLY6/3hl4t//82mf778WqfKEin@5cIyuuHLS//44lNtfrWZT0@dTX9@dOvPlDa12VWHrx7RqsOHze6XC@NCPfb7v311bXhO7C8Xr40/7O1b0U1/vhPd7I9P2A8vj7Uq9yda37gw8Y2Lw4dc/Yfx14uP//5s/ueP4uq@k5Gr6c@fZKSsvrr7WyGZ9M93QjL/ENJzOl/m@77ft39e0Z@LXr3M@91X@yg3x04rNNhmp1Gzl7neF82fZv/y5p1rG3/7Zj6@VZm@GvqXZVXsD4rg4JeL3X5X/SDSb0ST7w9ldXh5UOXm8fjLhf3fi/aXev/0h0b8VkC2Mi6vv/vEN6@@GNk3r36PL29odn8/3uXm6aLQ6nh8@@LzLLz4ctzf1OavztBhkKtdUV1MQHER70t1/jc83Pzqy92vf/8Mj/9486r76rK6qA/Vb2///glL//F59eckvPj1dnOoiv7i/WbX4PnqD49391rvTxd9XV0c@6o7XuTV9Hl/0R/OH3f3tFH0f@rY//LHLdTWrxFuvDBwDf//9fP55rjpP2/0Rd333fGXV69@05tu0z92PxfFKzz6xa/fuUBb/v6a5rfXdADeh@eQQDYXTXX@xr6/KFVZfVWlT7n/yFbfSP0rPOA727K@va2bfXe@ULsSDY9UY3@b48XHumEGKePYMc2LAmX@X@74TX549evbt2@PeEiP/06f/6s9Pl2uduWni/9SZLNvR3b/eKyJM497XV38ihgO7Wan9M9/fDYVZ7tHYx3R0M/t9W/fbevvdssfujz@3Ku7/emrPv8injevPo8sIpm0BGmMv/1EPzlU/eNh96w//vbTP3766fPovX2xqDAnf0WJ1K65OO8fwdGHi2O9Pz3H8QJP@NQsb18YV6@vL6@UKi7L6qrMy9x6nb@27NdXxuvLq9fKNKxCzfLXr@3fzDxXuVX9ZpSqMm17dvnb63xmTk/7WLP/ysLT8cGyTtZmzA/92W7Ly7HtLvPuOOt2jx/@528n63L/2HTtqe2Lw5MqTqfi9PCzOpwq9VT9vKv6V4c7rxfGdpmNg/nhpcz@94f0bF33t7@9z9NFklzrNna9/Vwc74xXm11ZDT9TJv79VTWQKnpVnf1Redez5Xa/ud9e/g@1YEaxCK7en6@NqnUei5Y3921tlIv5uNq8fpLe9fh@1z3lbfL77x6LHR8L6/WjtLShFnzzvtVP703ZFTtmZmJI8ln5@IfPeG4e2/tywU7FuH96bw3nMg3H/GzvVMr2pVg@KvH6aS3sXbHTNyr1m@J8Pc/b8lwlfle0bPzvPiNJea2sZHxvuli/18EZ93jG72PQ5cbu8vG/sR@r1sUs@PTfRzyj/32O8oVvFrPw6X1bdqVXmxk993ydyJSdVRo8cY8bRau/sfe@Q2xNbpl10YZ7rKmz2foxb7mRe7qtIrsuFu9@t@fXg9q@G75a5yETNj5fn5Vwj@@F@ygX/pMS66el1Zl522/y2Xrz/sbf5hbTVPfVbWKGcTIGt@8ugzg7LTenTY77lJCIb71ZbfywavQYJ/U@T@wH6ZT33KvdRPSKOdcOi9175shFnJSs4joVsS@V6fdx2jFM2FU2@mHO@aXQDN@3nXXsB8xZGqLtZGD6D2pkEUu6RZJ2u8qxEzmrI9X4h1iYHtbro4Yr1RinOPbDwLAfonYIuZmc8X1WGoh1VmpG64luHrrdg0jLFXeMMTZYWLn6Ko5d2v9McCYU131E113nHBvlSjXXzrrVSmnZxWYpVGL2Ip7LQPv72GRhmJhXudeHzNA29usHjf2QtHpVNSY9nweJnfC0C5njGDFnsjQGJ7zp17n4cJJOfVM1191qIZtoMd/Hnn2Xu50Tiusmcv1ZNuueyuZ0TnZyW8WJlW2XZu7Oe3U7byLHv4qt5rJs/WW0dbeI24o9syk8tlC3rlQxP2W7xuaWm0XbecMNOfKmsAPL71a8rIWzP0m39ApTLlZxuMH3n6RTnO4sd5ls59vIMax40diFFT7yXbcNtrUptv4x8Nwlb3WQi8GKb@deyfdjtOUMn23R1GGp3TQU9jZvh9uM13fKCm2Kh43vDllSR4EXLuNYBlWsx8yyRdUG59WCq6A9nXAd@R36fCGDIMkGwUsjd0x7xX3a/xn9EZYC@9uxr/OHVtZmxovLf3H/q9zssnjXBYFjPwldo24D5XfDbykfdVRa4VU@w352tS1dXG99xGPXwvWfkD8f@0mxvgBqnTLLPFbNaUjaAfXpTtmsMTFDi2ARrtV2/VX8zUkK0y1F2PP2D/2g2Ii@9OwT6tvzqK8jd3nKjDoMm8FepeE21xJzs7xE/s/57RzX0Z@eeUS/DGI3x/Ul5e@Si@UoFzwIOPZj2VGA@atcvgksZuL7@8Dzk6/7rVroRjj2FfoHeOBmSXuN/D/n91v1XSU@8IDZkvO7wgv7BPmkeDK9pvhRr3JbtdfIt39ZCUb53lQxf8T9Ea6nEbCXj7XFOervOWfMyxf1/07/HKXXmIXnX/1r@3fOyhswL6aVxP4@94Ixxvq430imfLDletfdq7i2sqa@CwSu7yTiYahPuUf@ujCdY/@ao1@iSrhZnP6@/t/rH3bKWrNR1vIciHoL3Hqa4nebEdyzyTnub8pjLngc4nrkOF/FW19mwK/KGXq5mDfM@jAIMcWPfnAlHzn2V9jYT8p2YYB5MTGPd2Xrpkkq/WD3bsD6hkI/JGmI/PgPsVveKc/vk5SpoJEG4gkL1At4opLZB@oXkTuDw9ISeJwA39kc@Oao0ccchCPwbFsaJuHbPXOBb2lxfR8tj8vWHOV5ebVstM2QG974Tnwb3pRtOM@tzk9GLXjCQ@xtwXZdjVkBtoVR2IQ7XL/nwGhwA7DVvpIjWyntDOAODqzuGbCYm/wKWBtiZp04BTZjnbgpGT5fYbYVM50x1swPge0MWM1ddwYsvlGN@cDicBXo7oC9K/rM0zJMxPVDlJRN2S7PiSgVMzITn/fKC85qoTfBlmZVuxKzjN7xmSE77Ffljsbnehu05Q61DD9dB5YfM8u4LNHLYSobYMdRNOBtZ8jWO3oeOAa1zU2dYT3JwVnA9qE0dYreUsIxd9RreP5y3daaz2oLs8Cktabe3ahkaWJ9Lq1wCWyr1wawAfmRlp/mC2BdO1hZCz2EWQMWYj1mTuuBC2JB2G/uBA9vwOGY5XqDXjzh@TPa/yqVm4/P8wKsDyxuEsN/ELwwcD2LW8Tn@haed5d7/oK3iF/zHbDpjvInRLkJtN5JDq4RYbfelVJ4w5htfY@wYr0NJ@zE/kXwnL8GWGwK6DdgkY38KMR7FLxeUfyYXYX19yIOJ@wqrXJL9cnAZcrtbkOvxCzUwFrEi/1U2C9m@3n9BPfvJNXLzFoD@4EGaKl@fCfdArMTZpzicfy9BFaWWqdTPUZ@QHw3lVieV8KkeJ@wH@TfpXop4WG9MYww64hvrj7XA/WMpudLcJspsL@lsso62HJL3i6xi65fpRrrLQfCBsxun1nIF7Djd/1H2HUUrS0K44v603q36@28Zqak/jyWyef89OCmKCAuSUM/8gYLn31pNiP6A9ipabbvoHGW0OcbaGObsIu@T/lDv4xZE1L@lti/5OZy6pcJq7fz5/g15hfx5YtwA6xAfkrU313k4O7/6j/ec/Q3nn@e8m1Rf/Tqi/6Y9seAfeUqN/SCtaANa5jiof19jOdpqv90HfNidsff9S/lfwashPbA/Ow@9bfzCXs6aOsut2xetCfSpl9yZ@wD@7kdg8MIuwtPE1easS4GZdjLYsG2zPU7@j4wbhHGrqpaBsyFtvOWyKe/ZaMzZsifasNH0dYysNYj@rMhbGY73QRa7qVn8hL9xrfzIDC6IAG@Ye4WhdOlYvEOWrDcli7w3pMqEB9MaNNj4PoLQLrMvdrnWvJQ@IuA80hZzErE0FQ6vFqnsqb@RP12H7UQ5tW08HlfWktoMaynMzOx7JNy/Ss162I@m1sZlzdFYt/CB8SMtG4MvdnYh@qW36O/DsnW35euFtIN66DpllzXRC8P0BZJ5L0eML9RxPmj9Dqdx82ZO4y4f5E0bCUW84cM2rnUnZvELubf97mwG9XyHvlOmLM3MF8R9PUj8q25C27icp@ACxNdx8KVe/TpHnnz5CIkrYeeOJpCZ6cg9gWDjyOtihk4hLwTwa0DbcBxP/PWO1Yzxz8kBr8LNfBxZA30uB2bwBWXX/EtnpUYyO/RZrzMAOPgjb0pRHeXiXARNbXg3qCydlDo7wPi19AKuJ/dJMJP5Qx8IOpbifsL53opQP@qHc7o2X3UMlE4tcjT@iExErMwyyP6pEHP0/pRnJgH4H8KjIyi0feQv4d128Usfof81YdQuPAamtP98CB3pdm50rneBIvaSFrkT7vwFtcy8Oqbb9/P@mjHsP68Q/94gYn63bINM@xTrMsTvMrDeusDz9xFLAZgKusLr9vw2YdRNJwFwLekwfote5AC86qZE7d9zY095qGG51mC/0oZtMchi13iCOQP93vDk4iXQ2LxQznrBO5X1L@hLpeF4zfBresmvG5i7btsGyac@zfy9t3AEjtdiR79t6d5gbZluH@KH2vyO/ChQB4a8JGB62rqvwU4zTEvgS9hpdnjmng/6Z6EgPBojmf0MocXpPyfsP@lGnkdpHPgut2gf84leaHGfp@1/axC/Cvepazh56l/DHMRNzqB3gglZ8dCo34u8FAMWQYVBiA6FQuO/tVYXx6AF8BjvQHsnIToG3irRbxD/zvAC12uAlcfs4/ry9tQKRMaPJ4rxv33mVHewaPY35m/Dv0fhS7Nh43@ubazBnrFDT1o@YSN7ig97D@5Rlw6CnYfBvRfWAFP0D/34IsH2n/glodEl4r6H/m6RP4eky28RBvOaH5ofuFNIwYlg/pjftbneCsJX0PMhxno8qCcfsN289NU/9ZP462P/g9M4NldxFkG3RUFGjjo1E/f6p9oF07xo/9FxjF/O8q/nklvuCk9F14a9U/2Fr/1D6HHeqpfrv0ugeYstAZnktczr5K284Qu3WIRpnnM32eNPHHHToEfoWrcb9fPLA/AD/LiVwmtT/Wb5gd8Y5QRPBLy123UOP/m/SX4Uo3uJl/MHcIPir@6dVE/gPKtexQu60Vz/e38QWdWwHPkD/pkmh/oL57IGeZP1DH06wr5S1ATjfkh/GoKw/TUTNfQL8AveVeYDfDLxf1dEhuhQfWP0pLmf4W5vAyT61R5mH/yRuifyELMTr3B/WGmE9RPH@OYvQc/A3@7G6VDN7j1gd9Hk/IXeT6dZYSBd0L/GCYHXzNd3wN/gX/9ieYvG@fov6n/1TfxryX81DPuFEPe8hTef8Wtes@bZ/zHnpuguSQ9r4B/fXUrqX8PWTy/DLWbKccWjGcGd3m0brkbpm4EPrhHXY6lLgXwb5t70CDoJ8Iv3sJfcOeb/FMAf6oFU2zGQil6D/MjkkZqFk/4s48t98BjN4HHgj6b6vcYaZr/zgL@@/DEB/Drio96yn@A@hfQj2pWXgnwmrLgUog/2vBS3vp3kceXqN@Gxwl07vA9/NywdjC5R/zrov9p/tgCXt9D/z1y5A@69lII8xAAv4EfEv3DgB87wn/lhFqN@hQbmD/HPBTA31wcB9zvA78e1xr8h77jCfKP/sX6LN/N1@Bf8GeZBryEPvSX4H/gD63PZO5@O3@xNa0fEX9g/gT09VUU8zpPJDwzpJLgD9P@0b@IfxW2S/CGGaoxAf8R/qF/GuiydqjhAQX48zEf/5/4P2FNmUz8L8xLTvXfdch/MGQNn1UuO0aaA//KGfAP@oil4O8N8vq8Pvovm5Xf7n@jXMFPwu@4rMIsYX6a2OJH0kf5xB/yLufdIkjDDTNdG/xxFOhf5V2n3Omuvs2/fIH9b9gMWC5QF6wvXUn6Jfve/BJ@5U43Cs1D6G@RQ7cD3x4yzSXqS@s3PP1gQY/aysT921AG0G8T/oP/Ivh59C/hB92/wPzdCzo7FIMszTKJ2uuJvzivvzO/fRhAV2B@Teg3wp@Gzeoa@m@G@j3EzRf65Sh2wK8W9ffMFe5fgItZsJgPpJ8Sy3fzBerdDmvMnRcCQ5OdH2LmUDqaP37E/8fcOo3Q@@A/H/1fC/DDKNJulbQuX6XzGJy950bJKvAv1k6Bgee4qRv0BTjA5bnbvcfzRekxFzmMuCMFMCpKTHYER2yYYwOv3LvY1Vzsyi1v4RAbuQK@p@UI/ThjMfjGKxo7gU5OEe8e64hMBAP0c4Orq0Qzj@lsUM51kjv2ks5euPDh133oC8fkGqtreYzaOgTfe8C7m8T0gR/ALi7jLPaj2OQP6N8V1k8F8DZuyY9qwcf5JfdMUZjw0VgffnPgbjlWHkN8wH9Dppi3Gzx/Uboho/hlwgXyQ@thfmUKXRSVAv3Q2HWFXHBdnIhvsA7y4We84SdmsoTt0JXt9RX5I@wP@y8x112cxP4dt7Bv3QFfOKP4oRNFkpYc877niD/iEvjZpzmXZ/CvEm65XGvoN0fO0NN34G93xcuQa37Jt25TWsEZ622w7xTrq8TtUnynYdq95GJQsYnZ39US/Zly@GFs@mqtoY@S7j0wgMMxiyn@mO9RPxEi/soNt3liXibC9mLTGeEHeeB2d@DfQ2m5VP86sIqB37qE79C/Yap0p4D/B3wPeklCv8OHCHPPXf8I/BRMhJfZ6EdFux4lNARLOui3oQksDo9D88GwPnjLZAL4Cy3akX47ctPvk6aWfLY2pIP6c7fP3TJiek/4J/LpHYNOsH6H@kAzsbQYge@YVfTPnTLJv/AU@rNGf3il24zwJDEbPwzgF8Jf5LMOwZ@or7@v4PkwnzH0M/B32Ofuckygn3LXHzHfJ6ahRdsJP@5Qf8yvC7/N7oFPPEH9kX/0Wxkz3YHvk0FxCf4ALu3qJ9RfFDTvbrlRs/kK8fMA8w0/D/0j98AfBXzrCyfkFL/Yhk3G/VQ5TPFZAPxM7IiX0Bt2Db1u861/mZvrU0C@3BsE/PBNbvKswPMDQfFz@EP0v9tx8qt8mv89dCz43qodzO0YitDF4KW5GFYZ@qXC/CVNt0Lel9zr94qHbiiAF64cYw5c5dhr20fCW5uE37nlnCP0HvKP/k9MWIcT9EMM75zQ@Rnqf8hvQ@C3/8TBAUXLHa7nAv0GcztE4E8B/Erg@@GfeiU0cuaWkjf6kpv1Eb7FLZwB@qIeuSlX6IBFgVgZ@oHDHypzfQZ@JMKr1wn0Jeb/wJsyDLgvuOjvlGE6rJEcmHeA5rtj2s@gPwTiR855E5uhSDQnvDvivsuKZ@fK68Ej7iXwa68cg87yMX8@9LuMGA8P8E8b4IcP/Nsn5DcduYJ@VdBJ@8RlwL8wRXw8EYOn8Dz0capM@Vz/5jpb63kMfb8HP3qEf2riB/YAHtsH7npQC0hhU/KsqYFNwKUGe@Xd7af@L10GXHx9Bv7dAU8XyS7cgl9S1H9fTPzoNoh/GSfwpdA7a@ivAPoBfC1Lwyb/KGi@4Z9Q/XLBm1pjPxnWnwPPBJ3rov@Af3IPD@sVXg38lQCRAfGzY0z@h1P/y31huZ7YyijXwK1d55Wacfj3mDcS/Srhn@RCzjT1/4NMyggyXhD@YX6o/xvo96FwpnctwGzzsgSfTPM/xc/uRAv8ond9HnuPPEPOc8Qf6jwtbW6WRm6yHvWPc68WhH/ief6b3GPQSYkN/8CDWArwewy8f@5/tyN9cZXMujuG@sMfMeivBPwzr7B7tfBXwFojof5r/b7CsxE/9f@x4PDLngb@rS2a/0y4PEh5zVyaf7Chq/sA/Mhi7fyg/wn/nus/zT8DnncHxG@EHPUHwiL@AfpHTfPv0jvZ7j5uoT/hD4PE3nBrjXkoLzE3i6gpqf4d8Ocu1rpH/CvUcwF/1Ez1h6cLtnyE3oM/kg/wG8DjI/CPq7XFFvDiiJ8hfv4E/Qf/6K@gX0fUDxztH/CZQ9@OsZZR5IDPMX/AH8V5cYKW8xAn9JvNUX8Rg38qJ2zAp4T/8Bi4l/jf6aAnyqgEHwB/U@AjclNeMsOE/oNeTtH/2/kJXJ4Gwq1z8jeW7Qk3JP6Lq6ZbJKYUBfq/oP53oA/h/9D/4L2ao/5phv7JTQl9ex1iNlPomwj450bbOQDAvwW/rZgOH0j35WlwAu9coh7Qcprij2leAuCfIL67dReI/8jpzKu9Foj/FvgvKP4VYBj8eYf4zdLkC3BCjfgymn/0gbPeIqPU/02JWQF@3YbE/6uYl@CfMIO2ofmPqP/zdur/miX2MUvhv4DnygMxa30J/zDhP3hNcY3dOLIpuA9@sDfCo/4n/RGcOemvFvU3pEL90bPT/PsZ5hH@7Rg1wDvgfyZMUUJbkX5nKfw35gv6xA15fY/p6IB/u8ql@PutmoV20vb0LNQfPe7yGeKPIgHdSucPt@uB0zs8rgXbYv@ODYwFvprgmpRmUUrMn0n8XY7Ae0fG0Csn1P@A/t4Imge3NATiR49K8C71/y6AfIzpfJ1wDf4fXmcx6cF0bcQ6sQXVn/Bf7wfwnxHT91LSQ3i@Ue5jU37C/xT65wTehvek@XfrLJE@9Pkjeg@uZb4k/Mf8g/@1AH8eSf9UvCTtRvUn/gP/SA/5Rv79syT@n87vejr/hJjq4Z@gD9OujhZz@HdzrFydojc0NLfzJ/yH2epugMfH/FbGwKcD384VuLQPxHUNPjKgX1YT/pH@dzrEl5jQhz36J6T3F9T/ZWOmdH6pLPB/a0YF79LgFv3t@m5iwX@52Qn6LlHQNxlmvhD@kuLPwQ@Yj5vQsQ9T/WeY/7Z/Ar4k8a5scP086S/Pz9CP4P/uPc0D8A96GLqrWZ6Qv1XguR7mOhYeU3FC@Wd9ectWPNYZ/N4xbszleifR//57fO@OtXwJ7UrnOzV3iyH0lkO@8MHFfkD8T1oC@gfzD@2ZMMxYuACe0fnpneTkP/iC@h/8bYH/feBZD96C/gH/x2EEPYi57ppn/QM9YjmjHCf@u0f/32FiMf/Q39YR35OqpPMTwj9RI/7hVJoS/pXep03xA6Mxv1heNeCNW7cpTEn6R8B/@VR/bsJbbOWz/m4HGZD@Af8hxyPw76h4uVBUf/IfqI@gfnDlBvz3o/mvWcu8mMObeO6hcEPwIzycKb3SCyn@uoJOwmeVmw70X6ngT7Oshd5BvbH@FvHbEroT85@iJwUbOen9O8Y59I@M4F8s6v8E/Md2HIjl76f5n/QP@h/6KzPqSHHo35b4337KRpfwn5P@4emc89v5D@sP7bCneEVap/Af94n1OX4emJiHGP2O@Cf8j/k99P8uIP5zrus86UZuwf@0/KDGuUI@LQn9SvoHfBihf2bo/23lBdB/PnwE1jT4XeHqI@qmwacT/ykP9b8lzVrfTv7XW4/kH6b@56UReh/5TwzQWVLR@es0/xr84nVKJQbqYyfQ3wPwj/zPkvqf5h/7g2Z24L@YDKyBJ0ZxCZx3ouYafhbxc8y/YZwV6gD9dkjGdwPiPypviBD/QPq3AP@h/hz@Dvp3uKP@D0Vfw/8ZyOXdpH/dOenfGeF7iX4MhBbwD1fP@t85c9J/LfFff5rwPyb/M4zchZfyfC7ofCyd3/5Q/y/miMX8qH@vE8I/zAPpn2yNfJB/zLbP/i@i87XZxP@mMjE/ulbIf52g3uA/6C/0U6x9@E3wn3sU0AWYf2gTOv9lB@XpeMK/7VwgfiFd0mbygDluQo758a7p/ZeY6u@im5OB9N898T@n361C/ZV1Gkn/Q/8dwtTXzJVr6uaM6yP8KvE/@Klfof8PmHeO@U@hf4AXZQb9QfwXTPxvliKm84fZnPS/AT2crNs@wfxDu9TQ8/R@7ZpDvy/I/wO7Dog/BJ954Ia9gl6N4P@FA/2vCe@hfyf/43NuHYnbpvMH6F/gu88qz/eUV4f0u0D47k1p0Xkpj9WoD9D7N8D3I/gxhX714GWhZyX6fU76fyT859w9wn@KAD762f9S/f178Cn8jzwplz@w1qX5n039D7@jbueEf9B/4LaP@D/5O/fP9B9qZOH@hUvvd2rgH82/g9wC/53J/5P/od/lE8/@h36XD3FCzZlyCf9wQr9na8w/5vEB83AH/vMU@f/P/ocfET@d90zvH9D/Av6nBr9bSQu61/4V29FJDIsTwj8ReusW@tUqJ/@rWjr/k8T/CvxM@vco6fw7nXuiKWxo1h5@PAE/0PxT/E5E788c8AT8a2RN5z@c9J8U5gz8D30LvcF9I7GGPZ7ron@m@ZfeAPzv3JXA/bFj8dYwofg/9b@C3mP0fhh6nPzvAPxHjf1knQJ/RX0mLzXpP8L/lM6/Oq/45H9nrKPzj3Caf7fGDJtZAt@P@Q8TJqFf7uEvbPaj/gf@faw/zb8Bv6LQt8Bj/uz/4O0KLh9FO81/Mp1/GHYP/UL@d5XpsgnMMoX/XTGjW1D9FdaPGltCLw9xI0@M3o@S/m@gSbZLswD/Ad/JH9H51wF97Yrm@/r/@fxDbhT8JRf2qaDzr6YOoT@O5P@gzUm/EP8toH9XiP@KNwP9PsoP/C@j8w8Oz6aQG/iP8uP5DzeUXp6KWxf6F/pPDB/1Xx3Dv8c/9H/oX@hH6n/4v0n/P5H/A99fJYR/yf4EUI/WlkN5iRUwJhbmGEznP77GXnyKPzEwL1uf9D/47t3AEH@OPWIGn@DvTmvgP6f44X/R/8B/noZpyZE/jvoDrzH/Dvm/JTJK/e8vMCsblr4DyroK@gqzxMC/w4rmP6H@9@yp/xH/Kvfcqxz9H3h1/ez/wscJ/w1jALZgmpgnFy69f0D96x31f7CoY@BAOp1/8BBzZNP55/P8C8zjD86/Cg3@0yH8L89iTIfi5P9riv@QWf1Y8Yn/a9R/AP@DgU3Mv4aekfB/74wA@jIjvddkFuJH/SXwtcQc8EvMlCfQXyEHf6fFCfX3gPhDsaB5qOPn8y@Wli7pP9BrCv2D/pcjsLi5PEH/A9fCDP4/ZBY0rwe/Dd8C/U/1Rx3A/@C/0rHxPXcW01msWZL/EJ/x3@RH@I8I3gc@wRjg/@n9QprjXjr/jSb8L8FvWgInj7kHnNxp4J@c6k/8B/6B5pqvkP8IeAj@B/6lc@DmuwFARv6I/O8V9P8J@r8vZvVH/ZsM7E/4D7P1sN6VqPvJSizDpPNP6GHyP0@k/0vPXcYT/smz4OT/gEgJ/I8YVnFS3wRT/wNPDW1z0U/nH8kO/nN8Z8bT@U/4QPiLPpd0Psgt9xCk7iZyJOE/@F1fwf@u1Ej1L43J/8w6@B97Jj1zOv9F/8O/1vXkd2gegH/oJ@gu@yZA/n7o/6B/n/2Pb6H/o2g6/5A6Qstk0O8ZZ2kQsw3qfwa/RrED/ictMZvfYv5XrDHRnzxmwHPBiyFqOeafafA/4d@@hP@JgGfA/@n8N3H//59/A6Mxv3NwUXcXWOtBLoBB0D/Ixyma6l/C/6P/6R2DKY/i@fwrJv1XmG6fezpl1ofx2f8/@59n/zfc/Wj@0f8N4k@AfzX0Ywx@HFB/9CLbTvGn0Emczv@uGZ1/iG14Ep4PvYN6Y33M5aESjH6/E3iNngQbRj/Wf8T/x@fzD/i/pIT@DzP4Kar/dP4XOn@Kf64iPKD3H6aEPwUeevBcuznq759iMzgzOv9p/PuP@l9AN2yn83DMewz8DxP4fe3XxH/E/@LZ/2ekfzB/Iqffn4E@BP8T/mWFQ3@XoAP@9@T/kvyj/sms4U/wLzELzRLgH/wPEMtD/Sf858/6L/ZXkQs/487p/dfX5/8dvX@i@idNCP6fz@j8E/yXgpekspB/IxkE/C/qj3lb0vz7pWGn9P72@fxrUIXm2D/W1/4yIz3QTOc/PKDzQC55pafzz1BpmT2f//rQWDrBvKbJdH4BXatD0gPwn5gNPeEfvX88gOfo/Rf0/0Dvvzx6/7c21@Q/IviDu4zXDfkvfH@DfqT33UduOfR3Jyb9Dkj0yo/nN1wQfknC1WM@0/GE3@LZvyL2JsCow5@v4D@HaFdyPjoG@Tfoh@W0f@hPXG8is8S8oYYpZj32oxL4Df6Cf4cecesT5gjrQz/P6hH5iYAftH@aNxf4xTDPvHJYnGv4X@jrUNPvXwDJdSdJf0St26/S@ffx2@Lg85Lw6kjvbzj465N@JT1H@oXtOkW/bwH@uOGJifpBxt@@s5c74y39jbOqqPf/0l/X/9tP//zn/wE";
-                    break;
                   case "chat":
 		    url = "https://mirotalk.up.railway.app";
                     break;
@@ -2651,118 +2384,113 @@ console.log(popArgs);
 
 
 
-    // 2. Initialize allCommands with baseCommands
-    let allCommands = {...baseCommands};
 
-    // 3. Merge dynamic pac commands
-    [pac0Command, pac1Command, pac2Command, pac3Command].forEach(cmdObj => {
-      if (cmdObj && typeof cmdObj === 'object') {
-        allCommands = {
-          ...allCommands,    // Keep existing commands
-          ...cmdObj          // Add new commands
-        };
-      }
-    });
+  // Create terminal welcome message
+  const welcomeMsg = "\n[[ \n you are now on upcOS privately owned property owned by \n " + 
+    owner + "\n on {polygon} \n" +
+    "\n Type `d` to see the disclaimer.  By continuing use, you agree to the disclaimer" +
+    "\n Welcome to @_" + upc + "\n]]";
 
-
-
-    console.log("ALLLLLLLLLLLLL COMMMMMMMANDSSSSSSSSSSS");
-    console.log(allCommands);
-
-    this.progressTerminal = React.createRef()
-    var promptlabel =  '[[ AWAITING COMMAND@ ]] => ';
-    var welcomeMsg ="\n[[ \n you are now on upcOS privately owned property owned by \n " + owner + "\n on {polygon} \n";
-    welcomeMsg += "\n Type `d` to see the disclaimer.  By continuing use, you agree to the disclaimer";
-    welcomeMsg += "\n Welcome to @_" + upc + "\n]]";
-    var popArgs = [];
-
-    var myTerm = <Terminal
+  // Create terminal component
+  const myTerm = (
+    <Terminal
       style={{
-           minHeight:"75vh",
-           backgroundColor: "#000",
-           zIndex:"0",
-           wordBreak:"break-word",
-           backgroundImage: `url('${bgValue}')`,  // Fixed: using backticks for template literal
-           backgroundSize: "cover",
-           backgroundPosition: "center",
-           backgroundRepeat: "no-repeat",
+        minHeight: "75vh",
+        backgroundColor: "#000",
+        zIndex: "0",
+        wordBreak: "break-word",
+        backgroundImage: this.state.bg ? `url('${this.state.bg}')` : 'none',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
       ref={this.progressTerminal}
-      commands={allCommands}
+      commands={baseCommands} // Initialize with base commands only
       welcomeMessage={welcomeMsg}
-      promptLabel={promptlabel}
+      promptLabel={'[[ AWAITING COMMAND@ ]] => '}
       dangerMode={true}
       ignoreCommandCase={true}
       noAutoScroll={true}
-      promptLabelStyle={{"color":"green", "fontWeight":"bold", "fontSize":"1.1em"}}
+      promptLabelStyle={{color: "green", fontWeight: "bold", fontSize: "1.1em"}}
       onClick={this.noScrollToBottom}
     />
+  );
 
+  // Set initial state
+  this.state = {
+    wallet: owner,
+    assist: assist,
+    code: upc,
+    pwd: upc,
+    mplayer: "",
+    channel: channel,
+    manifest: manifest,
+    missionUrl: missionUrl,
+    upcscript: "",
+    executable: msg,
+    payload: payload,
+    slides: [],
+    res: [],
+    terminal: myTerm,
+    pipVisibility3: "false",
+    pipDisplay3: "none",
+    pipVisibility2: "false",
+    pipDisplay2: "none",
+    pipVisibility: "false",
+    pipDisplay: "none",
+    msg: msg,
+    upcrss: upcrss,
+    shell: shell,
+    pplCommand: pplCommand,
+    shebang: shebang,
+    configUrl: configUrl,
+    publicPacs: [],
+    hdd: hddValue,
+    serial: serialbox,
+    ai: aiValue,
+    archive: archiveValue,
+    fund: fundValue,
+    pac0: pac0Value,
+    pac1: pac1Value,
+    pac2: pac2Value,
+    pac3: pac3Value,
+    configRaw: configRaw,
+    sealActiveTab: 'seal',
+    baseCommands: baseCommands
+  };
 
+  // Now that state is set, generate dynamic commands
+  const pac0Command = this.generateDynamicCommands(0);
+  const pac1Command = this.generateDynamicCommands(1);
+  const pac2Command = this.generateDynamicCommands(2);
+  const pac3Command = this.generateDynamicCommands(3);
 
-
-
-    this.state = {
-       wallet: owner,
-       assist: assist,
-       code: upc,
-       pwd: upc,
-       mplayer: "",
-       channel: channel,
-       manifest: manifest,
-       missionUrl: missionUrl,
-       upcscript: "",
-       executable: msg,
-       payload: scan[5],
-       slides: [],
-       res: [],
-       terminal: myTerm,
-//       terminalSwitch: devIframe,
-       pipVisibility3: "false",
-       pipDisplay3: "none",
-       pipVisibility2: "false",
-       pipDisplay2: "none",
-       pipVisibility: "false",
-       pipDisplay: "none",
-       msg: msg,
-       upcrss: upcrss,
-       shell: shell,
-       pplCommand: pplCommand,
-       shebang: shebang,
-       configUrl: configUrl,
-       publicPacs: publicPacs,
-       hdd: hddValue,
-       serial: serialbox,
-       ai:  aiValue,
-       archive: archiveValue,
-       fund: fundValue,
-       // Initialize pac slots as empty objects
-       pac0: pac0Value,
-       pac1: pac1Value,
-       pac2: pac2Value,
-       pac3: pac3Value,
-       configRaw: configRaw,
-       sealActiveTab: 'seal'
+  // Merge all commands
+  const allCommands = Object.assign({}, baseCommands);
+  [pac0Command, pac1Command, pac2Command, pac3Command].forEach(cmdObj => {
+    if (cmdObj) {
+      Object.assign(allCommands, cmdObj);
     }
+  });
 
+  // Update terminal with merged commands
+  this.setState({
+    terminal: React.cloneElement(myTerm, { commands: allCommands })
+  });
 
-
-
-
-
-
-    this.loadOne= this.loadOne.bind(this);
-    this.getMyNfts= this.getMyNfts.bind(this);
-    this.getMplayer= this.getMplayer.bind(this);
-    this.showTerminal= this.showTerminal.bind(this);
-    this.handleFlip= this.handleFlip.bind(this);
-    this.getLink= this.getLink.bind(this);
-    this.setAccount= this.setAccount.bind(this);
-    this.firstLookup= this.firstLookup.bind(this);
-    this.resolvePPL= this.resolvePPL.bind(this);
-    this.dynamicPPL= this.dynamicPPL.bind(this);
-    this.generateDynamicCommands= this.generateDynamicCommands.bind(this);
-  }
+  // Bind methods
+  this.loadOne = this.loadOne.bind(this);
+  this.getMyNfts = this.getMyNfts.bind(this);
+  this.getMplayer = this.getMplayer.bind(this);
+  this.showTerminal = this.showTerminal.bind(this);
+  this.handleFlip = this.handleFlip.bind(this);
+  this.getLink = this.getLink.bind(this);
+  this.setAccount = this.setAccount.bind(this);
+  this.firstLookup = this.firstLookup.bind(this);
+  this.resolvePPL = this.resolvePPL.bind(this);
+  this.dynamicPPL = this.dynamicPPL.bind(this);
+  this.generateDynamicCommands = this.generateDynamicCommands.bind(this);
+}
 
 
 
@@ -5901,70 +5629,163 @@ alert("clicked term");
 
 
   
-  componentDidMount = async () => {
+componentDidMount = async () => {
+  try {
+    // 1. First load the config
+    let config = {};
+    if (this.props.configUrl) {
+      try {
+        const response = await fetch(this.props.configUrl);
+        config = await response.json();
+        console.log("Successfully loaded config:", config);
+      } catch (error) {
+        console.error("Failed to load config from URL, using fallback:", error);
+        config = this.props.config || {};
+      }
+    } else {
+      config = this.props.config || {};
+    }
+
+    // 2. Initialize values from config
+    const configRaw = {
+      buttons: config.buttons && Array.isArray(config.buttons) ? config.buttons : []
+    };
+
+    const bgValue = config.background || '';
+    const hddValue = config.hdd || "https://app.ardrive.io/#/drives/8324c70e-a3c4-4dc5-b42c-1691464daef7?name=africans_unite_worldwide";
+    const aiValue = config.ai || '';
+    const archiveValue = config.archive || '';
+    const fundValue = config.fund || '';
+    const serialbox = config.serialbox || '';
+
+    // Extract PAC commands safely
+    const pacs = config.pacs || {};
+    const pac0Value = pacs.pac0 || {};
+    const pac1Value = pacs.pac1 || {};
+    const pac2Value = pacs.pac2 || {};
+    const pac3Value = pacs.pac3 || {};
+
+    // Generate PAC commands
+    const pac0Command = this.generateDynamicCommands(0);
+    const pac1Command = this.generateDynamicCommands(1);
+    const pac2Command = this.generateDynamicCommands(2);
+    const pac3Command = this.generateDynamicCommands(3);
+
+    // Merge with existing baseCommands from state
+    const allCommands = {...this.state.baseCommands};
+    [pac0Command, pac1Command, pac2Command, pac3Command].forEach(cmdObj => {
+      if (cmdObj) {
+        Object.assign(allCommands, cmdObj);
+      }
+    });
+
+  var upc = this.state.code;
 
 
+  const welcomeMsg = "\n[[ \n you are now on upcOS privately owned property owned by \n " + 
+    owner + "\n on {polygon} \n" +
+    "\n Type `d` to see the disclaimer.  By continuing use, you agree to the disclaimer" +
+    "\n Welcome to @_" + upc + "\n]]";
+
+const myTerm = (
+    <Terminal
+      style={{
+        minHeight: "75vh",
+        backgroundColor: "#000",
+        zIndex: "0",
+        wordBreak: "break-word",
+        backgroundImage:  `url('${bgValue}')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+      ref={this.progressTerminal}
+      commands={this.state.baseCommands} // Initialize with base commands only
+      welcomeMessage={welcomeMsg}
+      promptLabel={'[[ AWAITING COMMAND@ ]] => '}
+      dangerMode={true}
+      ignoreCommandCase={true}
+      noAutoScroll={true}
+      promptLabelStyle={{color: "green", fontWeight: "bold", fontSize: "1.1em"}}
+      onClick={this.noScrollToBottom}
+    />
+   );
 
 
+    // 3. Update state with config values
+    await new Promise(resolve => this.setState({
+      configRaw,
+      hdd: hddValue,
+      serial: serialbox,
+      ai: aiValue,
+      archive: archiveValue,
+      fund: fundValue,
+      pac0: pac0Value,
+      pac1: pac1Value,
+      pac2: pac2Value,
+      pac3: pac3Value,
+      bg: bgValue,
+      terminal: myTerm,
+      commands: allCommands
+    }, resolve));
+
+    // 4. Now proceed with your existing manifest processing logic
     var scan;
     scan = atob(this.state.manifest);
-
     console.log("GOOOOOOOD MANIFEST");
     console.log(scan);
 
     scan = scan.split(',');
     var res;
-    var ipfs   = this.props.show;
+    var ipfs = this.props.show;
     var assist = this.state.assist;
-    //console.log("assist is " );
-    //console.log(assist);
     
     if (!ipfs.includes(">>>")) {
-       ipfs = ">>>" + ipfs;
+      ipfs = ">>>" + ipfs;
     }
 
     var info = [];
     const containsGreaterThan = ipfs.includes('>');
-
     var nftIds;
 
-    if(containsGreaterThan) {
-       nftIds = ipfs.split(">");
+    if (containsGreaterThan) {
+      nftIds = ipfs.split(">");
+    } else {
+      nftIds = ipfs.split("#");
     }
-    else {
-       nftIds = ipfs.split("#");
-    }
-    var splash = 
-             <Modal style={{"background":'##86a865',"height":"50vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} visible={'true'} closemodal={(e) => {this.setState({ showModalSplash: false }); }} type="lightSpeedIn" >
-                <div style={{background:"#451206", verticalAlign:"middle", textAlign:"center" }}> 
-                  <div>
-                    <Zoom left> <i  style={{color:"red"}}>Welcome to</i></Zoom>
-                    <br/>
-                    <Zoom left> <b> &lt;UPCScript/&gt; </b></Zoom>
-                     <br/>
-                     <b style={{color:"white"}}>Click right arrow once to view intel</b>
-                     <br/>
-                     <b style={{color:"white"}}>Click right arrow twice to start</b>
-                     <br/>
-                     <Flip right> <Barcode value={this.state.code} format="UPC" /> </Flip>
-    
-                     <br/>
-                     <i  style={{color:"red"}}>[[{this.state.code}]]</i><br/>
-                     <b style={{color:"white"}}>powered by <a href="https://arweave.org">arweave</a> </b>
-                  </div>
-                </div>
-             </Modal>;
 
+    var splash = (
+      <Modal style={{"background":'##86a865',"height":"50vh","alignItems":"normal", "display":"table-cell", "textAlign":"center"}} 
+             visible={'true'} 
+             closemodal={(e) => {this.setState({ showModalSplash: false }); }} 
+             type="lightSpeedIn" >
+        <div style={{background:"#451206", verticalAlign:"middle", textAlign:"center" }}> 
+          <div>
+            <Zoom left> <i style={{color:"red"}}>Welcome to</i></Zoom>
+            <br/>
+            <Zoom left> <b> &lt;UPCScript/&gt; </b></Zoom>
+            <br/>
+            <b style={{color:"white"}}>Click right arrow once to view intel</b>
+            <br/>
+            <b style={{color:"white"}}>Click right arrow twice to start</b>
+            <br/>
+            <Flip right> <Barcode value={this.state.code} format="UPC" /> </Flip>
+            <br/>
+            <i style={{color:"red"}}>[[{this.state.code}]]</i><br/>
+            <b style={{color:"white"}}>powered by <a href="https://arweave.org">arweave</a> </b>
+          </div>
+        </div>
+      </Modal>
+    );
 
+    var isHacker = false;
+    var hacker = scan[0];
+    var ogOwner = scan[1];
+    var owner = scan[1];
+    var title = "owner";
+    var assistUrl;
 
-   var isHacker = false;
-   var hacker  = scan[0];
-   var ogOwner = scan[1];
-   var owner = scan[1];
-   var title = "owner";
-   var assistUrl;
-
-   if(scan[13] != undefined || owner.includes("0x0000000000")) {
+    if (scan[13] != undefined || owner.includes("0x0000000000")) {
       console.log(scan); 
       console.log(">>>>>>>>>>>>>ishacker0");
       console.log("trying to get assist");
@@ -5974,188 +5795,171 @@ alert("clicked term");
       isHacker = true;
       title = "anon";
 
+      this.setState({ hacker: hacker });
+    }
 
-      this.setState({ hacker: hacker});
-      //owner = scan[0];
-   }
+    var word = scan[7];
+    var createdData = scan[11];
+    var modifiedData = scan[12];
 
+    var createdDate = parseInt(createdData);
+    var created = new Date(createdDate * 1000);
 
-/*
-   let infoHacker = await this.props.upcInfo(this.state.pwd)
-   let qAddy = infoHacker['og'];
-   if(qAddy.includes("0x00000000000000000000")) {
-   }
-*/
+    var modifiedDate = parseInt(modifiedData);
+    var modified = new Date(modifiedDate * 1000);
+    var upcscript = scan[6];
+    var currentUrl = window.location.href;
+    currentUrl = currentUrl.replace('export','intel');
+    var currentUrlLink = <a href={currentUrl}>link</a>;
 
+    var content;
 
+    if (!isHacker) {
+      content = (
+        <div style={{overflow:"scroll",wordWrap:"break-word",height:"100vh",background:"#000000", verticalAlign:"middle", textAlign:"center" }}> 
+          <div>
+            <Zoom left> <b style={{color:"white"}}>[intel]</b></Zoom>
+            <br/>
+            <Zoom left> <b><Barcode value={this.state.code} format="UPC" /></b></Zoom>
+            <br/>
+            <Zoom left> <b>----------</b></Zoom>
+            <Zoom left> <b style={{color:"red"}}>web3-url:{currentUrlLink}</b></Zoom>
+            <br/>
+            <Zoom left> <b>----------</b></Zoom>
+            <br/>
+            <Zoom left> <b style={{color:"red"}}>{title}:</b><i>{owner}</i></Zoom>
+            <br/>
+            <Zoom left> <b>----------</b></Zoom>
+            <br/>
+            <Zoom left> <b style={{color:"red"}}>title:</b><i>{word}</i></Zoom>
+            <br/>
+            <Zoom left> <b>----------</b></Zoom>
+            <br/>
+            <Zoom left> <b style={{color:"red"}}>modified:</b><i>{modified.toString()}</i></Zoom>
+            <br/>
+            <Zoom left> <b>----------</b></Zoom>
+            <br/>
+            <Zoom left> <b style={{color:"red"}}>created:</b><i>{created.toString()}</i></Zoom>
+            <br/>
+            <Zoom left> <b>----------</b></Zoom>
+            <br/>
+            <Zoom left> <b style={{color:"red"}}>UPCScript:</b><i>s {upcscript}</i></Zoom>
+          </div>
+        </div>
+      );
+    } else {
+      var hackedData = scan[11];
+      var hacked = new Date(hackedData * 1000);
 
-   var word = scan[7];
-   var createdData = scan[11];
-   var modifiedData = scan[12];
+      content = (
+        <div style={{overflow:"scroll",wordWrap:"break-word",height:"100vh",background:"#000000", verticalAlign:"middle", textAlign:"center" }}> 
+          <div>
+            <br/>
+            <Zoom left> <b style={{color:"white"}}>[intel]</b></Zoom>
+            <br/>
+            <Zoom left> <b style={{color:"red"}}>{title}:</b><i>{hacker}</i></Zoom>
+            <br/>
+            <Zoom left> <b>----------</b></Zoom>
+            <br/>
+            <Zoom left> <b style={{color:"red"}}>title:</b><i>{word}</i></Zoom>
+            <br/>
+            <Zoom left> <b>----------</b></Zoom>
+            <br/>
+            <Zoom left> <b style={{color:"red"}}>anon_date:</b><i>{hacked.toString()}</i></Zoom>
+            <br/>
+            <Zoom left> <b style={{color:"red"}}>assist:</b><Barcode value={assist} format="UPC" /></Zoom>
+            <br/>
+            <Zoom left> <b style={{color:"red"}}>assistUrl:</b><a target="_blank" href={assistUrl}>Access root UPC console</a> (refresh page if it does not load)</Zoom>
+            <Zoom left> <b>----------</b></Zoom>
+            <br/>
+            <Zoom left> <b style={{color:"red"}}>UPCScript:</b><i>s {upcscript}</i></Zoom>
+          </div>
+        </div>
+      );
+    }
 
-
-   var createdDate = parseInt(createdData);
-   var created = new Date(createdDate * 1000);
-
-   var modifiedDate = parseInt(modifiedData);
-   var modified = new Date(modifiedDate * 1000);
-   var upcscript = scan[6];
-   var currentUrl = window.location.href;
-   var currentUrl = currentUrl.replace('export','intel');
-   var currentUrlLink = <a href={currentUrl}>link</a>
-
-
-   var content;
-
-   if(!isHacker) {
-   content = 
-                <div style={{overflow:"scroll",wordWrap:"break-word",height:"100vh",background:"#000000", verticalAlign:"middle", textAlign:"center" }}> 
-                  <div>
-                    <Zoom left> <b style={{color:"white"}}>[intel]</b></Zoom>
-                    <br/>
-                    <Zoom left> <b><Barcode value={this.state.code} format="UPC" /></b></Zoom>
-                    <br/>
-                    <Zoom left> <b>----------</b></Zoom>
-                    <Zoom left> <b style={{color:"red"}}>web3-url:{currentUrlLink}</b></Zoom>
-                    <br/>
-                    <Zoom left> <b>----------</b></Zoom>
-                    <br/>
-                    <Zoom left> <b style={{color:"red"}}>{title}:</b><i>{owner}</i></Zoom>
-                    <br/>
-                    <Zoom left> <b>----------</b></Zoom>
-                    <br/>
-                    <Zoom left> <b style={{color:"red"}}>title:</b><i>{word}</i></Zoom>
-                    <br/>
-                    <Zoom left> <b>----------</b></Zoom>
-                    <br/>
-                    <Zoom left> <b style={{color:"red"}}>modified:</b><i>{modified.toString()}</i></Zoom>
-                    <br/>
-                    <Zoom left> <b>----------</b></Zoom>
-                    <br/>
-                    <Zoom left> <b style={{color:"red"}}>created:</b><i>{created.toString()}</i></Zoom>
-                    <br/>
-                    <Zoom left> <b>----------</b></Zoom>
-                    <br/>
-                    <Zoom left> <b style={{color:"red"}}>UPCScript:</b><i>s {upcscript}</i></Zoom>
-                  </div>
-                </div>
-   } else {
-
-
-
-         var hackedData = scan[11];
-         var hacked = new Date(hackedData * 1000);
-
-         content = 
-                <div style={{overflow:"scroll",wordWrap:"break-word",height:"100vh",background:"#000000", verticalAlign:"middle", textAlign:"center" }}> 
-                  <div>
-                    <br/>
-                    <Zoom left> <b style={{color:"white"}}>[intel]</b></Zoom>
-                    <br/>
-                    <Zoom left> <b style={{color:"red"}}>{title}:</b><i>{hacker}</i></Zoom>
-                    <br/>
-                    <Zoom left> <b>----------</b></Zoom>
-                    <br/>
-                    <Zoom left> <b style={{color:"red"}}>title:</b><i>{word}</i></Zoom>
-                    <br/>
-                    <Zoom left> <b>----------</b></Zoom>
-                    <br/>
-                    <Zoom left> <b style={{color:"red"}}>anon_date:</b><i>{hacked.toString()}</i></Zoom>
-                    <br/>
-                    <Zoom left> <b style={{color:"red"}}>assist:</b><Barcode value={assist} format="UPC" /></Zoom>
-                    <br/>
-                    <Zoom left> <b style={{color:"red"}}>assistUrl:</b><a target="_blank" href={assistUrl}>Access root UPC console</a> (refresh page if it does not load)</Zoom>
-                    <Zoom left> <b>----------</b></Zoom>
-                    <br/>
-                    <Zoom left> <b style={{color:"red"}}>UPCScript:</b><i>s {upcscript}</i></Zoom>
-                  </div>
-                </div>
-
-   }     
-
-
-   this.setState({ intel: content });
+    this.setState({ intel: content });
     var res = this.state.slides;
 
     const isHacked = owner.includes("0x000000000000000000");
    
-    if(res.length == 0 && isHacked ) {
-       res.push(splash);
-       res.push(content);
+    if (res.length == 0 && isHacked) {
+      res.push(splash);
+      res.push(content);
     }
 
-    //if the upc is not owned, the user can not define a custom shell. if shell is rejected, in other  words, if it is an anonymous anon, the shell will be set to the assist upc's shell
+    // Process NFT IDs
+    for (var i = 0; i < nftIds.length; i++) {
+      if (!nftIds[i]) continue;
+      var vidSnippet;
+      var vid;
 
-    for(var i = 0; i < nftIds.length; i++) {
-       if(!nftIds[i]) continue;
-       var vidSnippet;
-       var vid;
+      var tmpId = nftIds[i];
+      info[i] = { 
+        order: i,
+        data: nftIds[i]
+      }
 
-       var tmpId = nftIds[i];
-       info[i] = { 
-          order: i,
-          data: nftIds[i]
-       }
+      console.log(info[i]);
 
-       console.log(info[i]);
-       //keep ss string clean.
-
-
-       var stagePiece = nftIds[i];
-       var containsLinkType = stagePiece.includes('[') && stagePiece.includes('|') && stagePiece.includes(']');
-       var loadYt = false;
-       var loadHtml = false;
-       if( stagePiece.includes('https:') ) {
+      var stagePiece = nftIds[i];
+      var containsLinkType = stagePiece.includes('[') && stagePiece.includes('|') && stagePiece.includes(']');
+      var loadYt = false;
+      var loadHtml = false;
+      
+      if (stagePiece.includes('https:')) {
         console.log("LINKKKKKKK1");
-            loadHtml = true;
-       }
+        loadHtml = true;
+      }
 
-       if( stagePiece.includes('yout') ) {
+      if (stagePiece.includes('yout')) {
         console.log("LINKKKKKKK2");
-            loadYt = true;
-       }
+        loadYt = true;
+      }
 
-       if (containsGreaterThan && loadHtml && !containsLinkType && !loadYt) {
-          var entry = await this.getHTML(nftIds[i]); 
-       } else if (containsLinkType) {
+      if (containsGreaterThan && loadHtml && !containsLinkType && !loadYt) {
+        var entry = await this.getHTML(nftIds[i]); 
+      } else if (containsLinkType) {
         console.log("LINKKKKKKK3");
         var entry = this.getLink(nftIds[i]);
-       }
-       else if(tmpId.length == 11) {
+      } else if (tmpId.length == 11) {
         console.log("LINKKKKKKK4");
-          var entry = await this.getYt(tmpId); 
-       }
-       else if(loadYt) {
-
+        var entry = await this.getYt(tmpId); 
+      } else if (loadYt) {
         console.log("LINKKKKKKK5");
-          var entry = await this.getYt(tmpId); 
-          //this class can not connect to web3, so it is up to the calling code to decode the nftId's content and pass that raw to this function
-          //var entry = await this.getNft(i,nftIds); 
-       }
+        var entry = await this.getYt(tmpId); 
+      }
     }
 
-      var testUpc       = this.state.code;      
-      var testResults   = await this.getUpc(testUpc);
-      var testOwner     = testResults[1];
-      var upcrss;
-      if( testOwner.includes("0x0000000000000000") ) {
-         var zeros = await this.getUpc("000000000000");
-         upcrss = zeros[5];
-      }
-      else {
-         var userFeed = await this.getUpc(testUpc);
-         upcrss = userFeed[5];
-      }
+    // Set upcrss feed
+    var testUpc = this.state.code;      
+    var testResults = await this.getUpc(testUpc);
+    var testOwner = testResults[1];
+    var upcrss;
+    
+    if (testOwner.includes("0x0000000000000000")) {
+      var zeros = await this.getUpc("000000000000");
+      upcrss = zeros[5];
+    } else {
+      var userFeed = await this.getUpc(testUpc);
+      upcrss = userFeed[5];
+    }
 
+    this.setState({ upcrss: upcrss });
+    let url = 'https://corsproxy.io/?url=' + encodeURIComponent(upcrss);
+    let feedset = await this.setFeed(url);
 
+    // Final state update to mark loading complete
+    this.setState({ isLoading: false });
 
-      //set the rss feed to the payload for the current upc unless it is unowned.  if unowned, default to system feed
-      this.setState({upcrss: upcrss});
-      let url = 'https://corsproxy.io/?url=' + encodeURIComponent(upcrss);
-      let feedset = await this.setFeed(url);
-
-
+  } catch (error) {
+    console.error("Error in componentDidMount:", error);
+    this.setState({ 
+      isLoading: false,
+      error: "Failed to initialize component"
+    });
   }
+};
 
 
 
