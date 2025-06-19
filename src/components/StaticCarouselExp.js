@@ -11,6 +11,7 @@ import TradingBotTerminal from './TradingBotTerminal'
 import MonopolyCLI from './MonopolyCLI'
 import MemecoinFactory from './MemecoinFactory';
 import ShirtDesign from './ShirtDesign';
+import SealModel from './SealModel';
 import WalletMessengerTerminal from './WalletMessenger';
 import VideoArchiveTerminal from './VideoArchiveTerminal';
 import MoneyPostTerminal from './MoneyPostTerminal';
@@ -636,13 +637,70 @@ export default class StaticCarouselExp extends Component {
             },
 
 
-            seal: {
-              description: '<p style="color:orange;font-size:1.1em">**  same as anon, only do not shorten the link.  raw url with no is.gd for more privacy</p>',
 
-              fn: async (upc) => {
-                  this.sealScan(upc);
-              }
-            },
+
+
+
+
+
+
+  seal: {
+    description: '<p style="color:orange;font-size:1.1em">** same as anon, only do not shorten the link. raw url with more privacy</p>',
+    fn: async (winNum) => {
+      const terminal = this.progressTerminal.current;
+      const currentState = this.state;
+      
+      try {
+        // Get the hero image
+        const heroImg = await this.getHero(currentState.pwd);
+        
+        // Create the modal component
+        const sealComponent = (
+          <SealModel
+            pwd={currentState.pwd}
+            code={currentState.code}
+            msg={currentState.msg}
+            terminal={terminal}
+            account={currentState.account}
+            heroImg={heroImg}
+            onClose={() => {
+              this.setState({ 
+                pipVisibility: false,
+                pipDisplay: 'none'
+              });
+            }}
+            getMyAddress={this.props.getMyAddress}
+            upcInfo={this.props.upcInfo}
+          />
+        );
+
+        // Show in either terminal or popup based on winNum
+        if (winNum === "1") {
+          terminal.pushToStdout(sealComponent);
+        } else {
+          this.setState({ 
+            fullIpfs: sealComponent,
+            pipVisibility: true,
+            pipDisplay: 'block'
+          });
+        }
+      } catch (error) {
+        terminal.pushToStdout(`[[error]]Error initializing seal: ${error.message}[[/error]]`);
+      }
+    }
+  },
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2683,6 +2741,7 @@ console.log(popArgs);
        pac2: pac2Value,
        pac3: pac3Value,
        configRaw: configRaw,
+       sealActiveTab: 'seal'
     }
 
 
@@ -3387,285 +3446,364 @@ doDrop = async () => {
 
 
 
-  doSeal = async (upc) => { 
 
-	    const terminal = this.progressTerminal.current
 
-            let rejectCustomShell = false;
-            const wallet = await this.props.getMyAddress();
-            let info = await this.props.upcInfo(this.state.pwd)
-            let assistInfo = await this.props.upcInfo(this.state.code)
-            var qOwner = info['staker'];
-            var tokenId= info['tokenId'];
-            var assistOwner = assistInfo['staker'];
-            console.log(info);
 
-            //reject custom shell if upc has no owner, or if the current user is not the upc codes owner.  an owner can create shells anywhere from their anones
-            if(tokenId != 0) {
-               if( (qOwner != wallet) ) {
-	          terminal.pushToStdout("You must cd or scan into a anon-able upc code. A anon-able UPC code is a upc that no one owns.  You can check upcs with the xupc command.  For example, to check ownership info 000000000000 type 'xupc 000000000000'");
-                  rejectCustomShell = true;
-                  return false;
-               }
-            }
-            else {
-               rejectCustomShell = true;
-            }
 
-            if( wallet == assistOwner ) {
-               rejectCustomShell = false;
-            }
 
-            if(!upc) {
-               upc = this.state.pwd
-            }
 
-      console.log("========== ASSIST INFO ==========");
 
+
+
+doSeal = async (upc) => {
+  const terminal = this.progressTerminal.current;
+  let rejectCustomShell = false;
+  const wallet = await this.props.getMyAddress();
+  let info = await this.props.upcInfo(this.state.pwd);
+  let assistInfo = await this.props.upcInfo(this.state.code);
+  var qOwner = info['staker'];
+  var tokenId = info['tokenId'];
+  var assistOwner = assistInfo['staker'];
+
+  if (tokenId != 0) {
+    if ((qOwner != wallet)) {
+      terminal.pushToStdout("You must cd or scan into a anon-able upc code. A anon-able UPC code is a upc that no one owns. You can check upcs with the xupc command. For example, to check ownership info 000000000000 type 'xupc 000000000000'");
+      rejectCustomShell = true;
+      return false;
+    }
+  } else {
+    rejectCustomShell = true;
+  }
+
+  if (wallet == assistOwner) {
+    rejectCustomShell = false;
+  }
+
+  if (!upc) {
+    upc = this.state.pwd;
+  }
 
   let heroImg = await this.getHero(upc);
 
-  var exportForm = <div>
-    {heroImg}
-    <Barcode value={this.state.pwd} format="UPC" />
-    <form className="mb-3" onSubmit={async (event) => { // Make the onSubmit function async
-      event.preventDefault()
-      let upcId = this.state.pwd
-      let humanReadableName = this.humanReadableName.value.toString()
-      let exportMsg= this.exportMsg.value.toString()
-
-      const lines = exportMsg.split('\n');
-      const firstLine = lines[0].trim();
-      let parentShell;
-      console.log("CHECKING SHEBANG");
-      console.log(firstLine);
-      console.log("shebang == " + this.state.shebang );
-      console.log("rejectShell == " + rejectCustomShell );
-
-      //if an unowned upc is being anoned, the shell must be the same as the parent. if the parent does not define a shell, default to /bin/upc and add to the top of the anoned code
-      if( rejectCustomShell == true ) {
-
-         let parentMsg = this.state.msg;
-         const linesParent = parentMsg.split('\n');
-
-         let shebangParent = "#!/bin/upc";
-         const shebangRegex = /^#!\/bin\/([^\/]+)(?:\/([^\/]+))?$/;
-         
-         // Extract the first line and trim it
-         const firstLineParent = linesParent[0].trim();
-         
-         // Check if the first line matches the shebang pattern
-         const matchShebangParent = shebangRegex.exec(firstLineParent);
-         
-         let addNewShebang = true;
-         if (matchShebangParent) {
-           // Capture the parameters from the regex match
-           shebangParent = firstLineParent;
-         }
-
-         //if the first line of the anon upcscript is not a shebang, substitute it with the parents shebang, or default shebang
-         const matchShebangFlex = shebangRegex.exec(firstLine);
-         if (!matchShebangFlex) {
-console.log("no match shebang anon");
-           lines.unshift(shebangParent); 
-           exportMsg = lines.join('\n');
-         }
-         else {
-console.log("match shebang anon");
-           lines[0] = shebangParent;
-           exportMsg = lines.join('\n');
-         }
-
-      }
-
-
-
-      let upcscript= this.upcscript.value.toString()
-      let payload = this.payload.value.toString()
-      let missionUrl = this.missionUrl.value.toString()
-      let configUrl= this.configUrl.value.toString()
-
-      const terminal = this.progressTerminal.current
-      var currentUrl = window.location.href;
-
-      //let info = await this.props.upcInfo(this.state.pwd)
-
-      let infoSanit = btoa(info);
-      var showString = upcscript;
-
-
-      const hackerAddress = await this.props.getMyAddress();
-      const currTime = Math.floor(Date.now() / 1000);
-      const hrn = "anoned-upc-" + this.state.pwd + "-" + currTime;
-
-/*
-      const manifestJson = {
-          "tokenId"   : "1337", 
-          "staker"   : owner, 
-          "og" : owner,
-          "upcHash"   :"1337", 
-          "word"   : this.state.pwd, 
-          "ipfs"   : payload, 
-          "vr"   : upcscript, 
-          "humanReadableName" : hrn, 
-          "minted"   : false, 
-          "bought"   : false, 
-          "tld"   : "0", 
-          "createdTimestamp"   : currTime, 
-          "latestTimestamp"   :currTime, 
-      }
-*/
-
-
-      var manifestAr = [hackerAddress,qOwner,0,0,0,payload,upcscript,hrn,0,0,0,currTime,currTime,this.state.code,currentUrl];
-
-
-      //var manifestAr = Object.entries(manifestJson);
-
-
-      var manifestEncoded = btoa(manifestAr);
-
-      console.log("manifestEncoded ar ");
-      console.log(manifestAr);
-
-
-      exportMsg = btoa(exportMsg);
-      missionUrl = btoa(missionUrl);
-
-
-      //var upcJson = '{"show":"' + upcscript + '","code":"' + this.state.pwd + '","assist":"' + this.state.code + '","manifest":"' + manifestEncoded + '","msg":"' + exportMsg + '","missionUrl":"' + missionUrl + '"}';
-
-
-      var upcJson = {
-        show: upcscript,
-        code: this.state.pwd,
-        assist: this.state.code,
-        manifest: manifestEncoded,
-        msg: exportMsg,
-        missionUrl: missionUrl,
-        configUrl: configUrl
-      };
-
-      var upcEncoded = btoa(JSON.stringify(upcJson));
-      currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
-      currentUrl = currentUrl.replace('intel', 'export');
-
-
-      console.log("^^^^^^^^^^^^^^CURRENT URL " , currentUrl);
-
-      var encodedWeb2 = encodeURIComponent(currentUrl);
-      var toShorten = "https://is.gd/create.php?format=json&url=" + currentUrl;
-      if (!(humanReadableName === '' || humanReadableName === null)) {
-        toShorten += "&shorturl=" + humanReadableName;
-      }
-
-      let response;
-      var shortUrl;
-      console.log("^^^^^^^^^RESPONSE",response);
-
-      var clipboard = 
-      <CopyToClipboard text={currentUrl}>
-        <button>Copy Raw URL</button>
-      </CopyToClipboard>
-
-
-
-
-
-
-      this.setState({ showModalExport: false });
-
-
-     var urlLink = <a href={currentUrl} >{currentUrl}</a>
-      terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser `);
-      terminal.pushToStdout(urlLink);
-
-      terminal.pushToStdout(`copy full link to your clipboard `);
-      terminal.pushToStdout(clipboard);
-
-
-
-      terminal.pushToStdout("=================================");
-      terminal.pushToStdout("=================================");
-      terminal.pushToStdout("=================================");
-  
-
-
-
-      //this.setState({ showModalExport: false });
-
+  // Tabbed interface
+  var exportForm = (
+    <div style={{
+      backgroundColor: 'rgba(5, 1, 10, 0.8)',
+      padding: '20px',
+      border: '1px solid #ff5e00',
+      boxShadow: '0 0 15px #ff5e00',
+      color: '#05d9e8',
+      fontFamily: "'Courier New', monospace"
     }}>
-      <div className="input-group mb-4">
-        <input
-          type="text"
-          style={{width:"100vw"}}
-          ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
-          className="form-control form-control-lg break"
-          placeholder="https://is.gd/[your-shortlink])"
-        />
-
-        <input
-          type="text"
-          style={{width:"100vw"}}
-          ref={(missionUrl) => { this.missionUrl= missionUrl}}
-          className="form-control form-control-lg break"
-          placeholder="link for mission button"
-          required />
-
-        <input
-          type="text"
-          style={{width:"100vw"}}
-          ref={(upcscript) => { this.upcscript=upcscript}}
-          className="form-control form-control-lg break"
-          placeholder="Content for front stage. (UPCScript is allowed)"
-          required />
-
-
-        <input
-          type="text"
-          style={{width:"100vw"}}
-          ref={(payload) => { this.payload=payload}}
-          className="form-control form-control-lg break"
-          placeholder="payload (etc button)"
-          required />
-
-
-        <input
-          type="text"
-          style={{width:"100vw"}}
-          ref={(configUrl) => { this.configUrl=configUrl}}
-          className="form-control form-control-lg break"
-          placeholder="json config file url"
-          />
-
-
-
-        <br/>
-        <textarea
-          style={{minHeight:"60vh",width:"100vw"}}
-          ref={(exportMsg) => { this.exportMsg = exportMsg}}
-          className="form-control form-control-lg break"
-          placeholder="this text will be displayed in the exported terminal welcome message. if you put a upcscript in this box, you can execute it with the exe command"
-          />
-
+      {heroImg}
+      <Barcode value={this.state.pwd} format="UPC" />
+      
+      {/* Tabs - Exactly like in the example component */}
+      <div style={{
+        display: 'flex',
+        marginBottom: '20px',
+        borderBottom: '1px solid #05d9e8',
+        overflowX: 'auto',
+        whiteSpace: 'nowrap',
+        scrollbarWidth: 'none',
+        '&::-webkit-scrollbar': { display: 'none' }
+      }}>
+        <button 
+          onClick={() => this.setState({sealActiveTab: 'seal'})}
+          style={{
+            padding: '10px 20px',
+            backgroundColor: 'transparent',
+            color: '#05d9e8',
+            border: 'none',
+            cursor: 'pointer',
+            fontFamily: "'Courier New', monospace",
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            fontSize: '14px',
+            marginRight: '10px',
+            flexShrink: 0,
+            borderBottom: this.state.sealActiveTab === 'seal' ? '2px solid #ff5e00' : 'none'
+          }}
+        >
+          SEAL
+        </button>
+        <button 
+          onClick={() => this.setState({sealActiveTab: 'compiler'})}
+          style={{
+            padding: '10px 20px',
+            backgroundColor: 'transparent',
+            color: '#05d9e8',
+            border: 'none',
+            cursor: 'pointer',
+            fontFamily: "'Courier New', monospace",
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            fontSize: '14px',
+            marginRight: '10px',
+            flexShrink: 0,
+            borderBottom: this.state.sealActiveTab === 'compiler' ? '2px solid #ff5e00' : 'none'
+          }}
+        >
+          COMPILER
+        </button>
       </div>
-      <button
-        type="submit"
-        className="btn btn-primary btn-block btn-lg"
-      >
-       anon
-      </button>
-    </form>
+
+      {/* Seal Tab Content */}
+      {this.state.sealActiveTab === 'seal' && (
+        <form onSubmit={async (event) => {
+          event.preventDefault();
+          let upcId = this.state.pwd;
+          let humanReadableName = this.humanReadableName.value.toString();
+          let exportMsg = this.exportMsg.value.toString();
+
+          const lines = exportMsg.split('\n');
+          const firstLine = lines[0].trim();
+
+          if (rejectCustomShell == true) {
+            let parentMsg = this.state.msg;
+            const linesParent = parentMsg.split('\n');
+            let shebangParent = "#!/bin/upc";
+            const shebangRegex = /^#!\/bin\/([^\/]+)(?:\/([^\/]+))?$/;
+            const firstLineParent = linesParent[0].trim();
+            const matchShebangParent = shebangRegex.exec(firstLineParent);
+            
+            if (matchShebangParent) {
+              shebangParent = firstLineParent;
+            }
+
+            const matchShebangFlex = shebangRegex.exec(firstLine);
+            if (!matchShebangFlex) {
+              lines.unshift(shebangParent); 
+              exportMsg = lines.join('\n');
+            } else {
+              lines[0] = shebangParent;
+              exportMsg = lines.join('\n');
+            }
+          }
+
+          let upcscript = this.upcscript.value.toString();
+          let payload = this.payload.value.toString();
+          let missionUrl = this.missionUrl.value.toString();
+          let configUrl = this.configUrl.value.toString();
+
+          const terminal = this.progressTerminal.current;
+          var currentUrl = window.location.href;
+
+          const hackerAddress = await this.props.getMyAddress();
+          const currTime = Math.floor(Date.now() / 1000);
+          const hrn = "anoned-upc-" + this.state.pwd + "-" + currTime;
+
+          var manifestAr = [hackerAddress, qOwner, 0, 0, 0, payload, upcscript, hrn, 0, 0, 0, currTime, currTime, this.state.code, currentUrl];
+          var manifestEncoded = btoa(manifestAr);
+
+          exportMsg = btoa(exportMsg);
+          missionUrl = btoa(missionUrl);
+
+          var upcJson = {
+            show: upcscript,
+            code: this.state.pwd,
+            assist: this.state.code,
+            manifest: manifestEncoded,
+            msg: exportMsg,
+            missionUrl: missionUrl,
+            configUrl: configUrl
+          };
+
+          var upcEncoded = btoa(JSON.stringify(upcJson));
+          currentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + upcEncoded;
+          currentUrl = currentUrl.replace('intel', 'export');
+
+          var clipboard = (
+            <CopyToClipboard text={currentUrl}>
+              <button style={{
+                background: 'rgba(5, 217, 232, 0.3)',
+                border: '1px solid #05d9e8',
+                color: 'white',
+                padding: '8px 15px',
+                margin: '5px',
+                cursor: 'pointer'
+              }}>
+                COPY RAW URL
+              </button>
+            </CopyToClipboard>
+          );
+
+          this.setState({ showModalExport: false });
+
+          var urlLink = (
+            <a href={currentUrl} style={{color: '#ff5e00'}}>
+              {currentUrl}
+            </a>
+          );
+
+          terminal.pushToStdout(`Visit ` + this.state.account + ` in a browser `);
+          terminal.pushToStdout(urlLink);
+          terminal.pushToStdout(`copy full link to your clipboard `);
+          terminal.pushToStdout(clipboard);
+          terminal.pushToStdout("=================================");
+          terminal.pushToStdout("=================================");
+          terminal.pushToStdout("=================================");
+        }}>
+
+          <div style={{marginBottom: '20px'}}>
+            <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>SHORTLINK NAME</label>
+            <input
+              type="text"
+              ref={(humanReadableName) => { this.humanReadableName = humanReadableName }}
+              style={{
+                width: '100%',
+                padding: '10px',
+                background: 'rgba(5, 217, 232, 0.1)',
+                border: '1px solid #05d9e8',
+                color: '#00ff41',
+                fontFamily: "'Courier New', monospace"
+              }}
+              placeholder="https://is.gd/[your-shortlink]"
+            />
+          </div>
+
+          <div style={{marginBottom: '20px'}}>
+            <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>MISSION BUTTON URL</label>
+            <input
+              type="text"
+              ref={(missionUrl) => { this.missionUrl = missionUrl }}
+              style={{
+                width: '100%',
+                padding: '10px',
+                background: 'rgba(5, 217, 232, 0.1)',
+                border: '1px solid #05d9e8',
+                color: '#00ff41',
+                fontFamily: "'Courier New', monospace"
+              }}
+              placeholder="link for mission button"
+              required
+            />
+          </div>
+
+          <div style={{marginBottom: '20px'}}>
+            <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>FRONT STAGE CONTENT</label>
+            <input
+              type="text"
+              ref={(upcscript) => { this.upcscript = upcscript }}
+              style={{
+                width: '100%',
+                padding: '10px',
+                background: 'rgba(5, 217, 232, 0.1)',
+                border: '1px solid #05d9e8',
+                color: '#00ff41',
+                fontFamily: "'Courier New', monospace"
+              }}
+              placeholder="Content for front stage. (UPCScript is allowed)"
+              required
+            />
+          </div>
+
+          <div style={{marginBottom: '20px'}}>
+            <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>PAYLOAD (ETC BUTTON)</label>
+            <input
+              type="text"
+              ref={(payload) => { this.payload = payload }}
+              style={{
+                width: '100%',
+                padding: '10px',
+                background: 'rgba(5, 217, 232, 0.1)',
+                border: '1px solid #05d9e8',
+                color: '#00ff41',
+                fontFamily: "'Courier New', monospace"
+              }}
+              placeholder="payload (etc button)"
+              required
+            />
+          </div>
+
+          <div style={{marginBottom: '20px'}}>
+            <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>CONFIG FILE URL</label>
+            <input
+              type="text"
+              ref={(configUrl) => { this.configUrl = configUrl }}
+              style={{
+                width: '100%',
+                padding: '10px',
+                background: 'rgba(5, 217, 232, 0.1)',
+                border: '1px solid #05d9e8',
+                color: '#00ff41',
+                fontFamily: "'Courier New', monospace"
+              }}
+              placeholder="json config file url"
+            />
+          </div>
+
+          <div style={{marginBottom: '20px'}}>
+            <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>TERMINAL WELCOME MESSAGE</label>
+            <textarea
+              ref={(exportMsg) => { this.exportMsg = exportMsg }}
+              style={{
+                width: '100%',
+                minHeight: '200px',
+                padding: '10px',
+                background: 'rgba(5, 217, 232, 0.1)',
+                border: '1px solid #05d9e8',
+                color: '#00ff41',
+                fontFamily: "'Courier New', monospace"
+              }}
+              placeholder="This text will be displayed in the exported terminal welcome message. If you put a upcscript in this box, you can execute it with the exe command"
+            />
+          </div>
+
+          <button
+            type="submit"
+            style={{
+              width: '100%',
+              padding: '12px',
+              background: 'rgba(255, 94, 0, 0.5)',
+              border: '1px solid #ff5e00',
+              color: 'white',
+              fontFamily: "'Courier New', monospace",
+              fontSize: '1.1rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s'
+            }}
+            onMouseOver={(e) => e.target.style.background = 'rgba(255, 94, 0, 0.8)'}
+            onMouseOut={(e) => e.target.style.background = 'rgba(255, 94, 0, 0.5)'}
+          >
+            ANON
+          </button>
+        </form>
+      )}
+
+      {/* Compiler Tab Content */}
+      {this.state.sealActiveTab === 'compiler' && (
+        <div style={{
+          height: '600px',
+          border: '1px solid #05d9e8',
+          boxShadow: '0 0 10px #05d9e8'
+        }}>
+          <iframe 
+            src="https://f5bjhmleqpsheeovgoj3vhn6fo36d4w2g3kurtaqnkzgfvxlgnua.arweave.net/L0KTsWSD5HIR1TOTup2-K7fh8to21UjMEGqyYtbrM2g" 
+            style={{
+              width: '100%',
+              height: '100%',
+              border: 'none'
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
+
+  // Initialize the active tab if not set
+  if (typeof this.state.sealActiveTab === 'undefined') {
+    this.setState({ sealActiveTab: 'seal' });
+  }
+
+  this.setState({ 
+    exportModalContent: exportForm,
+    showModalExport: true 
+  });
+};
 
 
-  </div>
-
-   this.setState({ exportModalContent: exportForm });
-
-   this.setState({ showModalExport: true });
-
-
-   }
 
 
 
