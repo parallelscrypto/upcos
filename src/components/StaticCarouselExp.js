@@ -646,18 +646,18 @@ export default class StaticCarouselExp extends Component {
 
   seal: {
     description: '<p style="color:orange;font-size:1.1em">** same as anon, only do not shorten the link. raw url with more privacy</p>',
-    fn: async (winNum) => {
+    fn: async (upc) => {
       const terminal = this.progressTerminal.current;
       const currentState = this.state;
       
       try {
         // Get the hero image
-        const heroImg = await this.getHero(currentState.pwd);
+        const heroImg = await this.getHero(upc);
         
         // Create the modal component
         const sealComponent = (
           <SealModel
-            pwd={currentState.pwd}
+            pwd={upc}
             code={currentState.code}
             msg={currentState.msg}
             terminal={terminal}
@@ -674,6 +674,7 @@ export default class StaticCarouselExp extends Component {
           />
         );
 
+        var winNum=1;
         // Show in either terminal or popup based on winNum
         if (winNum === "1") {
           terminal.pushToStdout(sealComponent);

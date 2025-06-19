@@ -132,9 +132,6 @@ class SealModel extends React.Component {
 
     return (
       <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
         width: '100%',
         height: '100%',
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -155,9 +152,22 @@ class SealModel extends React.Component {
           maxHeight: '90vh',
           overflowY: 'auto'
         }}>
-          {this.props.heroImg}
-          <Barcode value={this.state.pwd} format="UPC" />
-          
+           <div style={{
+             width: '100%',
+             display: 'flex',
+             justifyContent: 'center',
+             marginBottom: '20px'
+           }}>
+             {this.props.heroImg}
+           </div>
+           <div style={{
+             width: '100%',
+             display: 'flex',
+             justifyContent: 'center'
+           }}>
+             <Barcode value={this.state.pwd} format="UPC" />
+           </div>
+                    
           {/* Tabs */}
           <div style={{
             display: 'flex',
@@ -367,25 +377,6 @@ class SealModel extends React.Component {
               />
             </div>
           )}
-
-          <button
-            onClick={() => {
-              this.setState({ showModal: false });
-              this.props.onClose();
-            }}
-            style={{
-              position: 'absolute',
-              top: '10px',
-              right: '10px',
-              background: 'rgba(255, 94, 0, 0.3)',
-              border: '1px solid #ff5e00',
-              color: 'white',
-              padding: '5px 10px',
-              cursor: 'pointer'
-            }}
-          >
-            CLOSE
-          </button>
         </div>
       </div>
     );
