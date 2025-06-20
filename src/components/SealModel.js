@@ -222,25 +222,6 @@ class SealModel extends React.Component {
           {this.state.activeTab === 'seal' && (
             <form onSubmit={this.handleSubmit}>
               <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>SHORTLINK NAME</label>
-                <input
-                  type="text"
-                  name="humanReadableName"
-                  value={this.state.humanReadableName}
-                  onChange={this.handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    background: 'rgba(5, 217, 232, 0.1)',
-                    border: '1px solid #05d9e8',
-                    color: '#00ff41',
-                    fontFamily: "'Courier New', monospace"
-                  }}
-                  placeholder="https://is.gd/[your-shortlink]"
-                />
-              </div>
-
-              <div style={{marginBottom: '20px'}}>
                 <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>MISSION BUTTON URL</label>
                 <input
                   type="text"
@@ -355,7 +336,7 @@ class SealModel extends React.Component {
                 onMouseOver={(e) => e.target.style.background = 'rgba(255, 94, 0, 0.8)'}
                 onMouseOut={(e) => e.target.style.background = 'rgba(255, 94, 0, 0.5)'}
               >
-                ANON
+                SEAL
               </button>
             </form>
           )}
@@ -368,7 +349,7 @@ class SealModel extends React.Component {
               boxShadow: '0 0 10px #05d9e8'
             }}>
               <iframe 
-                src="https://f5bjhmleqpsheeovgoj3vhn6fo36d4w2g3kurtaqnkzgfvxlgnua.arweave.net/L0KTsWSD5HIR1TOTup2-K7fh8to21UjMEGqyYtbrM2g" 
+                src="https://mla52jgnxq6n2absm4ainsmpjlkeh2vd4jb2phqhv5jhldz43waa.arweave.net/YsHdJM28PN0AMmcAhsmPStRD6qPiQ6eeB69SdY883YA" 
                 style={{
                   width: '100%',
                   height: '100%',

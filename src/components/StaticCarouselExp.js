@@ -12,6 +12,7 @@ import MonopolyCLI from './MonopolyCLI'
 import MemecoinFactory from './MemecoinFactory';
 import ShirtDesign from './ShirtDesign';
 import SealModel from './SealModel';
+import AnonModel from './AnonModel';
 import WalletMessengerTerminal from './WalletMessenger';
 import VideoArchiveTerminal from './VideoArchiveTerminal';
 import MoneyPostTerminal from './MoneyPostTerminal';
@@ -363,20 +364,52 @@ console.log("INSIDE >>> CONSTRUCTOR TEST", config)
                },
 
 
+  anon: {
+    description: '<p style="color:orange;font-size:1.1em">** anonymously create a upc code using upcscript compiler, and shorten the link.</p>',
+    fn: async (upc) => {
+      const terminal = this.progressTerminal.current;
+      const currentState = this.state;
+      
+      try {
+        // Get the hero image
+        const heroImg = await this.getHero(upc);
+        
+        // Create the modal component
+        const anonComponent = (
+          <AnonModel
+            pwd={upc}
+            code={currentState.code}
+            msg={currentState.msg}
+            terminal={terminal}
+            account={currentState.account}
+            heroImg={heroImg}
+            onClose={() => {
+              this.setState({ 
+                pipVisibility: false,
+                pipDisplay: 'none'
+              });
+            }}
+            getMyAddress={this.props.getMyAddress}
+            upcInfo={this.props.upcInfo}
+          />
+        );
 
-            anon: {
-              description: '<p style="color:orange;font-size:1.1em">**  attempt to anon on the current upc. you can pass the upc as a param, and if the upc is available, the anon interface will appear.  you must anon upon an unowned upc code.  to see if a upc is unowned, run the xupc command.  </p>',
-
-              fn: async (upc) => {
-                  this.hackScan(upc);
-              }
-            },
-
-
-
-
-
-
+        var winNum=1;
+        // Show in either terminal or popup based on winNum
+        if (winNum === "1") {
+          terminal.pushToStdout(anonComponent);
+        } else {
+          this.setState({ 
+            fullIpfs: anonComponent,
+            pipVisibility: true,
+            pipDisplay: 'block'
+          });
+        }
+      } catch (error) {
+        terminal.pushToStdout(`[[error]]Error initializing seal: ${error.message}[[/error]]`);
+      }
+    }
+  },
 
 
 
