@@ -39,7 +39,7 @@ import ScanWizard from './ScanWizard';
 import QRCode from "react-qr-code";
 import Web3 from 'web3'
 import Parser from 'rss-parser'
-
+import { ethers } from 'ethers';
 
 var sha256 = require('js-sha256');
 var Barcode = require('react-barcode');
@@ -5661,9 +5661,80 @@ alert("clicked term");
   }
 
 
-  
+
+
+
+
+
+
+
+
+
 componentDidMount = async () => {
   try {
+    // Helper function to resolve dynamic config values (upc.* and nft.*)
+    const resolveDynamicConfigValue = async (value) => {
+      if (typeof value !== 'string') return value;
+      
+      // Check if value is a upc.* query
+      if (value.startsWith('upc.')) {
+        const parts = value.split('.');
+        if (parts.length < 3) return `**ERROR upc.missingParts **`;
+        
+        const upcId = parts[1];
+        const field = parts.slice(2).join('.');
+        
+        try {
+          const rawMaterial = new ethers.Contract(
+            '0x2C343942548319cCfc05666FF15d73E8569FaEdf',
+            ['function upcInfo(string calldata) external view returns (tuple)'],
+            this.state.provider
+          );
+          
+          const result = await rawMaterial.upcInfo(upcId);
+          
+          if (field in result) {
+            return result[field];
+          } else {
+            return `**ERROR upc.invalidField.${field} **`;
+          }
+        } catch (error) {
+          console.error(`Error fetching upc info for ${upcId}:`, error);
+          return `**ERROR upc.queryFailed.${upcId}.${field} **`;
+        }
+      }
+      
+      // Check if value is a nft.* query
+      if (value.startsWith('nft.')) {
+        const parts = value.split('.');
+        if (parts.length < 3) return `**ERROR nft.missingParts **`;
+        
+        const nftId = parts[1];
+        const field = parts.slice(2).join('.');
+        
+        try {
+          const rawMaterial = new ethers.Contract(
+            '0x2C343942548319cCfc05666FF15d73E8569FaEdf',
+            ['function nftInfo(uint256) external view returns (tuple)'],
+            this.state.provider
+          );
+          
+          const result = await rawMaterial.nftInfo(nftId);
+          
+          if (field in result) {
+            return result[field];
+          } else {
+            return `**ERROR nft.invalidField.${field} **`;
+          }
+        } catch (error) {
+          console.error(`Error fetching nft info for ${nftId}:`, error);
+          return `**ERROR nft.queryFailed.${nftId}.${field} **`;
+        }
+      }
+      
+      return value;
+    };
+
     // 1. First load the config
     let config = {};
     if (this.props.configUrl) {
@@ -5679,24 +5750,53 @@ componentDidMount = async () => {
       config = this.props.config || {};
     }
 
+    // Process manifest early to get owner info
+    var scan = atob(this.state.manifest).split(',');
+    var isHacker = false;
+    var hacker = scan[0];
+    var ogOwner = scan[1]; 
+    var owner = scan[1];
+
+    if (scan[13] != undefined || owner.includes("0x0000000000")) {
+      isHacker = true;
+    }
+
+    // Resolve dynamic values in buttons array
+    if (config.buttons && Array.isArray(config.buttons)) {
+      for (const button of config.buttons) {
+        if (button.payload) button.payload = await resolveDynamicConfigValue(button.payload);
+        if (button.title) button.title = await resolveDynamicConfigValue(button.title);
+      }
+    }
+
     // 2. Initialize values from config
     const configRaw = {
       buttons: config.buttons && Array.isArray(config.buttons) ? config.buttons : []
     };
 
-    const bgValue = config.background || '';
-    const hddValue = config.hdd || "https://app.ardrive.io/#/drives/8324c70e-a3c4-4dc5-b42c-1691464daef7?name=africans_unite_worldwide";
-    const aiValue = config.ai || '';
-    const archiveValue = config.archive || '';
-    const fundValue = config.fund || '';
-    const serialbox = config.serialbox || '';
+    // Resolve dynamic config values
+    const bgValue = await resolveDynamicConfigValue(config.background || '');
+    const hddValue = await resolveDynamicConfigValue(config.hdd || "https://app.ardrive.io/#/drives/8324c70e-a3c4-4dc5-b42c-1691464daef7?name=africans_unite_worldwide");
+    const aiValue = await resolveDynamicConfigValue(config.ai || '');
+    const archiveValue = await resolveDynamicConfigValue(config.archive || '');
+    const fundValue = await resolveDynamicConfigValue(config.fund || '');
+    const serialbox = await resolveDynamicConfigValue(config.serialbox || '');
+    const showValue = await resolveDynamicConfigValue(config.show || '');
 
-    // Extract PAC commands safely
+    // Process PAC commands
     const pacs = config.pacs || {};
-    const pac0Value = pacs.pac0 || {};
-    const pac1Value = pacs.pac1 || {};
-    const pac2Value = pacs.pac2 || {};
-    const pac3Value = pacs.pac3 || {};
+    const resolveDynamicPacValues = async (pac) => {
+      const resolvedPac = {};
+      for (const [key, value] of Object.entries(pac)) {
+        resolvedPac[key] = await resolveDynamicConfigValue(value);
+      }
+      return resolvedPac;
+    };
+
+    const resolvedPac0Value = await resolveDynamicPacValues(pacs.pac0 || {});
+    const resolvedPac1Value = await resolveDynamicPacValues(pacs.pac1 || {});
+    const resolvedPac2Value = await resolveDynamicPacValues(pacs.pac2 || {});
+    const resolvedPac3Value = await resolveDynamicPacValues(pacs.pac3 || {});
 
     // Generate PAC commands
     const pac0Command = this.generateDynamicCommands(0);
@@ -5704,46 +5804,41 @@ componentDidMount = async () => {
     const pac2Command = this.generateDynamicCommands(2);
     const pac3Command = this.generateDynamicCommands(3);
 
-    // Merge with existing baseCommands from state
+    // Merge commands
     const allCommands = {...this.state.baseCommands};
     [pac0Command, pac1Command, pac2Command, pac3Command].forEach(cmdObj => {
-      if (cmdObj) {
-        Object.assign(allCommands, cmdObj);
-      }
+      if (cmdObj) Object.assign(allCommands, cmdObj);
     });
 
-  var upc = this.state.code;
+    var upc = this.state.code;
+    const welcomeMsg = "\n[[ \n you are now on upcOS privately owned property owned by \n " + 
+      (owner || "unknown") + "\n on {polygon} \n" +
+      "\n Type `d` to see the disclaimer.  By continuing use, you agree to the disclaimer" +
+      "\n Welcome to @_" + upc + "\n]]";
 
-
-  const welcomeMsg = "\n[[ \n you are now on upcOS privately owned property owned by \n " + 
-    owner + "\n on {polygon} \n" +
-    "\n Type `d` to see the disclaimer.  By continuing use, you agree to the disclaimer" +
-    "\n Welcome to @_" + upc + "\n]]";
-
-const myTerm = (
-    <Terminal
-      style={{
-        minHeight: "75vh",
-        backgroundColor: "#000",
-        zIndex: "0",
-        wordBreak: "break-word",
-        backgroundImage:  `url('${bgValue}')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-      ref={this.progressTerminal}
-      commands={this.state.baseCommands} // Initialize with base commands only
-      welcomeMessage={welcomeMsg}
-      promptLabel={'[[ AWAITING COMMAND@ ]] => '}
-      dangerMode={true}
-      ignoreCommandCase={true}
-      noAutoScroll={true}
-      promptLabelStyle={{color: "green", fontWeight: "bold", fontSize: "1.1em"}}
-      onClick={this.noScrollToBottom}
-    />
-   );
-
+    const myTerm = (
+      <Terminal
+        style={{
+          minHeight: "75vh",
+          backgroundColor: "#000",
+          zIndex: "0",
+          wordBreak: "break-word",
+          backgroundImage: `url('${bgValue}')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+        ref={this.progressTerminal}
+        commands={this.state.baseCommands}
+        welcomeMessage={welcomeMsg}
+        promptLabel={'[[ AWAITING COMMAND@ ]] => '}
+        dangerMode={true}
+        ignoreCommandCase={true}
+        noAutoScroll={true}
+        promptLabelStyle={{color: "green", fontWeight: "bold", fontSize: "1.1em"}}
+        onClick={this.noScrollToBottom}
+      />
+    );
 
     // 3. Update state with config values
     await new Promise(resolve => this.setState({
@@ -5753,22 +5848,21 @@ const myTerm = (
       ai: aiValue,
       archive: archiveValue,
       fund: fundValue,
-      pac0: pac0Value,
-      pac1: pac1Value,
-      pac2: pac2Value,
-      pac3: pac3Value,
+      pac0: resolvedPac0Value,
+      pac1: resolvedPac1Value,
+      pac2: resolvedPac2Value,
+      pac3: resolvedPac3Value,
       bg: bgValue,
       terminal: myTerm,
-      commands: allCommands
+      commands: allCommands,
+      show: showValue,
+      owner: owner
     }, resolve));
 
     // 4. Now proceed with your existing manifest processing logic
-    var scan;
-    scan = atob(this.state.manifest);
     console.log("GOOOOOOOD MANIFEST");
     console.log(scan);
 
-    scan = scan.split(',');
     var res;
     var ipfs = this.props.show;
     var assist = this.state.assist;
@@ -5811,23 +5905,16 @@ const myTerm = (
       </Modal>
     );
 
-    var isHacker = false;
-    var hacker = scan[0];
-    var ogOwner = scan[1];
-    var owner = scan[1];
     var title = "owner";
     var assistUrl;
 
-    if (scan[13] != undefined || owner.includes("0x0000000000")) {
-      console.log(scan); 
+    if (isHacker) {
       console.log(">>>>>>>>>>>>>ishacker0");
       console.log("trying to get assist");
       assist = scan[13];     
       assistUrl = scan[14];     
       console.log(assistUrl);
-      isHacker = true;
       title = "anon";
-
       this.setState({ hacker: hacker });
     }
 
@@ -5914,7 +6001,7 @@ const myTerm = (
     this.setState({ intel: content });
     var res = this.state.slides;
 
-    const isHacked = owner.includes("0x000000000000000000");
+    const isHacked = owner.includes("0x0000000000000000");
    
     if (res.length == 0 && isHacked) {
       res.push(splash);
@@ -5982,6 +6069,24 @@ const myTerm = (
     let url = 'https://corsproxy.io/?url=' + encodeURIComponent(upcrss);
     let feedset = await this.setFeed(url);
 
+    // Handle show content if it exists
+    if (showValue) {
+      try {
+        // If showValue is a URL, fetch and display its content
+        if (showValue.startsWith('http')) {
+          const response = await fetch(showValue);
+          const content = await response.text();
+          this.progressTerminal.current.pushToStdout(content);
+        } else {
+          // If it's direct content, display it
+          this.progressTerminal.current.pushToStdout(showValue);
+        }
+      } catch (error) {
+        console.error("Error displaying show content:", error);
+        this.progressTerminal.current.pushToStdout(`Error loading content: ${showValue}`);
+      }
+    }
+
     // Final state update to mark loading complete
     this.setState({ isLoading: false });
 
@@ -5993,6 +6098,15 @@ const myTerm = (
     });
   }
 };
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,6 +1,8 @@
 import React from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Barcode from 'react-barcode';
+import { ethers } from 'ethers';
+import UPCScriptCompiler from './UPCScriptCompiler'; // Assuming this is in the same directory
 
 class SealModel extends React.Component {
   constructor(props) {
@@ -16,7 +18,8 @@ class SealModel extends React.Component {
       pwd: props.pwd,
       code: props.code,
       msg: props.msg,
-      showModal: true
+      showModal: true,
+      compiledConfig: null
     };
   }
 
@@ -29,9 +32,28 @@ class SealModel extends React.Component {
     this.setState({ [name]: value });
   };
 
+  handleConfigCompiled = (config) => {
+    this.setState({ 
+      compiledConfig: config,
+      configUrl: '' // Clear the config URL since we're using compiled config
+    });
+  };
+
   handleSubmit = async (e) => {
     e.preventDefault();
-    const { pwd, code, msg, humanReadableName, missionUrl, upcscript, payload, configUrl, exportMsg } = this.state;
+    const { 
+      pwd, 
+      code, 
+      msg, 
+      humanReadableName, 
+      missionUrl, 
+      upcscript, 
+      payload, 
+      configUrl, 
+      exportMsg,
+      compiledConfig 
+    } = this.state;
+    
     let rejectCustomShell = false;
     const wallet = await this.props.getMyAddress();
     let info = await this.props.upcInfo(pwd);
@@ -84,6 +106,9 @@ class SealModel extends React.Component {
     const currTime = Math.floor(Date.now() / 1000);
     const hrn = "anoned-upc-" + pwd + "-" + currTime;
 
+    // Use compiled config if available, otherwise use configUrl
+    const configToUse = compiledConfig ? btoa(JSON.stringify(compiledConfig)) : configUrl;
+
     var manifestAr = [hackerAddress, qOwner, 0, 0, 0, payload, upcscript, hrn, 0, 0, 0, currTime, currTime, code, currentUrl];
     var manifestEncoded = btoa(manifestAr);
 
@@ -97,7 +122,7 @@ class SealModel extends React.Component {
       manifest: manifestEncoded,
       msg: encodedExportMsg,
       missionUrl: encodedMissionUrl,
-      configUrl: configUrl
+      configUrl: configToUse
     };
 
     var upcEncoded = btoa(JSON.stringify(upcJson));
@@ -282,22 +307,43 @@ class SealModel extends React.Component {
               </div>
 
               <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>CONFIG FILE URL</label>
+                <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>
+                  {this.state.compiledConfig ? 'USING COMPILED CONFIG' : 'CONFIG FILE URL'}
+                </label>
                 <input
                   type="text"
                   name="configUrl"
-                  value={this.state.configUrl}
+                  value={this.state.compiledConfig ? 'Using compiled configuration' : this.state.configUrl}
                   onChange={this.handleInputChange}
+                  disabled={!!this.state.compiledConfig}
                   style={{
                     width: '100%',
                     padding: '10px',
                     background: 'rgba(5, 217, 232, 0.1)',
                     border: '1px solid #05d9e8',
-                    color: '#00ff41',
-                    fontFamily: "'Courier New', monospace"
+                    color: this.state.compiledConfig ? '#ff5e00' : '#00ff41',
+                    fontFamily: "'Courier New', monospace",
+                    opacity: this.state.compiledConfig ? 0.7 : 1
                   }}
-                  placeholder="json config file url"
+                  placeholder={this.state.compiledConfig ? 'Using compiled config' : 'json config file url'}
                 />
+                {this.state.compiledConfig && (
+                  <button
+                    type="button"
+                    onClick={() => this.setState({ compiledConfig: null })}
+                    style={{
+                      marginTop: '10px',
+                      padding: '8px 15px',
+                      background: 'rgba(255, 94, 0, 0.3)',
+                      border: '1px solid #ff5e00',
+                      color: 'white',
+                      fontFamily: "'Courier New', monospace",
+                      cursor: 'pointer'
+                    }}
+                  >
+                    CLEAR COMPILED CONFIG
+                  </button>
+                )}
               </div>
 
               <div style={{marginBottom: '20px'}}>
@@ -342,27 +388,58 @@ class SealModel extends React.Component {
           )}
 
           {/* Compiler Tab Content */}
-          {this.state.activeTab === 'compiler' && (
-            <div style={{
-              height: '600px',
-              border: '1px solid #05d9e8',
-              boxShadow: '0 0 10px #05d9e8'
-            }}>
-              <iframe 
-                src="https://mla52jgnxq6n2absm4ainsmpjlkeh2vd4jb2phqhv5jhldz43waa.arweave.net/YsHdJM28PN0AMmcAhsmPStRD6qPiQ6eeB69SdY883YA" 
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  border: 'none'
-                }}
-              />
-            </div>
-          )}
+
+
+{this.state.activeTab === 'compiler' && (
+  <div style={{
+    height: '600px',
+    width: '100%',
+    border: '1px solid #05d9e8',
+    boxShadow: '0 0 10px #05d9e8',
+    overflow: 'hidden',
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column'
+  }}>
+    <div style={{
+      padding: '10px',
+      background: 'rgba(5, 217, 232, 0.1)',
+      borderBottom: '1px solid #05d9e8',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    }}>
+      <span>UPCScript Compiler</span>
+      <button 
+        onClick={() => this.handleTabChange('seal')}
+        style={{
+          background: 'rgba(255, 94, 0, 0.3)',
+          border: '1px solid #ff5e00',
+          color: 'white',
+          padding: '5px 10px',
+          cursor: 'pointer',
+          fontFamily: "'Courier New', monospace"
+        }}
+      >
+        ← Back to Seal
+      </button>
+    </div>
+    <div style={{ flex: 1, overflow: 'hidden' }}>
+      <UPCScriptCompiler 
+        provider={this.props.provider}
+        onConfigCompiled={this.handleConfigCompiled}
+        embeddedMode={true}
+      />
+    </div>
+  </div>
+)}
+
+
+
         </div>
       </div>
     );
   }
 }
-
 
 export default SealModel;
