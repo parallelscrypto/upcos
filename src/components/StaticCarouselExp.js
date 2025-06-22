@@ -5864,7 +5864,7 @@ componentDidMount = async () => {
     console.log(scan);
 
     var res;
-    var ipfs = this.props.show;
+    var ipfs = showValue;
     var assist = this.state.assist;
     
     if (!ipfs.includes(">>>")) {
