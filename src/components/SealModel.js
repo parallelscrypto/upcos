@@ -247,66 +247,6 @@ class SealModel extends React.Component {
           {this.state.activeTab === 'seal' && (
             <form onSubmit={this.handleSubmit}>
               <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>MISSION BUTTON URL</label>
-                <input
-                  type="text"
-                  name="missionUrl"
-                  value={this.state.missionUrl}
-                  onChange={this.handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    background: 'rgba(5, 217, 232, 0.1)',
-                    border: '1px solid #05d9e8',
-                    color: '#00ff41',
-                    fontFamily: "'Courier New', monospace"
-                  }}
-                  placeholder="link for mission button"
-                  required
-                />
-              </div>
-
-              <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>FRONT STAGE CONTENT</label>
-                <input
-                  type="text"
-                  name="upcscript"
-                  value={this.state.upcscript}
-                  onChange={this.handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    background: 'rgba(5, 217, 232, 0.1)',
-                    border: '1px solid #05d9e8',
-                    color: '#00ff41',
-                    fontFamily: "'Courier New', monospace"
-                  }}
-                  placeholder="Content for front stage. (UPCScript is allowed)"
-                  required
-                />
-              </div>
-
-              <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>PAYLOAD (ETC BUTTON)</label>
-                <input
-                  type="text"
-                  name="payload"
-                  value={this.state.payload}
-                  onChange={this.handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    background: 'rgba(5, 217, 232, 0.1)',
-                    border: '1px solid #05d9e8',
-                    color: '#00ff41',
-                    fontFamily: "'Courier New', monospace"
-                  }}
-                  placeholder="payload (etc button)"
-                  required
-                />
-              </div>
-
-              <div style={{marginBottom: '20px'}}>
                 <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>
                   {this.state.compiledConfig ? 'USING COMPILED CONFIG' : 'CONFIG FILE URL'}
                 </label>
