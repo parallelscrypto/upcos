@@ -10,11 +10,11 @@ class UPCScriptCompiler extends Component {
       outputText: '',
       statusMessage: 'READY',
       isError: false,
-      isStatic: false,
+      isStatic: true,
       isCompiling: false,
       currentTime: '',
       currentDate: '',
-      provider: props.provider || null,
+      provider: null,
       compiledData: null,
       debugMessages: [],
       showDebug: false,
@@ -411,8 +411,6 @@ class UPCScriptCompiler extends Component {
     this.showStatus('FILE DOWNLOADED');
   };
 
-
-
   loadExample = () => {
     const exampleText = `config.button.2.title=nft.1.name
 config.button.2.payload=nft.1.vr
@@ -454,18 +452,8 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
     
     this.setState({ inputText: exampleText }, () => {
       this.showStatus('EXAMPLE LOADED');
-      // Scroll to top of input section
-      if (this.inputTextareaRef) {
-        this.inputTextareaRef.scrollTop = 0;
-      }
     });
   };
-
-
-
-
-
-
 
   shortenAddress = (address) => {
     if (!address) return '';
@@ -474,11 +462,9 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
 
   initBlockchain = async () => {
     try {
-      // Request account access
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       const currentAccount = accounts[0];
       
-      // Create provider
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       
       this.setState({
@@ -489,17 +475,14 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
       
       this.logDebug(`Connected to wallet: ${currentAccount}`);
       
-      // Listen for account changes
       window.ethereum.on('accountsChanged', (accounts) => {
         if (accounts.length === 0) {
-          // Wallet disconnected
           this.setState({
             currentAccount: null,
             isConnected: false
           });
           this.logDebug('Wallet disconnected');
         } else {
-          // Account changed
           this.setState({
             currentAccount: accounts[0]
           });
@@ -507,16 +490,14 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
         }
       });
       
-      // Listen for chain changes
       window.ethereum.on('chainChanged', (chainId) => {
         this.logDebug(`Chain changed to: ${chainId}`);
         window.location.reload();
       });
 
-      // Check if connected to Polygon
       const network = await provider.getNetwork();
       this.logDebug(`Connected to network: ${network.name} (chainId: ${network.chainId})`);
-      if (network.chainId !== 137) { // Polygon chain ID
+      if (network.chainId !== 137) {
         this.logDebug('Warning: Not connected to Polygon network');
         alert('Please connect to Polygon network in your wallet');
       }
@@ -537,7 +518,6 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
   resolveDynamicValue = async (value) => {
     if (!this.state.isStatic || typeof value !== 'string') return value;
     
-    // Check if value is a upc.* query
     if (value.startsWith('upc.')) {
       const parts = value.split('.');
       if (parts.length < 3) {
@@ -553,8 +533,6 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
           throw new Error('Contract not initialized');
         }
         
-        this.logDebug(`Calling upcInfo with UPC ID: "${upcId}"`);
-        
         const rawMaterial = new ethers.Contract(
           this.rawMaterialContractAddress,
           this.rawMaterialAbi,
@@ -564,7 +542,6 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
         const result = await rawMaterial.upcInfo(upcId);
         this.logDebug(`UPC Info Result: ${JSON.stringify(result)}`);
         
-        // Map the field names to the struct properties
         const fieldMap = {
           'tokenId': result.tokenId.toString(),
           'staker': result.staker,
@@ -598,7 +575,6 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
       }
     }
     
-    // Check if value is a nft.* query
     if (value.startsWith('nft.')) {
       const parts = value.split('.');
       if (parts.length < 3) {
@@ -614,8 +590,6 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
           throw new Error('Contract not initialized');
         }
         
-        this.logDebug(`Calling nftInfo with NFT ID: ${nftId}`);
-        
         const rawMaterial = new ethers.Contract(
           this.rawMaterialContractAddress,
           this.rawMaterialAbi,
@@ -625,7 +599,6 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
         const result = await rawMaterial.nftInfo(nftId);
         this.logDebug(`NFT Info Result: ${JSON.stringify(result)}`);
         
-        // Map the field names to the struct properties
         const fieldMap = {
           'tokenId': result.tokenId.toString(),
           'staker': result.staker,
@@ -659,7 +632,6 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
       }
     }
     
-    // Check if value is a ppl.name.* query
     if (value.startsWith('ppl.name.')) {
       const parts = value.split('.');
       if (parts.length < 4) {
@@ -675,8 +647,6 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
           throw new Error('Popit contract not initialized');
         }
         
-        this.logDebug(`Calling getPopByGlobalName with name: "${pplName}"`);
-        
         const popit = new ethers.Contract(
           this.popitContractAddress,
           this.popitAbi,
@@ -691,9 +661,8 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
           return `**ERROR ppl.name.notFound.${pplName} **`;
         }
         
-        const popData = result[0]; // Using first result
+        const popData = result[0];
         
-        // Map the field names to the struct properties
         const fieldMap = {
           'id': popData.id.toString(),
           'link': popData.link,
@@ -738,7 +707,6 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
         }
       };
 
-      // First pass: collect all config values
       const configValues = {};
       for (const line of lines) {
         const trimmedLine = line.trim();
@@ -752,37 +720,28 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
         configValues[key] = value;
       }
 
-      // Second pass: process all values with dynamic resolution
       for (const [key, value] of Object.entries(configValues)) {
-        // Handle background
         if (key === "config.bg") {
           config.background = await this.resolveDynamicValue(value);
         }
-        // Handle hdd
         else if (key === "config.hdd") {
           config.hdd = await this.resolveDynamicValue(value);
         }
-        // Handle ai
         else if (key === "config.ai") {
           config.ai = await this.resolveDynamicValue(value);
         }
-        // Handle archive
         else if (key === "config.archive") {
           config.archive = await this.resolveDynamicValue(value);
         }
-        // Handle serialbox
         else if (key === "config.serialbox") {
           config.serialbox = await this.resolveDynamicValue(value);
         }
-        // Handle fund
         else if (key === "config.fund") {
           config.fund = await this.resolveDynamicValue(value);
         }
-        // Handle show
         else if (key === "config.show") {
           config.show = await this.resolveDynamicValue(value);
         }
-        // Handle buttons
         else {
           const buttonMatch = key.match(/config\.button\.([2-4789])\.(.+)/);
           if (buttonMatch) {
@@ -812,7 +771,6 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
               button.style[property] = await this.resolveDynamicValue(value);
             }
           }
-          // Handle pac commands
           else {
             const pacMatch = key.match(/config\.pac(\d)\.(.+)/);
             if (pacMatch) {
@@ -830,17 +788,13 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
       
       this.setState({ 
         outputText: jsonOutput,
-        compiledData: jsonOutput
+        compiledData: jsonOutput,
+        isCompiling: false
       });
       
       this.showStatus('COMPILATION SUCCESSFUL');
       this.logDebug('Compilation completed successfully');
-      
-      setTimeout(() => {
-        this.setState({ isCompiling: false });
-        this.switchTab('upload');
-      }, 5000);
-      
+      this.switchTab('upload');
     } catch (error) {
       console.error(error);
       this.setState({ isCompiling: false });
@@ -849,26 +803,7 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-render() {
+  render() {
     const { 
       activeTab, 
       inputText, 
@@ -898,29 +833,33 @@ render() {
             --glow: 0 0 10px;
           }
 
-          .upcscript-compiler-container {
+          body {
             margin: 0;
             padding: 0;
             font-family: 'Courier New', monospace;
             background-color: var(--dark-bg);
             color: var(--neon-blue);
-            overflow-x: hidden;
+            overflow: hidden;
             min-height: 100vh;
           }
 
+          .upcscript-compiler-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+          }
+
           .container {
-            padding-top: 10px;
             display: flex;
             flex-direction: column;
             height: 100vh;
             background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
             border: 1px solid var(--neon-orange);
             box-shadow: 0 0 20px var(--neon-orange);
-            overflow-x: hidden;
           }
 
           .header {
-            padding: 10px;
+            padding: 15px;
             text-align: center;
             background: rgba(5, 217, 232, 0.1);
             border-bottom: 1px solid var(--neon-blue);
@@ -931,35 +870,32 @@ render() {
             margin: 0;
             color: var(--neon-orange);
             text-shadow: 0 0 10px var(--neon-orange);
-            font-size: 1.5rem;
-            letter-spacing: 1px;
+            font-size: 2rem;
+            letter-spacing: 2px;
           }
 
           .subtitle {
             color: var(--neon-blue);
             text-shadow: 0 0 5px var(--neon-blue);
             margin-top: 5px;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
           }
 
           .tabs {
             display: flex;
             background: var(--darker-bg);
             border-bottom: 1px solid var(--neon-orange);
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
           }
 
           .tab {
-            padding: 10px 12px;
+            padding: 12px 15px;
             cursor: pointer;
             background: rgba(255, 94, 0, 0.2);
             border-right: 1px solid var(--neon-orange);
             transition: all 0.3s;
             font-weight: bold;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             white-space: nowrap;
-            flex-shrink: 0;
           }
 
           .tab:hover {
@@ -976,10 +912,8 @@ render() {
           .tab-content {
             display: none;
             flex: 1;
-            padding: 10px;
-            overflow-y: auto;
-            overflow-x: hidden;
-            min-height: calc(100vh - 180px);
+            padding: 15px;
+            overflow: auto;
           }
 
           .tab-content.active {
@@ -989,8 +923,9 @@ render() {
 
           .compiler-container {
             display: flex;
+            flex: 1;
+            gap: 15px;
             flex-direction: column;
-            gap: 10px;
           }
 
           @media (min-width: 768px) {
@@ -999,31 +934,30 @@ render() {
             }
             
             h1 {
-              font-size: 2rem;
+              font-size: 2.5rem;
             }
             
             .tab {
-              padding: 12px 15px;
-              font-size: 0.9rem;
+              padding: 12px 20px;
+              font-size: 1rem;
             }
           }
 
           .input-section, .output-section {
-            margin-top: 10px;
             flex: 1;
             display: flex;
             flex-direction: column;
-            min-height: 200px;
+            min-height: 300px;
           }
 
           .section-header {
-            padding: 6px 8px;
+            padding: 8px 10px;
             background: rgba(255, 94, 0, 0.2);
             border: 1px solid var(--neon-orange);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-weight: bold;
             text-shadow: 0 0 5px var(--neon-orange);
-            font-size: 0.8rem;
+            font-size: 0.9rem;
           }
 
           textarea {
@@ -1031,13 +965,13 @@ render() {
             background: rgba(5, 217, 232, 0.05);
             border: 1px solid var(--neon-blue);
             color: var(--terminal-green);
-            padding: 10px;
+            padding: 12px;
             font-family: 'Courier New', monospace;
-            font-size: 12px;
+            font-size: 14px;
             resize: none;
             outline: none;
             box-shadow: 0 0 10px rgba(5, 217, 232, 0.3);
-            min-height: 150px;
+            min-height: 200px;
           }
 
           textarea:focus {
@@ -1047,13 +981,13 @@ render() {
 
           .button-group {
             display: flex;
-            gap: 6px;
-            margin-top: 8px;
+            gap: 8px;
+            margin-top: 10px;
             flex-wrap: wrap;
           }
 
           button {
-            padding: 8px 10px;
+            padding: 8px 15px;
             background: rgba(255, 94, 0, 0.3);
             border: 1px solid var(--neon-orange);
             color: white;
@@ -1063,15 +997,16 @@ render() {
             transition: all 0.3s;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-size: 0.7rem;
-            flex: 1 1 100px;
-            min-width: 0;
+            font-size: 0.8rem;
+            flex: 1;
+            min-width: 120px;
           }
 
           @media (min-width: 480px) {
             button {
-              padding: 10px 15px;
-              font-size: 0.8rem;
+              flex: none;
+              padding: 10px 20px;
+              font-size: 0.9rem;
             }
           }
 
@@ -1089,7 +1024,7 @@ render() {
             flex: 1;
             display: flex;
             flex-direction: column;
-            min-height: 300px;
+            min-height: 400px;
           }
 
           iframe {
@@ -1097,14 +1032,14 @@ render() {
             border: 1px solid var(--neon-blue);
             background: black;
             box-shadow: 0 0 15px var(--neon-blue);
-            min-height: 400px;
+            min-height: 900px;
           }
 
           .status-bar {
-            padding: 5px 8px;
+            padding: 6px 12px;
             background: rgba(0, 255, 65, 0.1);
             border-top: 1px solid var(--terminal-green);
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             display: flex;
             justify-content: space-between;
           }
@@ -1114,7 +1049,7 @@ render() {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 60%;
+            max-width: 70%;
           }
 
           .status-error {
@@ -1122,17 +1057,11 @@ render() {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 60%;
+            max-width: 70%;
           }
 
           .status-time {
             white-space: nowrap;
-          }
-
-          .json-pretty {
-            white-space: pre-wrap;
-            font-family: 'Courier New', monospace;
-            line-height: 1.5;
           }
 
           .scanlines {
@@ -1288,10 +1217,10 @@ render() {
           .static-toggle {
             display: flex;
             align-items: center;
-            gap: 6px;
-            margin-top: 8px;
+            gap: 8px;
+            margin-top: 10px;
             color: var(--terminal-green);
-            font-size: 0.8rem;
+            font-size: 0.9rem;
           }
 
           .static-toggle input {
@@ -1300,11 +1229,10 @@ render() {
 
           .debug-container {
             position: fixed;
-            bottom: 40px;
+            bottom: 50px;
             right: 10px;
-            width: 90%;
-            max-width: 400px;
-            height: 200px;
+            width: 400px;
+            height: 300px;
             background: var(--darker-bg);
             border: 1px solid var(--neon-orange);
             z-index: 1000;
@@ -1365,9 +1293,9 @@ render() {
 
           .connect-wallet {
             position: fixed;
-            top: 5px;
-            right: 5px;
-            padding: 6px 10px;
+            top: 10px;
+            right: 10px;
+            padding: 8px 15px;
             background: rgba(255, 94, 0, 0.3);
             border: 1px solid var(--neon-orange);
             color: white;
@@ -1377,12 +1305,8 @@ render() {
             transition: all 0.3s;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             z-index: 1000;
-            max-width: 60%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
           }
 
           .connect-wallet:hover {
@@ -1553,24 +1477,6 @@ render() {
       </div>
     );
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 export default UPCScriptCompiler;
