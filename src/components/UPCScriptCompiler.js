@@ -849,7 +849,8 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
     }
   };
 
-  render() {
+
+render() {
     const { 
       activeTab, 
       inputText, 
@@ -885,23 +886,23 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             font-family: 'Courier New', monospace;
             background-color: var(--dark-bg);
             color: var(--neon-blue);
-            overflow: hidden;
-            min-height: 110vh;
+            overflow-x: hidden;
+            min-height: 100vh;
           }
 
           .container {
-            padding-top:20px;
+            padding-top: 10px;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            min-height: 100vh;
             background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
             border: 1px solid var(--neon-orange);
             box-shadow: 0 0 20px var(--neon-orange);
-            overflow: hidden; /* Added to prevent container scrolling */
+            overflow-x: hidden;
           }
 
           .header {
-            padding: 15px;
+            padding: 10px;
             text-align: center;
             background: rgba(5, 217, 232, 0.1);
             border-bottom: 1px solid var(--neon-blue);
@@ -912,32 +913,35 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             margin: 0;
             color: var(--neon-orange);
             text-shadow: 0 0 10px var(--neon-orange);
-            font-size: 2rem;
-            letter-spacing: 2px;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
           }
 
           .subtitle {
             color: var(--neon-blue);
             text-shadow: 0 0 5px var(--neon-blue);
             margin-top: 5px;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
           }
 
           .tabs {
             display: flex;
             background: var(--darker-bg);
             border-bottom: 1px solid var(--neon-orange);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
           }
 
           .tab {
-            padding: 12px 15px;
+            padding: 10px 12px;
             cursor: pointer;
             background: rgba(255, 94, 0, 0.2);
             border-right: 1px solid var(--neon-orange);
             transition: all 0.3s;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             white-space: nowrap;
+            flex-shrink: 0;
           }
 
           .tab:hover {
@@ -954,10 +958,10 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
           .tab-content {
             display: none;
             flex: 1;
-            padding: 15px;
-            overflow-y: auto; /* Changed to auto for proper scrolling */
+            padding: 10px;
+            overflow-y: auto;
             overflow-x: hidden;
-            height: calc(100vh - 150px); /* Adjusted height for better scrolling */
+            min-height: calc(100vh - 180px);
           }
 
           .tab-content.active {
@@ -967,9 +971,8 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
 
           .compiler-container {
             display: flex;
-            flex: 1;
-            gap: 15px;
             flex-direction: column;
+            gap: 10px;
           }
 
           @media (min-width: 768px) {
@@ -978,61 +981,45 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             }
             
             h1 {
-              font-size: 2.5rem;
+              font-size: 2rem;
             }
             
             .tab {
-              padding: 12px 20px;
-              font-size: 1rem;
+              padding: 12px 15px;
+              font-size: 0.9rem;
             }
           }
 
           .input-section, .output-section {
-            margin-top: 20px; /* Reduced padding */
+            margin-top: 10px;
             flex: 1;
             display: flex;
             flex-direction: column;
-            min-height: 300px;
-            height: calc(100% - 100px); /* Adjusted height for better scrolling */
+            min-height: 200px;
           }
 
           .section-header {
-            padding: 8px 10px;
+            padding: 6px 8px;
             background: rgba(255, 94, 0, 0.2);
             border: 1px solid var(--neon-orange);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: bold;
             text-shadow: 0 0 5px var(--neon-orange);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
           }
-
-.output-section {
-  padding-top: 10px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 300px;
-  height: calc(100% - 100px);
-}
-
-.output-section .section-header {
-  margin-bottom: 10px; /* Added margin to separate from textarea */
-  margin-top: 10px; /* Added top margin to prevent overlap */
-}
 
           textarea {
             flex: 1;
             background: rgba(5, 217, 232, 0.05);
             border: 1px solid var(--neon-blue);
             color: var(--terminal-green);
-            padding: 12px;
+            padding: 10px;
             font-family: 'Courier New', monospace;
-            font-size: 14px;
+            font-size: 12px;
             resize: none;
             outline: none;
             box-shadow: 0 0 10px rgba(5, 217, 232, 0.3);
-            min-height: 200px;
-            overflow-y: auto; /* Ensure textarea can scroll */
+            min-height: 150px;
           }
 
           textarea:focus {
@@ -1042,13 +1029,13 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
 
           .button-group {
             display: flex;
-            gap: 8px;
-            margin-top: 10px;
+            gap: 6px;
+            margin-top: 8px;
             flex-wrap: wrap;
           }
 
           button {
-            padding: 8px 15px;
+            padding: 8px 10px;
             background: rgba(255, 94, 0, 0.3);
             border: 1px solid var(--neon-orange);
             color: white;
@@ -1058,16 +1045,15 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             transition: all 0.3s;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-size: 0.8rem;
-            flex: 1;
-            min-width: 120px;
+            font-size: 0.7rem;
+            flex: 1 1 100px;
+            min-width: 0;
           }
 
           @media (min-width: 480px) {
             button {
-              flex: none;
-              padding: 10px 20px;
-              font-size: 0.9rem;
+              padding: 10px 15px;
+              font-size: 0.8rem;
             }
           }
 
@@ -1085,7 +1071,7 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             flex: 1;
             display: flex;
             flex-direction: column;
-            min-height: 400px;
+            min-height: 300px;
           }
 
           iframe {
@@ -1093,14 +1079,14 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             border: 1px solid var(--neon-blue);
             background: black;
             box-shadow: 0 0 15px var(--neon-blue);
-            min-height: 900px;
+            min-height: 400px;
           }
 
           .status-bar {
-            padding: 6px 12px;
+            padding: 5px 8px;
             background: rgba(0, 255, 65, 0.1);
             border-top: 1px solid var(--terminal-green);
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             display: flex;
             justify-content: space-between;
           }
@@ -1110,7 +1096,7 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 70%;
+            max-width: 60%;
           }
 
           .status-error {
@@ -1118,7 +1104,7 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 70%;
+            max-width: 60%;
           }
 
           .status-time {
@@ -1284,10 +1270,10 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
           .static-toggle {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-top: 10px;
+            gap: 6px;
+            margin-top: 8px;
             color: var(--terminal-green);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
           }
 
           .static-toggle input {
@@ -1296,10 +1282,11 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
 
           .debug-container {
             position: fixed;
-            bottom: 50px;
+            bottom: 40px;
             right: 10px;
-            width: 400px;
-            height: 300px;
+            width: 90%;
+            max-width: 400px;
+            height: 200px;
             background: var(--darker-bg);
             border: 1px solid var(--neon-orange);
             z-index: 1000;
@@ -1360,9 +1347,9 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
 
           .connect-wallet {
             position: fixed;
-            top: 10px;
-            right: 10px;
-            padding: 8px 15px;
+            top: 5px;
+            right: 5px;
+            padding: 6px 10px;
             background: rgba(255, 94, 0, 0.3);
             border: 1px solid var(--neon-orange);
             color: white;
@@ -1372,8 +1359,12 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             transition: all 0.3s;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             z-index: 1000;
+            max-width: 60%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
 
           .connect-wallet:hover {
@@ -1466,7 +1457,7 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
                   id="inputText" 
                   value={inputText}
                   onChange={this.handleInputChange}
-                  placeholder="Paste your line-based UPCScript configuration here...\nExample:\nconfig.bg=https://example.com/background.jpg\nconfig.button.2.title=Button One\nconfig.pac0.yummy=https://example.com/pac0/yummy"
+                  placeholder="Paste your line-based UPCScript configuration here..."
                 />
                 <div className="static-toggle">
                   <input 
@@ -1475,26 +1466,26 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
                     checked={isStatic}
                     onChange={this.handleStaticToggle}
                   />
-                  <label htmlFor="staticToggle">Resolve dynamic values (upc.*, nft.*, ppl.*) during compilation</label>
+                  <label htmlFor="staticToggle">Resolve dynamic values (upc.*, nft.*, ppl.*)</label>
                 </div>
                 <div className="button-group">
                   <button id="compileBtn" onClick={this.compileToJson}>COMPILE</button>
                   <button id="clearBtn" onClick={this.clearInputs}>CLEAR</button>
-                  <button id="exampleBtn" onClick={this.loadExample}>LOAD EXAMPLE</button>
+                  <button id="exampleBtn" onClick={this.loadExample}>EXAMPLE</button>
                 </div>
               </div>
-                <div className="output-section">
-                  <div className="section-header" style={{ marginTop: '10px' }}>OUTPUT (CONSOLIDATED JSON)</div>
-                  <textarea 
-                    id="outputText" 
-                    value={outputText} 
-                    readOnly
-                  />
-                  <div className="button-group">
-                    <button id="copyBtn" onClick={this.copyToClipboard}>COPY JSON</button>
-                    <button id="downloadBtn" onClick={this.downloadFile}>DOWNLOAD</button>
-                  </div>
+              <div className="output-section">
+                <div className="section-header">OUTPUT (CONSOLIDATED JSON)</div>
+                <textarea 
+                  id="outputText" 
+                  value={outputText} 
+                  readOnly
+                />
+                <div className="button-group">
+                  <button id="copyBtn" onClick={this.copyToClipboard}>COPY JSON</button>
+                  <button id="downloadBtn" onClick={this.downloadFile}>DOWNLOAD</button>
                 </div>
+              </div>
             </div>
             <div className="status-bar">
               <div className={isError ? "status-error" : "status-message"} id="statusMessage">
@@ -1544,6 +1535,7 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
       </div>
     );
   }
+
 }
 
 export default UPCScriptCompiler;

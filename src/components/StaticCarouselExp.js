@@ -1221,6 +1221,29 @@ console.log(myPull);
 
 
 
+            cmp: {
+		    description: '<p style="color:orange;font-size:1.1em">** Open upcscript compiler </p>',
+              fn: (sheetNum) => {
+
+
+		      var fullUrl = "https://icfhsm3mjfakhw47paivyloe25foy2o22ltk4tzqs4v6snrwnwuq.arweave.net/QIp5M2xJQKPbn3gRXC3E10rsadrS5q5PMJcr6TY2bak";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+
+
 
 
             weave: {

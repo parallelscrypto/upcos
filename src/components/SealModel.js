@@ -365,11 +365,13 @@ class SealModel extends React.Component {
       </button>
     </div>
     <div style={{ flex: 1, overflow: 'hidden' }}>
-      <UPCScriptCompiler 
+      <UPCScriptCompiler
         provider={this.props.provider}
         onConfigCompiled={this.handleConfigCompiled}
         embeddedMode={true}
       />
+
+
     </div>
   </div>
 )}
