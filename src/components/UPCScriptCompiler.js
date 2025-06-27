@@ -850,6 +850,24 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
   };
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 render() {
     const { 
       activeTab, 
@@ -894,7 +912,7 @@ render() {
             padding-top: 10px;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            height: 100vh;
             background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
             border: 1px solid var(--neon-orange);
             box-shadow: 0 0 20px var(--neon-orange);
@@ -1535,6 +1553,23 @@ render() {
       </div>
     );
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 
