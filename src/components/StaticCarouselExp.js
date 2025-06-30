@@ -2357,7 +2357,17 @@ myppl: {
       const address = this.state.ppls;
       console.log("Using PPLS contract at:", address);
 
-      // 3. Initialize contract
+      // 3. Handle case when no name is provided - load component
+      if (!name) {
+        this.setState({
+          fullIpfs: <PopitTerminal address={address}/>,
+          pipVisibility: true,
+          pipDisplay: "block"
+        });
+        return;
+      }
+
+      // 4. Initialize contract
       const popitABI = [
         "function getPopByName(string) view returns (tuple(uint256,string,bytes32,address,string,string,uint256))",
         "function totalPops() view returns (uint256)"
@@ -2369,18 +2379,18 @@ myppl: {
         this.state.signer
       );
 
-      // 4. Verify contract is valid
+      // 5. Verify contract is valid
       try {
         await popit.totalPops();
       } catch (e) {
         throw new Error("Invalid PPLS contract");
       }
 
-      // 5. Look up PPL
+      // 6. Look up PPL
       terminal.pushToStdout(`Looking up PPL "${name}"...`);
       const pop = await popit.getPopByName(name);
       
-      // 6. Handle the tuple response properly
+      // 7. Handle the tuple response properly
       if (!pop || pop.length < 7) {
         throw new Error("Invalid PPL response format");
       }
@@ -2390,11 +2400,6 @@ myppl: {
 
       if (id.toString() === '0') {
         throw new Error(`PPL "${name}" not found`);
-      }
-
-      // 7. Verify ownership
-      if (owner.toLowerCase() !== this.state.account.toLowerCase()) {
-        throw new Error(`PPL "${name}" does not belong to your account`);
       }
 
       // 8. Open the PPL
@@ -2418,7 +2423,6 @@ myppl: {
     }
   }
 },
-
 
 
 
