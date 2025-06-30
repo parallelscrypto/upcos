@@ -701,6 +701,9 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
         else if (key === "config.serialbox") {
           config.serialbox = await this.resolveDynamicValue(value);
         }
+        else if (key === "config.ppls") {
+          config.ppls = await this.resolveDynamicValue(value);
+        }
         else if (key === "config.fund") {
           config.fund = await this.resolveDynamicValue(value);
         }

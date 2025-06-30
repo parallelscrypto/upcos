@@ -249,7 +249,7 @@ loadPopit = async (address) => {
   }
   
   try {
-    this.pushToTerminal(`Loading Popit at: ${address}`);
+    this.pushToTerminal(`Loading repo at: ${address}`);
     
     // Updated Popit ABI including insertLink function
     const popitABI = [
@@ -525,10 +525,10 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
   renderDashboardPanel = () => {
     return (
       <div style={styles.panel}>
-        <h2 style={styles.panelTitle}>POPIT DASHBOARD</h2>
+        <h2 style={styles.panelTitle}>REPO DASHBOARD</h2>
         <div style={styles.gridContainer}>
           <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>CURRENT POPIT</h3>
+            <h3 style={styles.subTitle}>CURRENT REPO</h3>
             <div style={styles.infoBox}>
               {this.state.currentPopit ? (
                 <>
@@ -592,10 +592,10 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
   renderPopitPanel = () => {
     return (
       <div style={styles.panel}>
-        <h2 style={styles.panelTitle}>POPIT MANAGEMENT</h2>
+        <h2 style={styles.panelTitle}>REPO MANAGEMENT</h2>
         <div style={styles.gridContainer}>
           <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>CREATE POP</h3>
+            <h3 style={styles.subTitle}>CREATE LINK</h3>
             <div style={styles.infoBox}>
               <input
                 type="text"
@@ -637,7 +637,7 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
             </div>
           </div>
           <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>LOAD POPIT</h3>
+            <h3 style={styles.subTitle}>LOAD REPO</h3>
             <div style={styles.infoBox}>
               <input
                 type="text"
@@ -651,7 +651,7 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
                 style={styles.button}
                 onClick={() => this.loadPopit(this.state.popitAddress)}
               >
-                LOAD POPIT
+                LOAD REPO
               </button>
             </div>
           </div>
@@ -675,13 +675,13 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
         <h2 style={styles.panelTitle}>FACTORY MANAGEMENT</h2>
         <div style={styles.gridContainer}>
           <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>CREATE POPIT</h3>
+            <h3 style={styles.subTitle}>CREATE REPO</h3>
             <div style={styles.infoBox}>
               <button 
                 style={styles.button}
                 onClick={this.createPopit}
               >
-                CREATE NEW POPIT
+                CREATE NEW REPO
               </button>
               <p style={{ color: CYBERPUNK.secondary }}>
                 Creation Price: {this.state.creationPrice} FLIP tokens
@@ -689,13 +689,13 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
             </div>
           </div>
           <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>LIST POPITS</h3>
+            <h3 style={styles.subTitle}>LIST REPOS</h3>
             <div style={styles.infoBox}>
               <button 
                 style={styles.button}
                 onClick={this.listPopits}
               >
-                LIST ALL POPITS
+                LIST ALL REPOS
               </button>
             </div>
           </div>
@@ -799,7 +799,7 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
               fontSize: '24px',
               textShadow: `0 0 5px ${CYBERPUNK.primary}`
             }}>
-              POPIT TERMINAL
+              REPO TERMINAL
             </h1>
             <div>
               <button 
@@ -853,7 +853,7 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
                     borderBottom: activePanel === 'popit' ? `2px solid ${CYBERPUNK.primary}` : 'none'
                   }}
                 >
-                  POPIT MGMT
+                  REPO MGMT
                 </button>
                 <button 
                   onClick={() => this.setActivePanel('factory')}
@@ -899,6 +899,9 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
             description: 'Load existing repo',
             usage: 'loadpopit <address>',
             fn: async (address) => {
+              if(!address) {
+                 address=this.state.popitAddress;
+              }
               try {
                 await this.loadPopit(address);
                 return '';
@@ -1029,7 +1032,7 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
               welcomeMessage={`
                 [[header]]
                 ===================================
-                POPIT TERMINAL v1.0
+                PPL REPO TERMINAL v1.0
                 ===================================
                 [[/header]]
                 [[secondary]]Type 'help' for command list[[/secondary]]

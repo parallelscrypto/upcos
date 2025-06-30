@@ -134,7 +134,7 @@ constructor(props) {
   const archiveValue = config.archive || '';
   const fundValue = config.fund || '';
   const serialbox = config.serialbox || '';
-
+  const pplsValue = config.ppls || '';
 
 console.log("INSIDE >>> CONSTRUCTOR TEST", config)
 
@@ -999,38 +999,6 @@ console.log("INVEST IS ", address);
  
               }
             },
-
-
-
-
-            ppls: {
-		    description: '<p style="color:orange;font-size:1.1em">** open the ppls admin console</p>',
-              fn: (address) => {
-
-                     if(!address) {
-                        address = this.state.ppls;
-                     }
-                     console.log("ppls contract is ", this.state.ppls);
-
-                     var winNum = 0;
-
-
-                      var mplayer = <PopitTerminal address={address}/>;
-                      if(winNum == "0") {
-		         this.setState(prevState => ({ fullIpfs: mplayer }));
-		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
-		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
-                      }
-                      else if(winNum == "1") {
-		         this.setState(prevState => ({ fullIpfs2: mplayer }));
-		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
-		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
-                      }
- 
-              }
-            },
-
-
 
 
 
@@ -2356,6 +2324,105 @@ console.log("upc data is " , data)
 
 
 
+myppl: {
+  description: '<p style="color:orange;font-size:1.1em">** Open MY PPL (admin private protocol link) minibrowser</p>',
+  fn: async (name) => {
+    const terminal = this.progressTerminal.current;
+    try {
+      // 1. Verify Ethereum connection
+      if (!window.ethereum) {
+        throw new Error("Ethereum provider not found");
+      }
+
+      // Initialize connection if needed
+      if (!this.state.provider) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+        const account = await signer.getAddress();
+        
+        this.setState({
+          provider,
+          signer,
+          account,
+          isConnected: true
+        });
+      }
+
+      // 2. Verify PPLS contract address
+      if (!this.state.ppls) {
+        throw new Error("No PPLS contract configured");
+      }
+
+      const address = this.state.ppls;
+      console.log("Using PPLS contract at:", address);
+
+      // 3. Initialize contract
+      const popitABI = [
+        "function getPopByName(string) view returns (tuple(uint256,string,bytes32,address,string,string,uint256))",
+        "function totalPops() view returns (uint256)"
+      ];
+
+      const popit = new ethers.Contract(
+        address,
+        popitABI,
+        this.state.signer
+      );
+
+      // 4. Verify contract is valid
+      try {
+        await popit.totalPops();
+      } catch (e) {
+        throw new Error("Invalid PPLS contract");
+      }
+
+      // 5. Look up PPL
+      terminal.pushToStdout(`Looking up PPL "${name}"...`);
+      const pop = await popit.getPopByName(name);
+      
+      // 6. Handle the tuple response properly
+      if (!pop || pop.length < 7) {
+        throw new Error("Invalid PPL response format");
+      }
+
+      // Destructure the tuple response
+      const [id, link, hash, owner, upc, pplName, timestamp] = pop;
+
+      if (id.toString() === '0') {
+        throw new Error(`PPL "${name}" not found`);
+      }
+
+      // 7. Verify ownership
+      if (owner.toLowerCase() !== this.state.account.toLowerCase()) {
+        throw new Error(`PPL "${name}" does not belong to your account`);
+      }
+
+      // 8. Open the PPL
+      this.cSearch3.value = name;
+      const resolvedPage = await this.getMplayer(link);
+      
+      this.setState({
+        fullIpfs3: resolvedPage,
+        pipVisibility3: "true",
+        pipDisplay3: "block",
+        showBigShow3: true,
+        currentPopit: popit
+      });
+
+      terminal.pushToStdout(`[[success]]Opened PPL "${name}"[[/success]]`);
+
+    } catch (error) {
+      const errorMessage = `[[error]]myppl error: ${error.message}[[/error]]`;
+      terminal.pushToStdout(errorMessage);
+      console.error("myppl execution error:", error);
+    }
+  }
+},
+
+
+
+
+
 
 
             [pplCommand]: {
@@ -2544,6 +2611,7 @@ console.log(popArgs);
     pac1: pac1Value,
     pac2: pac2Value,
     pac3: pac3Value,
+    ppls: pplsValue,
     configRaw: configRaw,
     sealActiveTab: 'seal',
     baseCommands: baseCommands
@@ -5839,6 +5907,8 @@ componentDidMount = async () => {
     const fundValue = await resolveDynamicConfigValue(config.fund || '');
     const serialbox = await resolveDynamicConfigValue(config.serialbox || '');
     const showValue = await resolveDynamicConfigValue(config.show || '');
+    const pplsValue = await resolveDynamicConfigValue(config.ppls || '');
+
 
     // Process PAC commands
     const pacs = config.pacs || {};
@@ -5910,6 +5980,7 @@ componentDidMount = async () => {
       pac2: resolvedPac2Value,
       pac3: resolvedPac3Value,
       bg: bgValue,
+      ppls: pplsValue,
       terminal: myTerm,
       commands: allCommands,
       show: showValue,
