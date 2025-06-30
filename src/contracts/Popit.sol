@@ -1,11 +1,14 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-pragma experimental ABIEncoderV2;
 
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol";
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import "./Flip.sol";
+interface IERC20Burnable is IERC20 {
+    function burn(uint256 amount) external;
+}
 
 contract Popit is ERC721, Ownable {
     using Counters for Counters.Counter;
@@ -21,218 +24,142 @@ contract Popit is ERC721, Ownable {
         uint256 timestamp;
     }
 
-    mapping(bytes32 => Pop[]) private instanceData;
-    mapping(string => Pop[]) private upcData;
-    mapping(string => Pop[]) private globalData; // Changed to key on human_readable_name
-    mapping(uint256 => Pop[]) private universalData; // New mapping
-    Flip private _token;
-    uint256 public latestTokenId;
-    uint256 public price = 100000000000000000;
+    mapping(bytes32 => Pop) private hashToPop;
+    mapping(string => Pop) private upcToPop;
+    mapping(string => Pop) private nameToPop;
+    mapping(uint256 => Pop) private idToPop;
+    
+    IERC20Burnable public flipToken;
+    uint256 public creationPrice = 500 * (10**18);
+    address public defaultFlipToken = 0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118;
 
-    event LinkInserted(bytes32 hash, string link, address owner, string upc, string human_readable_name);
-    event PopRemoved(bytes32 hash, string link, address owner, string upc, string human_readable_name);
-    event LinkUpdated(uint256 hash, string newLink, address owner, string upc, string human_readable_name);
+    event PopCreated(uint256 id, string link, bytes32 hash, string upc, string name);
+    event PopRemoved(uint256 id, string link, bytes32 hash);
+    event PopUpdated(uint256 id, string newLink);
 
-    constructor() ERC721("PrivateProtocolLink", "PPL") Ownable() {
-        _token = Flip(0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118);
+    constructor() ERC721("Popit", "POP") Ownable(msg.sender) {
+        flipToken = IERC20Burnable(defaultFlipToken);
     }
 
-    function setPrice(uint256 _price) external onlyOwner {
-        price = _price;
-    }
-
-    function setPayToken(address addy) external onlyOwner {
-        _token = Flip(addy);
-    }
-
-    function checkUniqueness(string memory _human_readable_name) public view returns (bool) {
-        // Check if the human_readable_name already exists in any of the mappings
-        // Check globalData mapping
-        for (uint256 i = 0; i < globalData[_human_readable_name].length; i++) {
-            if (keccak256(bytes(globalData[_human_readable_name][i].human_readable_name)) == keccak256(bytes(_human_readable_name))) {
-                return false; // Not unique
-            }
-        }
-        return true; // Unique
+    function exists(uint256 tokenId) public view returns (bool) {
+        return idToPop[tokenId].id != 0;
     }
 
     function insertLink(string memory _link, string memory _upc, string memory _human_readable_name) public {
-        require(checkUniqueness(_human_readable_name), "Human readable name must be unique");
+        require(nameToPop[_human_readable_name].id == 0, "Name must be unique");
+        require(flipToken.transferFrom(msg.sender, address(this), creationPrice), "FLIP transfer failed");
+        flipToken.burn(creationPrice);
 
-        _token.transferFrom(msg.sender, address(this), price);
-        _token.burn(price);
-
-        bytes32 hash = sha256(abi.encodePacked(_human_readable_name));
-
+        bytes32 hash = keccak256(abi.encodePacked(_human_readable_name));
         _tokenIds.increment();
-        uint256 newNftTokenId = _tokenIds.current();
-        latestTokenId = newNftTokenId;
+        uint256 newId = _tokenIds.current();
 
         Pop memory newPop = Pop({
-            id: latestTokenId,
+            id: newId,
             link: _link,
             hash: hash,
             owner: msg.sender,
             upc: _upc,
             human_readable_name: _human_readable_name,
-            timestamp: block.timestamp // Set timestamp upon pushing a new item
+            timestamp: block.timestamp
         });
 
-        instanceData[hash].push(newPop);
-        upcData[_upc].push(newPop);
-        globalData[_human_readable_name].push(newPop); // Updated to key on human_readable_name
-        universalData[latestTokenId + 1].push(newPop); // Increment and push to universalData
+        hashToPop[hash] = newPop;
+        upcToPop[_upc] = newPop;
+        nameToPop[_human_readable_name] = newPop;
+        idToPop[newId] = newPop;
 
-        _safeMint(msg.sender, latestTokenId);
-
-        latestTokenId++;
-
-        emit LinkInserted(hash, _link, msg.sender, _upc, _human_readable_name);
+        _safeMint(msg.sender, newId);
+        emit PopCreated(newId, _link, hash, _upc, _human_readable_name);
     }
 
-    function deleteLink(string memory _human_readable_name) public {
-        // Find and delete the Pop with the given human_readable_name
-        for (uint256 i = 0; i < latestTokenId; i++) {
-            for (uint256 j = 0; j < globalData[_human_readable_name].length; j++) {
-                if (keccak256(bytes(globalData[_human_readable_name][j].human_readable_name)) == keccak256(bytes(_human_readable_name))) {
-                    // Check if the sender is the owner of the Pop
-                    require(msg.sender == globalData[_human_readable_name][j].owner, "Only the owner can delete this Pop");
+    function createPop(string memory link, string memory upc, string memory name) external {
+        require(flipToken.balanceOf(msg.sender) >= creationPrice, "Insufficient balance");
+        require(flipToken.transferFrom(msg.sender, address(this), creationPrice), "Payment failed");
+        flipToken.burn(creationPrice);
 
-                    // Remove the Pop from all mappings
-                    bytes32 hash = globalData[_human_readable_name][j].hash;
-                    delete instanceData[hash];
-                    emit PopRemoved(hash, globalData[_human_readable_name][j].link, globalData[_human_readable_name][j].owner, globalData[_human_readable_name][j].upc, _human_readable_name);
+        bytes32 hash = keccak256(abi.encodePacked(name));
+        require(nameToPop[name].id == 0, "Name already exists");
 
-                    // Remove only the specific item with the given human_readable_name from upcData
-                    Pop[] storage upcArray = upcData[globalData[_human_readable_name][j].upc];
-                    for (uint256 k = 0; k < upcArray.length; k++) {
-                        if (upcArray[k].hash == hash) {
-                            // Shift elements after the deleted one to fill the gap
-                            for (uint256 l = k; l < upcArray.length - 1; l++) {
-                                upcArray[l] = upcArray[l + 1];
-                            }
-                            // Remove the last element (empty slot)
-                            upcArray.pop();
-                            break;
-                        }
-                    }
+        _tokenIds.increment();
+        uint256 newId = _tokenIds.current();
+        
+        Pop memory newPop = Pop({
+            id: newId,
+            link: link,
+            hash: hash,
+            owner: msg.sender,
+            upc: upc,
+            human_readable_name: name,
+            timestamp: block.timestamp
+        });
 
-                    // Remove the Pop from globalData after updating upcData
-                    globalData[_human_readable_name][j] = globalData[_human_readable_name][globalData[_human_readable_name].length - 1];
-                    globalData[_human_readable_name].pop();
+        hashToPop[hash] = newPop;
+        upcToPop[upc] = newPop;
+        nameToPop[name] = newPop;
+        idToPop[newId] = newPop;
 
-                    // Remove the Pop from universalData
-                    Pop[] storage universalArray = universalData[latestTokenId];
-                    for (uint256 m = 0; m < universalArray.length; m++) {
-                        if (universalArray[m].hash == hash) {
-                            // Shift elements after the deleted one to fill the gap
-                            for (uint256 n = m; n < universalArray.length - 1; n++) {
-                                universalArray[n] = universalArray[n + 1];
-                            }
-                            // Remove the last element (empty slot)
-                            universalArray.pop();
-                            break;
-                        }
-                    }
-
-                    break; // Stop searching once found and processed
-                }
-            }
-        }
+        _safeMint(msg.sender, newId);
+        emit PopCreated(newId, link, hash, upc, name);
     }
 
-    function getPopByInstance(bytes32 _hash) public view returns (Pop[] memory) {
-        return instanceData[_hash];
+    function removePop(uint256 id) external {
+        require(exists(id), "Pop does not exist");
+        require(ownerOf(id) == msg.sender, "Not owner");
+
+        Pop memory pop = idToPop[id];
+        delete hashToPop[pop.hash];
+        delete upcToPop[pop.upc];
+        delete nameToPop[pop.human_readable_name];
+        delete idToPop[id];
+
+        _burn(id);
+        emit PopRemoved(id, pop.link, pop.hash);
     }
 
-    function getPopByUpc(string memory _upc) public view returns (Pop[] memory) {
-        return upcData[_upc];
+    function updateLink(uint256 id, string memory newLink) external {
+        require(exists(id), "Pop does not exist");
+        require(ownerOf(id) == msg.sender, "Not owner");
+
+        Pop storage pop = idToPop[id];
+        pop.link = newLink;
+        
+        hashToPop[pop.hash].link = newLink;
+        upcToPop[pop.upc].link = newLink;
+        nameToPop[pop.human_readable_name].link = newLink;
+
+        emit PopUpdated(id, newLink);
     }
 
-    function getPopByGlobalName(string memory _human_readable_name) public view returns (Pop[] memory) {
-        return globalData[_human_readable_name];
+    function getPopById(uint256 id) public view returns (Pop memory) {
+        require(exists(id), "Pop does not exist");
+        return idToPop[id];
     }
 
-    function getUniversalData(uint256 start, uint256 end) public view returns (Pop[] memory) {
-        // Check if the end parameter is less than or equal to the latestTokenId
-        if (end > latestTokenId) {
-            end = latestTokenId;
-        }
-
-        Pop[] memory result = new Pop[](end - start + 1);
-        uint256 index = 0;
-
-        for (uint256 i = start; i <= end; i++) {
-            Pop[] memory currentData = universalData[i];
-            for (uint256 j = 0; j < currentData.length; j++) {
-                result[index++] = currentData[j];
-            }
-        }
-
-        return result;
+    function getPopByHash(bytes32 hash) public view returns (Pop memory) {
+        require(hashToPop[hash].id != 0, "Pop not found");
+        return hashToPop[hash];
     }
 
-    function getOwnerOfNFT(uint256 nftId) public view returns (address) {
-        require(nftId <= latestTokenId, "Invalid NFT ID");
-
-        // Iterate through universalData to find the NFT with the given ID
-        for (uint256 i = 1; i <= latestTokenId; i++) {
-            Pop[] memory currentData = universalData[i];
-            for (uint256 j = 0; j < currentData.length; j++) {
-                if (currentData[j].id == nftId) {
-                    return currentData[j].owner;
-                }
-            }
-        }
-
-        revert("NFT not found");
+    function getPopByUPC(string memory upc) public view returns (Pop memory) {
+        require(upcToPop[upc].id != 0, "Pop not found");
+        return upcToPop[upc];
     }
 
-
-    function updateLink(uint256 nftId, string memory newLink) public {
-        // Check if the sender is the owner of the NFT
-        address owner = getOwnerOfNFT(nftId);
-        require(owner == msg.sender, "Only the owner can update the link");
-
-        // Find the NFT with the given ID
-        bool found = false;
-        bytes32 hash;
-
-        for (uint256 i = 1; i <= latestTokenId; i++) {
-            Pop[] storage nftArray = universalData[i];
-            for (uint256 j = 0; j < nftArray.length; j++) {
-                if (nftArray[j].id == nftId) {
-                    hash = nftArray[j].hash;
-                    nftArray[j].link = newLink;
-                    
-                    // Update the link in globalData array
-                    string memory upKey = nftArray[j].human_readable_name;
-                    Pop[] storage globalArray = globalData[upKey];
-
-                    for (uint256 k = 0; k < globalArray.length; k++) {
-                        if (globalArray[k].id == nftId) {
-                            globalArray[k].link = newLink;
-                            break;
-                        }
-                    }
-
-                    found = true;
-                    break;
-                }
-            }
-            if (found) {
-                break;
-            }
-        }
-
-        require(found, "NFT with the given ID not found");
-
-        //emit LinkUpdated(hash, newLink, owner, "", ""); // Update with relevant parameters
+    function getPopByName(string memory name) public view returns (Pop memory) {
+        require(nameToPop[name].id != 0, "Pop not found");
+        return nameToPop[name];
     }
 
+    function totalPops() public view returns (uint256) {
+        return _tokenIds.current();
+    }
 
+    function setCreationPrice(uint256 newPrice) external onlyOwner {
+        creationPrice = newPrice;
+    }
 
-
-
+    function setFlipToken(address tokenAddress) external onlyOwner {
+        flipToken = IERC20Burnable(tokenAddress);
+    }
 }
-

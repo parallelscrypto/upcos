@@ -332,11 +332,11 @@ class SealModel extends React.Component {
 
 {this.state.activeTab === 'compiler' && (
   <div style={{
-    height: '600px',
+    height: '100vh',
     width: '100%',
     border: '1px solid #05d9e8',
     boxShadow: '0 0 10px #05d9e8',
-    overflow: 'hidden',
+    overflow: 'auto',
     position: 'relative',
     display: 'flex',
     flexDirection: 'column'
@@ -364,7 +364,7 @@ class SealModel extends React.Component {
         ← Back to Seal
       </button>
     </div>
-    <div style={{ flex: 1, overflow: 'hidden' }}>
+    <div style={{ flex: 1, paddingTop:'30px', overflow: 'auto' }}>
       <UPCScriptCompiler
         provider={this.props.provider}
         onConfigCompiled={this.handleConfigCompiled}

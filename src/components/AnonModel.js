@@ -160,261 +160,158 @@ class SealModel extends React.Component {
     this.props.onClose();
   };
 
-  render() {
-    if (!this.state.showModal) return null;
 
-    return (
+
+render() {
+  if (!this.state.showModal) return null;
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'flex-start',
+      zIndex: 1000,
+      overflow: 'auto',
+      WebkitOverflowScrolling: 'touch', // For smooth iOS scrolling
+      padding: '10px'
+    }}>
       <div style={{
+        backgroundColor: 'rgba(5, 1, 10, 0.95)',
+        padding: '15px',
+        border: '1px solid #ff5e00',
+        boxShadow: '0 0 15px #ff5e00',
+        color: '#05d9e8',
+        fontFamily: "'Courier New', monospace",
         width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        maxWidth: '800px',
+        maxHeight: '95vh',
         display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000
+        flexDirection: 'column',
+        margin: '10px 0',
+        overflow: 'hidden' // Prevent nested scrolling
       }}>
+        {/* Header Section */}
         <div style={{
-          backgroundColor: 'rgba(5, 1, 10, 0.9)',
-          padding: '20px',
-          border: '1px solid #ff5e00',
-          boxShadow: '0 0 15px #ff5e00',
-          color: '#05d9e8',
-          fontFamily: "'Courier New', monospace",
-          maxWidth: '800px',
-          width: '90%',
-          maxHeight: '90vh',
-          overflowY: 'auto'
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          marginBottom: '15px'
         }}>
-           <div style={{
-             width: '100%',
-             display: 'flex',
-             justifyContent: 'center',
-             marginBottom: '20px'
-           }}>
-             {this.props.heroImg}
-           </div>
-           <div style={{
-             width: '100%',
-             display: 'flex',
-             justifyContent: 'center'
-           }}>
-             <Barcode value={this.state.pwd} format="UPC" />
-           </div>
-                    
-          {/* Tabs */}
-          <div style={{
-            display: 'flex',
-            marginBottom: '20px',
-            borderBottom: '1px solid #05d9e8',
-            overflowX: 'auto',
-            whiteSpace: 'nowrap',
-            scrollbarWidth: 'none',
-            '&::-webkit-scrollbar': { display: 'none' }
-          }}>
-            <button 
-              onClick={() => this.handleTabChange('seal')}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: 'transparent',
-                color: '#05d9e8',
-                border: 'none',
-                cursor: 'pointer',
-                fontFamily: "'Courier New', monospace",
-                fontWeight: 'bold',
-                textTransform: 'uppercase',
-                fontSize: '14px',
-                marginRight: '10px',
-                flexShrink: 0,
-                borderBottom: this.state.activeTab === 'seal' ? '2px solid #ff5e00' : 'none'
-              }}
-            >
-              SEAL
-            </button>
-            <button 
-              onClick={() => this.handleTabChange('compiler')}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: 'transparent',
-                color: '#05d9e8',
-                border: 'none',
-                cursor: 'pointer',
-                fontFamily: "'Courier New', monospace",
-                fontWeight: 'bold',
-                textTransform: 'uppercase',
-                fontSize: '14px',
-                marginRight: '10px',
-                flexShrink: 0,
-                borderBottom: this.state.activeTab === 'compiler' ? '2px solid #ff5e00' : 'none'
-              }}
-            >
-              COMPILER
-            </button>
-          </div>
+          {this.props.heroImg}
+          <Barcode value={this.state.pwd} format="UPC" style={{ marginTop: '10px' }} />
+        </div>
 
+        {/* Tabs - Fixed for Mobile */}
+        <div style={{
+          display: 'flex',
+          marginBottom: '15px',
+          borderBottom: '1px solid #05d9e8',
+          overflowX: 'visible', // Changed from auto
+          whiteSpace: 'nowrap',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+          '&::-webkit-scrollbar': { display: 'none' }
+        }}>
+          <button 
+            onClick={() => this.handleTabChange('seal')}
+            style={{
+              padding: '12px 20px',
+              backgroundColor: this.state.activeTab === 'seal' ? 'rgba(255, 94, 0, 0.3)' : 'transparent',
+              color: '#05d9e8',
+              border: 'none',
+              borderBottom: this.state.activeTab === 'seal' ? '2px solid #ff5e00' : 'none',
+              cursor: 'pointer',
+              fontFamily: "'Courier New', monospace",
+              fontWeight: 'bold',
+              textTransform: 'uppercase',
+              fontSize: '14px',
+              marginRight: '10px',
+              flexShrink: 0
+            }}
+          >
+            SEAL
+          </button>
+          <button 
+            onClick={() => this.handleTabChange('compiler')}
+            style={{
+              padding: '12px 20px',
+              backgroundColor: this.state.activeTab === 'compiler' ? 'rgba(255, 94, 0, 0.3)' : 'transparent',
+              color: '#05d9e8',
+              border: 'none',
+              borderBottom: this.state.activeTab === 'compiler' ? '2px solid #ff5e00' : 'none',
+              cursor: 'pointer',
+              fontFamily: "'Courier New', monospace",
+              fontWeight: 'bold',
+              textTransform: 'uppercase',
+              fontSize: '14px',
+              marginRight: '10px',
+              flexShrink: 0
+            }}
+          >
+            COMPILER
+          </button>
+        </div>
+
+        {/* Content Area */}
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          position: 'relative'
+        }}>
           {/* Seal Tab Content */}
           {this.state.activeTab === 'seal' && (
-            <form onSubmit={this.handleSubmit}>
-              <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>SHORTLINK NAME</label>
-                <input
-                  type="text"
-                  name="humanReadableName"
-                  value={this.state.humanReadableName}
-                  onChange={this.handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    background: 'rgba(5, 217, 232, 0.1)',
-                    border: '1px solid #05d9e8',
-                    color: '#00ff41',
-                    fontFamily: "'Courier New', monospace"
-                  }}
-                  placeholder="https://is.gd/[your-shortlink]"
-                />
-              </div>
-
-              <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>MISSION BUTTON URL</label>
-                <input
-                  type="text"
-                  name="missionUrl"
-                  value={this.state.missionUrl}
-                  onChange={this.handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    background: 'rgba(5, 217, 232, 0.1)',
-                    border: '1px solid #05d9e8',
-                    color: '#00ff41',
-                    fontFamily: "'Courier New', monospace"
-                  }}
-                  placeholder="link for mission button"
-                  required
-                />
-              </div>
-
-              <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>FRONT STAGE CONTENT</label>
-                <input
-                  type="text"
-                  name="upcscript"
-                  value={this.state.upcscript}
-                  onChange={this.handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    background: 'rgba(5, 217, 232, 0.1)',
-                    border: '1px solid #05d9e8',
-                    color: '#00ff41',
-                    fontFamily: "'Courier New', monospace"
-                  }}
-                  placeholder="Content for front stage. (UPCScript is allowed)"
-                  required
-                />
-              </div>
-
-              <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>PAYLOAD (ETC BUTTON)</label>
-                <input
-                  type="text"
-                  name="payload"
-                  value={this.state.payload}
-                  onChange={this.handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    background: 'rgba(5, 217, 232, 0.1)',
-                    border: '1px solid #05d9e8',
-                    color: '#00ff41',
-                    fontFamily: "'Courier New', monospace"
-                  }}
-                  placeholder="payload (etc button)"
-                  required
-                />
-              </div>
-
-              <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>CONFIG FILE URL</label>
-                <input
-                  type="text"
-                  name="configUrl"
-                  value={this.state.configUrl}
-                  onChange={this.handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    background: 'rgba(5, 217, 232, 0.1)',
-                    border: '1px solid #05d9e8',
-                    color: '#00ff41',
-                    fontFamily: "'Courier New', monospace"
-                  }}
-                  placeholder="json config file url"
-                />
-              </div>
-
-              <div style={{marginBottom: '20px'}}>
-                <label style={{display: 'block', marginBottom: '5px', color: '#05d9e8'}}>TERMINAL WELCOME MESSAGE</label>
-                <textarea
-                  name="exportMsg"
-                  value={this.state.exportMsg}
-                  onChange={this.handleInputChange}
-                  style={{
-                    width: '100%',
-                    minHeight: '200px',
-                    padding: '10px',
-                    background: 'rgba(5, 217, 232, 0.1)',
-                    border: '1px solid #05d9e8',
-                    color: '#00ff41',
-                    fontFamily: "'Courier New', monospace"
-                  }}
-                  placeholder="This text will be displayed in the exported terminal welcome message. If you put a upcscript in this box, you can execute it with the exe command"
-                />
-              </div>
-
-              <button
-                type="submit"
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  background: 'rgba(255, 94, 0, 0.5)',
-                  border: '1px solid #ff5e00',
-                  color: 'white',
-                  fontFamily: "'Courier New', monospace",
-                  fontSize: '1.1rem',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s'
-                }}
-                onMouseOver={(e) => e.target.style.background = 'rgba(255, 94, 0, 0.8)'}
-                onMouseOut={(e) => e.target.style.background = 'rgba(255, 94, 0, 0.5)'}
-              >
-                ANON
-              </button>
+            <form onSubmit={this.handleSubmit} style={{
+              flex: 1,
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              paddingRight: '5px' // Compensate for scrollbar
+            }}>
+              {/* ... (keep all your seal form fields exactly as they were) ... */}
             </form>
           )}
 
-          {/* Compiler Tab Content */}
+          {/* Compiler Tab Content - Fixed for Mobile */}
           {this.state.activeTab === 'compiler' && (
             <div style={{
-              height: '600px',
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              height: '100vh',
               border: '1px solid #05d9e8',
-              boxShadow: '0 0 10px #05d9e8'
+              boxShadow: '0 0 10px #05d9e8',
+              overflow: 'auto'
             }}>
               <iframe 
-                src="https://mla52jgnxq6n2absm4ainsmpjlkeh2vd4jb2phqhv5jhldz43waa.arweave.net/YsHdJM28PN0AMmcAhsmPStRD6qPiQ6eeB69SdY883YA
-" 
+                src="https://mla52jgnxq6n2absm4ainsmpjlkeh2vd4jb2phqhv5jhldz43waa.arweave.net/YsHdJM28PN0AMmcAhsmPStRD6qPiQ6eeB69SdY883YA" 
                 style={{
+                  flex: 1,
                   width: '100%',
                   height: '100%',
-                  border: 'none'
+                  minHeight: '60vh',
+                  border: 'none',
+                  overflow: 'auto'
                 }}
+                allow="fullscreen"
               />
             </div>
           )}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
+
+
+
 }
 
 

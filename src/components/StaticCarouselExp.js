@@ -6,6 +6,7 @@ import makeCarousel from 'react-reveal/makeCarousel';
 import TrebleCleffExp from './TrebleCleffExp'
 import BassCleff from './BassCleff'
 import SerialBoxTerminal from './SerialBoxTerminal'
+import PopitTerminal from './PopitTerminal'
 import MLBBettingTerminal from './MLBBettingTerminal'
 import TradingBotTerminal from './TradingBotTerminal'
 import MonopolyCLI from './MonopolyCLI'
@@ -998,6 +999,39 @@ console.log("INVEST IS ", address);
  
               }
             },
+
+
+
+
+            ppls: {
+		    description: '<p style="color:orange;font-size:1.1em">** open the ppls admin console</p>',
+              fn: (address) => {
+
+                     if(!address) {
+                        address = this.state.ppls;
+                     }
+                     console.log("ppls contract is ", this.state.ppls);
+
+                     var winNum = 0;
+
+
+                      var mplayer = <PopitTerminal address={address}/>;
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
+
+
+
 
 
 

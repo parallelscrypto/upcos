@@ -16,10 +16,9 @@ class UPCScriptCompiler extends Component {
       currentDate: '',
       provider: null,
       compiledData: null,
-      debugMessages: [],
-      showDebug: false,
       isConnected: false,
-      currentAccount: null
+      currentAccount: null,
+      isMobileMenuOpen: false
     };
 
     this.defaultButtonStyle = {
@@ -273,7 +272,6 @@ class UPCScriptCompiler extends Component {
     ];
     
     this.previewFrameRef = React.createRef();
-    this.debugContentRef = React.createRef();
   }
 
   componentDidMount() {
@@ -291,28 +289,25 @@ class UPCScriptCompiler extends Component {
     if (window.ethereum && window.ethereum.selectedAddress) {
       this.initBlockchain();
     }
+
+    // Check if mobile
+    this.checkIfMobile();
+    window.addEventListener('resize', this.checkIfMobile);
   }
 
   componentWillUnmount() {
     clearInterval(this.timeInterval);
     window.removeEventListener('message', this.handleFrameMessage);
+    window.removeEventListener('resize', this.checkIfMobile);
   }
 
-  logDebug = (message) => {
-    const timestamp = new Date().toLocaleTimeString();
-    const newMessage = `[${timestamp}] ${message}`;
-    this.setState(prevState => ({
-      debugMessages: [...prevState.debugMessages, newMessage]
-    }), () => {
-      if (this.debugContentRef.current) {
-        this.debugContentRef.current.scrollTop = this.debugContentRef.current.scrollHeight;
-      }
-    });
+  checkIfMobile = () => {
+    this.setState({ isMobile: window.innerWidth < 768 });
   };
 
-  toggleDebug = () => {
+  toggleMobileMenu = () => {
     this.setState(prevState => ({
-      showDebug: !prevState.showDebug
+      isMobileMenuOpen: !prevState.isMobileMenuOpen
     }));
   };
 
@@ -347,7 +342,10 @@ class UPCScriptCompiler extends Component {
   };
 
   switchTab = (tab) => {
-    this.setState({ activeTab: tab }, () => {
+    this.setState({ 
+      activeTab: tab,
+      isMobileMenuOpen: false
+    }, () => {
       if (tab === 'upload' && this.state.compiledData) {
         setTimeout(() => {
           this.sendDataToFrame();
@@ -473,39 +471,25 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
         isConnected: true
       });
       
-      this.logDebug(`Connected to wallet: ${currentAccount}`);
-      
       window.ethereum.on('accountsChanged', (accounts) => {
         if (accounts.length === 0) {
           this.setState({
             currentAccount: null,
             isConnected: false
           });
-          this.logDebug('Wallet disconnected');
         } else {
           this.setState({
             currentAccount: accounts[0]
           });
-          this.logDebug(`Account changed to: ${accounts[0]}`);
         }
       });
       
       window.ethereum.on('chainChanged', (chainId) => {
-        this.logDebug(`Chain changed to: ${chainId}`);
         window.location.reload();
       });
-
-      const network = await provider.getNetwork();
-      this.logDebug(`Connected to network: ${network.name} (chainId: ${network.chainId})`);
-      if (network.chainId !== 137) {
-        this.logDebug('Warning: Not connected to Polygon network');
-        alert('Please connect to Polygon network in your wallet');
-      }
     } catch (error) {
       console.error('Error connecting to blockchain:', error);
-      this.logDebug(`Error connecting to blockchain: ${error.message}`);
       this.setState({ isConnected: false });
-      alert('Failed to connect wallet. Please make sure you have a wallet like Brave Wallet installed.');
     }
   };
 
@@ -521,7 +505,6 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
     if (value.startsWith('upc.')) {
       const parts = value.split('.');
       if (parts.length < 3) {
-        this.logDebug(`Invalid UPC query format: ${value}`);
         return `**ERROR upc.missingParts **`;
       }
 
@@ -540,7 +523,6 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
         );
         
         const result = await rawMaterial.upcInfo(upcId);
-        this.logDebug(`UPC Info Result: ${JSON.stringify(result)}`);
         
         const fieldMap = {
           'tokenId': result.tokenId.toString(),
@@ -562,15 +544,11 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
         };
         
         if (field in fieldMap) {
-          const resolvedValue = fieldMap[field];
-          this.logDebug(`Resolved upc.${upcId}.${field} to: ${resolvedValue}`);
-          return resolvedValue;
+          return fieldMap[field];
         } else {
-          this.logDebug(`Invalid field requested for UPC: ${field}`);
           return `**ERROR upc.invalidField.${field} **`;
         }
       } catch (error) {
-        this.logDebug(`UPC Query Failed: ${error.message}`);
         return `**ERROR upc.queryFailed.${upcId}.${field} **`;
       }
     }
@@ -578,7 +556,6 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
     if (value.startsWith('nft.')) {
       const parts = value.split('.');
       if (parts.length < 3) {
-        this.logDebug(`Invalid NFT query format: ${value}`);
         return `**ERROR nft.missingParts **`;
       }
 
@@ -597,7 +574,6 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
         );
         
         const result = await rawMaterial.nftInfo(nftId);
-        this.logDebug(`NFT Info Result: ${JSON.stringify(result)}`);
         
         const fieldMap = {
           'tokenId': result.tokenId.toString(),
@@ -619,15 +595,11 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
         };
         
         if (field in fieldMap) {
-          const resolvedValue = fieldMap[field];
-          this.logDebug(`Resolved nft.${nftId}.${field} to: ${resolvedValue}`);
-          return resolvedValue;
+          return fieldMap[field];
         } else {
-          this.logDebug(`Invalid field requested for NFT: ${field}`);
           return `**ERROR nft.invalidField.${field} **`;
         }
       } catch (error) {
-        this.logDebug(`NFT Query Failed: ${error.message}`);
         return `**ERROR nft.queryFailed.${nftId}.${field} **`;
       }
     }
@@ -635,7 +607,6 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
     if (value.startsWith('ppl.name.')) {
       const parts = value.split('.');
       if (parts.length < 4) {
-        this.logDebug(`Invalid ppl.name query format: ${value}`);
         return `**ERROR ppl.name.missingParts **`;
       }
 
@@ -654,10 +625,8 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
         );
         
         const result = await popit.getPopByGlobalName(pplName);
-        this.logDebug(`Popit Result: ${JSON.stringify(result)}`);
         
         if (result.length === 0) {
-          this.logDebug(`No pop found with name: ${pplName}`);
           return `**ERROR ppl.name.notFound.${pplName} **`;
         }
         
@@ -676,15 +645,11 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
         };
         
         if (field in fieldMap) {
-          const resolvedValue = fieldMap[field];
-          this.logDebug(`Resolved ppl.name.${pplName}.${field} to: ${resolvedValue}`);
-          return resolvedValue;
+          return fieldMap[field];
         } else {
-          this.logDebug(`Invalid field requested for pop: ${field}`);
           return `**ERROR ppl.name.invalidField.${field} **`;
         }
       } catch (error) {
-        this.logDebug(`Popit Query Failed: ${error.message}`);
         return `**ERROR ppl.name.queryFailed.${pplName}.${field} **`;
       }
     }
@@ -793,13 +758,11 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
       });
       
       this.showStatus('COMPILATION SUCCESSFUL');
-      this.logDebug('Compilation completed successfully');
       this.switchTab('upload');
     } catch (error) {
       console.error(error);
       this.setState({ isCompiling: false });
       this.showStatus('COMPILATION ERROR', true);
-      this.logDebug(`Compilation error: ${error.message}`);
     }
   };
 
@@ -814,10 +777,8 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
       isCompiling,
       currentTime,
       currentDate,
-      debugMessages,
-      showDebug,
-      isConnected,
-      currentAccount
+      isMobile,
+      isMobileMenuOpen
     } = this.state;
 
     return (
@@ -833,29 +794,36 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             --glow: 0 0 10px;
           }
 
+          * {
+            box-sizing: border-box;
+          }
+
           body {
             margin: 0;
             padding: 0;
             font-family: 'Courier New', monospace;
             background-color: var(--dark-bg);
             color: var(--neon-blue);
-            overflow: hidden;
+            overflow-x: hidden;
             min-height: 100vh;
           }
 
           .upcscript-compiler-container {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
+            padding-bottom: 60px;
           }
 
           .container {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            height: 100vh;
             background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
             border: 1px solid var(--neon-orange);
             box-shadow: 0 0 20px var(--neon-orange);
+            margin: 0;
+            width: 100%;
           }
 
           .header {
@@ -864,13 +832,14 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             background: rgba(5, 217, 232, 0.1);
             border-bottom: 1px solid var(--neon-blue);
             box-shadow: var(--glow) var(--neon-blue);
+            position: relative;
           }
 
           h1 {
             margin: 0;
             color: var(--neon-orange);
             text-shadow: 0 0 10px var(--neon-orange);
-            font-size: 2rem;
+            font-size: 1.5rem;
             letter-spacing: 2px;
           }
 
@@ -878,13 +847,26 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             color: var(--neon-blue);
             text-shadow: 0 0 5px var(--neon-blue);
             margin-top: 5px;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
+          }
+
+          .mobile-menu-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--neon-orange);
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: none;
           }
 
           .tabs {
             display: flex;
             background: var(--darker-bg);
             border-bottom: 1px solid var(--neon-orange);
+            flex-wrap: wrap;
           }
 
           .tab {
@@ -896,6 +878,9 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             font-weight: bold;
             font-size: 0.9rem;
             white-space: nowrap;
+            flex: 1;
+            text-align: center;
+            min-width: 120px;
           }
 
           .tab:hover {
@@ -928,26 +913,11 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             flex-direction: column;
           }
 
-          @media (min-width: 768px) {
-            .compiler-container {
-              flex-direction: row;
-            }
-            
-            h1 {
-              font-size: 2.5rem;
-            }
-            
-            .tab {
-              padding: 12px 20px;
-              font-size: 1rem;
-            }
-          }
-
           .input-section, .output-section {
             flex: 1;
             display: flex;
             flex-direction: column;
-            min-height: 300px;
+            min-height: 200px;
           }
 
           .section-header {
@@ -971,7 +941,7 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             resize: none;
             outline: none;
             box-shadow: 0 0 10px rgba(5, 217, 232, 0.3);
-            min-height: 200px;
+            min-height: 150px;
           }
 
           textarea:focus {
@@ -987,7 +957,7 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
           }
 
           button {
-            padding: 8px 15px;
+            padding: 8px 12px;
             background: rgba(255, 94, 0, 0.3);
             border: 1px solid var(--neon-orange);
             color: white;
@@ -997,17 +967,9 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             transition: all 0.3s;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             flex: 1;
-            min-width: 120px;
-          }
-
-          @media (min-width: 480px) {
-            button {
-              flex: none;
-              padding: 10px 20px;
-              font-size: 0.9rem;
-            }
+            min-width: 100px;
           }
 
           button:hover {
@@ -1024,7 +986,7 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             flex: 1;
             display: flex;
             flex-direction: column;
-            min-height: 400px;
+            min-height: 300px;
           }
 
           iframe {
@@ -1032,7 +994,7 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             border: 1px solid var(--neon-blue);
             background: black;
             box-shadow: 0 0 15px var(--neon-blue);
-            min-height: 900px;
+            min-height: 400px;
           }
 
           .status-bar {
@@ -1042,6 +1004,11 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             font-size: 0.8rem;
             display: flex;
             justify-content: space-between;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
           }
 
           .status-message {
@@ -1049,7 +1016,7 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 70%;
+            max-width: 60%;
           }
 
           .status-error {
@@ -1057,7 +1024,7 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 70%;
+            max-width: 60%;
           }
 
           .status-time {
@@ -1085,39 +1052,37 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             100% { background-position: 0 100%; }
           }
 
-          .glitch {
-            position: relative;
+          .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--darker-bg);
+            border: 1px solid var(--terminal-green);
+            padding: 10px 15px;
+            color: var(--terminal-green);
+            font-size: 0.9rem;
+            box-shadow: 0 0 15px var(--terminal-green);
+            z-index: 2000;
+            animation: fadeOut 3s forwards;
+            animation-delay: 2s;
+            max-width: 80%;
+          }
+          
+          @keyframes fadeOut {
+            to { opacity: 0; }
           }
 
-          .glitch::before, .glitch::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.8;
+          .static-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            color: var(--terminal-green);
+            font-size: 0.8rem;
           }
 
-          .glitch::before {
-            color: #0ff;
-            z-index: -1;
-            animation: glitch-effect 3s infinite;
-          }
-
-          .glitch::after {
-            color: #f0f;
-            z-index: -2;
-            animation: glitch-effect 2s infinite reverse;
-          }
-
-          @keyframes glitch-effect {
-            0% { transform: translate(0); }
-            20% { transform: translate(-3px, 3px); }
-            40% { transform: translate(-3px, -3px); }
-            60% { transform: translate(3px, 3px); }
-            80% { transform: translate(3px, -3px); }
-            100% { transform: translate(0); }
+          .static-toggle input {
+            accent-color: var(--neon-orange);
           }
 
           .compiling-overlay {
@@ -1138,27 +1103,29 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
           }
 
           .compiling-text {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
             text-shadow: 0 0 10px var(--terminal-green);
             animation: pulse 1.5s infinite;
+            padding: 0 20px;
           }
 
           .compiling-subtext {
-            font-size: 1rem;
+            font-size: 0.9rem;
             margin-top: 1rem;
             color: var(--neon-blue);
+            padding: 0 20px;
           }
 
           .compiling-animation {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
           }
 
           .compiling-dot {
-            width: 20px;
-            height: 20px;
+            width: 15px;
+            height: 15px;
             border-radius: 50%;
             background-color: var(--terminal-green);
             animation: bounce 1.5s infinite ease-in-out;
@@ -1182,7 +1149,7 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
               transform: translateY(0);
             }
             50% {
-              transform: translateY(-20px);
+              transform: translateY(-15px);
             }
           }
 
@@ -1195,183 +1162,66 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             }
           }
 
-          .notification {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            background: var(--darker-bg);
-            border: 1px solid var(--terminal-green);
-            padding: 15px 25px;
-            color: var(--terminal-green);
-            font-size: 1.1rem;
-            box-shadow: 0 0 15px var(--terminal-green);
-            z-index: 2000;
-            animation: fadeOut 3s forwards;
-            animation-delay: 2s;
-          }
-          
-          @keyframes fadeOut {
-            to { opacity: 0; }
-          }
-
-          .static-toggle {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 10px;
-            color: var(--terminal-green);
-            font-size: 0.9rem;
+          @media (min-width: 768px) {
+            h1 {
+              font-size: 2rem;
+            }
+            
+            .subtitle {
+              font-size: 0.9rem;
+            }
+            
+            .tab {
+              padding: 12px 20px;
+              font-size: 1rem;
+              flex: none;
+            }
+            
+            .compiler-container {
+              flex-direction: row;
+            }
+            
+            button {
+              padding: 10px 15px;
+              font-size: 0.8rem;
+            }
           }
 
-          .static-toggle input {
-            accent-color: var(--neon-orange);
-          }
-
-          .debug-container {
-            position: fixed;
-            bottom: 50px;
-            right: 10px;
-            width: 400px;
-            height: 300px;
-            background: var(--darker-bg);
-            border: 1px solid var(--neon-orange);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-          }
-
-          .debug-header {
-            padding: 8px;
-            background: rgba(255, 94, 0, 0.3);
-            border-bottom: 1px solid var(--neon-orange);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          }
-
-          .debug-title {
-            font-weight: bold;
-            color: var(--neon-orange);
-          }
-
-          .debug-close {
-            cursor: pointer;
-            color: var(--neon-orange);
-          }
-
-          .debug-content {
-            flex: 1;
-            padding: 10px;
-            overflow: auto;
-            color: var(--terminal-green);
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-          }
-
-          .debug-toggle {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            padding: 8px 15px;
-            background: rgba(255, 94, 0, 0.3);
-            border: 1px solid var(--neon-orange);
-            color: white;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.8rem;
-            z-index: 1000;
-          }
-
-          .debug-toggle:hover {
-            background: var(--neon-orange);
-            box-shadow: 0 0 15px var(--neon-orange);
-          }
-
-          .connect-wallet {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            padding: 8px 15px;
-            background: rgba(255, 94, 0, 0.3);
-            border: 1px solid var(--neon-orange);
-            color: white;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.8rem;
-            z-index: 1000;
-          }
-
-          .connect-wallet:hover {
-            background: var(--neon-orange);
-            box-shadow: 0 0 15px var(--neon-orange);
-          }
-
-          .blockchain-status {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            padding: 8px 12px;
-            background: rgba(0, 255, 65, 0.1);
-            border: 1px solid var(--terminal-green);
-            color: var(--terminal-green);
-            font-size: 0.8rem;
-            z-index: 1000;
-          }
-
-          .blockchain-status.connected {
-            background: rgba(0, 255, 65, 0.2);
-            border-color: var(--terminal-green);
-          }
-
-          .blockchain-status.disconnected {
-            background: rgba(255, 94, 0, 0.2);
-            border-color: var(--neon-orange);
-            color: var(--neon-orange);
+          @media (max-width: 767px) {
+            .mobile-menu-toggle {
+              display: block;
+            }
+            
+            .tabs {
+              flex-direction: column;
+              display: ${isMobileMenuOpen ? 'flex' : 'none'};
+              position: absolute;
+              top: 100%;
+              left: 0;
+              right: 0;
+              background: var(--darker-bg);
+              z-index: 100;
+            }
+            
+            .tab {
+              border-right: none;
+              border-bottom: 1px solid var(--neon-orange);
+            }
           }
         `}</style>
 
         <div className="scanlines"></div>
-        <button 
-          className="connect-wallet" 
-          onClick={this.connectWallet}
-        >
-          {isConnected ? `CONNECTED: ${this.shortenAddress(currentAccount)}` : 'CONNECT WALLET'}
-        </button>
-        <button 
-          className="debug-toggle" 
-          onClick={this.toggleDebug}
-        >
-          DEBUG
-        </button>
-        
-        {showDebug && (
-          <div className="debug-container">
-            <div className="debug-header">
-              <div className="debug-title">CONTRACT DEBUG OUTPUT</div>
-              <div className="debug-close" onClick={this.toggleDebug}>X</div>
-            </div>
-            <div className="debug-content" ref={this.debugContentRef}>
-              {debugMessages.map((message, index) => (
-                <div key={index}>{message}</div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className={`blockchain-status ${isConnected ? 'connected' : 'disconnected'}`}>
-          Blockchain: {isConnected ? 'Connected to Polygon' : 'Disconnected'}
-        </div>
 
         <div className="container">
           <div className="header">
+            {isMobile && (
+              <button 
+                className="mobile-menu-toggle"
+                onClick={this.toggleMobileMenu}
+              >
+                ☰
+              </button>
+            )}
             <h1 className="glitch" data-text="UPCSCRIPT COMPILER">UPCSCRIPT COMPILER</h1>
             <div className="subtitle">CONVERT LINE-BASED CONFIG TO JSON</div>
           </div>
@@ -1429,14 +1279,6 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
                 </div>
               </div>
             </div>
-            <div className="status-bar">
-              <div className={isError ? "status-error" : "status-message"} id="statusMessage">
-                {statusMessage}
-              </div>
-              <div className="status-time" id="statusTime">
-                {currentDate} {currentTime}
-              </div>
-            </div>
           </div>
 
           <div className={`tab-content ${activeTab === 'upload' ? 'active' : ''}`} id="upload">
@@ -1454,12 +1296,15 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
                 }}
               ></iframe>
             </div>
-            <div className="status-bar">
-              <div className="status-message">UPLOAD MODE</div>
-              <div className="status-time" id="uploadTime">
-                {currentDate} {currentTime}
-              </div>
-            </div>
+          </div>
+        </div>
+
+        <div className="status-bar">
+          <div className={isError ? "status-error" : "status-message"} id="statusMessage">
+            {statusMessage}
+          </div>
+          <div className="status-time" id="statusTime">
+            {currentDate} {currentTime}
           </div>
         </div>
 
