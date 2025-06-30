@@ -1,0 +1,1154 @@
+import React from 'react';
+import Terminal from 'react-console-emulator';
+import { ethers } from 'ethers';
+import PopitFactoryABI from '../etc/rawmaterial/PopitFactory.json';
+import PopitABI from '../etc/rawmaterial/Popit.json';
+
+const CYBERPUNK = {
+  primary: '#00f0ff',
+  secondary: '#ff00ff',
+  background: '#121212',
+  text: '#e0e0e0',
+  error: '#ff3d3d',
+  success: '#4caf50',
+  accent: '#ff5722',
+  terminalBg: '#0a0a1a',
+  terminalBorder: '1px solid #00f0ff',
+  terminalShadow: '0 0 15px rgba(0, 240, 255, 0.5)',
+  panelBg: 'rgba(10, 10, 26, 0.8)',
+  panelBorder: '1px solid rgba(0, 240, 255, 0.3)',
+  panelShadow: '0 0 10px rgba(0, 240, 255, 0.2)'
+};
+
+class PopitTerminal extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      provider: null,
+      signer: null,
+      factory: null,
+      currentPopit: null,
+      account: '',
+      isConnected: false,
+      showGUI: false,
+      activePanel: 'dashboard',
+      link: '',
+      upc: '',
+      name: '',
+      message: '',
+      creationPrice: '500',
+      dashboardOutput: [],
+      popitOutput: [],
+      factoryOutput: [],
+      popitAddress: props.address,
+      selectedPopId: '',
+      newLink: '',
+      pops: []
+    };
+    this.terminal = React.createRef();
+  }
+
+  componentDidMount() {
+    this.initConnection();
+    console.log("Popit address is ", this.state.popitAddress);
+  }
+
+  initConnection = async () => {
+    try {
+      if (window.ethereum) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await window.ethereum.enable();
+        const signer = provider.getSigner();
+        const account = await signer.getAddress();
+        
+        const factory = new ethers.Contract(
+          '0x55910d067a8f1ff45891f6F3A13196c24F12B414', // Replace with your PopitFactory address
+          PopitFactoryABI.abi,
+          signer
+        );
+
+        const creationPrice = await factory.creationPrice();
+        
+        this.setState({
+          provider,
+          signer,
+          factory,
+          account,
+          isConnected: true,
+          creationPrice: ethers.utils.formatEther(creationPrice)
+        });
+
+        this.pushToTerminal(`[[success]]Connected to account: ${account}[[/success]]`);
+        this.pushToTerminal(`Current creation price: ${ethers.utils.formatEther(creationPrice)} FLIP tokens`);
+        this.pushToTerminal('Type "help" to see available commands');
+      } else {
+        throw new Error('No Ethereum provider detected');
+      }
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Connection error: ${error.message}[[/error]]`);
+    }
+  };
+
+
+  pushToTerminal = (message) => {
+    // Convert objects to strings
+    if (typeof message === 'object' && message !== null) {
+      message = JSON.stringify(message, null, 2);
+    }
+  
+    if (this.terminal.current) {
+      this.terminal.current.pushToStdout(message.toString());
+    }
+    
+    const outputKey = `${this.state.activePanel}Output`;
+    this.setState(prevState => ({
+      [outputKey]: [...prevState[outputKey], message.toString()]
+    }));
+  };
+
+
+
+
+
+
+  clearOutput = (panel) => {
+    const outputKey = `${panel}Output`;
+    this.setState({ [outputKey]: [] });
+  };
+
+  checkAndSetAllowance = async (spender, amount) => {
+    try {
+      const { provider, account } = this.state;
+      const flipToken = new ethers.Contract(
+        '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118', // FLIP token address
+        [
+          'function allowance(address owner, address spender) external view returns (uint256)',
+          'function approve(address spender, uint256 amount) external returns (bool)'
+        ],
+        provider.getSigner()
+      );
+  
+      const currentAllowance = await flipToken.allowance(account, spender);
+      if (currentAllowance.lt(amount)) {
+        this.pushToTerminal('Approving FLIP tokens...');
+        const tx = await flipToken.approve(spender, amount);
+        await tx.wait();
+        this.pushToTerminal('[[success]]Token approval successful![[/success]]');
+      }
+      return true;
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Allowance error: ${error.message}[[/error]]`);
+      return false;
+    }
+  };
+
+
+  toggleGUI = () => {
+    this.setState(prevState => ({ showGUI: !prevState.showGUI }));
+  };
+
+  setActivePanel = (panel) => {
+    this.setState({ activePanel: panel });
+  };
+
+  handleInputChange = (e) => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  };
+
+
+
+  create = async () => {
+    try {
+      const { factory, account, provider } = this.state;
+      const creationPrice = ethers.utils.parseUnits('500', 18); // 500 FLIP tokens with 18 decimals
+  
+      this.pushToTerminal('Creating new Popit...');
+      
+      // Initialize FLIP token contract
+      const flipToken = new ethers.Contract(
+        '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118', // FLIP token address
+        [
+          'function allowance(address owner, address spender) external view returns (uint256)',
+          'function approve(address spender, uint256 amount) external returns (bool)',
+          'function balanceOf(address account) external view returns (uint256)'
+        ],
+        provider.getSigner()
+      );
+  
+      // Check FLIP token balance
+      const balance = await flipToken.balanceOf(account);
+      if (balance.lt(creationPrice)) {
+        throw new Error(`Insufficient FLIP balance. Need 500 FLIP, you have ${ethers.utils.formatUnits(balance, 18)}`);
+      }
+  
+      // Check and set allowance if needed
+      const currentAllowance = await flipToken.allowance(account, factory.address);
+      if (currentAllowance.lt(creationPrice)) {
+        this.pushToTerminal('Approving FLIP tokens...');
+        const approveTx = await flipToken.approve(factory.address, creationPrice);
+        await approveTx.wait();
+        this.pushToTerminal('[[success]]Token approval successful![[/success]]');
+      }
+  
+      // Create the Popit
+      this.pushToTerminal('Creating Popit contract...');
+      const tx = await factory.createPopit();
+      const receipt = await tx.wait();
+      
+      // Get the new Popit address from events
+      let newPopitAddress;
+      if (receipt.events && receipt.events.length) {
+        const popitCreatedEvent = receipt.events.find(e => e.event === 'PopitCreated');
+        if (popitCreatedEvent) {
+          newPopitAddress = popitCreatedEvent.args.popitAddress;
+        }
+      }
+  
+      // Fallback to getting from factory if event parsing fails
+      if (!newPopitAddress) {
+        const popits = await factory.getDeployedPopits();
+        newPopitAddress = popits[popits.length - 1];
+      }
+  
+      // Format success message
+      const successMessage = `[[success]]Popit created successfully!
+  Address: ${newPopitAddress}
+  Transaction: ${receipt.transactionHash}
+  Gas Used: ${receipt.gasUsed.toString()}
+  Block: ${receipt.blockNumber}[[/success]]`;
+  
+      this.pushToTerminal(successMessage);
+      
+      // Return string instead of object
+      return successMessage;
+    } catch (error) {
+      let errorMessage = `[[error]]Creation failed: ${error.reason || error.message}[[/error]]`;
+      if (error.data && error.data.message) {
+        errorMessage += `\n${error.data.message}`;
+      }
+      this.pushToTerminal(errorMessage);
+      throw error;
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
+loadPopit = async (address) => {
+  if (!address) {
+    address = this.state.popitAddress;
+  }
+  
+  try {
+    this.pushToTerminal(`Loading Popit at: ${address}`);
+    
+    // Updated Popit ABI including insertLink function
+    const popitABI = [
+      "function totalPops() external view returns (uint256)",
+      "function creationPrice() external view returns (uint256)",
+      "function insertLink(string memory _link, string memory _upc, string memory _human_readable_name) external",
+      "function createPop(string memory link, string memory upc, string memory name) external",
+      "function removePop(uint256 id) external",
+      "function updateLink(uint256 id, string memory newLink) external",
+      "function getPopById(uint256 id) public view returns (tuple(uint256 id, string link, bytes32 hash, address owner, string upc, string name, uint256 timestamp))",
+      "function owner() external view returns (address)",
+      "function setCreationPrice(uint256 newPrice) external",
+      "function setFlipToken(address tokenAddress) external"
+    ];
+
+    const popit = new ethers.Contract(
+      address,
+      popitABI,
+      this.state.signer
+    );
+
+    // Verify this is actually a Popit contract
+    try {
+      await popit.totalPops(); // Check if this function exists
+    } catch (e) {
+      throw new Error("Invalid Popit contract - missing required functions");
+    }
+
+    const price = await popit.creationPrice();
+    const popitOwner = await popit.owner();
+
+    this.setState({
+      currentPopit: popit,
+      creationPrice: ethers.utils.formatUnits(price, 18)
+    });
+
+    const successMessage = `[[success]]Successfully loaded Popit contract:
+Address: ${address}
+Owner: ${popitOwner}
+Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
+    
+    this.pushToTerminal(successMessage);
+    return successMessage;
+  } catch (error) {
+    const errorMessage = `[[error]]Error loading Popit: ${error.message}[[/error]]`;
+    this.pushToTerminal(errorMessage);
+    throw error;
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  createPop = async () => {
+    try {
+      const { currentPopit, link, upc, name } = this.state;
+      if (!currentPopit) {
+        throw new Error('No Popit loaded');
+      }
+  
+      if (!link || !upc || !name) {
+        throw new Error('Link, UPC, and name are required');
+      }
+  
+      this.pushToTerminal(`Creating Pop with name: ${name}, UPC: ${upc}, link: ${link}`);
+      
+      // First check if we need to approve FLIP tokens
+      const flipTokenAddress = '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118';
+      const flipToken = new ethers.Contract(
+        flipTokenAddress,
+        [
+          "function allowance(address owner, address spender) external view returns (uint256)",
+          "function approve(address spender, uint256 amount) external returns (bool)",
+          "function balanceOf(address account) external view returns (uint256)"
+        ],
+        this.state.signer
+      );
+  
+      const price = ethers.utils.parseUnits('10', 18); // 500 FLIP tokens with 18 decimals
+      //const price = await currentPopit.creationPrice();
+      const balance = await flipToken.balanceOf(this.state.account);
+      
+      if (balance.lt(price)) {
+        throw new Error(`Insufficient FLIP balance. Need ${ethers.utils.formatUnits(price, 18)} FLIP`);
+      }
+  
+      const allowance = await flipToken.allowance(this.state.account, currentPopit.address);
+      if (allowance.lt(price)) {
+        this.pushToTerminal('Approving FLIP tokens...');
+        const approveTx = await flipToken.approve(currentPopit.address, price);
+        await approveTx.wait();
+      }
+  
+      // Create the Pop
+      const tx = await currentPopit.createPop(link, upc, name);
+      const receipt = await tx.wait();
+  
+      const successMessage = `[[success]]Pop created successfully!
+  Transaction Hash: ${receipt.transactionHash}
+  Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
+  
+      this.pushToTerminal(successMessage);
+      
+      // Refresh the pops list
+      await this.listPops();
+      
+      return successMessage;
+    } catch (error) {
+      const errorMessage = `[[error]]Creation failed: ${error.reason || error.message}[[/error]]`;
+      this.pushToTerminal(errorMessage);
+      throw error;
+    }
+  };
+
+
+
+
+
+
+  removePop = async (id) => {
+    try {
+      const { currentPopit } = this.state;
+      if (!currentPopit) {
+        throw new Error('No Popit loaded');
+      }
+  
+      this.pushToTerminal(`Removing Pop with ID: ${id}`);
+      
+      const tx = await currentPopit.removePop(id);
+      await tx.wait();
+      
+      this.pushToTerminal(`[[success]]Pop removed successfully![[/success]]`);
+      
+      // Refresh pops list
+      await this.listPops();
+      return true;
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Removal failed: ${error.message}[[/error]]`);
+      return false;
+    }
+  };
+
+  updatePopLink = async () => {
+    try {
+      const { currentPopit, selectedPopId, newLink } = this.state;
+      if (!currentPopit) {
+        throw new Error('No Popit loaded');
+      }
+  
+      this.pushToTerminal(`Updating Pop ${selectedPopId} link to: ${newLink}`);
+      
+      const tx = await currentPopit.updateLink(selectedPopId, newLink);
+      await tx.wait();
+      
+      this.pushToTerminal(`[[success]]Pop link updated successfully![[/success]]`);
+      
+      // Refresh pops list
+      await this.listPops();
+      return true;
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Update failed: ${error.message}[[/error]]`);
+      return false;
+    }
+  };
+
+
+
+  listPops = async () => {
+    try {
+      const { currentPopit } = this.state;
+      if (!currentPopit) {
+        throw new Error('No Popit loaded');
+      }
+  
+      this.pushToTerminal('Fetching Pops...');
+      
+      const total = await currentPopit.totalPops();
+      const pops = [];
+      
+      for (let i = 1; i <= total; i++) {
+        try {
+          const pop = await currentPopit.getPopById(i);
+          // Check if pop exists (id != 0)
+          if (pop.id.toString() !== '0') {
+            pops.push({
+              id: pop.id.toString(),
+              link: pop.link,
+              name: pop.name,
+              upc: pop.upc,
+              timestamp: new Date(pop.timestamp * 1000).toLocaleString()
+            });
+          }
+        } catch (e) {
+          console.warn(`Error fetching pop ${i}:`, e);
+        }
+      }
+      
+      this.setState({ pops });
+      
+      let output = '[[header]]=== Pops ===[[/header]]\n';
+      if (pops.length === 0) {
+        output += 'No pops found\n';
+      } else {
+        pops.forEach(pop => {
+          output += `ID: ${pop.id} | Name: ${pop.name} | UPC: ${pop.upc}\n`;
+          output += `Link: ${pop.link}\n`;
+          output += `Created: ${pop.timestamp}\n`;
+          output += '----------------\n';
+        });
+      }
+  
+      this.pushToTerminal(output);
+      return output;
+    } catch (error) {
+      const errorMessage = `[[error]]Error fetching pops: ${error.message}[[/error]]`;
+      this.pushToTerminal(errorMessage);
+      throw error;
+    }
+  };
+
+
+
+
+
+
+  // ========== FACTORY OPERATIONS ==========
+  listPopits = async () => {
+    try {
+      const { factory, account } = this.state;
+      if (!factory) {
+        throw new Error('Factory not connected');
+      }
+  
+      const allPopits = await factory.getDeployedPopits();
+      const ownedPopits = await factory.getPopitsByOwner(account);
+      
+      let output = '[[header]]=== All Popits ===[[/header]]\n';
+      allPopits.forEach((popit, idx) => {
+        output += `  ${idx + 1}. ${popit}\n`;
+      });
+      
+      output += '[[header]]=== Your Popits ===[[/header]]\n';
+      if (ownedPopits.length === 0) {
+        output += 'No Popits found\n';
+      } else {
+        ownedPopits.forEach((popit, idx) => {
+          output += `  ${idx + 1}. ${popit}\n`;
+        });
+      }
+  
+      this.pushToTerminal(output);
+      return output; // Return string instead of object
+    } catch (error) {
+      const errorMessage = `[[error]]Error: ${error.message}[[/error]]`;
+      this.pushToTerminal(errorMessage);
+      throw error;
+    }
+  };
+
+
+
+  // ========== GUI RENDERING ==========
+  renderDashboardPanel = () => {
+    return (
+      <div style={styles.panel}>
+        <h2 style={styles.panelTitle}>POPIT DASHBOARD</h2>
+        <div style={styles.gridContainer}>
+          <div style={styles.gridItem}>
+            <h3 style={styles.subTitle}>CURRENT POPIT</h3>
+            <div style={styles.infoBox}>
+              {this.state.currentPopit ? (
+                <>
+                  <p>Address: {this.state.currentPopit.address.substring(0, 12)}...</p>
+                  <p>Total Pops: {this.state.pops.length}</p>
+                  <p>Creation Price: {this.state.creationPrice} FLIP</p>
+                </>
+              ) : (
+                <p>No Popit loaded</p>
+              )}
+            </div>
+          </div>
+          <div style={styles.gridItem}>
+            <h3 style={styles.subTitle}>POP MANAGEMENT</h3>
+            <div style={styles.infoBox}>
+              <input
+                type="text"
+                name="selectedPopId"
+                value={this.state.selectedPopId}
+                onChange={this.handleInputChange}
+                placeholder="Pop ID"
+                style={styles.input}
+              />
+              <input
+                type="text"
+                name="newLink"
+                value={this.state.newLink}
+                onChange={this.handleInputChange}
+                placeholder="New Link"
+                style={styles.input}
+              />
+              <button 
+                style={styles.button}
+                onClick={this.updatePopLink}
+              >
+                UPDATE POP LINK
+              </button>
+              <div style={styles.divider}></div>
+              <button 
+                style={{...styles.button, backgroundColor: CYBERPUNK.error}}
+                onClick={() => this.removePop(this.state.selectedPopId)}
+              >
+                REMOVE POP
+              </button>
+            </div>
+          </div>
+        </div>
+        {this.renderOutputArea(this.state.dashboardOutput)}
+        <div style={{ textAlign: 'right', marginTop: '10px' }}>
+          <button 
+            style={{ ...styles.button, width: 'auto', padding: '5px 10px' }}
+            onClick={() => this.clearOutput('dashboard')}
+          >
+            CLEAR OUTPUT
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  renderPopitPanel = () => {
+    return (
+      <div style={styles.panel}>
+        <h2 style={styles.panelTitle}>POPIT MANAGEMENT</h2>
+        <div style={styles.gridContainer}>
+          <div style={styles.gridItem}>
+            <h3 style={styles.subTitle}>CREATE POP</h3>
+            <div style={styles.infoBox}>
+              <input
+                type="text"
+                name="link"
+                value={this.state.link}
+                onChange={this.handleInputChange}
+                placeholder="Link"
+                style={styles.input}
+              />
+              <input
+                type="text"
+                name="upc"
+                value={this.state.upc}
+                onChange={this.handleInputChange}
+                placeholder="UPC"
+                style={styles.input}
+              />
+              <input
+                type="text"
+                name="name"
+                value={this.state.name}
+                onChange={this.handleInputChange}
+                placeholder="Name"
+                style={styles.input}
+              />
+              <button 
+                style={styles.button}
+                onClick={this.createPop}
+              >
+                CREATE POP
+              </button>
+              <div style={styles.divider}></div>
+              <button 
+                style={styles.button}
+                onClick={this.listPops}
+              >
+                LIST POPS
+              </button>
+            </div>
+          </div>
+          <div style={styles.gridItem}>
+            <h3 style={styles.subTitle}>LOAD POPIT</h3>
+            <div style={styles.infoBox}>
+              <input
+                type="text"
+                name="popitAddress"
+                value={this.state.popitAddress}
+                onChange={this.handleInputChange}
+                placeholder="Popit Address"
+                style={styles.input}
+              />
+              <button 
+                style={styles.button}
+                onClick={() => this.loadPopit(this.state.popitAddress)}
+              >
+                LOAD POPIT
+              </button>
+            </div>
+          </div>
+        </div>
+        {this.renderOutputArea(this.state.popitOutput)}
+        <div style={{ textAlign: 'right', marginTop: '10px' }}>
+          <button 
+            style={{ ...styles.button, width: 'auto', padding: '5px 10px' }}
+            onClick={() => this.clearOutput('popit')}
+          >
+            CLEAR OUTPUT
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  renderFactoryPanel = () => {
+    return (
+      <div style={styles.panel}>
+        <h2 style={styles.panelTitle}>FACTORY MANAGEMENT</h2>
+        <div style={styles.gridContainer}>
+          <div style={styles.gridItem}>
+            <h3 style={styles.subTitle}>CREATE POPIT</h3>
+            <div style={styles.infoBox}>
+              <button 
+                style={styles.button}
+                onClick={this.createPopit}
+              >
+                CREATE NEW POPIT
+              </button>
+              <p style={{ color: CYBERPUNK.secondary }}>
+                Creation Price: {this.state.creationPrice} FLIP tokens
+              </p>
+            </div>
+          </div>
+          <div style={styles.gridItem}>
+            <h3 style={styles.subTitle}>LIST POPITS</h3>
+            <div style={styles.infoBox}>
+              <button 
+                style={styles.button}
+                onClick={this.listPopits}
+              >
+                LIST ALL POPITS
+              </button>
+            </div>
+          </div>
+        </div>
+        {this.renderOutputArea(this.state.factoryOutput)}
+        <div style={{ textAlign: 'right', marginTop: '10px' }}>
+          <button 
+            style={{ ...styles.button, width: 'auto', padding: '5px 10px' }}
+            onClick={() => this.clearOutput('factory')}
+          >
+            CLEAR OUTPUT
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  renderOutputArea = (output) => {
+    return (
+      <div style={{
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        border: `1px solid ${CYBERPUNK.primary}`,
+        borderRadius: '4px',
+        padding: '10px',
+        marginTop: '15px',
+        height: '200px',
+        overflowY: 'auto',
+        fontFamily: 'monospace',
+        fontSize: '14px'
+      }}>
+        {output.length === 0 ? (
+          <div style={{ color: CYBERPUNK.secondary, opacity: 0.7 }}>
+            No output yet. Execute commands to see results here.
+          </div>
+        ) : (
+          output.map((line, index) => (
+            <div key={index} style={{ 
+              marginBottom: '5px',
+              whiteSpace: 'pre-wrap',
+              color: line.includes('[[error]]') ? CYBERPUNK.error :
+                    line.includes('[[success]]') ? CYBERPUNK.success :
+                    line.includes('[[header]]') ? CYBERPUNK.primary :
+                    line.includes('[[secondary]]') ? CYBERPUNK.secondary :
+                    CYBERPUNK.text
+            }}>
+              {line.replace(/\[\[.*?\]\]/g, '')}
+            </div>
+          ))
+        )}
+      </div>
+    );
+  };
+
+  render() {
+    const { showGUI, activePanel } = this.state;
+
+    return (
+      <div style={{
+        backgroundColor: CYBERPUNK.background,
+        padding: '20px',
+        height: '100%',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Scanlines overlay */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: `linear-gradient(
+            rgba(18, 16, 16, 0) 50%, 
+            rgba(0, 0, 0, 0.25) 50%
+          )`,
+          backgroundSize: '100% 2px',
+          pointerEvents: 'none',
+          zIndex: 1
+        }}></div>
+
+        {/* Main content */}
+        <div style={{
+          position: 'relative',
+          zIndex: 3,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          {/* Header */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '20px',
+            paddingBottom: '10px',
+            borderBottom: `1px solid ${CYBERPUNK.primary}`
+          }}>
+            <h1 style={{
+              color: CYBERPUNK.primary,
+              margin: 0,
+              fontSize: '24px',
+              textShadow: `0 0 5px ${CYBERPUNK.primary}`
+            }}>
+              POPIT TERMINAL
+            </h1>
+            <div>
+              <button 
+                onClick={this.toggleGUI}
+                style={{
+                  background: CYBERPUNK.terminalBg,
+                  color: CYBERPUNK.primary,
+                  border: `1px solid ${CYBERPUNK.primary}`,
+                  padding: '5px 15px',
+                  cursor: 'pointer',
+                  marginRight: '10px',
+                  boxShadow: `0 0 5px ${CYBERPUNK.primary}`,
+                  fontFamily: 'monospace'
+                }}
+              >
+                {showGUI ? 'SHOW TERMINAL' : 'SHOW GUI'}
+              </button>
+              <span style={{
+                color: this.state.isConnected ? CYBERPUNK.success : CYBERPUNK.error,
+                fontFamily: 'monospace'
+              }}>
+                {this.state.isConnected ? 
+                  `CONNECTED: ${this.state.account.substring(0, 12)}...` : 
+                  'NOT CONNECTED'}
+              </span>
+            </div>
+          </div>
+
+          {/* Main content area */}
+          {showGUI ? (
+            <div style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column'
+            }}>
+              {/* Navigation */}
+              <div style={styles.navContainer}>
+                <button 
+                  onClick={() => this.setActivePanel('dashboard')}
+                  style={{
+                    ...styles.navButton,
+                    borderBottom: activePanel === 'dashboard' ? `2px solid ${CYBERPUNK.primary}` : 'none'
+                  }}
+                >
+                  DASHBOARD
+                </button>
+                <button 
+                  onClick={() => this.setActivePanel('popit')}
+                  style={{
+                    ...styles.navButton,
+                    borderBottom: activePanel === 'popit' ? `2px solid ${CYBERPUNK.primary}` : 'none'
+                  }}
+                >
+                  POPIT MGMT
+                </button>
+                <button 
+                  onClick={() => this.setActivePanel('factory')}
+                  style={{
+                    ...styles.navButton,
+                    borderBottom: activePanel === 'factory' ? `2px solid ${CYBERPUNK.primary}` : 'none'
+                  }}
+                >
+                  FACTORY
+                </button>
+              </div>
+
+              {/* Panel content */}
+              <div style={{
+                flex: 1,
+                overflow: 'auto'
+              }}>
+                {activePanel === 'dashboard' && this.renderDashboardPanel()}
+                {activePanel === 'popit' && this.renderPopitPanel()}
+                {activePanel === 'factory' && this.renderFactoryPanel()}
+              </div>
+            </div>
+          ) : (
+            <Terminal
+              ref={this.terminal}
+        commands={{
+          connect: {
+            description: 'Connect wallet',
+            fn: this.initConnection
+          },
+          repo: {
+            description: 'Create new repository (costs 500 FLIP tokens)',
+            fn: async () => {
+              try {
+                await this.create();
+                return '';
+              } catch (error) {
+                return error.message;
+              }
+            }
+          },
+          load: {
+            description: 'Load existing repo',
+            usage: 'loadpopit <address>',
+            fn: async (address) => {
+              try {
+                await this.loadPopit(address);
+                return '';
+              } catch (error) {
+                return error.message;
+              }
+            }
+          },
+
+
+
+
+push: {
+  description: 'Create new Pop using insertLink',
+  usage: 'push <link> <upc> <name>',
+  fn: async (link, upc, name) => {
+    try {
+      const { currentPopit, account, provider } = this.state;
+      
+      // 1. Verify contract is loaded and has insertLink
+      if (!currentPopit || typeof currentPopit.insertLink !== 'function') {
+        throw new Error('Popit contract not loaded or missing insertLink function');
+      }
+
+      // 2. FLIP Token Setup
+      const flipToken = new ethers.Contract(
+        '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118',
+        [
+          "function approve(address spender, uint256 amount) returns (bool)",
+          "function allowance(address owner, address spender) view returns (uint256)",
+          "function balanceOf(address account) view returns (uint256)"
+        ],
+        provider.getSigner()
+      );
+
+      // 3. Check Balance - using the correct creation price from state
+      const requiredAmount = ethers.utils.parseUnits('1', 18);
+      const balance = await flipToken.balanceOf(account);
+      if (balance.lt(requiredAmount)) {
+        throw new Error(`Need ${this.state.creationPrice} FLIP (you have ${ethers.utils.formatUnits(balance, 18)})`);
+      }
+
+      // 4. Check & Set Allowance - using MAX_UINT256 for unlimited approval
+      const MAX_UINT256 = ethers.constants.MaxUint256;
+      const allowance = await flipToken.allowance(account, currentPopit.address);
+      if (allowance.lt(requiredAmount)) {
+        this.pushToTerminal('Approving FLIP tokens...');
+        const approveTx = await flipToken.approve(currentPopit.address, MAX_UINT256);
+        await approveTx.wait();
+        this.pushToTerminal('[[success]]FLIP tokens approved![[/success]]');
+        
+        // Wait for a block confirmation to ensure the approval is processed
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+
+      // 5. Execute insertLink with proper error handling
+      this.pushToTerminal('Creating Pop with insertLink...');
+      const tx = await currentPopit.insertLink(link, upc, name);
+      
+      const receipt = await tx.wait();
+      
+      // Verify the transaction was successful
+      if (receipt.status === 1) {
+        const successMessage = `[[success]]Pop created successfully!
+Transaction Hash: ${receipt.transactionHash}
+Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
+        this.pushToTerminal(successMessage);
+        await this.listPops();
+        return '';
+      } else {
+        throw new Error('Transaction failed');
+      }
+    } catch (error) {
+      let errorMessage = error.reason || error.message;
+      if (error.data && error.data.message) {
+        errorMessage += `\n${error.data.message}`;
+      }
+      const errMsg = `[[error]]Creation failed: ${errorMessage}[[/error]]`;
+      this.pushToTerminal(errMsg);
+      return errMsg;
+    }
+  }
+},
+
+
+
+
+
+
+
+
+
+
+
+
+
+          remove: {
+            description: 'Remove a Pop',
+            usage: 'removepop <id>',
+            fn: (id) => this.removePop(id)
+          },
+          updatelink: {
+            description: 'Update Pop link',
+            usage: 'updatelink <id> <newLink>',
+            fn: (id, newLink) => {
+              this.setState({ selectedPopId: id, newLink }, () => {
+                this.updatePopLink();
+              });
+            }
+          },
+          ls: {
+            description: 'List all Pops in current Popit',
+            fn: this.listPops
+          },
+          repos: {
+            description: 'List all Popits',
+            fn: async () => {
+              try {
+                await this.listPopits();
+                return '';
+              } catch (error) {
+                return error.message;
+              }
+            }
+          }
+        }}
+              dangerMode={true}
+              welcomeMessage={`
+                [[header]]
+                ===================================
+                POPIT TERMINAL v1.0
+                ===================================
+                [[/header]]
+                [[secondary]]Type 'help' for command list[[/secondary]]
+                ${this.state.isConnected ? 
+                  `\nConnected: ${this.state.account}` : 
+                  '\n[[error]]Not connected[[/error]]'}
+              `}
+              ignoreCommandCase={true}
+              promptLabel={'user@popit-terminal:~$'}
+              promptLabelStyle={{
+                color: CYBERPUNK.primary,
+                fontWeight: 'bold'
+              }}
+              inputTextStyle={{
+                color: CYBERPUNK.text
+              }}
+              autoFocus={true}
+            />
+          )}
+        </div>
+      </div>
+    );
+  }
+}
+
+// Reuse your existing styles object
+const styles = {
+  panel: {
+    backgroundColor: CYBERPUNK.panelBg,
+    border: CYBERPUNK.panelBorder,
+    borderRadius: '4px',
+    padding: '20px',
+    marginBottom: '20px',
+    boxShadow: CYBERPUNK.panelShadow,
+    color: CYBERPUNK.text,
+    fontFamily: 'monospace'
+  },
+  panelTitle: {
+    color: CYBERPUNK.primary,
+    marginTop: '0',
+    marginBottom: '20px',
+    textShadow: `0 0 5px ${CYBERPUNK.primary}`,
+    borderBottom: `1px solid ${CYBERPUNK.primary}`,
+    paddingBottom: '10px'
+  },
+  subTitle: {
+    color: CYBERPUNK.secondary,
+    marginTop: '0',
+    marginBottom: '10px',
+    fontSize: '16px'
+  },
+  gridContainer: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    gap: '20px'
+  },
+  gridItem: {
+    flex: '1',
+    minWidth: '300px'
+  },
+  infoBox: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    padding: '15px',
+    borderRadius: '4px',
+    border: `1px solid ${CYBERPUNK.primary}`,
+    height: '100%'
+  },
+  input: {
+    width: '100%',
+    padding: '8px',
+    marginBottom: '10px',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    border: `1px solid ${CYBERPUNK.primary}`,
+    color: CYBERPUNK.text,
+    fontFamily: 'monospace'
+  },
+  button: {
+    width: '100%',
+    padding: '10px',
+    backgroundColor: CYBERPUNK.terminalBg,
+    color: CYBERPUNK.primary,
+    border: `1px solid ${CYBERPUNK.primary}`,
+    borderRadius: '4px',
+    cursor: 'pointer',
+    marginBottom: '10px',
+    fontFamily: 'monospace',
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    boxShadow: `0 0 5px ${CYBERPUNK.primary}`,
+    transition: 'all 0.2s',
+    '&:hover': {
+      backgroundColor: CYBERPUNK.primary,
+      color: CYBERPUNK.terminalBg
+    }
+  },
+  navContainer: {
+    display: 'flex',
+    marginBottom: '20px',
+    borderBottom: `1px solid ${CYBERPUNK.primary}`,
+    overflowX: 'auto'
+  },
+  navButton: {
+    padding: '10px 20px',
+    backgroundColor: 'transparent',
+    color: CYBERPUNK.primary,
+    border: 'none',
+    cursor: 'pointer',
+    fontFamily: 'monospace',
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    fontSize: '14px',
+    marginRight: '10px'
+  },
+  divider: {
+    height: '1px',
+    backgroundColor: CYBERPUNK.primary,
+    margin: '10px 0',
+    opacity: 0.3
+  }
+};
+
+export default PopitTerminal;
