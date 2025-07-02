@@ -2324,6 +2324,13 @@ console.log("upc data is " , data)
 
 
 
+
+
+
+
+
+
+
 myppl: {
   description: '<p style="color:orange;font-size:1.1em">** Open MY PPL (admin private protocol link) minibrowser</p>',
   fn: async (name) => {
@@ -2349,15 +2356,24 @@ myppl: {
         });
       }
 
-      // 2. Verify PPLS contract address
+      // 2. Check if name is a valid Ethereum address
+      if (name && ethers.utils.isAddress(name)) {
+        this.setState({
+          ppls: name
+        });
+        terminal.pushToStdout(`[[success]]PPLS repository set to: ${name}[[/success]]`);
+        return;
+      }
+
+      // 3. Verify PPLS contract address
       if (!this.state.ppls) {
-        throw new Error("No PPLS contract configured");
+        throw new Error("No PPLS contract configured. Please provide a valid repository address as the parameter");
       }
 
       const address = this.state.ppls;
       console.log("Using PPLS contract at:", address);
 
-      // 3. Handle case when no name is provided - load component
+      // 4. Handle case when no name is provided - load component
       if (!name) {
         this.setState({
           fullIpfs: <PopitTerminal address={address}/>,
@@ -2367,7 +2383,7 @@ myppl: {
         return;
       }
 
-      // 4. Initialize contract
+      // 5. Initialize contract
       const popitABI = [
         "function getPopByName(string) view returns (tuple(uint256,string,bytes32,address,string,string,uint256))",
         "function totalPops() view returns (uint256)"
@@ -2379,18 +2395,18 @@ myppl: {
         this.state.signer
       );
 
-      // 5. Verify contract is valid
+      // 6. Verify contract is valid
       try {
         await popit.totalPops();
       } catch (e) {
         throw new Error("Invalid PPLS contract");
       }
 
-      // 6. Look up PPL
+      // 7. Look up PPL
       terminal.pushToStdout(`Looking up PPL "${name}"...`);
       const pop = await popit.getPopByName(name);
       
-      // 7. Handle the tuple response properly
+      // 8. Handle the tuple response properly
       if (!pop || pop.length < 7) {
         throw new Error("Invalid PPL response format");
       }
@@ -2402,7 +2418,7 @@ myppl: {
         throw new Error(`PPL "${name}" not found`);
       }
 
-      // 8. Open the PPL
+      // 9. Open the PPL
       this.cSearch3.value = name;
       const resolvedPage = await this.getMplayer(link);
       
@@ -2423,6 +2439,27 @@ myppl: {
     }
   }
 },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

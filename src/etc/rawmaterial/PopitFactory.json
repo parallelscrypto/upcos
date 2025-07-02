@@ -61,13 +61,36 @@
 				"internalType": "address",
 				"name": "popitAddress",
 				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
 			}
 		],
 		"name": "PopitCreated",
 		"type": "event"
 	},
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
+			}
+		],
 		"name": "createPopit",
 		"outputs": [
 			{
@@ -17068,7 +17091,7 @@
     "137": {
       "events": {},
       "links": {},
-      "address": "0x55910d067a8f1ff45891f6F3A13196c24F12B414",
+      "address": "0x75218f31e6f2279397b317a9f59e377fbfebd5ac",
       "transactionHash": "0xb0698defe177f8d5fa85bbb7586538aadd3677e43c982b11a375bae3fe419f93"
     }
   },

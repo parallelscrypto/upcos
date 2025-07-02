@@ -2,7 +2,6 @@ import React from 'react';
 import Terminal from 'react-console-emulator';
 import { ethers } from 'ethers';
 import PopitFactoryABI from '../etc/rawmaterial/PopitFactory.json';
-import PopitABI from '../etc/rawmaterial/Popit.json';
 
 const CYBERPUNK = {
   primary: '#00f0ff',
@@ -20,6 +19,546 @@ const CYBERPUNK = {
   panelShadow: '0 0 10px rgba(0, 240, 255, 0.2)'
 };
 
+// Updated Popit ABI based on new contract
+const PopitABI = [
+  {
+    "inputs": [
+      {"internalType": "string","name": "name","type": "string"},
+      {"internalType": "string","name": "symbol","type": "string"}
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true,"internalType": "address","name": "owner","type": "address"},
+      {"indexed": true,"internalType": "address","name": "approved","type": "address"},
+      {"indexed": true,"internalType": "uint256","name": "tokenId","type": "uint256"}
+    ],
+    "name": "Approval",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true,"internalType": "address","name": "owner","type": "address"},
+      {"indexed": true,"internalType": "address","name": "operator","type": "address"},
+      {"indexed": true,"internalType": "uint256","name": "tokenId","type": "uint256"}
+    ],
+    "name": "ApprovalForAll",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true,"internalType": "address","name": "previousOwner","type": "address"},
+      {"indexed": true,"internalType": "address","name": "newOwner","type": "address"}
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": false,"internalType": "uint256","name": "id","type": "uint256"},
+      {"indexed": false,"internalType": "string","name": "link","type": "string"},
+      {"indexed": false,"internalType": "bytes32","name": "hash","type": "bytes32"},
+      {"indexed": false,"internalType": "string","name": "upc","type": "string"},
+      {"indexed": false,"internalType": "string","name": "name","type": "string"},
+      {"indexed": false,"internalType": "string","name": "protocol","type": "string"}
+    ],
+    "name": "PopCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": false,"internalType": "uint256","name": "id","type": "uint256"},
+      {"indexed": false,"internalType": "string","name": "link","type": "string"},
+      {"indexed": false,"internalType": "bytes32","name": "hash","type": "bytes32"}
+    ],
+    "name": "PopRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": false,"internalType": "uint256","name": "id","type": "uint256"},
+      {"indexed": false,"internalType": "string","name": "newLink","type": "string"}
+    ],
+    "name": "PopUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true,"internalType": "string","name": "protocol","type": "string"},
+      {"indexed": false,"internalType": "string","name": "parserUrl","type": "string"},
+      {"indexed": false,"internalType": "address","name": "owner","type": "address"}
+    ],
+    "name": "ProtocolParserAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true,"internalType": "string","name": "protocol","type": "string"}
+    ],
+    "name": "ProtocolParserRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true,"internalType": "address","name": "from","type": "address"},
+      {"indexed": true,"internalType": "address","name": "to","type": "address"},
+      {"indexed": true,"internalType": "uint256","name": "tokenId","type": "uint256"}
+    ],
+    "name": "Transfer",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {"internalType": "string","name": "protocol","type": "string"},
+      {"internalType": "string","name": "parserUrl","type": "string"}
+    ],
+    "name": "addProtocolParser",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address","name": "to","type": "address"},
+      {"internalType": "uint256","name": "tokenId","type": "uint256"}
+    ],
+    "name": "approve",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address","name": "owner","type": "address"}
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      {"internalType": "uint256","name": "","type": "uint256"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "string","name": "link","type": "string"},
+      {"internalType": "string","name": "upc","type": "string"},
+      {"internalType": "string","name": "name","type": "string"},
+      {"internalType": "string","name": "protocol","type": "string"}
+    ],
+    "name": "createPop",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "creationPrice",
+    "outputs": [
+      {"internalType": "uint256","name": "","type": "uint256"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "uint256","name": "tokenId","type": "uint256"}
+    ],
+    "name": "exists",
+    "outputs": [
+      {"internalType": "bool","name": "","type": "bool"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "flipToken",
+    "outputs": [
+      {"internalType": "contract IERC20Burnable","name": "","type": "address"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "uint256","name": "tokenId","type": "uint256"}
+    ],
+    "name": "getApproved",
+    "outputs": [
+      {"internalType": "address","name": "","type": "address"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "bytes32","name": "hash","type": "bytes32"}
+    ],
+    "name": "getPopByHash",
+    "outputs": [
+      {
+        "components": [
+          {"internalType": "uint256","name": "id","type": "uint256"},
+          {"internalType": "string","name": "link","type": "string"},
+          {"internalType": "bytes32","name": "hash","type": "bytes32"},
+          {"internalType": "address","name": "owner","type": "address"},
+          {"internalType": "string","name": "upc","type": "string"},
+          {"internalType": "string","name": "human_readable_name","type": "string"},
+          {"internalType": "uint256","name": "timestamp","type": "uint256"},
+          {"internalType": "string","name": "protocol","type": "string"}
+        ],
+        "internalType": "struct Popit.Pop",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "uint256","name": "id","type": "uint256"}
+    ],
+    "name": "getPopById",
+    "outputs": [
+      {
+        "components": [
+          {"internalType": "uint256","name": "id","type": "uint256"},
+          {"internalType": "string","name": "link","type": "string"},
+          {"internalType": "bytes32","name": "hash","type": "bytes32"},
+          {"internalType": "address","name": "owner","type": "address"},
+          {"internalType": "string","name": "upc","type": "string"},
+          {"internalType": "string","name": "human_readable_name","type": "string"},
+          {"internalType": "uint256","name": "timestamp","type": "uint256"},
+          {"internalType": "string","name": "protocol","type": "string"}
+        ],
+        "internalType": "struct Popit.Pop",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "string","name": "name","type": "string"}
+    ],
+    "name": "getPopByName",
+    "outputs": [
+      {
+        "components": [
+          {"internalType": "uint256","name": "id","type": "uint256"},
+          {"internalType": "string","name": "link","type": "string"},
+          {"internalType": "bytes32","name": "hash","type": "bytes32"},
+          {"internalType": "address","name": "owner","type": "address"},
+          {"internalType": "string","name": "upc","type": "string"},
+          {"internalType": "string","name": "human_readable_name","type": "string"},
+          {"internalType": "uint256","name": "timestamp","type": "uint256"},
+          {"internalType": "string","name": "protocol","type": "string"}
+        ],
+        "internalType": "struct Popit.Pop",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "string","name": "upc","type": "string"}
+    ],
+    "name": "getPopByUPC",
+    "outputs": [
+      {
+        "components": [
+          {"internalType": "uint256","name": "id","type": "uint256"},
+          {"internalType": "string","name": "link","type": "string"},
+          {"internalType": "bytes32","name": "hash","type": "bytes32"},
+          {"internalType": "address","name": "owner","type": "address"},
+          {"internalType": "string","name": "upc","type": "string"},
+          {"internalType": "string","name": "human_readable_name","type": "string"},
+          {"internalType": "uint256","name": "timestamp","type": "uint256"},
+          {"internalType": "string","name": "protocol","type": "string"}
+        ],
+        "internalType": "struct Popit.Pop",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "string","name": "protocol","type": "string"}
+    ],
+    "name": "getPopsByProtocol",
+    "outputs": [
+      {
+        "components": [
+          {"internalType": "uint256","name": "id","type": "uint256"},
+          {"internalType": "string","name": "link","type": "string"},
+          {"internalType": "bytes32","name": "hash","type": "bytes32"},
+          {"internalType": "address","name": "owner","type": "address"},
+          {"internalType": "string","name": "upc","type": "string"},
+          {"internalType": "string","name": "human_readable_name","type": "string"},
+          {"internalType": "uint256","name": "timestamp","type": "uint256"},
+          {"internalType": "string","name": "protocol","type": "string"}
+        ],
+        "internalType": "struct Popit.Pop[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "string","name": "protocol","type": "string"}
+    ],
+    "name": "getParserForProtocol",
+    "outputs": [
+      {
+        "components": [
+          {"internalType": "string","name": "protocol","type": "string"},
+          {"internalType": "string","name": "parserUrl","type": "string"},
+          {"internalType": "address","name": "owner","type": "address"},
+          {"internalType": "uint256","name": "timestamp","type": "uint256"}
+        ],
+        "internalType": "struct Popit.ProtocolParser",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address","name": "owner","type": "address"}
+    ],
+    "name": "getProtocolsByOwner",
+    "outputs": [
+      {"internalType": "string[]","name": "","type": "string[]"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address","name": "owner","type": "address"},
+      {"internalType": "address","name": "operator","type": "address"}
+    ],
+    "name": "isApprovedForAll",
+    "outputs": [
+      {"internalType": "bool","name": "","type": "bool"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "string","name": "_link","type": "string"},
+      {"internalType": "string","name": "_upc","type": "string"},
+      {"internalType": "string","name": "_human_readable_name","type": "string"},
+      {"internalType": "string","name": "_protocol","type": "string"}
+    ],
+    "name": "insertLink",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "name",
+    "outputs": [
+      {"internalType": "string","name": "","type": "string"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {"internalType": "address","name": "","type": "address"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "uint256","name": "tokenId","type": "uint256"}
+    ],
+    "name": "ownerOf",
+    "outputs": [
+      {"internalType": "address","name": "","type": "address"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "string","name": "protocol","type": "string"}
+    ],
+    "name": "removeProtocolParser",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "uint256","name": "id","type": "uint256"}
+    ],
+    "name": "removePop",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address","name": "from","type": "address"},
+      {"internalType": "address","name": "to","type": "address"},
+      {"internalType": "uint256","name": "tokenId","type": "uint256"}
+    ],
+    "name": "safeTransferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address","name": "from","type": "address"},
+      {"internalType": "address","name": "to","type": "address"},
+      {"internalType": "uint256","name": "tokenId","type": "uint256"},
+      {"internalType": "bytes","name": "data","type": "bytes"}
+    ],
+    "name": "safeTransferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address","name": "operator","type": "address"},
+      {"internalType": "bool","name": "approved","type": "bool"}
+    ],
+    "name": "setApprovalForAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "uint256","name": "newPrice","type": "uint256"}
+    ],
+    "name": "setCreationPrice",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address","name": "tokenAddress","type": "address"}
+    ],
+    "name": "setFlipToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "bytes4","name": "interfaceId","type": "bytes4"}
+    ],
+    "name": "supportsInterface",
+    "outputs": [
+      {"internalType": "bool","name": "","type": "bool"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "symbol",
+    "outputs": [
+      {"internalType": "string","name": "","type": "string"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "uint256","name": "tokenId","type": "uint256"}
+    ],
+    "name": "tokenURI",
+    "outputs": [
+      {"internalType": "string","name": "","type": "string"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalPops",
+    "outputs": [
+      {"internalType": "uint256","name": "","type": "uint256"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address","name": "from","type": "address"},
+      {"internalType": "address","name": "to","type": "address"},
+      {"internalType": "uint256","name": "tokenId","type": "uint256"}
+    ],
+    "name": "transferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address","name": "newOwner","type": "address"}
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "uint256","name": "id","type": "uint256"},
+      {"internalType": "string","name": "newLink","type": "string"}
+    ],
+    "name": "updateLink",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+];
+
 class PopitTerminal extends React.Component {
   constructor(props) {
     super(props);
@@ -35,6 +574,7 @@ class PopitTerminal extends React.Component {
       link: '',
       upc: '',
       name: '',
+      protocol: '',
       message: '',
       creationPrice: '500',
       dashboardOutput: [],
@@ -43,7 +583,9 @@ class PopitTerminal extends React.Component {
       popitAddress: props.address,
       selectedPopId: '',
       newLink: '',
-      pops: []
+      pops: [],
+      repoName: '',
+      repoSymbol: ''
     };
     this.terminal = React.createRef();
   }
@@ -62,7 +604,7 @@ class PopitTerminal extends React.Component {
         const account = await signer.getAddress();
         
         const factory = new ethers.Contract(
-          '0x55910d067a8f1ff45891f6F3A13196c24F12B414', // Replace with your PopitFactory address
+          '0x75218F31e6F2279397B317A9F59E377FbfeBD5aC', // Replace with your PopitFactory address
           PopitFactoryABI.abi,
           signer
         );
@@ -89,9 +631,7 @@ class PopitTerminal extends React.Component {
     }
   };
 
-
   pushToTerminal = (message) => {
-    // Convert objects to strings
     if (typeof message === 'object' && message !== null) {
       message = JSON.stringify(message, null, 2);
     }
@@ -105,11 +645,6 @@ class PopitTerminal extends React.Component {
       [outputKey]: [...prevState[outputKey], message.toString()]
     }));
   };
-
-
-
-
-
 
   clearOutput = (panel) => {
     const outputKey = `${panel}Output`;
@@ -142,7 +677,6 @@ class PopitTerminal extends React.Component {
     }
   };
 
-
   toggleGUI = () => {
     this.setState(prevState => ({ showGUI: !prevState.showGUI }));
   };
@@ -157,80 +691,12 @@ class PopitTerminal extends React.Component {
     });
   };
 
-
-
-  create = async () => {
-    try {
-      const { factory, account, provider } = this.state;
-      const creationPrice = ethers.utils.parseUnits('500', 18); // 500 FLIP tokens with 18 decimals
-  
-      this.pushToTerminal('Creating new Popit...');
-      
-      // Initialize FLIP token contract
-      const flipToken = new ethers.Contract(
-        '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118', // FLIP token address
-        [
-          'function allowance(address owner, address spender) external view returns (uint256)',
-          'function approve(address spender, uint256 amount) external returns (bool)',
-          'function balanceOf(address account) external view returns (uint256)'
-        ],
-        provider.getSigner()
-      );
-  
-      // Check FLIP token balance
-      const balance = await flipToken.balanceOf(account);
-      if (balance.lt(creationPrice)) {
-        throw new Error(`Insufficient FLIP balance. Need 500 FLIP, you have ${ethers.utils.formatUnits(balance, 18)}`);
-      }
-  
-      // Check and set allowance if needed
-      const currentAllowance = await flipToken.allowance(account, factory.address);
-      if (currentAllowance.lt(creationPrice)) {
-        this.pushToTerminal('Approving FLIP tokens...');
-        const approveTx = await flipToken.approve(factory.address, creationPrice);
-        await approveTx.wait();
-        this.pushToTerminal('[[success]]Token approval successful![[/success]]');
-      }
-  
-      // Create the Popit
-      this.pushToTerminal('Creating Popit contract...');
-      const tx = await factory.createPopit();
-      const receipt = await tx.wait();
-      
-      // Get the new Popit address from events
-      let newPopitAddress;
-      if (receipt.events && receipt.events.length) {
-        const popitCreatedEvent = receipt.events.find(e => e.event === 'PopitCreated');
-        if (popitCreatedEvent) {
-          newPopitAddress = popitCreatedEvent.args.popitAddress;
-        }
-      }
-  
-      // Fallback to getting from factory if event parsing fails
-      if (!newPopitAddress) {
-        const popits = await factory.getDeployedPopits();
-        newPopitAddress = popits[popits.length - 1];
-      }
-  
-      // Format success message
-      const successMessage = `[[success]]Popit created successfully!
-  Address: ${newPopitAddress}
-  Transaction: ${receipt.transactionHash}
-  Gas Used: ${receipt.gasUsed.toString()}
-  Block: ${receipt.blockNumber}[[/success]]`;
-  
-      this.pushToTerminal(successMessage);
-      
-      // Return string instead of object
-      return successMessage;
-    } catch (error) {
-      let errorMessage = `[[error]]Creation failed: ${error.reason || error.message}[[/error]]`;
-      if (error.data && error.data.message) {
-        errorMessage += `\n${error.data.message}`;
-      }
-      this.pushToTerminal(errorMessage);
-      throw error;
+  extractProtocol = (name) => {
+    const protocolMatch = name.match(/^[^:]+:\/\/|^[^:]+:/);
+    if (protocolMatch) {
+      return protocolMatch[0].replace(/\/\/$/, ''); // Remove trailing //
     }
+    return 'default';
   };
 
 
@@ -243,59 +709,125 @@ class PopitTerminal extends React.Component {
 
 
 
-loadPopit = async (address) => {
-  if (!address) {
-    address = this.state.popitAddress;
-  }
-  
-  try {
-    this.pushToTerminal(`Loading repo at: ${address}`);
-    
-    // Updated Popit ABI including insertLink function
-    const popitABI = [
-      "function totalPops() external view returns (uint256)",
-      "function creationPrice() external view returns (uint256)",
-      "function insertLink(string memory _link, string memory _upc, string memory _human_readable_name) external",
-      "function createPop(string memory link, string memory upc, string memory name) external",
-      "function removePop(uint256 id) external",
-      "function updateLink(uint256 id, string memory newLink) external",
-      "function getPopById(uint256 id) public view returns (tuple(uint256 id, string link, bytes32 hash, address owner, string upc, string name, uint256 timestamp))",
-      "function owner() external view returns (address)",
-      "function setCreationPrice(uint256 newPrice) external",
-      "function setFlipToken(address tokenAddress) external"
-    ];
 
-    const popit = new ethers.Contract(
-      address,
-      popitABI,
+
+
+
+
+
+
+
+createPopit = async (repoName, repoSymbol) => {
+  try {
+    const { factory, account } = this.state;
+    if (!repoName || !repoSymbol) {
+      throw new Error('Repository name and symbol are required');
+    }
+
+    this.pushToTerminal(`Creating new Popit: ${repoName} (${repoSymbol})...`);
+    
+    // Check allowance and approve if needed
+    const creationPrice = ethers.utils.parseUnits('500', 18);
+    const flipToken = new ethers.Contract(
+      '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118',
+      [
+        'function allowance(address owner, address spender) external view returns (uint256)',
+        'function approve(address spender, uint256 amount) external returns (bool)',
+        'function balanceOf(address account) external view returns (uint256)'
+      ],
       this.state.signer
     );
 
-    // Verify this is actually a Popit contract
-    try {
-      await popit.totalPops(); // Check if this function exists
-    } catch (e) {
-      throw new Error("Invalid Popit contract - missing required functions");
+    // Check balance
+    const balance = await flipToken.balanceOf(account);
+    if (balance.lt(creationPrice)) {
+      throw new Error(`Insufficient FLIP balance. Need 500 FLIP, you have ${ethers.utils.formatUnits(balance, 18)}`);
     }
 
-    const price = await popit.creationPrice();
-    const popitOwner = await popit.owner();
-
-    this.setState({
-      currentPopit: popit,
-      creationPrice: ethers.utils.formatUnits(price, 18)
-    });
-
-    const successMessage = `[[success]]Successfully loaded Popit contract:
-Address: ${address}
-Owner: ${popitOwner}
-Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
+    // Check allowance and always approve (for safety)
+    this.pushToTerminal('Approving FLIP tokens...');
+    const approveTx = await flipToken.approve(factory.address, creationPrice);
+    await approveTx.wait();
+    this.pushToTerminal('[[success]]FLIP tokens approved![[/success]]');
     
+    // Wait for block confirmation
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Create the Popit with name and symbol
+    this.pushToTerminal('Estimating gas...');
+    
+    // First estimate gas with buffer
+    let gasLimit;
+    try {
+      const estimatedGas = await factory.estimateGas.createPopit(repoName, repoSymbol);
+      gasLimit = estimatedGas.mul(120).div(100); // Add 20% buffer
+      this.pushToTerminal(`Estimated gas: ${estimatedGas.toString()} (using ${gasLimit.toString()} with buffer)`);
+    } catch (estimateError) {
+      this.pushToTerminal(`[[warning]]Gas estimation failed, using default high limit[[/warning]]`);
+      gasLimit = ethers.BigNumber.from(500000); // Fallback high limit
+      console.warn("Gas estimation failed, using fallback:", estimateError);
+    }
+
+    this.pushToTerminal('Creating repository...');
+    const tx = await factory.createPopit(repoName, repoSymbol, {
+      gasLimit: gasLimit
+    });
+    
+    this.pushToTerminal(`Transaction sent: ${tx.hash}`);
+    const receipt = await tx.wait();
+    
+    // Check transaction status
+    if (receipt.status === 0) {
+      throw new Error('Transaction reverted in the blockchain');
+    }
+
+    // Get the new Popit address from events
+    let newPopitAddress;
+    if (receipt.events && receipt.events.length) {
+      const popitCreatedEvent = receipt.events.find(e => e.event === 'PopitCreated');
+      if (popitCreatedEvent) {
+        newPopitAddress = popitCreatedEvent.args.popitAddress;
+      }
+    }
+
+    // Fallback to getting from factory if event parsing fails
+    if (!newPopitAddress) {
+      const popits = await factory.getDeployedPopits();
+      newPopitAddress = popits[popits.length - 1];
+    }
+
+    const successMessage = `[[success]]Popit created successfully!
+Address: ${newPopitAddress}
+Name: ${repoName}
+Symbol: ${repoSymbol}
+Transaction: ${receipt.transactionHash}
+Gas Used: ${receipt.gasUsed.toString()}
+Block: ${receipt.blockNumber}[[/success]]`;
+
     this.pushToTerminal(successMessage);
     return successMessage;
   } catch (error) {
-    const errorMessage = `[[error]]Error loading Popit: ${error.message}[[/error]]`;
+    let errorMessage = `[[error]]Creation failed: ${error.reason || error.message}[[/error]]`;
+    
+    // Add more detailed error information
+    if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
+      errorMessage += '\nThe transaction would revert. Possible reasons:';
+      errorMessage += '\n1. Insufficient FLIP token allowance';
+      errorMessage += '\n2. Invalid name or symbol format';
+      errorMessage += '\n3. Factory contract issue';
+      errorMessage += '\n4. Network congestion';
+    }
+    
+    if (error.transactionHash) {
+      errorMessage += `\nTransaction Hash: ${error.transactionHash}`;
+    }
+    
+    if (error.data) {
+      errorMessage += `\nError data: ${JSON.stringify(error.data)}`;
+    }
+    
     this.pushToTerminal(errorMessage);
+    console.error("CreatePopit error:", error);
     throw error;
   }
 };
@@ -313,6 +845,65 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+  loadPopit = async (address) => {
+    if (!address) {
+      address = this.state.popitAddress;
+    }
+    
+    try {
+      this.pushToTerminal(`Loading repo at: ${address}`);
+      
+      const popit = new ethers.Contract(
+        address,
+        PopitABI,
+        this.state.signer
+      );
+
+      // Verify this is actually a Popit contract
+      try {
+        await popit.totalPops();
+      } catch (e) {
+        throw new Error("Invalid Popit contract - missing required functions");
+      }
+
+      const price = await popit.creationPrice();
+      const popitOwner = await popit.owner();
+      const name = await popit.name();
+      const symbol = await popit.symbol();
+
+      this.setState({
+        currentPopit: popit,
+        creationPrice: ethers.utils.formatUnits(price, 18)
+      });
+
+      const successMessage = `[[success]]Successfully loaded Popit contract:
+Address: ${address}
+Name: ${name}
+Symbol: ${symbol}
+Owner: ${popitOwner}
+Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
+      
+      this.pushToTerminal(successMessage);
+      return successMessage;
+    } catch (error) {
+      const errorMessage = `[[error]]Error loading Popit: ${error.message}[[/error]]`;
+      this.pushToTerminal(errorMessage);
+      throw error;
+    }
+  };
+
   createPop = async () => {
     try {
       const { currentPopit, link, upc, name } = this.state;
@@ -323,8 +914,10 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
       if (!link || !upc || !name) {
         throw new Error('Link, UPC, and name are required');
       }
+
+      const protocol = this.extractProtocol(name);
   
-      this.pushToTerminal(`Creating Pop with name: ${name}, UPC: ${upc}, link: ${link}`);
+      this.pushToTerminal(`Creating Pop with name: ${name}, UPC: ${upc}, link: ${link}, protocol: ${protocol}`);
       
       // First check if we need to approve FLIP tokens
       const flipTokenAddress = '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118';
@@ -338,8 +931,7 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
         this.state.signer
       );
   
-      const price = ethers.utils.parseUnits('10', 18); // 500 FLIP tokens with 18 decimals
-      //const price = await currentPopit.creationPrice();
+      const price = ethers.utils.parseUnits('1', 18);
       const balance = await flipToken.balanceOf(this.state.account);
       
       if (balance.lt(price)) {
@@ -353,13 +945,13 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
         await approveTx.wait();
       }
   
-      // Create the Pop
-      const tx = await currentPopit.createPop(link, upc, name);
+      // Create the Pop with protocol
+      const tx = await currentPopit.createPop(link, upc, name, protocol);
       const receipt = await tx.wait();
   
       const successMessage = `[[success]]Pop created successfully!
-  Transaction Hash: ${receipt.transactionHash}
-  Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
+Transaction Hash: ${receipt.transactionHash}
+Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
   
       this.pushToTerminal(successMessage);
       
@@ -373,11 +965,6 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
       throw error;
     }
   };
-
-
-
-
-
 
   removePop = async (id) => {
     try {
@@ -425,8 +1012,6 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
     }
   };
 
-
-
   listPops = async () => {
     try {
       const { currentPopit } = this.state;
@@ -442,13 +1027,13 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
       for (let i = 1; i <= total; i++) {
         try {
           const pop = await currentPopit.getPopById(i);
-          // Check if pop exists (id != 0)
           if (pop.id.toString() !== '0') {
             pops.push({
               id: pop.id.toString(),
               link: pop.link,
-              name: pop.name,
+              name: pop.human_readable_name,
               upc: pop.upc,
+              protocol: pop.protocol,
               timestamp: new Date(pop.timestamp * 1000).toLocaleString()
             });
           }
@@ -466,6 +1051,7 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
         pops.forEach(pop => {
           output += `ID: ${pop.id} | Name: ${pop.name} | UPC: ${pop.upc}\n`;
           output += `Link: ${pop.link}\n`;
+          output += `Protocol: ${pop.protocol}\n`;
           output += `Created: ${pop.timestamp}\n`;
           output += '----------------\n';
         });
@@ -480,12 +1066,6 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
     }
   };
 
-
-
-
-
-
-  // ========== FACTORY OPERATIONS ==========
   listPopits = async () => {
     try {
       const { factory, account } = this.state;
@@ -511,7 +1091,7 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
       }
   
       this.pushToTerminal(output);
-      return output; // Return string instead of object
+      return output;
     } catch (error) {
       const errorMessage = `[[error]]Error: ${error.message}[[/error]]`;
       this.pushToTerminal(errorMessage);
@@ -519,9 +1099,6 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
     }
   };
 
-
-
-  // ========== GUI RENDERING ==========
   renderDashboardPanel = () => {
     return (
       <div style={styles.panel}>
@@ -618,7 +1195,7 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
                 name="name"
                 value={this.state.name}
                 onChange={this.handleInputChange}
-                placeholder="Name"
+                placeholder="Name (include protocol)"
                 style={styles.input}
               />
               <button 
@@ -677,6 +1254,22 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
           <div style={styles.gridItem}>
             <h3 style={styles.subTitle}>CREATE REPO</h3>
             <div style={styles.infoBox}>
+              <input
+                type="text"
+                name="repoName"
+                value={this.state.repoName}
+                onChange={this.handleInputChange}
+                placeholder="Repository Name"
+                style={styles.input}
+              />
+              <input
+                type="text"
+                name="repoSymbol"
+                value={this.state.repoSymbol}
+                onChange={this.handleInputChange}
+                placeholder="Repository Symbol"
+                style={styles.input}
+              />
               <button 
                 style={styles.button}
                 onClick={this.createPopit}
@@ -879,155 +1472,137 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
           ) : (
             <Terminal
               ref={this.terminal}
-        commands={{
-          connect: {
-            description: 'Connect wallet',
-            fn: this.initConnection
-          },
-          repo: {
-            description: 'Create new repository (costs 500 FLIP tokens)',
-            fn: async () => {
-              try {
-                await this.create();
-                return '';
-              } catch (error) {
-                return error.message;
-              }
-            }
-          },
-          load: {
-            description: 'Load existing repo',
-            usage: 'loadpopit <address>',
-            fn: async (address) => {
-              if(!address) {
-                 address=this.state.popitAddress;
-              }
-              try {
-                await this.loadPopit(address);
-                return '';
-              } catch (error) {
-                return error.message;
-              }
-            }
-          },
+              commands={{
+                connect: {
+                  description: 'Connect wallet',
+                  fn: this.initConnection
+                },
+                repo: {
+                  description: 'Create new repository (costs 500 FLIP tokens)',
+                  fn: async (name,symbol) => {
+                    try {
+                      await this.createPopit(name,symbol);
+                      return '';
+                    } catch (error) {
+                      return error.message;
+                    }
+                  }
+                },
+                load: {
+                  description: 'Load existing repo',
+                  usage: 'load <address>',
+                  fn: async (address) => {
+                    if(!address) {
+                      address=this.state.popitAddress;
+                    }
+                    try {
+                      await this.loadPopit(address);
+                      return '';
+                    } catch (error) {
+                      return error.message;
+                    }
+                  }
+                },
+                push: {
+                  description: 'Create new Pop',
+                  usage: 'push <link> <upc> <name>',
+                  fn: async (link, upc, name) => {
+                    try {
+                      const { currentPopit, account, provider } = this.state;
+                      
+                      if (!currentPopit) {
+                        throw new Error('Popit contract not loaded');
+                      }
 
+                      // Extract protocol from name
+                      const protocol = this.extractProtocol(name);
 
+                      // FLIP Token Setup
+                      const flipToken = new ethers.Contract(
+                        '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118',
+                        [
+                          "function approve(address spender, uint256 amount) returns (bool)",
+                          "function allowance(address owner, address spender) view returns (uint256)",
+                          "function balanceOf(address account) view returns (uint256)"
+                        ],
+                        provider.getSigner()
+                      );
 
+                      // Check Balance
+                      const requiredAmount = ethers.utils.parseUnits('1', 18);
+                      const balance = await flipToken.balanceOf(account);
+                      if (balance.lt(requiredAmount)) {
+                        throw new Error(`Need 1 FLIP (you have ${ethers.utils.formatUnits(balance, 18)})`);
+                      }
 
-push: {
-  description: 'Create new Pop using insertLink',
-  usage: 'push <link> <upc> <name>',
-  fn: async (link, upc, name) => {
-    try {
-      const { currentPopit, account, provider } = this.state;
-      
-      // 1. Verify contract is loaded and has insertLink
-      if (!currentPopit || typeof currentPopit.insertLink !== 'function') {
-        throw new Error('Popit contract not loaded or missing insertLink function');
-      }
+                      // Check & Set Allowance
+                      const MAX_UINT256 = ethers.constants.MaxUint256;
+                      const allowance = await flipToken.allowance(account, currentPopit.address);
+                      if (allowance.lt(requiredAmount)) {
+                        this.pushToTerminal('Approving FLIP tokens...');
+                        const approveTx = await flipToken.approve(currentPopit.address, MAX_UINT256);
+                        await approveTx.wait();
+                        this.pushToTerminal('[[success]]FLIP tokens approved![[/success]]');
+                        
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                      }
 
-      // 2. FLIP Token Setup
-      const flipToken = new ethers.Contract(
-        '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118',
-        [
-          "function approve(address spender, uint256 amount) returns (bool)",
-          "function allowance(address owner, address spender) view returns (uint256)",
-          "function balanceOf(address account) view returns (uint256)"
-        ],
-        provider.getSigner()
-      );
-
-      // 3. Check Balance - using the correct creation price from state
-      const requiredAmount = ethers.utils.parseUnits('1', 18);
-      const balance = await flipToken.balanceOf(account);
-      if (balance.lt(requiredAmount)) {
-        throw new Error(`Need ${this.state.creationPrice} FLIP (you have ${ethers.utils.formatUnits(balance, 18)})`);
-      }
-
-      // 4. Check & Set Allowance - using MAX_UINT256 for unlimited approval
-      const MAX_UINT256 = ethers.constants.MaxUint256;
-      const allowance = await flipToken.allowance(account, currentPopit.address);
-      if (allowance.lt(requiredAmount)) {
-        this.pushToTerminal('Approving FLIP tokens...');
-        const approveTx = await flipToken.approve(currentPopit.address, MAX_UINT256);
-        await approveTx.wait();
-        this.pushToTerminal('[[success]]FLIP tokens approved![[/success]]');
-        
-        // Wait for a block confirmation to ensure the approval is processed
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      }
-
-      // 5. Execute insertLink with proper error handling
-      this.pushToTerminal('Creating Pop with insertLink...');
-      const tx = await currentPopit.insertLink(link, upc, name);
-      
-      const receipt = await tx.wait();
-      
-      // Verify the transaction was successful
-      if (receipt.status === 1) {
-        const successMessage = `[[success]]Pop created successfully!
-Transaction Hash: ${receipt.transactionHash}
-Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
-        this.pushToTerminal(successMessage);
-        await this.listPops();
-        return '';
-      } else {
-        throw new Error('Transaction failed');
-      }
-    } catch (error) {
-      let errorMessage = error.reason || error.message;
-      if (error.data && error.data.message) {
-        errorMessage += `\n${error.data.message}`;
-      }
-      const errMsg = `[[error]]Creation failed: ${errorMessage}[[/error]]`;
-      this.pushToTerminal(errMsg);
-      return errMsg;
-    }
-  }
-},
-
-
-
-
-
-
-
-
-
-
-
-
-
-          remove: {
-            description: 'Remove a Pop',
-            usage: 'removepop <id>',
-            fn: (id) => this.removePop(id)
-          },
-          updatelink: {
-            description: 'Update Pop link',
-            usage: 'updatelink <id> <newLink>',
-            fn: (id, newLink) => {
-              this.setState({ selectedPopId: id, newLink }, () => {
-                this.updatePopLink();
-              });
-            }
-          },
-          ls: {
-            description: 'List all Pops in current Popit',
-            fn: this.listPops
-          },
-          repos: {
-            description: 'List all Popits',
-            fn: async () => {
-              try {
-                await this.listPopits();
-                return '';
-              } catch (error) {
-                return error.message;
-              }
-            }
-          }
-        }}
+                      this.pushToTerminal('Creating Pop...');
+                      const tx = await currentPopit.createPop(link, upc, name, protocol);
+                      
+                      const receipt = await tx.wait();
+                      
+                      if (receipt.status === 1) {
+                        const successMessage = `[[success]]Pop created successfully!
+  Transaction Hash: ${receipt.transactionHash}
+  Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
+                        this.pushToTerminal(successMessage);
+                        await this.listPops();
+                        return '';
+                      } else {
+                        throw new Error('Transaction failed');
+                      }
+                    } catch (error) {
+                      let errorMessage = error.reason || error.message;
+                      if (error.data && error.data.message) {
+                        errorMessage += `\n${error.data.message}`;
+                      }
+                      const errMsg = `[[error]]Creation failed: ${errorMessage}[[/error]]`;
+                      this.pushToTerminal(errMsg);
+                      return errMsg;
+                    }
+                  }
+                },
+                remove: {
+                  description: 'Remove a Pop',
+                  usage: 'remove <id>',
+                  fn: (id) => this.removePop(id)
+                },
+                updatelink: {
+                  description: 'Update Pop link',
+                  usage: 'updatelink <id> <newLink>',
+                  fn: (id, newLink) => {
+                    this.setState({ selectedPopId: id, newLink }, () => {
+                      this.updatePopLink();
+                    });
+                  }
+                },
+                ls: {
+                  description: 'List all Pops in current Popit',
+                  fn: this.listPops
+                },
+                repos: {
+                  description: 'List all Popits',
+                  fn: async () => {
+                    try {
+                      await this.listPopits();
+                      return '';
+                    } catch (error) {
+                      return error.message;
+                    }
+                  }
+                }
+              }}
               dangerMode={true}
               welcomeMessage={`
                 [[header]]
@@ -1058,7 +1633,6 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
   }
 }
 
-// Reuse your existing styles object
 const styles = {
   panel: {
     backgroundColor: CYBERPUNK.panelBg,
