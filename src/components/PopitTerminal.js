@@ -19,7 +19,6 @@ const CYBERPUNK = {
   panelShadow: '0 0 10px rgba(0, 240, 255, 0.2)'
 };
 
-// Updated Popit ABI based on new contract
 const PopitABI = [
   {
     "inputs": [
@@ -580,12 +579,22 @@ class PopitTerminal extends React.Component {
       dashboardOutput: [],
       popitOutput: [],
       factoryOutput: [],
+      protocolOutput: [],
       popitAddress: props.address,
       selectedPopId: '',
       newLink: '',
       pops: [],
       repoName: '',
-      repoSymbol: ''
+      repoSymbol: '',
+      protocolName: '',
+      parserUrl: '',
+      definedProtocols: [],
+      selectedProtocol: null,
+      protocolData: {},
+      protocolFormData: {},
+      protocolFormErrors: {},
+      protocolSearchQuery: '',
+      protocolSearchResults: []
     };
     this.terminal = React.createRef();
   }
@@ -604,7 +613,7 @@ class PopitTerminal extends React.Component {
         const account = await signer.getAddress();
         
         const factory = new ethers.Contract(
-          '0x75218F31e6F2279397B317A9F59E377FbfeBD5aC', // Replace with your PopitFactory address
+          '0x75218F31e6F2279397B317A9F59E377FbfeBD5aC',
           PopitFactoryABI.abi,
           signer
         );
@@ -655,7 +664,7 @@ class PopitTerminal extends React.Component {
     try {
       const { provider, account } = this.state;
       const flipToken = new ethers.Contract(
-        '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118', // FLIP token address
+        '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118',
         [
           'function allowance(address owner, address spender) external view returns (uint256)',
           'function approve(address spender, uint256 amount) external returns (bool)'
@@ -694,109 +703,80 @@ class PopitTerminal extends React.Component {
   extractProtocol = (name) => {
     const protocolMatch = name.match(/^[^:]+:\/\/|^[^:]+:/);
     if (protocolMatch) {
-      return protocolMatch[0].replace(/\/\/$/, ''); // Remove trailing //
+      return protocolMatch[0].replace(/\/\/$/, '');
     }
     return 'default';
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-createPopit = async (repoName, repoSymbol) => {
-  try {
-    const { factory, account } = this.state;
-    if (!repoName || !repoSymbol) {
-      throw new Error('Repository name and symbol are required');
-    }
-
-    this.pushToTerminal(`Creating new Popit: ${repoName} (${repoSymbol})...`);
-    
-    // Check allowance and approve if needed
-    const creationPrice = ethers.utils.parseUnits('500', 18);
-    const flipToken = new ethers.Contract(
-      '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118',
-      [
-        'function allowance(address owner, address spender) external view returns (uint256)',
-        'function approve(address spender, uint256 amount) external returns (bool)',
-        'function balanceOf(address account) external view returns (uint256)'
-      ],
-      this.state.signer
-    );
-
-    // Check balance
-    const balance = await flipToken.balanceOf(account);
-    if (balance.lt(creationPrice)) {
-      throw new Error(`Insufficient FLIP balance. Need 500 FLIP, you have ${ethers.utils.formatUnits(balance, 18)}`);
-    }
-
-    // Check allowance and always approve (for safety)
-    this.pushToTerminal('Approving FLIP tokens...');
-    const approveTx = await flipToken.approve(factory.address, creationPrice);
-    await approveTx.wait();
-    this.pushToTerminal('[[success]]FLIP tokens approved![[/success]]');
-    
-    // Wait for block confirmation
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    // Create the Popit with name and symbol
-    this.pushToTerminal('Estimating gas...');
-    
-    // First estimate gas with buffer
-    let gasLimit;
+  createPopit = async (repoName, repoSymbol) => {
     try {
-      const estimatedGas = await factory.estimateGas.createPopit(repoName, repoSymbol);
-      gasLimit = estimatedGas.mul(120).div(100); // Add 20% buffer
-      this.pushToTerminal(`Estimated gas: ${estimatedGas.toString()} (using ${gasLimit.toString()} with buffer)`);
-    } catch (estimateError) {
-      this.pushToTerminal(`[[warning]]Gas estimation failed, using default high limit[[/warning]]`);
-      gasLimit = ethers.BigNumber.from(500000); // Fallback high limit
-      console.warn("Gas estimation failed, using fallback:", estimateError);
-    }
-
-    this.pushToTerminal('Creating repository...');
-    const tx = await factory.createPopit(repoName, repoSymbol, {
-      gasLimit: gasLimit
-    });
-    
-    this.pushToTerminal(`Transaction sent: ${tx.hash}`);
-    const receipt = await tx.wait();
-    
-    // Check transaction status
-    if (receipt.status === 0) {
-      throw new Error('Transaction reverted in the blockchain');
-    }
-
-    // Get the new Popit address from events
-    let newPopitAddress;
-    if (receipt.events && receipt.events.length) {
-      const popitCreatedEvent = receipt.events.find(e => e.event === 'PopitCreated');
-      if (popitCreatedEvent) {
-        newPopitAddress = popitCreatedEvent.args.popitAddress;
+      const { factory, account } = this.state;
+      if (!repoName || !repoSymbol) {
+        throw new Error('Repository name and symbol are required');
       }
-    }
 
-    // Fallback to getting from factory if event parsing fails
-    if (!newPopitAddress) {
-      const popits = await factory.getDeployedPopits();
-      newPopitAddress = popits[popits.length - 1];
-    }
+      this.pushToTerminal(`Creating new Popit: ${repoName} (${repoSymbol})...`);
+      
+      const creationPrice = ethers.utils.parseUnits('500', 18);
+      const flipToken = new ethers.Contract(
+        '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118',
+        [
+          'function allowance(address owner, address spender) external view returns (uint256)',
+          'function approve(address spender, uint256 amount) external returns (bool)',
+          'function balanceOf(address account) external view returns (uint256)'
+        ],
+        this.state.signer
+      );
 
-    const successMessage = `[[success]]Popit created successfully!
+      const balance = await flipToken.balanceOf(account);
+      if (balance.lt(creationPrice)) {
+        throw new Error(`Insufficient FLIP balance. Need 500 FLIP, you have ${ethers.utils.formatUnits(balance, 18)}`);
+      }
+
+      this.pushToTerminal('Approving FLIP tokens...');
+      const approveTx = await flipToken.approve(factory.address, creationPrice);
+      await approveTx.wait();
+      this.pushToTerminal('[[success]]FLIP tokens approved![[/success]]');
+      
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      let gasLimit;
+      try {
+        const estimatedGas = await factory.estimateGas.createPopit(repoName, repoSymbol);
+        gasLimit = estimatedGas.mul(120).div(100);
+        this.pushToTerminal(`Estimated gas: ${estimatedGas.toString()} (using ${gasLimit.toString()} with buffer)`);
+      } catch (estimateError) {
+        this.pushToTerminal(`[[warning]]Gas estimation failed, using default high limit[[/warning]]`);
+        gasLimit = ethers.BigNumber.from(500000);
+        console.warn("Gas estimation failed, using fallback:", estimateError);
+      }
+
+      this.pushToTerminal('Creating repository...');
+      const tx = await factory.createPopit(repoName, repoSymbol, {
+        gasLimit: gasLimit
+      });
+      
+      this.pushToTerminal(`Transaction sent: ${tx.hash}`);
+      const receipt = await tx.wait();
+      
+      if (receipt.status === 0) {
+        throw new Error('Transaction reverted in the blockchain');
+      }
+
+      let newPopitAddress;
+      if (receipt.events && receipt.events.length) {
+        const popitCreatedEvent = receipt.events.find(e => e.event === 'PopitCreated');
+        if (popitCreatedEvent) {
+          newPopitAddress = popitCreatedEvent.args.popitAddress;
+        }
+      }
+
+      if (!newPopitAddress) {
+        const popits = await factory.getDeployedPopits();
+        newPopitAddress = popits[popits.length - 1];
+      }
+
+      const successMessage = `[[success]]Popit created successfully!
 Address: ${newPopitAddress}
 Name: ${repoName}
 Symbol: ${repoSymbol}
@@ -804,58 +784,32 @@ Transaction: ${receipt.transactionHash}
 Gas Used: ${receipt.gasUsed.toString()}
 Block: ${receipt.blockNumber}[[/success]]`;
 
-    this.pushToTerminal(successMessage);
-    return successMessage;
-  } catch (error) {
-    let errorMessage = `[[error]]Creation failed: ${error.reason || error.message}[[/error]]`;
-    
-    // Add more detailed error information
-    if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
-      errorMessage += '\nThe transaction would revert. Possible reasons:';
-      errorMessage += '\n1. Insufficient FLIP token allowance';
-      errorMessage += '\n2. Invalid name or symbol format';
-      errorMessage += '\n3. Factory contract issue';
-      errorMessage += '\n4. Network congestion';
+      this.pushToTerminal(successMessage);
+      return successMessage;
+    } catch (error) {
+      let errorMessage = `[[error]]Creation failed: ${error.reason || error.message}[[/error]]`;
+      
+      if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
+        errorMessage += '\nThe transaction would revert. Possible reasons:';
+        errorMessage += '\n1. Insufficient FLIP token allowance';
+        errorMessage += '\n2. Invalid name or symbol format';
+        errorMessage += '\n3. Factory contract issue';
+        errorMessage += '\n4. Network congestion';
+      }
+      
+      if (error.transactionHash) {
+        errorMessage += `\nTransaction Hash: ${error.transactionHash}`;
+      }
+      
+      if (error.data) {
+        errorMessage += `\nError data: ${JSON.stringify(error.data)}`;
+      }
+      
+      this.pushToTerminal(errorMessage);
+      console.error("CreatePopit error:", error);
+      throw error;
     }
-    
-    if (error.transactionHash) {
-      errorMessage += `\nTransaction Hash: ${error.transactionHash}`;
-    }
-    
-    if (error.data) {
-      errorMessage += `\nError data: ${JSON.stringify(error.data)}`;
-    }
-    
-    this.pushToTerminal(errorMessage);
-    console.error("CreatePopit error:", error);
-    throw error;
-  }
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  };
 
   loadPopit = async (address) => {
     if (!address) {
@@ -871,7 +825,6 @@ Block: ${receipt.blockNumber}[[/success]]`;
         this.state.signer
       );
 
-      // Verify this is actually a Popit contract
       try {
         await popit.totalPops();
       } catch (e) {
@@ -919,7 +872,6 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
   
       this.pushToTerminal(`Creating Pop with name: ${name}, UPC: ${upc}, link: ${link}, protocol: ${protocol}`);
       
-      // First check if we need to approve FLIP tokens
       const flipTokenAddress = '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118';
       const flipToken = new ethers.Contract(
         flipTokenAddress,
@@ -945,7 +897,6 @@ Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
         await approveTx.wait();
       }
   
-      // Create the Pop with protocol
       const tx = await currentPopit.createPop(link, upc, name, protocol);
       const receipt = await tx.wait();
   
@@ -954,8 +905,6 @@ Transaction Hash: ${receipt.transactionHash}
 Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
   
       this.pushToTerminal(successMessage);
-      
-      // Refresh the pops list
       await this.listPops();
       
       return successMessage;
@@ -979,8 +928,6 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
       await tx.wait();
       
       this.pushToTerminal(`[[success]]Pop removed successfully![[/success]]`);
-      
-      // Refresh pops list
       await this.listPops();
       return true;
     } catch (error) {
@@ -1002,8 +949,6 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
       await tx.wait();
       
       this.pushToTerminal(`[[success]]Pop link updated successfully![[/success]]`);
-      
-      // Refresh pops list
       await this.listPops();
       return true;
     } catch (error) {
@@ -1096,6 +1041,226 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
       const errorMessage = `[[error]]Error: ${error.message}[[/error]]`;
       this.pushToTerminal(errorMessage);
       throw error;
+    }
+  };
+
+  fetchProtocols = async () => {
+    try {
+      const { currentPopit, account } = this.state;
+      if (!currentPopit) {
+        throw new Error('No Popit loaded');
+      }
+      
+      const protocols = await currentPopit.getProtocolsByOwner(account);
+      this.setState({ definedProtocols: protocols });
+      return protocols;
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error fetching protocols: ${error.message}[[/error]]`);
+      return [];
+    }
+  };
+
+  addProtocolParser = async () => {
+    try {
+      const { currentPopit, protocolName, parserUrl } = this.state;
+      if (!currentPopit) {
+        throw new Error('No Popit loaded');
+      }
+      
+      if (!protocolName || !parserUrl) {
+        throw new Error('Protocol name and parser URL are required');
+      }
+      
+      this.pushToTerminal(`Adding protocol parser: ${protocolName} (${parserUrl})`);
+      const tx = await currentPopit.addProtocolParser(protocolName, parserUrl);
+      await tx.wait();
+      
+      this.pushToTerminal(`[[success]]Protocol parser added successfully![[/success]]`);
+      await this.fetchProtocols();
+      return true;
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Failed to add protocol parser: ${error.message}[[/error]]`);
+      return false;
+    }
+  };
+
+  removeProtocolParser = async (protocol) => {
+    try {
+      const { currentPopit } = this.state;
+      if (!currentPopit) {
+        throw new Error('No Popit loaded');
+      }
+      
+      this.pushToTerminal(`Removing protocol parser: ${protocol}`);
+      const tx = await currentPopit.removeProtocolParser(protocol);
+      await tx.wait();
+      
+      this.pushToTerminal(`[[success]]Protocol parser removed successfully![[/success]]`);
+      await this.fetchProtocols();
+      return true;
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Failed to remove protocol parser: ${error.message}[[/error]]`);
+      return false;
+    }
+  };
+
+  getParserForProtocol = async (protocol) => {
+    try {
+      const { currentPopit } = this.state;
+      if (!currentPopit) {
+        throw new Error('No Popit loaded');
+      }
+      
+      const parser = await currentPopit.getParserForProtocol(protocol);
+      return parser;
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error fetching parser: ${error.message}[[/error]]`);
+      return null;
+    }
+  };
+
+  loadProtocolDefinition = async (protocol) => {
+    try {
+      const parser = await this.getParserForProtocol(protocol);
+      if (!parser || !parser.parserUrl) {
+        throw new Error('No parser URL found for protocol');
+      }
+      
+      const response = await fetch(parser.parserUrl);
+      if (!response.ok) {
+        throw new Error('Failed to fetch protocol definition');
+      }
+      
+      const protocolDef = await response.json();
+      this.setState({
+        selectedProtocol: protocolDef,
+        protocolFormData: protocolDef.sample_data || {},
+        protocolFormErrors: {}
+      });
+      
+      return protocolDef;
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error loading protocol definition: ${error.message}[[/error]]`);
+      return null;
+    }
+  };
+
+  handleProtocolFormChange = (field, value) => {
+    this.setState(prevState => ({
+      protocolFormData: {
+        ...prevState.protocolFormData,
+        [field]: value
+      }
+    }));
+  };
+
+  handleArrayFieldChange = (field, index, value) => {
+    this.setState(prevState => {
+      const newArray = [...prevState.protocolFormData[field]];
+      newArray[index] = value;
+      return {
+        protocolFormData: {
+          ...prevState.protocolFormData,
+          [field]: newArray
+        }
+      };
+    });
+  };
+
+  handleAddArrayItem = (field) => {
+    this.setState(prevState => ({
+      protocolFormData: {
+        ...prevState.protocolFormData,
+        [field]: [...(prevState.protocolFormData[field] || []), '']
+      }
+    }));
+  };
+
+  handleRemoveArrayItem = (field, index) => {
+    this.setState(prevState => {
+      const newArray = [...prevState.protocolFormData[field]];
+      newArray.splice(index, 1);
+      return {
+        protocolFormData: {
+          ...prevState.protocolFormData,
+          [field]: newArray
+        }
+      };
+    });
+  };
+
+  validateProtocolForm = () => {
+    const { selectedProtocol, protocolFormData } = this.state;
+    if (!selectedProtocol || !selectedProtocol.validation_rules) return true;
+    
+    const errors = {};
+    let isValid = true;
+    
+    Object.entries(selectedProtocol.validation_rules).forEach(([field, rules]) => {
+      const value = protocolFormData[field];
+      
+      if (rules.pattern && !new RegExp(rules.pattern).test(value)) {
+        errors[field] = rules.error || `Invalid format for ${field}`;
+        isValid = false;
+      }
+      
+      if (rules.min !== undefined && value < rules.min) {
+        errors[field] = rules.error || `${field} must be at least ${rules.min}`;
+        isValid = false;
+      }
+      
+      if (rules.max !== undefined && value > rules.max) {
+        errors[field] = rules.error || `${field} must be at most ${rules.max}`;
+        isValid = false;
+      }
+    });
+    
+    this.setState({ protocolFormErrors: errors });
+    return isValid;
+  };
+
+  submitProtocolForm = () => {
+    if (!this.validateProtocolForm()) {
+      this.pushToTerminal('[[error]]Form contains errors. Please fix them before submitting.[[/error]]');
+      return;
+    }
+    
+    const { protocolFormData } = this.state;
+    this.pushToTerminal('[[success]]Form submitted successfully![[/success]]');
+    this.pushToTerminal(JSON.stringify(protocolFormData, null, 2));
+  };
+
+  searchPopsByProtocol = async () => {
+    try {
+      const { currentPopit, protocolSearchQuery } = this.state;
+      if (!currentPopit) {
+        throw new Error('No Popit loaded');
+      }
+      
+      if (!protocolSearchQuery) {
+        throw new Error('Please enter a protocol to search');
+      }
+      
+      const pops = await currentPopit.getPopsByProtocol(protocolSearchQuery);
+      this.setState({ protocolSearchResults: pops });
+      
+      let output = '[[header]]=== Search Results ===[[/header]]\n';
+      if (pops.length === 0) {
+        output += 'No pops found for this protocol\n';
+      } else {
+        pops.forEach(pop => {
+          output += `ID: ${pop.id} | Name: ${pop.human_readable_name} | Protocol: ${pop.protocol}\n`;
+          output += `Link: ${pop.link}\n`;
+          output += `Created: ${new Date(pop.timestamp * 1000).toLocaleString()}\n`;
+          output += '----------------\n';
+        });
+      }
+      
+      this.pushToTerminal(output);
+      return output;
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Search failed: ${error.message}[[/error]]`);
+      return null;
     }
   };
 
@@ -1306,6 +1471,254 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
     );
   };
 
+  renderProtocolPanel = () => {
+    const { 
+      protocolName, 
+      parserUrl, 
+      definedProtocols, 
+      selectedProtocol, 
+      protocolFormData, 
+      protocolFormErrors,
+      protocolSearchQuery,
+      protocolSearchResults
+    } = this.state;
+
+    return (
+      <div style={styles.panel}>
+        <h2 style={styles.panelTitle}>PROTOCOL MANAGEMENT</h2>
+        <div style={styles.gridContainer}>
+          <div style={styles.gridItem}>
+            <h3 style={styles.subTitle}>DEFINE PROTOCOL</h3>
+            <div style={styles.infoBox}>
+              <input
+                type="text"
+                name="protocolName"
+                value={protocolName}
+                onChange={(e) => this.setState({ protocolName: e.target.value })}
+                placeholder="Protocol Name (e.g., vin://)"
+                style={styles.input}
+              />
+              <input
+                type="text"
+                name="parserUrl"
+                value={parserUrl}
+                onChange={(e) => this.setState({ parserUrl: e.target.value })}
+                placeholder="Parser URL (JSON)"
+                style={styles.input}
+              />
+              <button 
+                style={styles.button}
+                onClick={this.addProtocolParser}
+              >
+                ADD PROTOCOL
+              </button>
+              <div style={styles.divider}></div>
+              <h4 style={{ color: CYBERPUNK.secondary, marginBottom: '5px' }}>Your Protocols:</h4>
+              {definedProtocols.length === 0 ? (
+                <p style={{ color: CYBERPUNK.text, opacity: 0.7 }}>No protocols defined</p>
+              ) : (
+                <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
+                  {definedProtocols.map((protocol, index) => (
+                    <div key={index} style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '5px',
+                      padding: '5px',
+                      backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                      border: `1px solid ${CYBERPUNK.primary}`
+                    }}>
+                      <span 
+                        style={{ 
+                          cursor: 'pointer',
+                          color: CYBERPUNK.primary,
+                          flex: 1
+                        }}
+                        onClick={() => this.loadProtocolDefinition(protocol)}
+                      >
+                        {protocol}
+                      </span>
+                      <button
+                        style={{
+                          background: 'transparent',
+                          border: `1px solid ${CYBERPUNK.error}`,
+                          color: CYBERPUNK.error,
+                          padding: '2px 5px',
+                          cursor: 'pointer',
+                          fontSize: '12px'
+                        }}
+                        onClick={() => this.removeProtocolParser(protocol)}
+                      >
+                        X
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div style={styles.gridItem}>
+            <h3 style={styles.subTitle}>DATA ENTRY</h3>
+            <div style={styles.infoBox}>
+              {selectedProtocol ? (
+                <div>
+                  <h4 style={{ color: CYBERPUNK.secondary }}>{selectedProtocol.protocol}</h4>
+                  <div style={{ maxHeight: '300px', overflowY: 'auto', padding: '5px' }}>
+                    {Object.entries(selectedProtocol.data_structure).map(([field, type]) => (
+                      <div key={field} style={{ marginBottom: '10px' }}>
+                        <label style={{ 
+                          display: 'block', 
+                          color: CYBERPUNK.primary,
+                          marginBottom: '3px'
+                        }}>
+                          {field} ({type})
+                        </label>
+                        
+                        {Array.isArray(protocolFormData[field]) ? (
+                          <div>
+                            {protocolFormData[field].map((item, index) => (
+                              <div key={index} style={{ 
+                                display: 'flex', 
+                                marginBottom: '5px',
+                                alignItems: 'center'
+                              }}>
+                                <input
+                                  type={typeof item === 'number' ? 'number' : 'text'}
+                                  value={item}
+                                  onChange={(e) => this.handleArrayFieldChange(field, index, e.target.value)}
+                                  style={{
+                                    ...styles.input,
+                                    flex: 1,
+                                    marginBottom: 0,
+                                    backgroundColor: protocolFormErrors[field] ? 'rgba(255, 61, 61, 0.2)' : 'rgba(0, 0, 0, 0.5)'
+                                  }}
+                                />
+                                <button
+                                  style={{
+                                    background: CYBERPUNK.error,
+                                    border: 'none',
+                                    color: 'white',
+                                    padding: '5px',
+                                    marginLeft: '5px',
+                                    cursor: 'pointer'
+                                  }}
+                                  onClick={() => this.handleRemoveArrayItem(field, index)}
+                                >
+                                  -
+                                </button>
+                              </div>
+                            ))}
+                            <button
+                              style={{
+                                background: CYBERPUNK.success,
+                                border: 'none',
+                                color: 'white',
+                                padding: '5px 10px',
+                                cursor: 'pointer',
+                                fontSize: '12px'
+                              }}
+                              onClick={() => this.handleAddArrayItem(field)}
+                            >
+                              Add Item
+                            </button>
+                          </div>
+                        ) : (
+                          <input
+                            type={typeof protocolFormData[field] === 'number' ? 'number' : 'text'}
+                            value={protocolFormData[field] || ''}
+                            onChange={(e) => this.handleProtocolFormChange(
+                              field, 
+                              typeof protocolFormData[field] === 'number' ? 
+                                parseFloat(e.target.value) || 0 : 
+                                e.target.value
+                            )}
+                            style={{
+                              ...styles.input,
+                              backgroundColor: protocolFormErrors[field] ? 'rgba(255, 61, 61, 0.2)' : 'rgba(0, 0, 0, 0.5)'
+                            }}
+                          />
+                        )}
+                        
+                        {protocolFormErrors[field] && (
+                          <div style={{ 
+                            color: CYBERPUNK.error,
+                            fontSize: '12px',
+                            marginTop: '3px'
+                          }}>
+                            {protocolFormErrors[field]}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <button 
+                    style={{ ...styles.button, marginTop: '10px' }}
+                    onClick={this.submitProtocolForm}
+                  >
+                    SUBMIT DATA
+                  </button>
+                </div>
+              ) : (
+                <p style={{ color: CYBERPUNK.text, opacity: 0.7 }}>
+                  Select a protocol to enter data
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div style={styles.gridItem}>
+            <h3 style={styles.subTitle}>PROTOCOL SEARCH</h3>
+            <div style={styles.infoBox}>
+              <input
+                type="text"
+                value={protocolSearchQuery}
+                onChange={(e) => this.setState({ protocolSearchQuery: e.target.value })}
+                placeholder="Enter protocol to search (e.g., vin://)"
+                style={styles.input}
+              />
+              <button 
+                style={styles.button}
+                onClick={this.searchPopsByProtocol}
+              >
+                SEARCH POPS
+              </button>
+              <div style={{ marginTop: '10px', maxHeight: '200px', overflowY: 'auto' }}>
+                {protocolSearchResults.length > 0 && (
+                  <div>
+                    <h4 style={{ color: CYBERPUNK.secondary }}>Results:</h4>
+                    {protocolSearchResults.map((pop, index) => (
+                      <div key={index} style={{ 
+                        marginBottom: '10px',
+                        padding: '5px',
+                        border: `1px solid ${CYBERPUNK.primary}`,
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)'
+                      }}>
+                        <div><strong>ID:</strong> {pop.id.toString()}</div>
+                        <div><strong>Name:</strong> {pop.human_readable_name}</div>
+                        <div><strong>Link:</strong> {pop.link}</div>
+                        <div><strong>Created:</strong> {new Date(pop.timestamp * 1000).toLocaleString()}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+        {this.renderOutputArea(this.state.protocolOutput)}
+        <div style={{ textAlign: 'right', marginTop: '10px' }}>
+          <button 
+            style={{ ...styles.button, width: 'auto', padding: '5px 10px' }}
+            onClick={() => this.clearOutput('protocol')}
+          >
+            CLEAR OUTPUT
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   renderOutputArea = (output) => {
     return (
       <div style={{
@@ -1353,7 +1766,6 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
         position: 'relative',
         overflow: 'hidden'
       }}>
-        {/* Scanlines overlay */}
         <div style={{
           position: 'absolute',
           top: 0,
@@ -1369,7 +1781,6 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
           zIndex: 1
         }}></div>
 
-        {/* Main content */}
         <div style={{
           position: 'relative',
           zIndex: 3,
@@ -1377,7 +1788,6 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
           display: 'flex',
           flexDirection: 'column'
         }}>
-          {/* Header */}
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -1421,14 +1831,12 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
             </div>
           </div>
 
-          {/* Main content area */}
           {showGUI ? (
             <div style={{
               flex: 1,
               display: 'flex',
               flexDirection: 'column'
             }}>
-              {/* Navigation */}
               <div style={styles.navContainer}>
                 <button 
                   onClick={() => this.setActivePanel('dashboard')}
@@ -1457,9 +1865,20 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
                 >
                   FACTORY
                 </button>
+                <button 
+                  onClick={() => {
+                    this.setActivePanel('protocol');
+                    this.fetchProtocols();
+                  }}
+                  style={{
+                    ...styles.navButton,
+                    borderBottom: activePanel === 'protocol' ? `2px solid ${CYBERPUNK.primary}` : 'none'
+                  }}
+                >
+                  PROTOCOLS
+                </button>
               </div>
 
-              {/* Panel content */}
               <div style={{
                 flex: 1,
                 overflow: 'auto'
@@ -1467,6 +1886,7 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
                 {activePanel === 'dashboard' && this.renderDashboardPanel()}
                 {activePanel === 'popit' && this.renderPopitPanel()}
                 {activePanel === 'factory' && this.renderFactoryPanel()}
+                {activePanel === 'protocol' && this.renderProtocolPanel()}
               </div>
             </div>
           ) : (
@@ -1514,10 +1934,8 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
                         throw new Error('Popit contract not loaded');
                       }
 
-                      // Extract protocol from name
                       const protocol = this.extractProtocol(name);
 
-                      // FLIP Token Setup
                       const flipToken = new ethers.Contract(
                         '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118',
                         [
@@ -1528,14 +1946,12 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
                         provider.getSigner()
                       );
 
-                      // Check Balance
                       const requiredAmount = ethers.utils.parseUnits('1', 18);
                       const balance = await flipToken.balanceOf(account);
                       if (balance.lt(requiredAmount)) {
                         throw new Error(`Need 1 FLIP (you have ${ethers.utils.formatUnits(balance, 18)})`);
                       }
 
-                      // Check & Set Allowance
                       const MAX_UINT256 = ethers.constants.MaxUint256;
                       const allowance = await flipToken.allowance(account, currentPopit.address);
                       if (allowance.lt(requiredAmount)) {
@@ -1596,6 +2012,60 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
                   fn: async () => {
                     try {
                       await this.listPopits();
+                      return '';
+                    } catch (error) {
+                      return error.message;
+                    }
+                  }
+                },
+                addprotocol: {
+                  description: 'Add a new protocol parser',
+                  usage: 'addprotocol <name> <parserUrl>',
+                  fn: async (name, parserUrl) => {
+                    try {
+                      this.setState({ protocolName: name, parserUrl }, async () => {
+                        await this.addProtocolParser();
+                      });
+                      return '';
+                    } catch (error) {
+                      return error.message;
+                    }
+                  }
+                },
+                removeprotocol: {
+                  description: 'Remove a protocol parser',
+                  usage: 'removeprotocol <name>',
+                  fn: async (name) => {
+                    try {
+                      await this.removeProtocolParser(name);
+                      return '';
+                    } catch (error) {
+                      return error.message;
+                    }
+                  }
+                },
+                listprotocols: {
+                  description: 'List all protocol parsers',
+                  fn: async () => {
+                    try {
+                      const protocols = await this.fetchProtocols();
+                      if (protocols.length === 0) {
+                        return 'No protocols defined';
+                      }
+                      return protocols.join('\n');
+                    } catch (error) {
+                      return error.message;
+                    }
+                  }
+                },
+                searchprotocol: {
+                  description: 'Search pops by protocol',
+                  usage: 'searchprotocol <protocol>',
+                  fn: async (protocol) => {
+                    try {
+                      this.setState({ protocolSearchQuery: protocol }, async () => {
+                        await this.searchPopsByProtocol();
+                      });
                       return '';
                     } catch (error) {
                       return error.message;

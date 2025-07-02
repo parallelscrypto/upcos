@@ -2367,7 +2367,11 @@ myppl: {
 
       // 3. Verify PPLS contract address
       if (!this.state.ppls) {
-        throw new Error("No PPLS contract configured. Please provide a valid repository address as the parameter");
+        this.setState({
+          ppls: '0xB7997334E8D694F0fb2430053BF1E3F9430CFBE5'
+        });
+
+        throw new Error("No PPLS contract configured. Using default repo address 0xB7997334E8D694F0fb2430053BF1E3F9430CFBE5 for myppl command until you set it yourself.  run this command and pass the address of your ppl to set a new ppl");
       }
 
       const address = this.state.ppls;
