@@ -396,7 +396,10 @@ console.log("############CURRENT STATE ##############3",this.state);
 
     var upcNum  = this.props.account;
 
-    var channelNum = upcNum.substr(-1);
+    if(upcNum) {
+       var channelNum = upcNum.substr(-1);
+    }
+
     var upcInfo = this.props.upcInfo(upcNum);
     var myAddress = this.props.address;
     var upcStatus = "";

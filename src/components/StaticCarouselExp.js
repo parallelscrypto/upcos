@@ -2368,10 +2368,10 @@ myppl: {
       // 3. Verify PPLS contract address
       if (!this.state.ppls) {
         this.setState({
-          ppls: '0xB7997334E8D694F0fb2430053BF1E3F9430CFBE5'
+          ppls: '0x0f1b72D9A7845E6CeF7Ec639D203bF1a92A1e925'
         });
 
-        throw new Error("No PPLS contract configured. Using default repo address 0xB7997334E8D694F0fb2430053BF1E3F9430CFBE5 for myppl command until you set it yourself.  run this command and pass the address of your ppl to set a new ppl");
+        //throw new Error("No PPLS contract configured. Using default repo address 0xB7997334E8D694F0fb2430053BF1E3F9430CFBE5 for myppl command until you set it yourself.  run this command and pass the address of your ppl to set a new ppl");
       }
 
       const address = this.state.ppls;
