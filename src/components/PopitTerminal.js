@@ -631,39 +631,38 @@ class PopitTerminal extends React.Component {
 
 
 handleArweaveMessage = (event) => {
-  const allowedOrigin = 'https://x7vvqfuva5vke4mmmt5w7bma4apn5yjyl2c2y2f45uwy5xwlzmrq.arweave.net';
-  if (event.origin !== allowedOrigin) return;
+  // Allow messages from both the iframe origin and parent window (for testing)
+  const allowedOrigins = [
+    'https://5qw6rsejfhwovrumxotfe26m4vlv6ewbef7pu3hvt5usmcoqarha.arweave.net',
+    window.location.origin
+  ];
+  
+  if (!allowedOrigins.includes(event.origin)) return;
   
   if (event.data.type === 'FRAME_READY') {
-    // If the iframe sends a ready message, resend the data
     if (this.state.arweaveData && this.arweaveIframeRef.current) {
       this.arweaveIframeRef.current.contentWindow.postMessage({
         type: 'UPDATE_DATA',
         data: this.state.arweaveData
-      }, event.origin);
+      }, 'https://5qw6rsejfhwovrumxotfe26m4vlv6ewbef7pu3hvt5usmcoqarha.arweave.net');
     }
   }
-  else if (event.data.type === 'UPDATE_DATA') {
-    this.setState({
-      arweaveData: event.data.data,
-      showWizard: true,
-      wizardStep: 0,
-      tempLink: event.data.data,
-      showArweaveUploader: false
-    });
-    this.pushToTerminal('[[success]]Data received from Arweave uploader! Starting wizard...[[/success]]');
-  } 
   else if (event.data.type === 'ARWEAVE_UPLOAD_COMPLETE') {
+    console.log('Upload complete received:', event.data); // Debug log
+    
     this.setState({
       arweaveUploadUrl: event.data.url,
       showWizard: true,
-      wizardStep: 0,
+      wizardStep: 1, // Start at action selection
       tempLink: event.data.url,
       showArweaveUploader: false
+    }, () => {
+      this.pushToTerminal(`[[success]]Arweave upload complete! URL: ${event.data.url}[[/success]]`);
+      this.pushToTerminal('Starting wizard to create/update Pop...');
     });
-    this.pushToTerminal(`[[success]]Arweave upload complete! URL: ${event.data.url}[[/success]]`);
   }
 };
+
 
 
 
@@ -1347,31 +1346,32 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
     this.openArweaveUploader();
   };
 
-  completeCreatePop = () => {
-    const { tempLink, name, upc } = this.state;
-    this.setState({
-      link: tempLink,
-      showWizard: false,
-      wizardStep: 0,
-      wizardAction: '',
-      tempLink: ''
-    }, () => {
-      this.createPop();
-    });
-  };
+completeCreatePop = () => {
+  const { tempLink, name, upc } = this.state;
+  this.setState({
+    link: tempLink,
+    showWizard: false,
+    wizardStep: 0,
+    wizardAction: '',
+    tempLink: ''
+  }, () => {
+    this.createPop();
+  });
+};
 
-  completeUpdatePop = () => {
-    const { tempLink, selectedPopId } = this.state;
-    this.setState({
-      newLink: tempLink,
-      showWizard: false,
-      wizardStep: 0,
-      wizardAction: '',
-      tempLink: ''
-    }, () => {
-      this.updatePopLink();
-    });
-  };
+completeUpdatePop = () => {
+  const { tempLink, selectedPopId } = this.state;
+  this.setState({
+    newLink: tempLink,
+    showWizard: false,
+    wizardStep: 0,
+    wizardAction: '',
+    tempLink: '',
+    selectedPopId: ''
+  }, () => {
+    this.updatePopLink();
+  });
+};
 
   searchPopsByProtocol = async () => {
     try {
@@ -1444,20 +1444,29 @@ renderArweaveUploader = () => {
       zIndex: 1000,
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      overflow: 'auto', // Allow scrolling if content is too large
+      padding: '20px', // Add padding to ensure content doesn't touch edges
+      boxSizing: 'border-box'
     }}>
       <div style={{
-        width: '80%',
-        height: '80%',
+        width: '100%',
+        maxWidth: '800px', // Limit maximum width
+        height: 'auto',
+        maxHeight: '90vh', // Limit height to viewport
         backgroundColor: CYBERPUNK.terminalBg,
         border: `2px solid ${CYBERPUNK.primary}`,
-        boxShadow: `0 0 20px ${CYBERPUNK.primary}`
+        boxShadow: `0 0 20px ${CYBERPUNK.primary}`,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden' // Prevent inner content from overflowing
       }}>
         <div style={{
           display: 'flex',
           justifyContent: 'flex-end',
           padding: '10px',
-          backgroundColor: CYBERPUNK.terminalBg
+          backgroundColor: CYBERPUNK.terminalBg,
+          flexShrink: 0 // Prevent header from shrinking
         }}>
           <button 
             onClick={() => this.setState({ showArweaveUploader: false })}
@@ -1475,11 +1484,13 @@ renderArweaveUploader = () => {
         <iframe
           key={`arweave-iframe-${Date.now()}`}
           ref={this.arweaveIframeRef}
-          src="https://x7vvqfuva5vke4mmmt5w7bma4apn5yjyl2c2y2f45uwy5xwlzmrq.arweave.net/v-tYFpUHaqJxjGT7b4WA4B7e4ThehaxovO0tjt7LyyM"
+          src="https://5qw6rsejfhwovrumxotfe26m4vlv6ewbef7pu3hvt5usmcoqarha.arweave.net/7C3oyIkp7OrGjLumUmvM5VdfEsEhfvps9Z9pJgnQBE4"
           style={{
             width: '100%',
-            height: 'calc(100% - 50px)',
-            border: 'none'
+            height: 'calc(100vh - 150px)', // Dynamic height calculation
+            minHeight: '400px', // Minimum height
+            border: 'none',
+            flexGrow: 1 // Allow iframe to fill remaining space
           }}
           title="Arweave Uploader"
           sandbox="allow-scripts allow-same-origin allow-modals allow-forms allow-popups"
@@ -1488,7 +1499,7 @@ renderArweaveUploader = () => {
               this.arweaveIframeRef.current.contentWindow.postMessage({
                 type: 'UPDATE_DATA',
                 data: this.state.arweaveData
-              }, 'https://x7vvqfuva5vke4mmmt5w7bma4apn5yjyl2c2y2f45uwy5xwlzmrq.arweave.net');
+              }, 'https://5qw6rsejfhwovrumxotfe26m4vlv6ewbef7pu3hvt5usmcoqarha.arweave.net');
             }
           }}
         />
@@ -1525,233 +1536,173 @@ renderArweaveUploader = () => {
 
 
 
-  renderWizard = () => {
-    if (!this.state.showWizard) return null;
+renderWizard = () => {
+  if (!this.state.showWizard) return null;
 
-    const { wizardStep, wizardAction, pops, tempLink, selectedPopId } = this.state;
+  const { wizardStep, wizardAction, pops, tempLink, selectedPopId } = this.state;
 
-    return (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0,0,0,0.8)',
-        zIndex: 1000,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}>
-        <div style={{
-          width: '600px',
-          maxWidth: '90%',
-          backgroundColor: CYBERPUNK.terminalBg,
-          border: `2px solid ${CYBERPUNK.primary}`,
-          boxShadow: `0 0 20px ${CYBERPUNK.primary}`,
-          padding: '20px',
-          color: CYBERPUNK.text
-        }}>
-          <h2 style={{
-            color: CYBERPUNK.primary,
-            marginTop: 0,
-            borderBottom: `1px solid ${CYBERPUNK.primary}`,
-            paddingBottom: '10px'
-          }}>
-            {wizardStep === 0 && 'Select Action'}
-            {wizardStep === 1 && wizardAction === 'create' && 'Create New Pop'}
-            {wizardStep === 1 && wizardAction === 'update' && 'Select Pop to Update'}
-            {wizardStep === 2 && 'Confirm Update'}
-          </h2>
+  return (
+    <div style={wizardStyles.overlay}>
+      <div style={wizardStyles.container}>
+        <h2 style={wizardStyles.title}>
+          {wizardStep === 1 && 'Select Action'}
+          {wizardStep === 2 && wizardAction === 'create' && 'Create New Pop'}
+          {wizardStep === 2 && wizardAction === 'update' && 'Select Pop to Update'}
+          {wizardStep === 3 && 'Confirm Update'}
+        </h2>
 
-          {wizardStep === 0 && (
-            <div>
-              <p>Data uploaded to Arweave at:</p>
-              <div style={{
-                backgroundColor: 'rgba(0,0,0,0.5)',
-                padding: '10px',
-                margin: '10px 0',
-                wordBreak: 'break-all'
-              }}>
-                {tempLink}
-              </div>
-              <p>What would you like to do with this data?</p>
-              <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                <button
-                  onClick={() => this.selectWizardAction('create')}
-                  style={{
-                    flex: 1,
-                    padding: '10px',
-                    backgroundColor: CYBERPUNK.terminalBg,
-                    color: CYBERPUNK.primary,
-                    border: `1px solid ${CYBERPUNK.primary}`,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Create New Pop
-                </button>
-                <button
-                  onClick={() => this.selectWizardAction('update')}
-                  style={{
-                    flex: 1,
-                    padding: '10px',
-                    backgroundColor: CYBERPUNK.terminalBg,
-                    color: CYBERPUNK.primary,
-                    border: `1px solid ${CYBERPUNK.primary}`,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Update Existing Pop
-                </button>
-              </div>
+        {/* Step 1: Action Selection */}
+        {wizardStep === 1 && (
+          <div>
+            <p>Data uploaded to Arweave at:</p>
+            <div style={wizardStyles.linkBox}>
+              {tempLink}
             </div>
-          )}
-
-          {wizardStep === 1 && wizardAction === 'create' && (
-            <div>
-              <p>Creating new Pop with data from:</p>
-              <div style={{
-                backgroundColor: 'rgba(0,0,0,0.5)',
-                padding: '10px',
-                margin: '10px 0',
-                wordBreak: 'break-all'
-              }}>
-                {tempLink}
-              </div>
-              <div style={{ margin: '15px 0' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Name:</label>
-                <input
-                  type="text"
-                  value={this.state.name}
-                  onChange={(e) => this.setState({ name: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '8px',
-                    backgroundColor: 'rgba(0,0,0,0.5)',
-                    border: `1px solid ${CYBERPUNK.primary}`,
-                    color: CYBERPUNK.text
-                  }}
-                  placeholder="Enter a name for this Pop"
-                />
-              </div>
-              <div style={{ margin: '15px 0' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>UPC (optional):</label>
-                <input
-                  type="text"
-                  value={this.state.upc}
-                  onChange={(e) => this.setState({ upc: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '8px',
-                    backgroundColor: 'rgba(0,0,0,0.5)',
-                    border: `1px solid ${CYBERPUNK.primary}`,
-                    color: CYBERPUNK.text
-                  }}
-                  placeholder="Enter UPC if applicable"
-                />
-              </div>
+            <p>What would you like to do with this data?</p>
+            <div style={wizardStyles.buttonGroup}>
+              <button
+                onClick={() => this.setState({ wizardAction: 'create', wizardStep: 2 })}
+                style={wizardStyles.button}
+              >
+                Create New Pop
+              </button>
+              <button
+                onClick={() => this.setState({ wizardAction: 'update', wizardStep: 2 })}
+                style={wizardStyles.button}
+              >
+                Update Existing Pop
+              </button>
             </div>
-          )}
-
-          {wizardStep === 1 && wizardAction === 'update' && (
-            <div>
-              <p>Select which Pop to update with this data:</p>
-              <div style={{
-                maxHeight: '300px',
-                overflowY: 'auto',
-                margin: '10px 0',
-                border: `1px solid ${CYBERPUNK.primary}`
-              }}>
-                {pops.length === 0 ? (
-                  <div style={{ padding: '10px', textAlign: 'center' }}>
-                    No Pops available to update
-                  </div>
-                ) : (
-                  pops.map(pop => (
-                    <div
-                      key={pop.id}
-                      onClick={() => this.selectPopToUpdate(pop.id)}
-                      style={{
-                        padding: '10px',
-                        cursor: 'pointer',
-                        backgroundColor: selectedPopId === pop.id ? 'rgba(0, 240, 255, 0.2)' : 'transparent',
-                        borderBottom: `1px solid ${CYBERPUNK.primary}`
-                      }}
-                    >
-                      <div><strong>ID:</strong> {pop.id}</div>
-                      <div><strong>Name:</strong> {pop.name}</div>
-                      <div><strong>Current Link:</strong> {pop.link}</div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
-
-          {wizardStep === 2 && wizardAction === 'update' && (
-            <div>
-              <p>Updating Pop #{selectedPopId} with new data from:</p>
-              <div style={{
-                backgroundColor: 'rgba(0,0,0,0.5)',
-                padding: '10px',
-                margin: '10px 0',
-                wordBreak: 'break-all'
-              }}>
-                {tempLink}
-              </div>
-              <p>Are you sure you want to update this Pop?</p>
-            </div>
-          )}
-
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            marginTop: '20px',
-            borderTop: `1px solid ${CYBERPUNK.primary}`,
-            paddingTop: '15px'
-          }}>
-            <button
-              onClick={wizardStep === 0 ? this.closeWizard : this.prevWizardStep}
-              style={{
-                padding: '8px 15px',
-                backgroundColor: CYBERPUNK.terminalBg,
-                color: CYBERPUNK.error,
-                border: `1px solid ${CYBERPUNK.error}`,
-                cursor: 'pointer'
-              }}
-            >
-              {wizardStep === 0 ? 'Cancel' : 'Back'}
-            </button>
-            
-            <button
-              onClick={() => {
-                if (wizardAction === 'create' && wizardStep === 1) {
-                  this.completeCreatePop();
-                } else if (wizardAction === 'update' && wizardStep === 2) {
-                  this.completeUpdatePop();
-                } else {
-                  this.nextWizardStep();
-                }
-              }}
-              disabled={wizardAction === 'update' && wizardStep === 1 && !selectedPopId}
-              style={{
-                padding: '8px 15px',
-                backgroundColor: CYBERPUNK.terminalBg,
-                color: CYBERPUNK.success,
-                border: `1px solid ${CYBERPUNK.success}`,
-                cursor: 'pointer',
-                opacity: (wizardAction === 'update' && wizardStep === 1 && !selectedPopId) ? 0.5 : 1
-              }}
-            >
-              {wizardStep === 1 && wizardAction === 'create' && 'Create Pop'}
-              {wizardStep === 2 && wizardAction === 'update' && 'Confirm Update'}
-              {(wizardStep === 0 || (wizardStep === 1 && wizardAction === 'update')) && 'Next'}
-            </button>
           </div>
-        </div>
+        )}
+
+        {/* Step 2a: Create New Pop */}
+        {wizardStep === 2 && wizardAction === 'create' && (
+          <div>
+            <p>Creating new Pop with data from:</p>
+            <div style={wizardStyles.linkBox}>
+              {tempLink}
+            </div>
+            <div style={wizardStyles.formGroup}>
+              <label style={wizardStyles.label}>Name:</label>
+              <input
+                type="text"
+                value={this.state.name}
+                onChange={(e) => this.setState({ name: e.target.value })}
+                style={wizardStyles.input}
+                placeholder="Enter a name for this Pop"
+              />
+            </div>
+            <div style={wizardStyles.formGroup}>
+              <label style={wizardStyles.label}>UPC (optional):</label>
+              <input
+                type="text"
+                value={this.state.upc}
+                onChange={(e) => this.setState({ upc: e.target.value })}
+                style={wizardStyles.input}
+                placeholder="Enter UPC if applicable"
+              />
+            </div>
+            <div style={wizardStyles.buttonGroup}>
+              <button
+                onClick={() => this.setState({ wizardStep: 1 })}
+                style={{ ...wizardStyles.button, ...wizardStyles.secondaryButton }}
+              >
+                Back
+              </button>
+              <button
+                onClick={this.completeCreatePop}
+                style={wizardStyles.button}
+              >
+                Create Pop
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 2b: Update Existing Pop */}
+        {wizardStep === 2 && wizardAction === 'update' && (
+          <div>
+            <p>Select which Pop to update with this data:</p>
+            <div style={wizardStyles.popList}>
+              {pops.length === 0 ? (
+                <div style={wizardStyles.emptyMessage}>
+                  No Pops available to update
+                </div>
+              ) : (
+                pops.map(pop => (
+                  <div
+                    key={pop.id}
+                    onClick={() => this.setState({ selectedPopId: pop.id })}
+                    style={{
+                      ...wizardStyles.popItem,
+                      ...(selectedPopId === pop.id ? wizardStyles.selectedPopItem : {})
+                    }}
+                  >
+                    <div><strong>ID:</strong> {pop.id}</div>
+                    <div><strong>Name:</strong> {pop.name}</div>
+                    <div><strong>Current Link:</strong> {pop.link}</div>
+                  </div>
+                ))
+              )}
+            </div>
+            <div style={wizardStyles.buttonGroup}>
+              <button
+                onClick={() => this.setState({ wizardStep: 1 })}
+                style={{ ...wizardStyles.button, ...wizardStyles.secondaryButton }}
+              >
+                Back
+              </button>
+              <button
+                onClick={() => this.setState({ wizardStep: 3 })}
+                disabled={!selectedPopId}
+                style={{
+                  ...wizardStyles.button,
+                  opacity: !selectedPopId ? 0.5 : 1
+                }}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Confirm Update */}
+        {wizardStep === 3 && (
+          <div>
+            <p>Updating Pop #{selectedPopId} with new data from:</p>
+            <div style={wizardStyles.linkBox}>
+              {tempLink}
+            </div>
+            <p>Are you sure you want to update this Pop?</p>
+            <div style={wizardStyles.buttonGroup}>
+              <button
+                onClick={() => this.setState({ wizardStep: 2 })}
+                style={{ ...wizardStyles.button, ...wizardStyles.secondaryButton }}
+              >
+                Back
+              </button>
+              <button
+                onClick={this.completeUpdatePop}
+                style={wizardStyles.button}
+              >
+                Confirm Update
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-    );
-  };
+    </div>
+  );
+};
+
+
+
+
+
+
+
+
 
   renderDashboardPanel = () => {
     return (
@@ -2686,6 +2637,95 @@ const styles = {
     backgroundColor: CYBERPUNK.primary,
     margin: '10px 0',
     opacity: 0.3
+  }
+};
+
+// Add these styles to your styles object
+const wizardStyles = {
+  overlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    zIndex: 1000,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  container: {
+    width: '600px',
+    maxWidth: '90%',
+    backgroundColor: CYBERPUNK.terminalBg,
+    border: `2px solid ${CYBERPUNK.primary}`,
+    boxShadow: `0 0 20px ${CYBERPUNK.primary}`,
+    padding: '20px',
+    color: CYBERPUNK.text
+  },
+  title: {
+    color: CYBERPUNK.primary,
+    marginTop: 0,
+    borderBottom: `1px solid ${CYBERPUNK.primary}`,
+    paddingBottom: '10px'
+  },
+  linkBox: {
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    padding: '10px',
+    margin: '10px 0',
+    wordBreak: 'break-all'
+  },
+  buttonGroup: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginTop: '20px',
+    borderTop: `1px solid ${CYBERPUNK.primary}`,
+    paddingTop: '15px'
+  },
+  button: {
+    padding: '8px 15px',
+    backgroundColor: CYBERPUNK.terminalBg,
+    color: CYBERPUNK.success,
+    border: `1px solid ${CYBERPUNK.success}`,
+    cursor: 'pointer'
+  },
+  secondaryButton: {
+    color: CYBERPUNK.error,
+    border: `1px solid ${CYBERPUNK.error}`
+  },
+  formGroup: {
+    margin: '15px 0'
+  },
+  label: {
+    display: 'block',
+    marginBottom: '5px'
+  },
+  input: {
+    width: '100%',
+    padding: '8px',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    border: `1px solid ${CYBERPUNK.primary}`,
+    color: CYBERPUNK.text
+  },
+  popList: {
+    maxHeight: '300px',
+    overflowY: 'auto',
+    margin: '10px 0',
+    border: `1px solid ${CYBERPUNK.primary}`
+  },
+  popItem: {
+    padding: '10px',
+    cursor: 'pointer',
+    backgroundColor: 'transparent',
+    borderBottom: `1px solid ${CYBERPUNK.primary}`,
+    transition: 'background-color 0.2s'
+  },
+  selectedPopItem: {
+    backgroundColor: 'rgba(0, 240, 255, 0.2)'
+  },
+  emptyMessage: {
+    padding: '10px',
+    textAlign: 'center'
   }
 };
 
