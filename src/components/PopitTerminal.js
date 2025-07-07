@@ -1515,160 +1515,145 @@ handleArweaveMessage = (event) => {
 
 
   // Add new method for grep command
-  executeGrepQuery = async (query) => {
-    try {
-      const { currentPopit } = this.state;
-      if (!currentPopit) {
-        throw new Error('No Popit loaded');
-      }
-
-      // Parse the query (simple format: "protocol:vin:// where make=Toyota")
-      const protocolMatch = query.match(/protocol:([^\s]+)/);
-      if (!protocolMatch) {
-        throw new Error('Query must specify a protocol with "protocol:<protocol>"');
-      }
-      const protocol = protocolMatch[1];
-
-      // Parse conditions (simple format: "field=value", "field>value", etc.)
-      const conditions = [];
-      const conditionRegex = /(\w+)\s*(=|!=|>|<|>=|<=|contains)\s*([^\s]+)/g;
-      let match;
-      while ((match = conditionRegex.exec(query)) !== null) {
-        conditions.push({
-          field: match[1],
-          operator: match[2],
-          value: match[3]
-        });
-      }
-
-      if (conditions.length === 0) {
-        throw new Error('No conditions specified in query');
-      }
-
-      this.setState({
-        grepLoading: true,
-        grepError: null,
-        grepResults: [],
-        grepProtocol: protocol,
-        grepConditions: conditions
-      });
-
-      // Load the protocol parser
-      const parser = await this.getParserForProtocol(protocol);
-      if (!parser || !parser.parserUrl) {
-        throw new Error(`No parser found for protocol ${protocol}`);
-      }
-
-      // Fetch all pops for the protocol
-      const pops = await currentPopit.getPopsByProtocol(protocol);
-      if (pops.length === 0) {
-        this.pushToTerminal(`[[warning]]No pops found for protocol ${protocol}[[/warning]]`);
-        this.setState({
-          grepLoading: false,
-          grepResults: [],
-          showGrepResults: true
-        });
-        return [];
-      }
-
-      this.pushToTerminal(`Searching ${pops.length} pops for protocol ${protocol}...`);
-
-      // Check each pop's data against the conditions
-      const results = [];
-      for (const pop of pops) {
-        try {
-          // Fetch the data at the pop's link
-          const response = await fetch(pop.link);
-          if (!response.ok) {
-            continue;
-          }
-
-          const data = await response.json();
-          if (!data || typeof data !== 'object') {
-            continue;
-          }
-
-          // Check all conditions
-          let matches = true;
-          for (const condition of conditions) {
-            const { field, operator, value } = condition;
-            if (!(field in data)) {
-              matches = false;
-              break;
-            }
-
-            const fieldValue = data[field];
-            switch (operator) {
-              case '=':
-                if (String(fieldValue) !== String(value)) {
-                  matches = false;
-                }
-                break;
-              case '!=':
-                if (String(fieldValue) === String(value)) {
-                  matches = false;
-                }
-                break;
-              case '>':
-                if (Number(fieldValue) <= Number(value)) {
-                  matches = false;
-                }
-                break;
-              case '<':
-                if (Number(fieldValue) >= Number(value)) {
-                  matches = false;
-                }
-                break;
-              case '>=':
-                if (Number(fieldValue) < Number(value)) {
-                  matches = false;
-                }
-                break;
-              case '<=':
-                if (Number(fieldValue) > Number(value)) {
-                  matches = false;
-                }
-                break;
-              case 'contains':
-                if (!String(fieldValue).includes(String(value))) {
-                  matches = false;
-                }
-                break;
-              default:
-                matches = false;
-            }
-
-            if (!matches) break;
-          }
-
-          if (matches) {
-            results.push({
-              pop,
-              data
-            });
-          }
-        } catch (error) {
-          console.warn(`Error processing pop ${pop.id}:`, error);
-        }
-      }
-
-      this.pushToTerminal(`[[success]]Found ${results.length} matching pops[[/success]]`);
-      this.setState({
-        grepLoading: false,
-        grepResults: results,
-        showGrepResults: true
-      });
-
-      return results;
-    } catch (error) {
-      this.pushToTerminal(`[[error]]Grep error: ${error.message}[[/error]]`);
-      this.setState({
-        grepLoading: false,
-        grepError: error.message
-      });
-      throw error;
+executeGrepQuery = async (protocol, query) => {
+  try {
+    const { currentPopit } = this.state;
+    if (!currentPopit) {
+      throw new Error('No Popit loaded');
     }
-  };
+
+    // Parse conditions (simple format: "field=value", "field>value", etc.)
+    const conditions = [];
+    const conditionRegex = /(\w+)\s*(=|!=|>|<|>=|<=|contains)\s*([^\s]+)/g;
+    let match;
+    while ((match = conditionRegex.exec(query)) !== null) {
+      conditions.push({
+        field: match[1],
+        operator: match[2],
+        value: match[3]
+      });
+    }
+
+    this.setState({
+      grepLoading: true,
+      grepError: null,
+      grepResults: [],
+      grepConditions: conditions
+    });
+
+    // Get all pops for this protocol
+    const pops = await currentPopit.getPopsByProtocol(protocol);
+    if (pops.length === 0) {
+      this.pushToTerminal(`No pops found for protocol ${protocol}`);
+      return [];
+    }
+
+    // Process BigNumber values before storing in state
+    const processBigNumbers = (obj) => {
+      if (obj && typeof obj === 'object') {
+        if (obj._isBigNumber) {
+          return ethers.BigNumber.from(obj._hex).toNumber();
+        }
+        
+        // Handle arrays
+        if (Array.isArray(obj)) {
+          return obj.map(item => processBigNumbers(item));
+        }
+        
+        // Handle nested objects
+        const result = {};
+        for (const key in obj) {
+          result[key] = processBigNumbers(obj[key]);
+        }
+        return result;
+      }
+      return obj;
+    };
+
+    // Check each pop's data
+    const results = [];
+    for (const pop of pops) {
+      try {
+        // Process BigNumber fields in the pop object
+        const processedPop = {
+          ...pop,
+          id: pop.id._hex ? ethers.BigNumber.from(pop.id._hex).toNumber() : pop.id,
+          timestamp: pop.timestamp._hex ? ethers.BigNumber.from(pop.timestamp._hex).toNumber() : pop.timestamp
+        };
+
+        const response = await fetch(pop.link);
+        if (!response.ok) continue;
+        
+        const data = await response.json();
+        if (!data) continue;
+
+        // Check all conditions against the data
+        const matches = conditions.every(({field, operator, value}) => {
+          if (!(field in data)) return false;
+          
+          const fieldValue = data[field];
+          switch (operator) {
+            case '=': return String(fieldValue) === String(value);
+            case '!=': return String(fieldValue) !== String(value);
+            case '>': return Number(fieldValue) > Number(value);
+            case '<': return Number(fieldValue) < Number(value);
+            case '>=': return Number(fieldValue) >= Number(value);
+            case '<=': return Number(fieldValue) <= Number(value);
+            case 'contains': return String(fieldValue).includes(String(value));
+            default: return false;
+          }
+        });
+
+        if (matches) {
+          results.push({ 
+            pop: processedPop, 
+            data: processBigNumbers(data) 
+          });
+        }
+      } catch (error) {
+        console.warn(`Error processing pop ${pop.id}:`, error);
+      }
+    }
+
+    this.pushToTerminal(`Found ${results.length} matching pops`);
+    this.setState({
+      grepLoading: false,
+      grepResults: results,
+      showGrepResults: true
+    });
+
+    return results;
+  } catch (error) {
+    this.pushToTerminal(`Error: ${error.message}`);
+    this.setState({ grepLoading: false, grepError: error.message });
+    throw error;
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // Add new method to render grep results
   renderGrepResults = () => {
@@ -1819,184 +1804,286 @@ handleArweaveMessage = (event) => {
     );
   };
 
-  // Add new method to render grep GUI panel
-  renderGrepPanel = () => {
-    const { 
-      grepField, 
-      grepOperator, 
-      grepValue, 
-      grepConditions,
-      grepProtocol,
-      grepLoading
-    } = this.state;
 
-    return (
-      <div style={styles.panel}>
-        <h2 style={styles.panelTitle}>ADVANCED SEARCH</h2>
-        <div style={styles.gridContainer}>
-          <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>QUERY BUILDER</h3>
-            <div style={styles.infoBox}>
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Protocol:</label>
-                <input
-                  type="text"
-                  value={grepProtocol}
-                  onChange={(e) => this.setState({ grepProtocol: e.target.value })}
-                  placeholder="e.g. vin://"
-                  style={styles.input}
-                />
-              </div>
-              
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Field:</label>
-                <input
-                  type="text"
-                  value={grepField}
-                  onChange={(e) => this.setState({ grepField: e.target.value })}
-                  placeholder="Field name"
-                  style={styles.input}
-                />
-              </div>
-              
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Operator:</label>
-                <select
-                  value={grepOperator}
-                  onChange={(e) => this.setState({ grepOperator: e.target.value })}
-                  style={styles.input}
-                >
-                  <option value="=">=</option>
-                  <option value="!=">!=</option>
-                  <option value=">">&gt;</option>
-                  <option value="<">&lt;</option>
-                  <option value=">=">&gt;=</option>
-                  <option value="<=">&lt;=</option>
-                  <option value="contains">contains</option>
-                </select>
-              </div>
-              
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Value:</label>
-                <input
-                  type="text"
-                  value={grepValue}
-                  onChange={(e) => this.setState({ grepValue: e.target.value })}
-                  placeholder="Value to compare"
-                  style={styles.input}
-                />
-              </div>
-              
-              <button 
-                style={styles.button}
-                onClick={() => {
-                  if (!grepField || !grepValue || !grepProtocol) return;
-                  const newCondition = {
-                    field: grepField,
-                    operator: grepOperator,
-                    value: grepValue
-                  };
-                  this.setState(prevState => ({
-                    grepConditions: [...prevState.grepConditions, newCondition],
-                    grepField: '',
-                    grepValue: ''
-                  }));
-                }}
-              >
-                ADD CONDITION
-              </button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // Add new method to render grep GUI panel
+
+
+
+
+
+
+
+
+
+renderGrepPanel = () => {
+  const { 
+    grepField, 
+    grepOperator, 
+    grepValue, 
+    grepConditions,
+    grepProtocol,
+    grepLoading,
+    grepResults
+  } = this.state;
+
+  return (
+    <div style={styles.panel}>
+      <h2 style={styles.panelTitle}>ADVANCED SEARCH</h2>
+      <div style={styles.gridContainer}>
+        <div style={styles.gridItem}>
+          <h3 style={styles.subTitle}>QUERY BUILDER</h3>
+          <div style={styles.infoBox}>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Protocol:</label>
+              <input
+                type="text"
+                value={grepProtocol}
+                onChange={(e) => this.setState({ grepProtocol: e.target.value })}
+                placeholder="e.g. vin://"
+                style={styles.input}
+              />
             </div>
+            
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Field:</label>
+              <input
+                type="text"
+                value={grepField}
+                onChange={(e) => this.setState({ grepField: e.target.value })}
+                placeholder="Field name"
+                style={styles.input}
+              />
+            </div>
+            
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Operator:</label>
+              <select
+                value={grepOperator}
+                onChange={(e) => this.setState({ grepOperator: e.target.value })}
+                style={styles.input}
+              >
+                <option value="=">=</option>
+                <option value="!=">!=</option>
+                <option value=">">&gt;</option>
+                <option value="<">&lt;</option>
+                <option value=">=">&gt;=</option>
+                <option value="<=">&lt;=</option>
+                <option value="contains">contains</option>
+              </select>
+            </div>
+            
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Value:</label>
+              <input
+                type="text"
+                value={grepValue}
+                onChange={(e) => this.setState({ grepValue: e.target.value })}
+                placeholder="Value to compare"
+                style={styles.input}
+              />
+            </div>
+            
+            <button 
+              style={styles.button}
+              onClick={() => {
+                if (!grepField || !grepValue || !grepProtocol) return;
+                const newCondition = {
+                  field: grepField,
+                  operator: grepOperator,
+                  value: grepValue
+                };
+                this.setState(prevState => ({
+                  grepConditions: [...prevState.grepConditions, newCondition],
+                  grepField: '',
+                  grepValue: ''
+                }));
+              }}
+              disabled={!grepField || !grepValue || !grepProtocol}
+            >
+              ADD CONDITION
+            </button>
           </div>
-          
-          <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>CURRENT QUERY</h3>
-            <div style={styles.infoBox}>
-              {grepConditions.length === 0 ? (
-                <p style={{ color: CYBERPUNK.text, opacity: 0.7 }}>
-                  No conditions added yet
+        </div>
+        
+        <div style={styles.gridItem}>
+          <h3 style={styles.subTitle}>CURRENT QUERY</h3>
+          <div style={styles.infoBox}>
+            {grepConditions.length === 0 ? (
+              <p style={{ color: CYBERPUNK.text, opacity: 0.7 }}>
+                No conditions added yet
+              </p>
+            ) : (
+              <div>
+                <p style={{ color: CYBERPUNK.primary }}>
+                  Protocol: {grepProtocol}
                 </p>
-              ) : (
-                <div>
-                  <p style={{ color: CYBERPUNK.primary }}>
-                    Protocol: {grepProtocol}
-                  </p>
-                  <div style={{ 
-                    maxHeight: '150px',
-                    overflowY: 'auto',
-                    margin: '10px 0',
-                    padding: '5px',
-                    backgroundColor: 'rgba(0, 0, 0, 0.3)'
-                  }}>
-                    {grepConditions.map((cond, idx) => (
-                      <div key={idx} style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '5px',
-                        marginBottom: '5px',
-                        backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                        border: `1px solid ${CYBERPUNK.secondary}`
-                      }}>
-                        <span>
-                          {cond.field} {cond.operator} {cond.value}
-                        </span>
-                        <button
-                          style={{
-                            background: 'transparent',
-                            border: `1px solid ${CYBERPUNK.error}`,
-                            color: CYBERPUNK.error,
-                            padding: '2px 5px',
-                            cursor: 'pointer'
-                          }}
-                          onClick={() => {
-                            this.setState(prevState => ({
-                              grepConditions: prevState.grepConditions.filter((_, i) => i !== idx)
-                            }));
-                          }}
-                        >
-                          X
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <button 
-                    style={{ ...styles.button, marginBottom: '10px' }}
-                    onClick={() => this.setState({ grepConditions: [] })}
-                  >
-                    CLEAR ALL
-                  </button>
+                <div style={{ 
+                  maxHeight: '150px',
+                  overflowY: 'auto',
+                  margin: '10px 0',
+                  padding: '5px',
+                  backgroundColor: 'rgba(0, 0, 0, 0.3)'
+                }}>
+                  {grepConditions.map((cond, idx) => (
+                    <div key={idx} style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '5px',
+                      marginBottom: '5px',
+                      backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                      border: `1px solid ${CYBERPUNK.secondary}`
+                    }}>
+                      <span>
+                        {cond.field} {cond.operator} {cond.value}
+                      </span>
+                      <button
+                        style={{
+                          background: 'transparent',
+                          border: `1px solid ${CYBERPUNK.error}`,
+                          color: CYBERPUNK.error,
+                          padding: '2px 5px',
+                          cursor: 'pointer'
+                        }}
+                        onClick={() => {
+                          this.setState(prevState => ({
+                            grepConditions: prevState.grepConditions.filter((_, i) => i !== idx)
+                          }));
+                        }}
+                      >
+                        X
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              )}
-              
-              <button 
-                style={{
-                  ...styles.button,
-                  backgroundColor: grepConditions.length > 0 && grepProtocol ? 
-                    CYBERPUNK.success : 'gray',
-                  cursor: grepConditions.length > 0 && grepProtocol ? 
-                    'pointer' : 'not-allowed'
-                }}
-                onClick={async () => {
-                  if (grepConditions.length === 0 || !grepProtocol) return;
-                  
-                  // Build query string
-                  let query = `protocol:${grepProtocol} where `;
-                  query += grepConditions.map(cond => 
-                    `${cond.field}${cond.operator}${cond.value}`
-                  ).join(' and ');
-                  
-                  await this.executeGrepQuery(query);
-                }}
-                disabled={grepLoading || grepConditions.length === 0 || !grepProtocol}
-              >
-                {grepLoading ? 'SEARCHING...' : 'EXECUTE QUERY'}
-              </button>
-            </div>
+                <button 
+                  style={{ ...styles.button, marginBottom: '10px' }}
+                  onClick={() => this.setState({ grepConditions: [] })}
+                >
+                  CLEAR ALL
+                </button>
+              </div>
+            )}
+            
+            <button 
+              style={{
+                ...styles.button,
+                backgroundColor: grepConditions.length > 0 && grepProtocol ? 
+                  CYBERPUNK.success : 'gray',
+                cursor: grepConditions.length > 0 && grepProtocol ? 
+                  'pointer' : 'not-allowed'
+              }}
+              onClick={async () => {
+                if (grepConditions.length === 0 || !grepProtocol) return;
+                
+                // Execute the query with protocol and conditions
+                await this.executeGrepQuery(grepProtocol, 
+                  grepConditions.map(c => `${c.field}${c.operator}${c.value}`).join(' and ')
+                );
+              }}
+              disabled={grepLoading || grepConditions.length === 0 || !grepProtocol}
+            >
+              {grepLoading ? 'SEARCHING...' : 'EXECUTE QUERY'}
+            </button>
+          </div>
+        </div>
+
+        {/* Results Preview Section */}
+        <div style={styles.gridItem}>
+          <h3 style={styles.subTitle}>RESULTS PREVIEW</h3>
+          <div style={styles.infoBox}>
+            {grepResults.length > 0 ? (
+              <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                <p style={{ color: CYBERPUNK.primary }}>
+                  Found {grepResults.length} matches
+                </p>
+                {grepResults.slice(0, 3).map((result, idx) => (
+                  <div key={idx} style={{
+                    marginBottom: '10px',
+                    padding: '5px',
+                    border: `1px solid ${CYBERPUNK.secondary}`,
+                    backgroundColor: 'rgba(0, 0, 0, 0.2)'
+                  }}>
+                    <div><strong>Pop ID:</strong> {result.pop.id}</div>
+                    <div><strong>Name:</strong> {result.pop.human_readable_name}</div>
+                    <div style={{ 
+                      maxHeight: '100px',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      <strong>Data:</strong> {JSON.stringify(result.data)}
+                    </div>
+                  </div>
+                ))}
+                {grepResults.length > 3 && (
+                  <p style={{ color: CYBERPUNK.secondary }}>
+                    ...and {grepResults.length - 3} more
+                  </p>
+                )}
+                <button 
+                  style={styles.button}
+                  onClick={() => this.setState({ showGrepResults: true })}
+                >
+                  VIEW ALL RESULTS
+                </button>
+              </div>
+            ) : (
+              <p style={{ color: CYBERPUNK.text, opacity: 0.7 }}>
+                {grepLoading ? 'Searching...' : 'No results yet'}
+              </p>
+            )}
           </div>
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
