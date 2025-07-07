@@ -2357,18 +2357,18 @@ myppl: {
       }
 
       // 2. Check if name is a valid Ethereum address
-      if (name && ethers.utils.isAddress(name)) {
-        this.setState({
-          ppls: name
-        });
-        terminal.pushToStdout(`[[success]]PPLS repository set to: ${name}[[/success]]`);
-        return;
-      }
+      //if (name && ethers.utils.isAddress(name)) {
+      //  this.setState({
+      //    ppls: name
+      //  });
+      //  terminal.pushToStdout(`[[success]]PPLS repository set to: ${name}[[/success]]`);
+       // return;
+     // }
 
       // 3. Verify PPLS contract address
-      if (!this.state.ppls) {
+      if (!this.state.ppls || this.state.ppls == "0x1234567890123456789012345678901234567890") {
         this.setState({
-          ppls: '0x0f1b72D9A7845E6CeF7Ec639D203bF1a92A1e925'
+          ppls: '0xb5E940a2a914c31B84f2bB77D2c3D4C69fc06097'
         });
 
         //throw new Error("No PPLS contract configured. Using default repo address 0xB7997334E8D694F0fb2430053BF1E3F9430CFBE5 for myppl command until you set it yourself.  run this command and pass the address of your ppl to set a new ppl");

@@ -22,7 +22,7 @@ contract Popit is ERC721, Ownable {
         string upc;
         string human_readable_name;
         uint256 timestamp;
-        string protocol; // New field to store protocol identifier
+        string protocol;
     }
 
     struct ProtocolParser {
@@ -42,6 +42,10 @@ contract Popit is ERC721, Ownable {
     IERC20Burnable public flipToken;
     uint256 public creationPrice = 1 * (10**18);
     address public defaultFlipToken = 0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118;
+
+    // New state variables for efficient parser management
+    address[] private allParserOwners;
+    string[] private allProtocols;
 
     event PopCreated(uint256 id, string link, bytes32 hash, string upc, string name, string protocol);
     event PopRemoved(uint256 id, string link, bytes32 hash);
@@ -67,11 +71,57 @@ contract Popit is ERC721, Ownable {
         });
         
         ownerProtocols[msg.sender].push(protocol);
+        allProtocols.push(protocol);
+        
+        // Add to allParserOwners if not already present
+        bool ownerExists = false;
+        for (uint i = 0; i < allParserOwners.length; i++) {
+            if (allParserOwners[i] == msg.sender) {
+                ownerExists = true;
+                break;
+            }
+        }
+        if (!ownerExists) {
+            allParserOwners.push(msg.sender);
+        }
+        
         emit ProtocolParserAdded(protocol, parserUrl, msg.sender);
     }
 
     function removeProtocolParser(string memory protocol) external {
         require(protocolParsers[protocol].owner == msg.sender, "Not the parser owner");
+        
+        // Remove from allProtocols array
+        for (uint i = 0; i < allProtocols.length; i++) {
+            if (keccak256(abi.encodePacked(allProtocols[i])) == keccak256(abi.encodePacked(protocol))) {
+                allProtocols[i] = allProtocols[allProtocols.length - 1];
+                allProtocols.pop();
+                break;
+            }
+        }
+        
+        // Remove from owner's protocol list
+        string[] storage protocols = ownerProtocols[msg.sender];
+        for (uint i = 0; i < protocols.length; i++) {
+            if (keccak256(abi.encodePacked(protocols[i])) == keccak256(abi.encodePacked(protocol))) {
+                protocols[i] = protocols[protocols.length - 1];
+                protocols.pop();
+                break;
+            }
+        }
+        
+        // Check if owner has any remaining protocols
+        if (ownerProtocols[msg.sender].length == 0) {
+            // Remove from allParserOwners if no more protocols
+            for (uint i = 0; i < allParserOwners.length; i++) {
+                if (allParserOwners[i] == msg.sender) {
+                    allParserOwners[i] = allParserOwners[allParserOwners.length - 1];
+                    allParserOwners.pop();
+                    break;
+                }
+            }
+        }
+        
         delete protocolParsers[protocol];
         emit ProtocolParserRemoved(protocol);
     }
@@ -80,11 +130,35 @@ contract Popit is ERC721, Ownable {
         return protocolParsers[protocol];
     }
 
+    function getAllProtocolParsers() public view returns (ProtocolParser[] memory) {
+        ProtocolParser[] memory parsers = new ProtocolParser[](allProtocols.length);
+        
+        for (uint256 i = 0; i < allProtocols.length; i++) {
+            parsers[i] = protocolParsers[allProtocols[i]];
+        }
+        
+        return parsers;
+    }
+
     function getProtocolsByOwner(address owner) public view returns (string[] memory) {
         return ownerProtocols[owner];
     }
 
-    // Modified Pop Functions with Protocol Support
+    function updateLink(uint256 id, string memory newLink) external {
+        require(exists(id), "Pop does not exist");
+        require(idToPop[id].owner == msg.sender, "Only the owner can update the link");
+        require(bytes(newLink).length > 0, "Link cannot be empty");
+        
+        Pop storage popToUpdate = idToPop[id];
+        popToUpdate.link = newLink;
+        
+        hashToPop[popToUpdate.hash].link = newLink;
+        upcToPop[popToUpdate.upc].link = newLink;
+        nameToPop[popToUpdate.human_readable_name].link = newLink;
+        
+        emit PopUpdated(id, newLink);
+    }
+
     function insertLink(string memory _link, string memory _upc, string memory _human_readable_name, string memory _protocol) public {
         require(nameToPop[_human_readable_name].id == 0, "Name must be unique");
         require(flipToken.transferFrom(msg.sender, address(this), creationPrice), "FLIP transfer failed");
@@ -145,7 +219,6 @@ contract Popit is ERC721, Ownable {
         emit PopCreated(newId, link, hash, upc, name, protocol);
     }
 
-    // Existing functions remain the same but with protocol awareness
     function getPopById(uint256 id) public view returns (Pop memory) {
         require(exists(id), "Pop does not exist");
         return idToPop[id];
@@ -170,7 +243,6 @@ contract Popit is ERC721, Ownable {
         uint256 count = 0;
         uint256 total = _tokenIds.current();
         
-        // First pass: count matching pops
         for (uint256 i = 1; i <= total; i++) {
             if (idToPop[i].id != 0 && 
                 keccak256(abi.encodePacked(idToPop[i].protocol)) == 
@@ -179,7 +251,6 @@ contract Popit is ERC721, Ownable {
             }
         }
         
-        // Second pass: populate results
         Pop[] memory results = new Pop[](count);
         uint256 index = 0;
         for (uint256 i = 1; i <= total; i++) {
@@ -194,7 +265,48 @@ contract Popit is ERC721, Ownable {
         return results;
     }
 
-    // Existing utility functions
+    function getAllProtocols() public view returns (string[] memory) {
+        uint256 count = 0;
+        uint256 total = _tokenIds.current();
+        for (uint256 i = 1; i <= total; i++) {
+            if (idToPop[i].id != 0) {
+                bool exists = false;
+                for (uint256 j = 1; j < i; j++) {
+                    if (idToPop[j].id != 0 && 
+                        keccak256(abi.encodePacked(idToPop[i].protocol)) == 
+                        keccak256(abi.encodePacked(idToPop[j].protocol))) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    count++;
+                }
+            }
+        }
+        
+        string[] memory protocols = new string[](count);
+        uint256 index = 0;
+        for (uint256 i = 1; i <= total; i++) {
+            if (idToPop[i].id != 0) {
+                bool exists = false;
+                for (uint256 j = 0; j < index; j++) {
+                    if (keccak256(abi.encodePacked(protocols[j])) == 
+                        keccak256(abi.encodePacked(idToPop[i].protocol))) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    protocols[index] = idToPop[i].protocol;
+                    index++;
+                }
+            }
+        }
+        
+        return protocols;
+    }
+
     function exists(uint256 tokenId) public view returns (bool) {
         return idToPop[tokenId].id != 0;
     }

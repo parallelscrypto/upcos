@@ -21,542 +21,1327 @@ const CYBERPUNK = {
 
 /* ABI PLACEHOLDER - INSERT FULL ABI HERE */
 const PopitABI = [
-  {
-    "inputs": [
-      {"internalType": "string","name": "name","type": "string"},
-      {"internalType": "string","name": "symbol","type": "string"}
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {"indexed": true,"internalType": "address","name": "owner","type": "address"},
-      {"indexed": true,"internalType": "address","name": "approved","type": "address"},
-      {"indexed": true,"internalType": "uint256","name": "tokenId","type": "uint256"}
-    ],
-    "name": "Approval",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {"indexed": true,"internalType": "address","name": "owner","type": "address"},
-      {"indexed": true,"internalType": "address","name": "operator","type": "address"},
-      {"indexed": true,"internalType": "uint256","name": "tokenId","type": "uint256"}
-    ],
-    "name": "ApprovalForAll",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {"indexed": true,"internalType": "address","name": "previousOwner","type": "address"},
-      {"indexed": true,"internalType": "address","name": "newOwner","type": "address"}
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {"indexed": false,"internalType": "uint256","name": "id","type": "uint256"},
-      {"indexed": false,"internalType": "string","name": "link","type": "string"},
-      {"indexed": false,"internalType": "bytes32","name": "hash","type": "bytes32"},
-      {"indexed": false,"internalType": "string","name": "upc","type": "string"},
-      {"indexed": false,"internalType": "string","name": "name","type": "string"},
-      {"indexed": false,"internalType": "string","name": "protocol","type": "string"}
-    ],
-    "name": "PopCreated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {"indexed": false,"internalType": "uint256","name": "id","type": "uint256"},
-      {"indexed": false,"internalType": "string","name": "link","type": "string"},
-      {"indexed": false,"internalType": "bytes32","name": "hash","type": "bytes32"}
-    ],
-    "name": "PopRemoved",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {"indexed": false,"internalType": "uint256","name": "id","type": "uint256"},
-      {"indexed": false,"internalType": "string","name": "newLink","type": "string"}
-    ],
-    "name": "PopUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {"indexed": true,"internalType": "string","name": "protocol","type": "string"},
-      {"indexed": false,"internalType": "string","name": "parserUrl","type": "string"},
-      {"indexed": false,"internalType": "address","name": "owner","type": "address"}
-    ],
-    "name": "ProtocolParserAdded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {"indexed": true,"internalType": "string","name": "protocol","type": "string"}
-    ],
-    "name": "ProtocolParserRemoved",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {"indexed": true,"internalType": "address","name": "from","type": "address"},
-      {"indexed": true,"internalType": "address","name": "to","type": "address"},
-      {"indexed": true,"internalType": "uint256","name": "tokenId","type": "uint256"}
-    ],
-    "name": "Transfer",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {"internalType": "string","name": "protocol","type": "string"},
-      {"internalType": "string","name": "parserUrl","type": "string"}
-    ],
-    "name": "addProtocolParser",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "address","name": "to","type": "address"},
-      {"internalType": "uint256","name": "tokenId","type": "uint256"}
-    ],
-    "name": "approve",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "address","name": "owner","type": "address"}
-    ],
-    "name": "balanceOf",
-    "outputs": [
-      {"internalType": "uint256","name": "","type": "uint256"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "string","name": "link","type": "string"},
-      {"internalType": "string","name": "upc","type": "string"},
-      {"internalType": "string","name": "name","type": "string"},
-      {"internalType": "string","name": "protocol","type": "string"}
-    ],
-    "name": "createPop",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "creationPrice",
-    "outputs": [
-      {"internalType": "uint256","name": "","type": "uint256"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "uint256","name": "tokenId","type": "uint256"}
-    ],
-    "name": "exists",
-    "outputs": [
-      {"internalType": "bool","name": "","type": "bool"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "flipToken",
-    "outputs": [
-      {"internalType": "contract IERC20Burnable","name": "","type": "address"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "uint256","name": "tokenId","type": "uint256"}
-    ],
-    "name": "getApproved",
-    "outputs": [
-      {"internalType": "address","name": "","type": "address"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "bytes32","name": "hash","type": "bytes32"}
-    ],
-    "name": "getPopByHash",
-    "outputs": [
-      {
-        "components": [
-          {"internalType": "uint256","name": "id","type": "uint256"},
-          {"internalType": "string","name": "link","type": "string"},
-          {"internalType": "bytes32","name": "hash","type": "bytes32"},
-          {"internalType": "address","name": "owner","type": "address"},
-          {"internalType": "string","name": "upc","type": "string"},
-          {"internalType": "string","name": "human_readable_name","type": "string"},
-          {"internalType": "uint256","name": "timestamp","type": "uint256"},
-          {"internalType": "string","name": "protocol","type": "string"}
-        ],
-        "internalType": "struct Popit.Pop",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "uint256","name": "id","type": "uint256"}
-    ],
-    "name": "getPopById",
-    "outputs": [
-      {
-        "components": [
-          {"internalType": "uint256","name": "id","type": "uint256"},
-          {"internalType": "string","name": "link","type": "string"},
-          {"internalType": "bytes32","name": "hash","type": "bytes32"},
-          {"internalType": "address","name": "owner","type": "address"},
-          {"internalType": "string","name": "upc","type": "string"},
-          {"internalType": "string","name": "human_readable_name","type": "string"},
-          {"internalType": "uint256","name": "timestamp","type": "uint256"},
-          {"internalType": "string","name": "protocol","type": "string"}
-        ],
-        "internalType": "struct Popit.Pop",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "string","name": "name","type": "string"}
-    ],
-    "name": "getPopByName",
-    "outputs": [
-      {
-        "components": [
-          {"internalType": "uint256","name": "id","type": "uint256"},
-          {"internalType": "string","name": "link","type": "string"},
-          {"internalType": "bytes32","name": "hash","type": "bytes32"},
-          {"internalType": "address","name": "owner","type": "address"},
-          {"internalType": "string","name": "upc","type": "string"},
-          {"internalType": "string","name": "human_readable_name","type": "string"},
-          {"internalType": "uint256","name": "timestamp","type": "uint256"},
-          {"internalType": "string","name": "protocol","type": "string"}
-        ],
-        "internalType": "struct Popit.Pop",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "string","name": "upc","type": "string"}
-    ],
-    "name": "getPopByUPC",
-    "outputs": [
-      {
-        "components": [
-          {"internalType": "uint256","name": "id","type": "uint256"},
-          {"internalType": "string","name": "link","type": "string"},
-          {"internalType": "bytes32","name": "hash","type": "bytes32"},
-          {"internalType": "address","name": "owner","type": "address"},
-          {"internalType": "string","name": "upc","type": "string"},
-          {"internalType": "string","name": "human_readable_name","type": "string"},
-          {"internalType": "uint256","name": "timestamp","type": "uint256"},
-          {"internalType": "string","name": "protocol","type": "string"}
-        ],
-        "internalType": "struct Popit.Pop",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "string","name": "protocol","type": "string"}
-    ],
-    "name": "getPopsByProtocol",
-    "outputs": [
-      {
-        "components": [
-          {"internalType": "uint256","name": "id","type": "uint256"},
-          {"internalType": "string","name": "link","type": "string"},
-          {"internalType": "bytes32","name": "hash","type": "bytes32"},
-          {"internalType": "address","name": "owner","type": "address"},
-          {"internalType": "string","name": "upc","type": "string"},
-          {"internalType": "string","name": "human_readable_name","type": "string"},
-          {"internalType": "uint256","name": "timestamp","type": "uint256"},
-          {"internalType": "string","name": "protocol","type": "string"}
-        ],
-        "internalType": "struct Popit.Pop[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "string","name": "protocol","type": "string"}
-    ],
-    "name": "getParserForProtocol",
-    "outputs": [
-      {
-        "components": [
-          {"internalType": "string","name": "protocol","type": "string"},
-          {"internalType": "string","name": "parserUrl","type": "string"},
-          {"internalType": "address","name": "owner","type": "address"},
-          {"internalType": "uint256","name": "timestamp","type": "uint256"}
-        ],
-        "internalType": "struct Popit.ProtocolParser",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "address","name": "owner","type": "address"}
-    ],
-    "name": "getProtocolsByOwner",
-    "outputs": [
-      {"internalType": "string[]","name": "","type": "string[]"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "address","name": "owner","type": "address"},
-      {"internalType": "address","name": "operator","type": "address"}
-    ],
-    "name": "isApprovedForAll",
-    "outputs": [
-      {"internalType": "bool","name": "","type": "bool"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "string","name": "_link","type": "string"},
-      {"internalType": "string","name": "_upc","type": "string"},
-      {"internalType": "string","name": "_human_readable_name","type": "string"},
-      {"internalType": "string","name": "_protocol","type": "string"}
-    ],
-    "name": "insertLink",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "name",
-    "outputs": [
-      {"internalType": "string","name": "","type": "string"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {"internalType": "address","name": "","type": "address"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "uint256","name": "tokenId","type": "uint256"}
-    ],
-    "name": "ownerOf",
-    "outputs": [
-      {"internalType": "address","name": "","type": "address"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "string","name": "protocol","type": "string"}
-    ],
-    "name": "removeProtocolParser",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "uint256","name": "id","type": "uint256"}
-    ],
-    "name": "removePop",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "address","name": "from","type": "address"},
-      {"internalType": "address","name": "to","type": "address"},
-      {"internalType": "uint256","name": "tokenId","type": "uint256"}
-    ],
-    "name": "safeTransferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "address","name": "from","type": "address"},
-      {"internalType": "address","name": "to","type": "address"},
-      {"internalType": "uint256","name": "tokenId","type": "uint256"},
-      {"internalType": "bytes","name": "data","type": "bytes"}
-    ],
-    "name": "safeTransferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "address","name": "operator","type": "address"},
-      {"internalType": "bool","name": "approved","type": "bool"}
-    ],
-    "name": "setApprovalForAll",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "uint256","name": "newPrice","type": "uint256"}
-    ],
-    "name": "setCreationPrice",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "address","name": "tokenAddress","type": "address"}
-    ],
-    "name": "setFlipToken",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "bytes4","name": "interfaceId","type": "bytes4"}
-    ],
-    "name": "supportsInterface",
-    "outputs": [
-      {"internalType": "bool","name": "","type": "bool"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [
-      {"internalType": "string","name": "","type": "string"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "uint256","name": "tokenId","type": "uint256"}
-    ],
-    "name": "tokenURI",
-    "outputs": [
-      {"internalType": "string","name": "","type": "string"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalPops",
-    "outputs": [
-      {"internalType": "uint256","name": "","type": "uint256"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "address","name": "from","type": "address"},
-      {"internalType": "address","name": "to","type": "address"},
-      {"internalType": "uint256","name": "tokenId","type": "uint256"}
-    ],
-    "name": "transferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "address","name": "newOwner","type": "address"}
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "uint256","name": "id","type": "uint256"},
-      {"internalType": "string","name": "newLink","type": "string"}
-    ],
-    "name": "updateLink",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "ERC721IncorrectOwner",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "operator",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "ERC721InsufficientApproval",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "approver",
+				"type": "address"
+			}
+		],
+		"name": "ERC721InvalidApprover",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "operator",
+				"type": "address"
+			}
+		],
+		"name": "ERC721InvalidOperator",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "ERC721InvalidOwner",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "receiver",
+				"type": "address"
+			}
+		],
+		"name": "ERC721InvalidReceiver",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			}
+		],
+		"name": "ERC721InvalidSender",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "ERC721NonexistentToken",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "OwnableInvalidOwner",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "OwnableUnauthorizedAccount",
+		"type": "error"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "approved",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "Approval",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "operator",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "approved",
+				"type": "bool"
+			}
+		],
+		"name": "ApprovalForAll",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "previousOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "link",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "bytes32",
+				"name": "hash",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "upc",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "protocol",
+				"type": "string"
+			}
+		],
+		"name": "PopCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "link",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "bytes32",
+				"name": "hash",
+				"type": "bytes32"
+			}
+		],
+		"name": "PopRemoved",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "newLink",
+				"type": "string"
+			}
+		],
+		"name": "PopUpdated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "string",
+				"name": "protocol",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "parserUrl",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "ProtocolParserAdded",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "string",
+				"name": "protocol",
+				"type": "string"
+			}
+		],
+		"name": "ProtocolParserRemoved",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "Transfer",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "protocol",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "parserUrl",
+				"type": "string"
+			}
+		],
+		"name": "addProtocolParser",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "approve",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "balanceOf",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "link",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "upc",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "protocol",
+				"type": "string"
+			}
+		],
+		"name": "createPop",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "creationPrice",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "defaultFlipToken",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "exists",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "flipToken",
+		"outputs": [
+			{
+				"internalType": "contract IERC20Burnable",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getAllProtocolParsers",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "protocol",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "parserUrl",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct Popit.ProtocolParser[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getAllProtocols",
+		"outputs": [
+			{
+				"internalType": "string[]",
+				"name": "",
+				"type": "string[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "getApproved",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "protocol",
+				"type": "string"
+			}
+		],
+		"name": "getParserForProtocol",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "protocol",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "parserUrl",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct Popit.ProtocolParser",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "hash",
+				"type": "bytes32"
+			}
+		],
+		"name": "getPopByHash",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "link",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "hash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "upc",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "human_readable_name",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "protocol",
+						"type": "string"
+					}
+				],
+				"internalType": "struct Popit.Pop",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			}
+		],
+		"name": "getPopById",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "link",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "hash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "upc",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "human_readable_name",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "protocol",
+						"type": "string"
+					}
+				],
+				"internalType": "struct Popit.Pop",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			}
+		],
+		"name": "getPopByName",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "link",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "hash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "upc",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "human_readable_name",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "protocol",
+						"type": "string"
+					}
+				],
+				"internalType": "struct Popit.Pop",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "upc",
+				"type": "string"
+			}
+		],
+		"name": "getPopByUPC",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "link",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "hash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "upc",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "human_readable_name",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "protocol",
+						"type": "string"
+					}
+				],
+				"internalType": "struct Popit.Pop",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "protocol",
+				"type": "string"
+			}
+		],
+		"name": "getPopsByProtocol",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "link",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "hash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "upc",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "human_readable_name",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "protocol",
+						"type": "string"
+					}
+				],
+				"internalType": "struct Popit.Pop[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "getProtocolsByOwner",
+		"outputs": [
+			{
+				"internalType": "string[]",
+				"name": "",
+				"type": "string[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_link",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_upc",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_human_readable_name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_protocol",
+				"type": "string"
+			}
+		],
+		"name": "insertLink",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "operator",
+				"type": "address"
+			}
+		],
+		"name": "isApprovedForAll",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "name",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "ownerOf",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "ownerProtocols",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"name": "protocolParsers",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "protocol",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "parserUrl",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "protocol",
+				"type": "string"
+			}
+		],
+		"name": "removeProtocolParser",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "safeTransferFrom",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
+			}
+		],
+		"name": "safeTransferFrom",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "operator",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "approved",
+				"type": "bool"
+			}
+		],
+		"name": "setApprovalForAll",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "newPrice",
+				"type": "uint256"
+			}
+		],
+		"name": "setCreationPrice",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			}
+		],
+		"name": "setFlipToken",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes4",
+				"name": "interfaceId",
+				"type": "bytes4"
+			}
+		],
+		"name": "supportsInterface",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "symbol",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "tokenURI",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalPops",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "transferFrom",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "newLink",
+				"type": "string"
+			}
+		],
+		"name": "updateLink",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
 ];
 
 class PopitTerminal extends React.Component {
@@ -602,7 +1387,25 @@ class PopitTerminal extends React.Component {
       showWizard: false,
       wizardStep: 0,
       wizardAction: '',
-      tempLink: ''
+      tempLink: '',
+      validatingPop: false,
+      popValidationError: null,
+      // New state for grep functionality
+      grepQuery: '',
+      grepProtocol: '',
+      grepResults: [],
+      grepLoading: false,
+      grepError: null,
+      showGrepResults: false,
+      grepField: '',
+      grepOperator: '=',
+      grepValue: '',
+      grepConditions: [],
+      dashboardOutput: [],
+      popitOutput: [],
+      factoryOutput: [],
+      protocolOutput: [],
+      grepOutput: [], // Add this if not already present
     };
     this.terminal = React.createRef();
     this.arweaveIframeRef = React.createRef();
@@ -618,7 +1421,44 @@ class PopitTerminal extends React.Component {
   }
 
 
+componentDidUpdate(prevProps, prevState) {
+  // Validate pop when selectedPopId changes
+  if (prevState.selectedPopId !== this.state.selectedPopId && this.state.selectedPopId) {
+    this.validatePopForUpdate(this.state.selectedPopId);
+  }
+}
 
+validatePopForUpdate = async (popId) => {
+  this.setState({ validatingPop: true, popValidationError: null });
+  
+  try {
+    const { currentPopit, account } = this.state;
+    
+    if (!currentPopit) {
+      throw new Error('No Popit loaded');
+    }
+
+    if (!popId) {
+      throw new Error('Pop ID is required');
+    }
+
+    const pop = await currentPopit.getPopById(popId);
+    if (pop.id.toString() === '0') {
+      throw new Error('Pop does not exist');
+    }
+
+    const owner = await currentPopit.ownerOf(popId);
+    if (owner.toLowerCase() !== account.toLowerCase()) {
+      throw new Error('You are not the owner of this Pop');
+    }
+
+    this.setState({ popValidationError: null });
+  } catch (error) {
+    this.setState({ popValidationError: error.message });
+  } finally {
+    this.setState({ validatingPop: false });
+  }
+};
 
 
 
@@ -662,6 +1502,507 @@ handleArweaveMessage = (event) => {
     });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+  // Add new method for grep command
+  executeGrepQuery = async (query) => {
+    try {
+      const { currentPopit } = this.state;
+      if (!currentPopit) {
+        throw new Error('No Popit loaded');
+      }
+
+      // Parse the query (simple format: "protocol:vin:// where make=Toyota")
+      const protocolMatch = query.match(/protocol:([^\s]+)/);
+      if (!protocolMatch) {
+        throw new Error('Query must specify a protocol with "protocol:<protocol>"');
+      }
+      const protocol = protocolMatch[1];
+
+      // Parse conditions (simple format: "field=value", "field>value", etc.)
+      const conditions = [];
+      const conditionRegex = /(\w+)\s*(=|!=|>|<|>=|<=|contains)\s*([^\s]+)/g;
+      let match;
+      while ((match = conditionRegex.exec(query)) !== null) {
+        conditions.push({
+          field: match[1],
+          operator: match[2],
+          value: match[3]
+        });
+      }
+
+      if (conditions.length === 0) {
+        throw new Error('No conditions specified in query');
+      }
+
+      this.setState({
+        grepLoading: true,
+        grepError: null,
+        grepResults: [],
+        grepProtocol: protocol,
+        grepConditions: conditions
+      });
+
+      // Load the protocol parser
+      const parser = await this.getParserForProtocol(protocol);
+      if (!parser || !parser.parserUrl) {
+        throw new Error(`No parser found for protocol ${protocol}`);
+      }
+
+      // Fetch all pops for the protocol
+      const pops = await currentPopit.getPopsByProtocol(protocol);
+      if (pops.length === 0) {
+        this.pushToTerminal(`[[warning]]No pops found for protocol ${protocol}[[/warning]]`);
+        this.setState({
+          grepLoading: false,
+          grepResults: [],
+          showGrepResults: true
+        });
+        return [];
+      }
+
+      this.pushToTerminal(`Searching ${pops.length} pops for protocol ${protocol}...`);
+
+      // Check each pop's data against the conditions
+      const results = [];
+      for (const pop of pops) {
+        try {
+          // Fetch the data at the pop's link
+          const response = await fetch(pop.link);
+          if (!response.ok) {
+            continue;
+          }
+
+          const data = await response.json();
+          if (!data || typeof data !== 'object') {
+            continue;
+          }
+
+          // Check all conditions
+          let matches = true;
+          for (const condition of conditions) {
+            const { field, operator, value } = condition;
+            if (!(field in data)) {
+              matches = false;
+              break;
+            }
+
+            const fieldValue = data[field];
+            switch (operator) {
+              case '=':
+                if (String(fieldValue) !== String(value)) {
+                  matches = false;
+                }
+                break;
+              case '!=':
+                if (String(fieldValue) === String(value)) {
+                  matches = false;
+                }
+                break;
+              case '>':
+                if (Number(fieldValue) <= Number(value)) {
+                  matches = false;
+                }
+                break;
+              case '<':
+                if (Number(fieldValue) >= Number(value)) {
+                  matches = false;
+                }
+                break;
+              case '>=':
+                if (Number(fieldValue) < Number(value)) {
+                  matches = false;
+                }
+                break;
+              case '<=':
+                if (Number(fieldValue) > Number(value)) {
+                  matches = false;
+                }
+                break;
+              case 'contains':
+                if (!String(fieldValue).includes(String(value))) {
+                  matches = false;
+                }
+                break;
+              default:
+                matches = false;
+            }
+
+            if (!matches) break;
+          }
+
+          if (matches) {
+            results.push({
+              pop,
+              data
+            });
+          }
+        } catch (error) {
+          console.warn(`Error processing pop ${pop.id}:`, error);
+        }
+      }
+
+      this.pushToTerminal(`[[success]]Found ${results.length} matching pops[[/success]]`);
+      this.setState({
+        grepLoading: false,
+        grepResults: results,
+        showGrepResults: true
+      });
+
+      return results;
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Grep error: ${error.message}[[/error]]`);
+      this.setState({
+        grepLoading: false,
+        grepError: error.message
+      });
+      throw error;
+    }
+  };
+
+  // Add new method to render grep results
+  renderGrepResults = () => {
+    if (!this.state.showGrepResults) return null;
+
+    const { grepResults, grepProtocol, grepConditions } = this.state;
+
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0,0,0,0.8)',
+        zIndex: 1000,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'auto',
+        padding: '20px',
+        boxSizing: 'border-box'
+      }}>
+        <div style={{
+          width: '100%',
+          maxWidth: '1000px',
+          maxHeight: '90vh',
+          backgroundColor: CYBERPUNK.terminalBg,
+          border: `2px solid ${CYBERPUNK.primary}`,
+          boxShadow: `0 0 20px ${CYBERPUNK.primary}`,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden'
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '10px',
+            backgroundColor: CYBERPUNK.terminalBg,
+            borderBottom: `1px solid ${CYBERPUNK.primary}`
+          }}>
+            <h3 style={{ color: CYBERPUNK.primary, margin: 0 }}>
+              Query Results for {grepProtocol}
+            </h3>
+            <button 
+              onClick={() => this.setState({ showGrepResults: false })}
+              style={{
+                background: 'none',
+                border: `1px solid ${CYBERPUNK.error}`,
+                color: CYBERPUNK.error,
+                padding: '5px 10px',
+                cursor: 'pointer'
+              }}
+            >
+              Close
+            </button>
+          </div>
+          
+          <div style={{ padding: '10px', borderBottom: `1px solid ${CYBERPUNK.primary}` }}>
+            <h4 style={{ color: CYBERPUNK.secondary, margin: '0 0 10px 0' }}>Conditions:</h4>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+              {grepConditions.map((cond, idx) => (
+                <div key={idx} style={{
+                  padding: '5px 10px',
+                  backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                  border: `1px solid ${CYBERPUNK.secondary}`,
+                  borderRadius: '3px'
+                }}>
+                  {cond.field} {cond.operator} {cond.value}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{
+            flex: 1,
+            overflow: 'auto',
+            padding: '10px'
+          }}>
+            {grepResults.length === 0 ? (
+              <div style={{ 
+                color: CYBERPUNK.text,
+                textAlign: 'center',
+                padding: '20px'
+              }}>
+                No results found matching your query
+              </div>
+            ) : (
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                gap: '15px',
+                padding: '10px'
+              }}>
+                {grepResults.map((result, idx) => (
+                  <div key={idx} style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                    border: `1px solid ${CYBERPUNK.primary}`,
+                    borderRadius: '4px',
+                    padding: '15px',
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{ 
+                      color: CYBERPUNK.primary,
+                      fontWeight: 'bold',
+                      marginBottom: '10px',
+                      borderBottom: `1px solid ${CYBERPUNK.secondary}`,
+                      paddingBottom: '5px'
+                    }}>
+                      Pop #{result.pop.id}
+                    </div>
+                    <div style={{ 
+                      maxHeight: '200px',
+                      overflow: 'auto',
+                      marginBottom: '10px',
+                      padding: '5px',
+                      backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                      fontFamily: 'monospace',
+                      fontSize: '12px'
+                    }}>
+                      <pre>{JSON.stringify(result.data, null, 2)}</pre>
+                    </div>
+                    <div style={{ 
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontSize: '12px'
+                    }}>
+                      <span style={{ color: CYBERPUNK.secondary }}>
+                        Owner: {result.pop.owner.substring(0, 10)}...
+                      </span>
+                      <a 
+                        href={result.pop.link} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{ color: CYBERPUNK.primary }}
+                      >
+                        View Data
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Add new method to render grep GUI panel
+  renderGrepPanel = () => {
+    const { 
+      grepField, 
+      grepOperator, 
+      grepValue, 
+      grepConditions,
+      grepProtocol,
+      grepLoading
+    } = this.state;
+
+    return (
+      <div style={styles.panel}>
+        <h2 style={styles.panelTitle}>ADVANCED SEARCH</h2>
+        <div style={styles.gridContainer}>
+          <div style={styles.gridItem}>
+            <h3 style={styles.subTitle}>QUERY BUILDER</h3>
+            <div style={styles.infoBox}>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Protocol:</label>
+                <input
+                  type="text"
+                  value={grepProtocol}
+                  onChange={(e) => this.setState({ grepProtocol: e.target.value })}
+                  placeholder="e.g. vin://"
+                  style={styles.input}
+                />
+              </div>
+              
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Field:</label>
+                <input
+                  type="text"
+                  value={grepField}
+                  onChange={(e) => this.setState({ grepField: e.target.value })}
+                  placeholder="Field name"
+                  style={styles.input}
+                />
+              </div>
+              
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Operator:</label>
+                <select
+                  value={grepOperator}
+                  onChange={(e) => this.setState({ grepOperator: e.target.value })}
+                  style={styles.input}
+                >
+                  <option value="=">=</option>
+                  <option value="!=">!=</option>
+                  <option value=">">&gt;</option>
+                  <option value="<">&lt;</option>
+                  <option value=">=">&gt;=</option>
+                  <option value="<=">&lt;=</option>
+                  <option value="contains">contains</option>
+                </select>
+              </div>
+              
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Value:</label>
+                <input
+                  type="text"
+                  value={grepValue}
+                  onChange={(e) => this.setState({ grepValue: e.target.value })}
+                  placeholder="Value to compare"
+                  style={styles.input}
+                />
+              </div>
+              
+              <button 
+                style={styles.button}
+                onClick={() => {
+                  if (!grepField || !grepValue || !grepProtocol) return;
+                  const newCondition = {
+                    field: grepField,
+                    operator: grepOperator,
+                    value: grepValue
+                  };
+                  this.setState(prevState => ({
+                    grepConditions: [...prevState.grepConditions, newCondition],
+                    grepField: '',
+                    grepValue: ''
+                  }));
+                }}
+              >
+                ADD CONDITION
+              </button>
+            </div>
+          </div>
+          
+          <div style={styles.gridItem}>
+            <h3 style={styles.subTitle}>CURRENT QUERY</h3>
+            <div style={styles.infoBox}>
+              {grepConditions.length === 0 ? (
+                <p style={{ color: CYBERPUNK.text, opacity: 0.7 }}>
+                  No conditions added yet
+                </p>
+              ) : (
+                <div>
+                  <p style={{ color: CYBERPUNK.primary }}>
+                    Protocol: {grepProtocol}
+                  </p>
+                  <div style={{ 
+                    maxHeight: '150px',
+                    overflowY: 'auto',
+                    margin: '10px 0',
+                    padding: '5px',
+                    backgroundColor: 'rgba(0, 0, 0, 0.3)'
+                  }}>
+                    {grepConditions.map((cond, idx) => (
+                      <div key={idx} style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '5px',
+                        marginBottom: '5px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                        border: `1px solid ${CYBERPUNK.secondary}`
+                      }}>
+                        <span>
+                          {cond.field} {cond.operator} {cond.value}
+                        </span>
+                        <button
+                          style={{
+                            background: 'transparent',
+                            border: `1px solid ${CYBERPUNK.error}`,
+                            color: CYBERPUNK.error,
+                            padding: '2px 5px',
+                            cursor: 'pointer'
+                          }}
+                          onClick={() => {
+                            this.setState(prevState => ({
+                              grepConditions: prevState.grepConditions.filter((_, i) => i !== idx)
+                            }));
+                          }}
+                        >
+                          X
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <button 
+                    style={{ ...styles.button, marginBottom: '10px' }}
+                    onClick={() => this.setState({ grepConditions: [] })}
+                  >
+                    CLEAR ALL
+                  </button>
+                </div>
+              )}
+              
+              <button 
+                style={{
+                  ...styles.button,
+                  backgroundColor: grepConditions.length > 0 && grepProtocol ? 
+                    CYBERPUNK.success : 'gray',
+                  cursor: grepConditions.length > 0 && grepProtocol ? 
+                    'pointer' : 'not-allowed'
+                }}
+                onClick={async () => {
+                  if (grepConditions.length === 0 || !grepProtocol) return;
+                  
+                  // Build query string
+                  let query = `protocol:${grepProtocol} where `;
+                  query += grepConditions.map(cond => 
+                    `${cond.field}${cond.operator}${cond.value}`
+                  ).join(' and ');
+                  
+                  await this.executeGrepQuery(query);
+                }}
+                disabled={grepLoading || grepConditions.length === 0 || !grepProtocol}
+              >
+                {grepLoading ? 'SEARCHING...' : 'EXECUTE QUERY'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+
+
+
+
+
 
 
 
@@ -731,7 +2072,7 @@ openArweaveUploader = () => {
         const account = await signer.getAddress();
         
         const factory = new ethers.Contract(
-          '0x75218F31e6F2279397B317A9F59E377FbfeBD5aC',
+          '0x693089F92E12Da6871D3839B1037031b558D26E0',
           PopitFactoryABI.abi,
           signer
         );
@@ -758,20 +2099,27 @@ openArweaveUploader = () => {
     }
   };
 
-  pushToTerminal = (message) => {
-    if (typeof message === 'object' && message !== null) {
-      message = JSON.stringify(message, null, 2);
-    }
+pushToTerminal = (message) => {
+  if (typeof message === 'object' && message !== null) {
+    message = JSON.stringify(message, null, 2);
+  }
+
+  if (this.terminal.current) {
+    this.terminal.current.pushToStdout(message.toString());
+  }
   
-    if (this.terminal.current) {
-      this.terminal.current.pushToStdout(message.toString());
-    }
+  const outputKey = `${this.state.activePanel}Output`;
+  this.setState(prevState => {
+    // Ensure we always have an array, even if the key doesn't exist yet
+    const currentOutput = Array.isArray(prevState[outputKey]) 
+      ? prevState[outputKey] 
+      : [];
     
-    const outputKey = `${this.state.activePanel}Output`;
-    this.setState(prevState => ({
-      [outputKey]: [...prevState[outputKey], message.toString()]
-    }));
-  };
+    return {
+      [outputKey]: [...currentOutput, message.toString()]
+    };
+  });
+};
 
   clearOutput = (panel) => {
     const outputKey = `${panel}Output`;
@@ -818,13 +2166,18 @@ openArweaveUploader = () => {
     });
   };
 
-  extractProtocol = (name) => {
-    const protocolMatch = name.match(/^[^:]+:\/\/|^[^:]+:/);
-    if (protocolMatch) {
-      return protocolMatch[0].replace(/\/\/$/, '');
-    }
-    return 'default';
-  };
+extractProtocol = (name) => {
+  // Match protocol patterns like:
+  // - protocol:// (e.g., http://, vin://)
+  // - protocol: (e.g., property:123)
+  const protocolMatch = name.match(/^([^:\s]+:\/\/)|^([^:\s]+:)/);
+  
+  if (protocolMatch) {
+    // Return the first non-empty match group (either with // or without)
+    return protocolMatch[1] || protocolMatch[2];
+  }
+  return 'default';
+};
 
   createPopit = async (repoName, repoSymbol) => {
     try {
@@ -1054,26 +2407,146 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
     }
   };
 
-  updatePopLink = async () => {
-    try {
-      const { currentPopit, selectedPopId, newLink } = this.state;
-      if (!currentPopit) {
-        throw new Error('No Popit loaded');
-      }
-  
-      this.pushToTerminal(`Updating Pop ${selectedPopId} link to: ${newLink}`);
-      
-      const tx = await currentPopit.updateLink(selectedPopId, newLink);
-      await tx.wait();
-      
-      this.pushToTerminal(`[[success]]Pop link updated successfully![[/success]]`);
-      await this.listPops();
-      return true;
-    } catch (error) {
-      this.pushToTerminal(`[[error]]Update failed: ${error.message}[[/error]]`);
-      return false;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+updatePopLink = async () => {
+  try {
+    const { currentPopit, selectedPopId, newLink } = this.state;
+    if (!currentPopit) {
+      throw new Error('No Popit loaded');
     }
-  };
+
+    if (!selectedPopId) {
+      throw new Error('Please select a Pop ID');
+    }
+
+    if (!newLink) {
+      throw new Error('Please enter a new link');
+    }
+
+    this.pushToTerminal(`Updating Pop ${selectedPopId} link to: ${newLink}`);
+    
+    // First check if the pop exists and you're the owner
+    try {
+      const pop = await currentPopit.getPopById(selectedPopId);
+      if (pop.id.toString() === '0') {
+        throw new Error('Pop does not exist');
+      }
+      
+      const owner = await currentPopit.ownerOf(selectedPopId);
+      if (owner.toLowerCase() !== this.state.account.toLowerCase()) {
+        throw new Error('You are not the owner of this Pop');
+      }
+    } catch (checkError) {
+      throw new Error(`Validation failed: ${checkError.message}`);
+    }
+
+    // Try with a manual gas limit if estimation fails
+    let tx;
+    try {
+      tx = await currentPopit.updateLink(selectedPopId, newLink);
+    } catch (estimateError) {
+      console.warn("Gas estimation failed, trying with manual limit:", estimateError);
+      tx = await currentPopit.updateLink(selectedPopId, newLink, {
+        gasLimit: 500000 // Set a reasonable manual gas limit
+      });
+    }
+    
+    const receipt = await tx.wait();
+    
+    if (receipt.status === 0) {
+      throw new Error('Transaction reverted in the blockchain');
+    }
+
+    this.pushToTerminal(`[[success]]Pop link updated successfully!
+Transaction Hash: ${receipt.transactionHash}
+Gas Used: ${receipt.gasUsed.toString()}[[/success]]`);
+    
+    await this.listPops();
+    return true;
+  } catch (error) {
+    let errorMessage = `[[error]]Update failed: ${error.reason || error.message}[[/error]]`;
+    
+    if (error.data && error.data.message) {
+      errorMessage += `\n${error.data.message}`;
+    }
+    
+    this.pushToTerminal(errorMessage);
+    console.error("UpdatePopLink error:", error);
+    return false;
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+validatePopForUpdate = async (popId) => {
+  const { currentPopit, account } = this.state;
+  
+  if (!currentPopit) {
+    throw new Error('No Popit loaded');
+  }
+
+  if (!popId) {
+    throw new Error('Pop ID is required');
+  }
+
+  const pop = await currentPopit.getPopById(popId);
+  if (pop.id.toString() === '0') {
+    throw new Error('Pop does not exist');
+  }
+
+  const owner = await currentPopit.ownerOf(popId);
+  if (owner.toLowerCase() !== account.toLowerCase()) {
+    throw new Error('You are not the owner of this Pop');
+  }
+
+  return true;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   listPops = async () => {
     try {
@@ -1162,21 +2635,56 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
     }
   };
 
-  fetchProtocols = async () => {
-    try {
-      const { currentPopit, account } = this.state;
-      if (!currentPopit) {
-        throw new Error('No Popit loaded');
-      }
-      
-      const protocols = await currentPopit.getProtocolsByOwner(account);
-      this.setState({ definedProtocols: protocols });
-      return protocols;
-    } catch (error) {
-      this.pushToTerminal(`[[error]]Error fetching protocols: ${error.message}[[/error]]`);
-      return [];
+
+
+
+
+
+
+
+
+
+
+
+fetchProtocols = async () => {
+  try {
+    const { currentPopit } = this.state;
+    if (!currentPopit) {
+      throw new Error('No Popit loaded');
     }
-  };
+    
+    // Get ALL protocol parsers (not just the ones owned by current user)
+    const allParsers = await currentPopit.getAllProtocolParsers();
+    
+console.log("all parsers $$$$$$$$$$$$");
+console.log(allParsers);
+
+
+
+    // Extract just the protocol names
+    const protocols = allParsers.map(parser => parser.protocol);
+    
+    this.setState({ 
+      definedProtocols: protocols,
+      // Store full parser data too for reference
+      allProtocolParsers: allParsers 
+    });
+    
+    return protocols;
+  } catch (error) {
+    this.pushToTerminal(`[[error]]Error fetching protocols: ${error.message}[[/error]]`);
+    return [];
+  }
+};
+
+
+
+
+
+
+
+
+
 
   addProtocolParser = async () => {
     try {
@@ -1237,31 +2745,46 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
     }
   };
 
-  loadProtocolDefinition = async (protocol) => {
-    try {
-      const parser = await this.getParserForProtocol(protocol);
-      if (!parser || !parser.parserUrl) {
-        throw new Error('No parser URL found for protocol');
-      }
-      
-      const response = await fetch(parser.parserUrl);
-      if (!response.ok) {
-        throw new Error('Failed to fetch protocol definition');
-      }
-      
-      const protocolDef = await response.json();
-      this.setState({
-        selectedProtocol: protocolDef,
-        protocolFormData: protocolDef.sample_data || {},
-        protocolFormErrors: {}
-      });
-      
-      return protocolDef;
-    } catch (error) {
-      this.pushToTerminal(`[[error]]Error loading protocol definition: ${error.message}[[/error]]`);
-      return null;
+loadProtocolDefinition = async (protocol) => {
+  try {
+    const parser = await this.getParserForProtocol(protocol);
+    if (!parser || !parser.parserUrl) {
+      throw new Error('No parser URL found for protocol');
     }
-  };
+    
+    this.pushToTerminal(`Loading protocol definition for ${protocol} from ${parser.parserUrl}`);
+    
+    const response = await fetch(parser.parserUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch protocol definition (HTTP ${response.status})`);
+    }
+    
+    const protocolDef = await response.json();
+    
+    // Validate the protocol definition structure
+    if (!protocolDef.protocol || !protocolDef.data_structure) {
+      throw new Error('Invalid protocol definition format');
+    }
+    
+    this.setState({
+      selectedProtocol: protocolDef,
+      protocolFormData: protocolDef.sample_data || {},
+      protocolFormErrors: {}
+    });
+    
+    this.pushToTerminal(`[[success]]Successfully loaded protocol: ${protocolDef.protocol}[[/success]]`);
+    return protocolDef;
+  } catch (error) {
+    const errorMsg = `[[error]]Error loading protocol definition: ${error.message}[[/error]]`;
+    this.pushToTerminal(errorMsg);
+    this.setState({
+      selectedProtocol: null,
+      protocolFormData: {},
+      protocolFormErrors: {}
+    });
+    return null;
+  }
+};
 
   handleProtocolFormChange = (field, value) => {
     this.setState(prevState => ({
@@ -1704,72 +3227,96 @@ renderWizard = () => {
 
 
 
-  renderDashboardPanel = () => {
-    return (
-      <div style={styles.panel}>
-        <h2 style={styles.panelTitle}>REPO DASHBOARD</h2>
-        <div style={styles.gridContainer}>
-          <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>CURRENT REPO</h3>
-            <div style={styles.infoBox}>
-              {this.state.currentPopit ? (
-                <>
-                  <p>Address: {this.state.currentPopit.address.substring(0, 12)}...</p>
-                  <p>Total Pops: {this.state.pops.length}</p>
-                  <p>Creation Price: {this.state.creationPrice} FLIP</p>
-                </>
-              ) : (
-                <p>No Popit loaded</p>
-              )}
-            </div>
-          </div>
-          <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>POP MANAGEMENT</h3>
-            <div style={styles.infoBox}>
-              <input
-                type="text"
-                name="selectedPopId"
-                value={this.state.selectedPopId}
-                onChange={this.handleInputChange}
-                placeholder="Pop ID"
-                style={styles.input}
-              />
-              <input
-                type="text"
-                name="newLink"
-                value={this.state.newLink}
-                onChange={this.handleInputChange}
-                placeholder="New Link"
-                style={styles.input}
-              />
-              <button 
-                style={styles.button}
-                onClick={this.updatePopLink}
-              >
-                UPDATE POP LINK
-              </button>
-              <div style={styles.divider}></div>
-              <button 
-                style={{...styles.button, backgroundColor: CYBERPUNK.error}}
-                onClick={() => this.removePop(this.state.selectedPopId)}
-              >
-                REMOVE POP
-              </button>
-            </div>
+renderDashboardPanel = () => {
+  return (
+    <div style={styles.panel}>
+      <h2 style={styles.panelTitle}>REPO DASHBOARD</h2>
+      <div style={styles.gridContainer}>
+        <div style={styles.gridItem}>
+          <h3 style={styles.subTitle}>CURRENT REPO</h3>
+          <div style={styles.infoBox}>
+            {this.state.currentPopit ? (
+              <>
+                <p>Address: {this.state.currentPopit.address.substring(0, 12)}...</p>
+                <p>Total Pops: {this.state.pops.length}</p>
+                <p>Creation Price: {this.state.creationPrice} FLIP</p>
+              </>
+            ) : (
+              <p>No Popit loaded</p>
+            )}
           </div>
         </div>
-        {this.renderOutputArea(this.state.dashboardOutput)}
-        <div style={{ textAlign: 'right', marginTop: '10px' }}>
-          <button 
-            style={{ ...styles.button, width: 'auto', padding: '5px 10px' }}
-            onClick={() => this.clearOutput('dashboard')}
-          >
-            CLEAR OUTPUT
-          </button>
+        <div style={styles.gridItem}>
+          <h3 style={styles.subTitle}>POP MANAGEMENT</h3>
+          <div style={styles.infoBox}>
+            <input
+              type="text"
+              name="selectedPopId"
+              value={this.state.selectedPopId}
+              onChange={this.handleInputChange}
+              placeholder="Pop ID"
+              style={styles.input}
+            />
+            {this.state.validatingPop && <div>Validating...</div>}
+            {this.state.popValidationError && (
+              <div style={{ color: CYBERPUNK.error, margin: '5px 0' }}>
+                {this.state.popValidationError}
+              </div>
+            )}
+            <input
+              type="text"
+              name="newLink"
+              value={this.state.newLink}
+              onChange={this.handleInputChange}
+              placeholder="New Link"
+              style={styles.input}
+            />
+            <button 
+              style={{
+                ...styles.button,
+                opacity: this.state.popValidationError ? 0.5 : 1,
+                cursor: this.state.popValidationError ? 'not-allowed' : 'pointer'
+              }}
+              onClick={!this.state.popValidationError ? this.updatePopLink : null}
+              disabled={!!this.state.popValidationError}
+            >
+              UPDATE POP LINK
+            </button>
+            <div style={styles.divider}></div>
+            <button 
+              style={{...styles.button, backgroundColor: CYBERPUNK.error}}
+              onClick={() => this.removePop(this.state.selectedPopId)}
+            >
+              REMOVE POP
+            </button>
+          </div>
         </div>
       </div>
-    );
-  };
+      {this.renderOutputArea(this.state.dashboardOutput)}
+      <div style={{ textAlign: 'right', marginTop: '10px' }}>
+        <button 
+          style={{ ...styles.button, width: 'auto', padding: '5px 10px' }}
+          onClick={() => this.clearOutput('dashboard')}
+        >
+          CLEAR OUTPUT
+        </button>
+      </div>
+    </div>
+  );
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   renderPopitPanel = () => {
     return (
@@ -1954,47 +3501,57 @@ renderWizard = () => {
               </button>
               <div style={styles.divider}></div>
               <h4 style={{ color: CYBERPUNK.secondary, marginBottom: '5px' }}>Your Protocols:</h4>
-              {definedProtocols.length === 0 ? (
-                <p style={{ color: CYBERPUNK.text, opacity: 0.7 }}>No protocols defined</p>
-              ) : (
-                <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
-                  {definedProtocols.map((protocol, index) => (
-                    <div key={index} style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '5px',
-                      padding: '5px',
-                      backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                      border: `1px solid ${CYBERPUNK.primary}`
-                    }}>
-                      <span 
-                        style={{ 
-                          cursor: 'pointer',
-                          color: CYBERPUNK.primary,
-                          flex: 1
-                        }}
-                        onClick={() => this.loadProtocolDefinition(protocol)}
-                      >
-                        {protocol}
-                      </span>
-                      <button
-                        style={{
-                          background: 'transparent',
-                          border: `1px solid ${CYBERPUNK.error}`,
-                          color: CYBERPUNK.error,
-                          padding: '2px 5px',
-                          cursor: 'pointer',
-                          fontSize: '12px'
-                        }}
-                        onClick={() => this.removeProtocolParser(protocol)}
-                      >
-                        X
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+{definedProtocols.length === 0 ? (
+  <p style={{ color: CYBERPUNK.text, opacity: 0.7 }}>No protocols defined</p>
+) : (
+  <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
+{(this.state.allProtocolParsers || []).map((parser, index) => (
+  <div 
+    key={index} 
+    style={{ 
+      display: 'flex', 
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: '5px',
+      padding: '5px',
+      backgroundColor: 'rgba(0, 0, 0, 0.3)',
+      border: `1px solid ${CYBERPUNK.primary}`,
+      cursor: 'pointer' // Add cursor pointer to indicate clickable
+    }}
+    onClick={() => this.loadProtocolDefinition(parser.protocol)} // Add click handler
+  >
+    <div style={{ flex: 1 }}>
+      <div style={{ color: CYBERPUNK.primary }}>{parser.protocol}</div>
+      <div style={{ fontSize: '12px', opacity: 0.8 }}>
+        {parser.parserUrl}
+      </div>
+      <div style={{ fontSize: '10px', opacity: 0.6 }}>
+        Owner: {parser.owner.substring(0, 8)}...@{new Date(parser.timestamp * 1000).toLocaleDateString()}
+      </div>
+    </div>
+    {parser.owner.toLowerCase() === this.state.account.toLowerCase() && (
+      <button
+        style={{
+          background: 'transparent',
+          border: `1px solid ${CYBERPUNK.error}`,
+          color: CYBERPUNK.error,
+          padding: '2px 5px',
+          cursor: 'pointer',
+          fontSize: '12px'
+        }}
+        onClick={(e) => {
+          e.stopPropagation(); // Prevent triggering the parent div's click
+          this.removeProtocolParser(parser.protocol);
+        }}
+      >
+        X
+      </button>
+    )}
+  </div>
+))}
+  </div>
+)}
+
             </div>
           </div>
 
@@ -2317,6 +3874,15 @@ renderWizard = () => {
                 >
                   PROTOCOLS
                 </button>
+                <button 
+                  onClick={() => this.setActivePanel('grep')}
+                  style={{
+                    ...styles.navButton,
+                    borderBottom: activePanel === 'grep' ? `2px solid ${CYBERPUNK.primary}` : 'none'
+                  }}
+                >
+                  ADVANCED SEARCH
+                </button>
               </div>
 
               <div style={{
@@ -2327,6 +3893,7 @@ renderWizard = () => {
                 {activePanel === 'popit' && this.renderPopitPanel()}
                 {activePanel === 'factory' && this.renderFactoryPanel()}
                 {activePanel === 'protocol' && this.renderProtocolPanel()}
+                {activePanel === 'grep' && this.renderGrepPanel()}
               </div>
             </div>
           ) : (
@@ -2498,6 +4065,18 @@ renderWizard = () => {
                     }
                   }
                 },
+                grep: {
+                  description: 'Search pops using SQL-like queries (protocol:name where field=value)',
+                  usage: 'grep protocol:vin:// where make=Toyota and year>2020',
+                  fn: async (query) => {
+                    try {
+                      await this.executeGrepQuery(query);
+                      return '';
+                    } catch (error) {
+                      return error.message;
+                    }
+                  }
+                },
                 searchprotocol: {
                   description: 'Search pops by protocol',
                   usage: 'searchprotocol <protocol>',
@@ -2540,6 +4119,7 @@ renderWizard = () => {
         </div>
         {this.renderArweaveUploader()}
         {this.renderWizard()}
+        {this.renderGrepResults()}
       </div>
     );
   }
