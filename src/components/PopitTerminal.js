@@ -2,6 +2,7 @@ import React from 'react';
 import Terminal from 'react-console-emulator';
 import { ethers } from 'ethers';
 import PopitFactoryABI from '../etc/rawmaterial/PopitFactory.json';
+import Handlebars from 'handlebars';
 
 const CYBERPUNK = {
   primary: '#00f0ff',
@@ -1390,7 +1391,6 @@ class PopitTerminal extends React.Component {
       tempLink: '',
       validatingPop: false,
       popValidationError: null,
-      // New state for grep functionality
       grepQuery: '',
       grepProtocol: '',
       grepResults: [],
@@ -1401,11 +1401,9 @@ class PopitTerminal extends React.Component {
       grepOperator: '=',
       grepValue: '',
       grepConditions: [],
-      dashboardOutput: [],
-      popitOutput: [],
-      factoryOutput: [],
-      protocolOutput: [],
-      grepOutput: [], // Add this if not already present
+      grepOutput: [],
+      allProtocolParsers: [],
+      protocolTemplates: {}
     };
     this.terminal = React.createRef();
     this.arweaveIframeRef = React.createRef();
@@ -1414,252 +1412,243 @@ class PopitTerminal extends React.Component {
   componentDidMount() {
     this.initConnection();
     window.addEventListener('message', this.handleArweaveMessage);
+    this.fetchAllProtocols(); // Add this line to fetch protocols on mount
   }
 
   componentWillUnmount() {
     window.removeEventListener('message', this.handleArweaveMessage);
   }
 
-
-componentDidUpdate(prevProps, prevState) {
-  // Validate pop when selectedPopId changes
-  if (prevState.selectedPopId !== this.state.selectedPopId && this.state.selectedPopId) {
-    this.validatePopForUpdate(this.state.selectedPopId);
-  }
-}
-
-validatePopForUpdate = async (popId) => {
-  this.setState({ validatingPop: true, popValidationError: null });
-  
-  try {
-    const { currentPopit, account } = this.state;
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.selectedPopId !== this.state.selectedPopId && this.state.selectedPopId) {
+      this.validatePopForUpdate(this.state.selectedPopId);
+    }
     
-    if (!currentPopit) {
-      throw new Error('No Popit loaded');
+    // Load protocol templates when protocols are fetched
+    if (prevState.allProtocolParsers !== this.state.allProtocolParsers) {
+      this.loadProtocolTemplates();
     }
 
-    if (!popId) {
-      throw new Error('Pop ID is required');
-    }
-
-    const pop = await currentPopit.getPopById(popId);
-    if (pop.id.toString() === '0') {
-      throw new Error('Pop does not exist');
-    }
-
-    const owner = await currentPopit.ownerOf(popId);
-    if (owner.toLowerCase() !== account.toLowerCase()) {
-      throw new Error('You are not the owner of this Pop');
-    }
-
-    this.setState({ popValidationError: null });
-  } catch (error) {
-    this.setState({ popValidationError: error.message });
-  } finally {
-    this.setState({ validatingPop: false });
-  }
-};
-
-
-
-
-
-
-
-
-
-
-
-handleArweaveMessage = (event) => {
-  // Allow messages from both the iframe origin and parent window (for testing)
-  const allowedOrigins = [
-    'https://5qw6rsejfhwovrumxotfe26m4vlv6ewbef7pu3hvt5usmcoqarha.arweave.net',
-    window.location.origin
-  ];
-  
-  if (!allowedOrigins.includes(event.origin)) return;
-  
-  if (event.data.type === 'FRAME_READY') {
-    if (this.state.arweaveData && this.arweaveIframeRef.current) {
-      this.arweaveIframeRef.current.contentWindow.postMessage({
-        type: 'UPDATE_DATA',
-        data: this.state.arweaveData
-      }, 'https://5qw6rsejfhwovrumxotfe26m4vlv6ewbef7pu3hvt5usmcoqarha.arweave.net');
-    }
-  }
-  else if (event.data.type === 'ARWEAVE_UPLOAD_COMPLETE') {
-    console.log('Upload complete received:', event.data); // Debug log
-    
-    this.setState({
-      arweaveUploadUrl: event.data.url,
-      showWizard: true,
-      wizardStep: 1, // Start at action selection
-      tempLink: event.data.url,
-      showArweaveUploader: false
-    }, () => {
-      this.pushToTerminal(`[[success]]Arweave upload complete! URL: ${event.data.url}[[/success]]`);
-      this.pushToTerminal('Starting wizard to create/update Pop...');
-    });
-  }
-};
-
-
-
-
-
-
-
-
-
-
-
-
-  // Add new method for grep command
-executeGrepQuery = async (protocol, query) => {
-  try {
-    const { currentPopit } = this.state;
-    if (!currentPopit) {
-      throw new Error('No Popit loaded');
-    }
-
-    // Parse conditions (simple format: "field=value", "field>value", etc.)
-    const conditions = [];
-    const conditionRegex = /(\w+)\s*(=|!=|>|<|>=|<=|contains)\s*([^\s]+)/g;
-    let match;
-    while ((match = conditionRegex.exec(query)) !== null) {
-      conditions.push({
-        field: match[1],
-        operator: match[2],
-        value: match[3]
-      });
-    }
-
-    this.setState({
-      grepLoading: true,
-      grepError: null,
-      grepResults: [],
-      grepConditions: conditions
-    });
-
-    // Get all pops for this protocol
-    const pops = await currentPopit.getPopsByProtocol(protocol);
-    if (pops.length === 0) {
-      this.pushToTerminal(`No pops found for protocol ${protocol}`);
-      return [];
-    }
-
-    // Process BigNumber values before storing in state
-    const processBigNumbers = (obj) => {
-      if (obj && typeof obj === 'object') {
-        if (obj._isBigNumber) {
-          return ethers.BigNumber.from(obj._hex).toNumber();
-        }
-        
-        // Handle arrays
-        if (Array.isArray(obj)) {
-          return obj.map(item => processBigNumbers(item));
-        }
-        
-        // Handle nested objects
-        const result = {};
-        for (const key in obj) {
-          result[key] = processBigNumbers(obj[key]);
-        }
-        return result;
+    // Fetch protocols when switching to grep panel if not already loaded
+    if (this.state.activePanel === 'grep' && prevState.activePanel !== 'grep') {
+      if (this.state.allProtocolParsers.length === 0) {
+        this.fetchAllProtocols();
       }
-      return obj;
-    };
+    }
+  }
 
-    // Check each pop's data
-    const results = [];
-    for (const pop of pops) {
+
+  // New method to fetch all protocols
+  fetchAllProtocols = async () => {
+    try {
+      const { currentPopit } = this.state;
+      if (!currentPopit) return;
+
+      const allParsers = await currentPopit.getAllProtocolParsers();
+      this.setState({
+        allProtocolParsers: allParsers,
+        definedProtocols: allParsers.map(parser => parser.protocol)
+      });
+    } catch (error) {
+      console.error('Error fetching protocols:', error);
+    }
+  };
+
+  loadProtocolTemplates = async () => {
+    const { allProtocolParsers } = this.state;
+    const templates = {};
+    
+    for (const parser of allProtocolParsers) {
       try {
-        // Process BigNumber fields in the pop object
-        const processedPop = {
-          ...pop,
-          id: pop.id._hex ? ethers.BigNumber.from(pop.id._hex).toNumber() : pop.id,
-          timestamp: pop.timestamp._hex ? ethers.BigNumber.from(pop.timestamp._hex).toNumber() : pop.timestamp
-        };
-
-        const response = await fetch(pop.link);
+        const response = await fetch(parser.parserUrl);
         if (!response.ok) continue;
         
-        const data = await response.json();
-        if (!data) continue;
-
-        // Check all conditions against the data
-        const matches = conditions.every(({field, operator, value}) => {
-          if (!(field in data)) return false;
-          
-          const fieldValue = data[field];
-          switch (operator) {
-            case '=': return String(fieldValue) === String(value);
-            case '!=': return String(fieldValue) !== String(value);
-            case '>': return Number(fieldValue) > Number(value);
-            case '<': return Number(fieldValue) < Number(value);
-            case '>=': return Number(fieldValue) >= Number(value);
-            case '<=': return Number(fieldValue) <= Number(value);
-            case 'contains': return String(fieldValue).includes(String(value));
-            default: return false;
-          }
-        });
-
-        if (matches) {
-          results.push({ 
-            pop: processedPop, 
-            data: processBigNumbers(data) 
-          });
+        const protocolDef = await response.json();
+        if (protocolDef.template) {
+          templates[parser.protocol] = protocolDef.template;
         }
       } catch (error) {
-        console.warn(`Error processing pop ${pop.id}:`, error);
+        console.warn(`Failed to load template for ${parser.protocol}:`, error);
       }
     }
+    
+    this.setState({ protocolTemplates: templates });
+  };
 
-    this.pushToTerminal(`Found ${results.length} matching pops`);
-    this.setState({
-      grepLoading: false,
-      grepResults: results,
-      showGrepResults: true
-    });
+  validatePopForUpdate = async (popId) => {
+    this.setState({ validatingPop: true, popValidationError: null });
+    
+    try {
+      const { currentPopit, account } = this.state;
+      
+      if (!currentPopit) {
+        throw new Error('No Popit loaded');
+      }
 
-    return results;
-  } catch (error) {
-    this.pushToTerminal(`Error: ${error.message}`);
-    this.setState({ grepLoading: false, grepError: error.message });
-    throw error;
-  }
-};
+      if (!popId) {
+        throw new Error('Pop ID is required');
+      }
 
+      const pop = await currentPopit.getPopById(popId);
+      if (pop.id.toString() === '0') {
+        throw new Error('Pop does not exist');
+      }
 
+      const owner = await currentPopit.ownerOf(popId);
+      if (owner.toLowerCase() !== account.toLowerCase()) {
+        throw new Error('You are not the owner of this Pop');
+      }
 
+      this.setState({ popValidationError: null });
+    } catch (error) {
+      this.setState({ popValidationError: error.message });
+    } finally {
+      this.setState({ validatingPop: false });
+    }
+  };
 
+  handleArweaveMessage = (event) => {
+    const allowedOrigins = [
+      'https://5qw6rsejfhwovrumxotfe26m4vlv6ewbef7pu3hvt5usmcoqarha.arweave.net',
+      window.location.origin
+    ];
+    
+    if (!allowedOrigins.includes(event.origin)) return;
+    
+    if (event.data.type === 'FRAME_READY') {
+      if (this.state.arweaveData && this.arweaveIframeRef.current) {
+        this.arweaveIframeRef.current.contentWindow.postMessage({
+          type: 'UPDATE_DATA',
+          data: this.state.arweaveData
+        }, 'https://5qw6rsejfhwovrumxotfe26m4vlv6ewbef7pu3hvt5usmcoqarha.arweave.net');
+      }
+    }
+    else if (event.data.type === 'ARWEAVE_UPLOAD_COMPLETE') {
+      this.setState({
+        arweaveUploadUrl: event.data.url,
+        showWizard: true,
+        wizardStep: 1,
+        tempLink: event.data.url,
+        showArweaveUploader: false
+      }, () => {
+        this.pushToTerminal(`[[success]]Arweave upload complete! URL: ${event.data.url}[[/success]]`);
+        this.pushToTerminal('Starting wizard to create/update Pop...');
+      });
+    }
+  };
 
+  executeGrepQuery = async (protocol, query) => {
+    try {
+      const { currentPopit } = this.state;
+      if (!currentPopit) {
+        throw new Error('No Popit loaded');
+      }
 
+      const conditions = [];
+      const conditionRegex = /(\w+)\s*(=|!=|>|<|>=|<=|contains)\s*([^\s]+)/g;
+      let match;
+      while ((match = conditionRegex.exec(query)) !== null) {
+        conditions.push({
+          field: match[1],
+          operator: match[2],
+          value: match[3]
+        });
+      }
 
+      this.setState({
+        grepLoading: true,
+        grepError: null,
+        grepResults: [],
+        grepConditions: conditions
+      });
 
+      const pops = await currentPopit.getPopsByProtocol(protocol);
+      if (pops.length === 0) {
+        this.pushToTerminal(`No pops found for protocol ${protocol}`);
+        return [];
+      }
 
+      const processBigNumbers = (obj) => {
+        if (obj && typeof obj === 'object') {
+          if (obj._isBigNumber) {
+            return ethers.BigNumber.from(obj._hex).toNumber();
+          }
+          
+          if (Array.isArray(obj)) {
+            return obj.map(item => processBigNumbers(item));
+          }
+          
+          const result = {};
+          for (const key in obj) {
+            result[key] = processBigNumbers(obj[key]);
+          }
+          return result;
+        }
+        return obj;
+      };
 
+      const results = [];
+      for (const pop of pops) {
+        try {
+          const processedPop = {
+            ...pop,
+            id: pop.id._hex ? ethers.BigNumber.from(pop.id._hex).toNumber() : pop.id,
+            timestamp: pop.timestamp._hex ? ethers.BigNumber.from(pop.timestamp._hex).toNumber() : pop.timestamp
+          };
 
+          const response = await fetch(pop.link);
+          if (!response.ok) continue;
+          
+          const data = await response.json();
+          if (!data) continue;
 
+          const matches = conditions.every(({field, operator, value}) => {
+            if (!(field in data)) return false;
+            
+            const fieldValue = data[field];
+            switch (operator) {
+              case '=': return String(fieldValue) === String(value);
+              case '!=': return String(fieldValue) !== String(value);
+              case '>': return Number(fieldValue) > Number(value);
+              case '<': return Number(fieldValue) < Number(value);
+              case '>=': return Number(fieldValue) >= Number(value);
+              case '<=': return Number(fieldValue) <= Number(value);
+              case 'contains': return String(fieldValue).includes(String(value));
+              default: return false;
+            }
+          });
 
+          if (matches) {
+            results.push({ 
+              pop: processedPop, 
+              data: processBigNumbers(data),
+              protocol: pop.protocol
+            });
+          }
+        } catch (error) {
+          console.warn(`Error processing pop ${pop.id}:`, error);
+        }
+      }
 
+      this.pushToTerminal(`Found ${results.length} matching pops`);
+      this.setState({
+        grepLoading: false,
+        grepResults: results,
+        showGrepResults: true
+      });
 
+      return results;
+    } catch (error) {
+      this.pushToTerminal(`Error: ${error.message}`);
+      this.setState({ grepLoading: false, grepError: error.message });
+      throw error;
+    }
+  };
 
-
-
-
-
-
-
-
-
-
-
-  // Add new method to render grep results
   renderGrepResults = () => {
     if (!this.state.showGrepResults) return null;
 
-    const { grepResults, grepProtocol, grepConditions } = this.state;
+    const { grepResults, grepProtocol, grepConditions, protocolTemplates } = this.state;
 
     return (
       <div style={{
@@ -1749,53 +1738,73 @@ executeGrepQuery = async (protocol, query) => {
                 gap: '15px',
                 padding: '10px'
               }}>
-                {grepResults.map((result, idx) => (
-                  <div key={idx} style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                    border: `1px solid ${CYBERPUNK.primary}`,
-                    borderRadius: '4px',
-                    padding: '15px',
-                    overflow: 'hidden'
-                  }}>
-                    <div style={{ 
-                      color: CYBERPUNK.primary,
-                      fontWeight: 'bold',
-                      marginBottom: '10px',
-                      borderBottom: `1px solid ${CYBERPUNK.secondary}`,
-                      paddingBottom: '5px'
+                {grepResults.map((result, idx) => {
+                  const template = protocolTemplates[result.protocol];
+                  let renderedContent = null;
+                  
+                  if (template) {
+                    try {
+                      const compiled = Handlebars.compile(template);
+                      renderedContent = compiled(result.data);
+                    } catch (error) {
+                      console.error('Template rendering error:', error);
+                    }
+                  }
+                  
+                  return (
+                    <div key={idx} style={{
+                      backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                      border: `1px solid ${CYBERPUNK.primary}`,
+                      borderRadius: '4px',
+                      padding: '15px',
+                      overflow: 'hidden'
                     }}>
-                      Pop #{result.pop.id}
+                      {renderedContent ? (
+                        <div dangerouslySetInnerHTML={{ __html: renderedContent }} />
+                      ) : (
+                        <>
+                          <div style={{ 
+                            color: CYBERPUNK.primary,
+                            fontWeight: 'bold',
+                            marginBottom: '10px',
+                            borderBottom: `1px solid ${CYBERPUNK.secondary}`,
+                            paddingBottom: '5px'
+                          }}>
+                            Pop #{result.pop.id}
+                          </div>
+                          <div style={{ 
+                            maxHeight: '200px',
+                            overflow: 'auto',
+                            marginBottom: '10px',
+                            padding: '5px',
+                            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                            fontFamily: 'monospace',
+                            fontSize: '12px'
+                          }}>
+                            <pre>{JSON.stringify(result.data, null, 2)}</pre>
+                          </div>
+                        </>
+                      )}
+                      <div style={{ 
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        fontSize: '12px'
+                      }}>
+                        <span style={{ color: CYBERPUNK.secondary }}>
+                          Owner: {result.pop.owner.substring(0, 10)}...
+                        </span>
+                        <a 
+                          href={result.pop.link} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          style={{ color: CYBERPUNK.primary }}
+                        >
+                          View Raw Data
+                        </a>
+                      </div>
                     </div>
-                    <div style={{ 
-                      maxHeight: '200px',
-                      overflow: 'auto',
-                      marginBottom: '10px',
-                      padding: '5px',
-                      backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                      fontFamily: 'monospace',
-                      fontSize: '12px'
-                    }}>
-                      <pre>{JSON.stringify(result.data, null, 2)}</pre>
-                    </div>
-                    <div style={{ 
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      fontSize: '12px'
-                    }}>
-                      <span style={{ color: CYBERPUNK.secondary }}>
-                        Owner: {result.pop.owner.substring(0, 10)}...
-                      </span>
-                      <a 
-                        href={result.pop.link} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        style={{ color: CYBERPUNK.primary }}
-                      >
-                        View Data
-                      </a>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -1818,23 +1827,6 @@ executeGrepQuery = async (protocol, query) => {
 
 
 
-
-
-
-
-
-
-
-  // Add new method to render grep GUI panel
-
-
-
-
-
-
-
-
-
 renderGrepPanel = () => {
   const { 
     grepField, 
@@ -1843,7 +1835,9 @@ renderGrepPanel = () => {
     grepConditions,
     grepProtocol,
     grepLoading,
-    grepResults
+    grepResults,
+    allProtocolParsers,
+    selectedProtocol
   } = this.state;
 
   return (
@@ -1855,25 +1849,55 @@ renderGrepPanel = () => {
           <div style={styles.infoBox}>
             <div style={styles.formGroup}>
               <label style={styles.label}>Protocol:</label>
-              <input
-                type="text"
+              <select
                 value={grepProtocol}
-                onChange={(e) => this.setState({ grepProtocol: e.target.value })}
-                placeholder="e.g. vin://"
+                onChange={(e) => {
+                  const selectedProtocol = e.target.value;
+                  this.setState({ 
+                    grepProtocol: selectedProtocol,
+                    grepField: '',
+                    grepValue: ''
+                  });
+
+                  // Load protocol definition when selected
+                  if (selectedProtocol) {
+                    const parser = allProtocolParsers.find(
+                      p => p.protocol === selectedProtocol
+                    );
+                    if (parser) {
+                      this.loadProtocolDefinition(selectedProtocol);
+                    }
+                  }
+                }}
                 style={styles.input}
-              />
+              >
+                <option value="">Select Protocol</option>
+                {allProtocolParsers.map((parser, index) => (
+                  <option key={index} value={parser.protocol}>
+                    {parser.protocol}
+                  </option>
+                ))}
+              </select>
             </div>
             
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Field:</label>
-              <input
-                type="text"
-                value={grepField}
-                onChange={(e) => this.setState({ grepField: e.target.value })}
-                placeholder="Field name"
-                style={styles.input}
-              />
-            </div>
+            {grepProtocol && (
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Field:</label>
+                <select
+                  value={grepField}
+                  onChange={(e) => this.setState({ grepField: e.target.value })}
+                  style={styles.input}
+                  disabled={!selectedProtocol}
+                >
+                  <option value="">Select Field</option>
+                  {selectedProtocol && 
+                    Object.keys(selectedProtocol.data_structure || {}).map((field, idx) => (
+                      <option key={idx} value={field}>{field}</option>
+                    ))
+                  }
+                </select>
+              </div>
+            )}
             
             <div style={styles.formGroup}>
               <label style={styles.label}>Operator:</label>
@@ -2008,7 +2032,6 @@ renderGrepPanel = () => {
           </div>
         </div>
 
-        {/* Results Preview Section */}
         <div style={styles.gridItem}>
           <h3 style={styles.subTitle}>RESULTS PREVIEW</h3>
           <div style={styles.infoBox}>
@@ -2076,48 +2099,15 @@ renderGrepPanel = () => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-openArweaveUploader = () => {
-  const { protocolFormData } = this.state;
-  const jsonData = JSON.stringify(protocolFormData, null, 2);
-  
-  this.setState({ 
-    showArweaveUploader: true,
-    arweaveData: jsonData
-  }, () => {
-    // This will be handled by the iframe's onLoad event
-  });
-};
-
-
-
-
+  openArweaveUploader = () => {
+    const { protocolFormData } = this.state;
+    const jsonData = JSON.stringify(protocolFormData, null, 2);
+    
+    this.setState({ 
+      showArweaveUploader: true,
+      arweaveData: jsonData
+    });
+  };
 
   nextWizardStep = () => {
     this.setState(prevState => ({ wizardStep: prevState.wizardStep + 1 }));
@@ -2186,27 +2176,26 @@ openArweaveUploader = () => {
     }
   };
 
-pushToTerminal = (message) => {
-  if (typeof message === 'object' && message !== null) {
-    message = JSON.stringify(message, null, 2);
-  }
+  pushToTerminal = (message) => {
+    if (typeof message === 'object' && message !== null) {
+      message = JSON.stringify(message, null, 2);
+    }
 
-  if (this.terminal.current) {
-    this.terminal.current.pushToStdout(message.toString());
-  }
-  
-  const outputKey = `${this.state.activePanel}Output`;
-  this.setState(prevState => {
-    // Ensure we always have an array, even if the key doesn't exist yet
-    const currentOutput = Array.isArray(prevState[outputKey]) 
-      ? prevState[outputKey] 
-      : [];
+    if (this.terminal.current) {
+      this.terminal.current.pushToStdout(message.toString());
+    }
     
-    return {
-      [outputKey]: [...currentOutput, message.toString()]
-    };
-  });
-};
+    const outputKey = `${this.state.activePanel}Output`;
+    this.setState(prevState => {
+      const currentOutput = Array.isArray(prevState[outputKey]) 
+        ? prevState[outputKey] 
+        : [];
+      
+      return {
+        [outputKey]: [...currentOutput, message.toString()]
+      };
+    });
+  };
 
   clearOutput = (panel) => {
     const outputKey = `${panel}Output`;
@@ -2253,18 +2242,14 @@ pushToTerminal = (message) => {
     });
   };
 
-extractProtocol = (name) => {
-  // Match protocol patterns like:
-  // - protocol:// (e.g., http://, vin://)
-  // - protocol: (e.g., property:123)
-  const protocolMatch = name.match(/^([^:\s]+:\/\/)|^([^:\s]+:)/);
-  
-  if (protocolMatch) {
-    // Return the first non-empty match group (either with // or without)
-    return protocolMatch[1] || protocolMatch[2];
-  }
-  return 'default';
-};
+  extractProtocol = (name) => {
+    const protocolMatch = name.match(/^([^:\s]+:\/\/)|^([^:\s]+:)/);
+    
+    if (protocolMatch) {
+      return protocolMatch[1] || protocolMatch[2];
+    }
+    return 'default';
+  };
 
   createPopit = async (repoName, repoSymbol) => {
     try {
@@ -2494,146 +2479,71 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-updatePopLink = async () => {
-  try {
-    const { currentPopit, selectedPopId, newLink } = this.state;
-    if (!currentPopit) {
-      throw new Error('No Popit loaded');
-    }
-
-    if (!selectedPopId) {
-      throw new Error('Please select a Pop ID');
-    }
-
-    if (!newLink) {
-      throw new Error('Please enter a new link');
-    }
-
-    this.pushToTerminal(`Updating Pop ${selectedPopId} link to: ${newLink}`);
-    
-    // First check if the pop exists and you're the owner
+  updatePopLink = async () => {
     try {
-      const pop = await currentPopit.getPopById(selectedPopId);
-      if (pop.id.toString() === '0') {
-        throw new Error('Pop does not exist');
+      const { currentPopit, selectedPopId, newLink } = this.state;
+      if (!currentPopit) {
+        throw new Error('No Popit loaded');
+      }
+
+      if (!selectedPopId) {
+        throw new Error('Please select a Pop ID');
+      }
+
+      if (!newLink) {
+        throw new Error('Please enter a new link');
+      }
+
+      this.pushToTerminal(`Updating Pop ${selectedPopId} link to: ${newLink}`);
+      
+      try {
+        const pop = await currentPopit.getPopById(selectedPopId);
+        if (pop.id.toString() === '0') {
+          throw new Error('Pop does not exist');
+        }
+        
+        const owner = await currentPopit.ownerOf(selectedPopId);
+        if (owner.toLowerCase() !== this.state.account.toLowerCase()) {
+          throw new Error('You are not the owner of this Pop');
+        }
+      } catch (checkError) {
+        throw new Error(`Validation failed: ${checkError.message}`);
+      }
+
+      let tx;
+      try {
+        tx = await currentPopit.updateLink(selectedPopId, newLink);
+      } catch (estimateError) {
+        console.warn("Gas estimation failed, trying with manual limit:", estimateError);
+        tx = await currentPopit.updateLink(selectedPopId, newLink, {
+          gasLimit: 500000
+        });
       }
       
-      const owner = await currentPopit.ownerOf(selectedPopId);
-      if (owner.toLowerCase() !== this.state.account.toLowerCase()) {
-        throw new Error('You are not the owner of this Pop');
+      const receipt = await tx.wait();
+      
+      if (receipt.status === 0) {
+        throw new Error('Transaction reverted in the blockchain');
       }
-    } catch (checkError) {
-      throw new Error(`Validation failed: ${checkError.message}`);
-    }
 
-    // Try with a manual gas limit if estimation fails
-    let tx;
-    try {
-      tx = await currentPopit.updateLink(selectedPopId, newLink);
-    } catch (estimateError) {
-      console.warn("Gas estimation failed, trying with manual limit:", estimateError);
-      tx = await currentPopit.updateLink(selectedPopId, newLink, {
-        gasLimit: 500000 // Set a reasonable manual gas limit
-      });
-    }
-    
-    const receipt = await tx.wait();
-    
-    if (receipt.status === 0) {
-      throw new Error('Transaction reverted in the blockchain');
-    }
-
-    this.pushToTerminal(`[[success]]Pop link updated successfully!
+      this.pushToTerminal(`[[success]]Pop link updated successfully!
 Transaction Hash: ${receipt.transactionHash}
 Gas Used: ${receipt.gasUsed.toString()}[[/success]]`);
-    
-    await this.listPops();
-    return true;
-  } catch (error) {
-    let errorMessage = `[[error]]Update failed: ${error.reason || error.message}[[/error]]`;
-    
-    if (error.data && error.data.message) {
-      errorMessage += `\n${error.data.message}`;
+      
+      await this.listPops();
+      return true;
+    } catch (error) {
+      let errorMessage = `[[error]]Update failed: ${error.reason || error.message}[[/error]]`;
+      
+      if (error.data && error.data.message) {
+        errorMessage += `\n${error.data.message}`;
+      }
+      
+      this.pushToTerminal(errorMessage);
+      console.error("UpdatePopLink error:", error);
+      return false;
     }
-    
-    this.pushToTerminal(errorMessage);
-    console.error("UpdatePopLink error:", error);
-    return false;
-  }
-};
-
-
-
-
-
-
-
-
-
-
-
-validatePopForUpdate = async (popId) => {
-  const { currentPopit, account } = this.state;
-  
-  if (!currentPopit) {
-    throw new Error('No Popit loaded');
-  }
-
-  if (!popId) {
-    throw new Error('Pop ID is required');
-  }
-
-  const pop = await currentPopit.getPopById(popId);
-  if (pop.id.toString() === '0') {
-    throw new Error('Pop does not exist');
-  }
-
-  const owner = await currentPopit.ownerOf(popId);
-  if (owner.toLowerCase() !== account.toLowerCase()) {
-    throw new Error('You are not the owner of this Pop');
-  }
-
-  return true;
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  };
 
   listPops = async () => {
     try {
@@ -2722,56 +2632,28 @@ validatePopForUpdate = async (popId) => {
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-
-fetchProtocols = async () => {
-  try {
-    const { currentPopit } = this.state;
-    if (!currentPopit) {
-      throw new Error('No Popit loaded');
+  fetchProtocols = async () => {
+    try {
+      const { currentPopit } = this.state;
+      if (!currentPopit) {
+        throw new Error('No Popit loaded');
+      }
+      
+      const allParsers = await currentPopit.getAllProtocolParsers();
+      
+      const protocols = allParsers.map(parser => parser.protocol);
+      
+      this.setState({ 
+        definedProtocols: protocols,
+        allProtocolParsers: allParsers 
+      });
+      
+      return protocols;
+    } catch (error) {
+      this.pushToTerminal(`[[error]]Error fetching protocols: ${error.message}[[/error]]`);
+      return [];
     }
-    
-    // Get ALL protocol parsers (not just the ones owned by current user)
-    const allParsers = await currentPopit.getAllProtocolParsers();
-    
-console.log("all parsers $$$$$$$$$$$$");
-console.log(allParsers);
-
-
-
-    // Extract just the protocol names
-    const protocols = allParsers.map(parser => parser.protocol);
-    
-    this.setState({ 
-      definedProtocols: protocols,
-      // Store full parser data too for reference
-      allProtocolParsers: allParsers 
-    });
-    
-    return protocols;
-  } catch (error) {
-    this.pushToTerminal(`[[error]]Error fetching protocols: ${error.message}[[/error]]`);
-    return [];
-  }
-};
-
-
-
-
-
-
-
-
-
+  };
 
   addProtocolParser = async () => {
     try {
@@ -2832,46 +2714,45 @@ console.log(allParsers);
     }
   };
 
-loadProtocolDefinition = async (protocol) => {
-  try {
-    const parser = await this.getParserForProtocol(protocol);
-    if (!parser || !parser.parserUrl) {
-      throw new Error('No parser URL found for protocol');
+  loadProtocolDefinition = async (protocol) => {
+    try {
+      const parser = await this.getParserForProtocol(protocol);
+      if (!parser || !parser.parserUrl) {
+        throw new Error('No parser URL found for protocol');
+      }
+      
+      this.pushToTerminal(`Loading protocol definition for ${protocol} from ${parser.parserUrl}`);
+      
+      const response = await fetch(parser.parserUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch protocol definition (HTTP ${response.status})`);
+      }
+      
+      const protocolDef = await response.json();
+      
+      if (!protocolDef.protocol || !protocolDef.data_structure) {
+        throw new Error('Invalid protocol definition format');
+      }
+      
+      this.setState({
+        selectedProtocol: protocolDef,
+        protocolFormData: protocolDef.sample_data || {},
+        protocolFormErrors: {}
+      });
+      
+      this.pushToTerminal(`[[success]]Successfully loaded protocol: ${protocolDef.protocol}[[/success]]`);
+      return protocolDef;
+    } catch (error) {
+      const errorMsg = `[[error]]Error loading protocol definition: ${error.message}[[/error]]`;
+      this.pushToTerminal(errorMsg);
+      this.setState({
+        selectedProtocol: null,
+        protocolFormData: {},
+        protocolFormErrors: {}
+      });
+      return null;
     }
-    
-    this.pushToTerminal(`Loading protocol definition for ${protocol} from ${parser.parserUrl}`);
-    
-    const response = await fetch(parser.parserUrl);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch protocol definition (HTTP ${response.status})`);
-    }
-    
-    const protocolDef = await response.json();
-    
-    // Validate the protocol definition structure
-    if (!protocolDef.protocol || !protocolDef.data_structure) {
-      throw new Error('Invalid protocol definition format');
-    }
-    
-    this.setState({
-      selectedProtocol: protocolDef,
-      protocolFormData: protocolDef.sample_data || {},
-      protocolFormErrors: {}
-    });
-    
-    this.pushToTerminal(`[[success]]Successfully loaded protocol: ${protocolDef.protocol}[[/success]]`);
-    return protocolDef;
-  } catch (error) {
-    const errorMsg = `[[error]]Error loading protocol definition: ${error.message}[[/error]]`;
-    this.pushToTerminal(errorMsg);
-    this.setState({
-      selectedProtocol: null,
-      protocolFormData: {},
-      protocolFormErrors: {}
-    });
-    return null;
-  }
-};
+  };
 
   handleProtocolFormChange = (field, value) => {
     this.setState(prevState => ({
@@ -2956,32 +2837,32 @@ loadProtocolDefinition = async (protocol) => {
     this.openArweaveUploader();
   };
 
-completeCreatePop = () => {
-  const { tempLink, name, upc } = this.state;
-  this.setState({
-    link: tempLink,
-    showWizard: false,
-    wizardStep: 0,
-    wizardAction: '',
-    tempLink: ''
-  }, () => {
-    this.createPop();
-  });
-};
+  completeCreatePop = () => {
+    const { tempLink, name, upc } = this.state;
+    this.setState({
+      link: tempLink,
+      showWizard: false,
+      wizardStep: 0,
+      wizardAction: '',
+      tempLink: ''
+    }, () => {
+      this.createPop();
+    });
+  };
 
-completeUpdatePop = () => {
-  const { tempLink, selectedPopId } = this.state;
-  this.setState({
-    newLink: tempLink,
-    showWizard: false,
-    wizardStep: 0,
-    wizardAction: '',
-    tempLink: '',
-    selectedPopId: ''
-  }, () => {
-    this.updatePopLink();
-  });
-};
+  completeUpdatePop = () => {
+    const { tempLink, selectedPopId } = this.state;
+    this.setState({
+      newLink: tempLink,
+      showWizard: false,
+      wizardStep: 0,
+      wizardAction: '',
+      tempLink: '',
+      selectedPopId: ''
+    }, () => {
+      this.updatePopLink();
+    });
+  };
 
   searchPopsByProtocol = async () => {
     try {
@@ -3017,393 +2898,317 @@ completeUpdatePop = () => {
     }
   };
 
+  renderArweaveUploader = () => {
+    if (!this.state.showArweaveUploader) return null;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-renderArweaveUploader = () => {
-  if (!this.state.showArweaveUploader) return null;
-
-  return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      backgroundColor: 'rgba(0,0,0,0.8)',
-      zIndex: 1000,
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      overflow: 'auto', // Allow scrolling if content is too large
-      padding: '20px', // Add padding to ensure content doesn't touch edges
-      boxSizing: 'border-box'
-    }}>
+    return (
       <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
         width: '100%',
-        maxWidth: '800px', // Limit maximum width
-        height: 'auto',
-        maxHeight: '90vh', // Limit height to viewport
-        backgroundColor: CYBERPUNK.terminalBg,
-        border: `2px solid ${CYBERPUNK.primary}`,
-        boxShadow: `0 0 20px ${CYBERPUNK.primary}`,
+        height: '100%',
+        backgroundColor: 'rgba(0,0,0,0.8)',
+        zIndex: 1000,
         display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden' // Prevent inner content from overflowing
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'auto',
+        padding: '20px',
+        boxSizing: 'border-box'
       }}>
         <div style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          padding: '10px',
+          width: '100%',
+          maxWidth: '800px',
+          height: 'auto',
+          maxHeight: '90vh',
           backgroundColor: CYBERPUNK.terminalBg,
-          flexShrink: 0 // Prevent header from shrinking
+          border: `2px solid ${CYBERPUNK.primary}`,
+          boxShadow: `0 0 20px ${CYBERPUNK.primary}`,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden'
         }}>
-          <button 
-            onClick={() => this.setState({ showArweaveUploader: false })}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            padding: '10px',
+            backgroundColor: CYBERPUNK.terminalBg,
+            flexShrink: 0
+          }}>
+            <button 
+              onClick={() => this.setState({ showArweaveUploader: false })}
+              style={{
+                background: 'none',
+                border: `1px solid ${CYBERPUNK.error}`,
+                color: CYBERPUNK.error,
+                padding: '5px 10px',
+                cursor: 'pointer'
+              }}
+            >
+              Close
+            </button>
+          </div>
+          <iframe
+            key={`arweave-iframe-${Date.now()}`}
+            ref={this.arweaveIframeRef}
+            src="https://5qw6rsejfhwovrumxotfe26m4vlv6ewbef7pu3hvt5usmcoqarha.arweave.net/7C3oyIkp7OrGjLumUmvM5VdfEsEhfvps9Z9pJgnQBE4"
             style={{
-              background: 'none',
-              border: `1px solid ${CYBERPUNK.error}`,
-              color: CYBERPUNK.error,
-              padding: '5px 10px',
-              cursor: 'pointer'
+              width: '100%',
+              height: 'calc(100vh - 150px)',
+              minHeight: '400px',
+              border: 'none',
+              flexGrow: 1
             }}
-          >
-            Close
-          </button>
+            title="Arweave Uploader"
+            sandbox="allow-scripts allow-same-origin allow-modals allow-forms allow-popups"
+            onLoad={() => {
+              if (this.state.arweaveData && this.arweaveIframeRef.current) {
+                this.arweaveIframeRef.current.contentWindow.postMessage({
+                  type: 'UPDATE_DATA',
+                  data: this.state.arweaveData
+                }, 'https://5qw6rsejfhwovrumxotfe26m4vlv6ewbef7pu3hvt5usmcoqarha.arweave.net');
+              }
+            }}
+          />
         </div>
-        <iframe
-          key={`arweave-iframe-${Date.now()}`}
-          ref={this.arweaveIframeRef}
-          src="https://5qw6rsejfhwovrumxotfe26m4vlv6ewbef7pu3hvt5usmcoqarha.arweave.net/7C3oyIkp7OrGjLumUmvM5VdfEsEhfvps9Z9pJgnQBE4"
-          style={{
-            width: '100%',
-            height: 'calc(100vh - 150px)', // Dynamic height calculation
-            minHeight: '400px', // Minimum height
-            border: 'none',
-            flexGrow: 1 // Allow iframe to fill remaining space
-          }}
-          title="Arweave Uploader"
-          sandbox="allow-scripts allow-same-origin allow-modals allow-forms allow-popups"
-          onLoad={() => {
-            if (this.state.arweaveData && this.arweaveIframeRef.current) {
-              this.arweaveIframeRef.current.contentWindow.postMessage({
-                type: 'UPDATE_DATA',
-                data: this.state.arweaveData
-              }, 'https://5qw6rsejfhwovrumxotfe26m4vlv6ewbef7pu3hvt5usmcoqarha.arweave.net');
-            }
-          }}
-        />
       </div>
-    </div>
-  );
-};
+    );
+  };
 
+  renderWizard = () => {
+    if (!this.state.showWizard) return null;
 
+    const { wizardStep, wizardAction, pops, tempLink, selectedPopId } = this.state;
 
+    return (
+      <div style={wizardStyles.overlay}>
+        <div style={wizardStyles.container}>
+          <h2 style={wizardStyles.title}>
+            {wizardStep === 1 && 'Select Action'}
+            {wizardStep === 2 && wizardAction === 'create' && 'Create New Pop'}
+            {wizardStep === 2 && wizardAction === 'update' && 'Select Pop to Update'}
+            {wizardStep === 3 && 'Confirm Update'}
+          </h2>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-renderWizard = () => {
-  if (!this.state.showWizard) return null;
-
-  const { wizardStep, wizardAction, pops, tempLink, selectedPopId } = this.state;
-
-  return (
-    <div style={wizardStyles.overlay}>
-      <div style={wizardStyles.container}>
-        <h2 style={wizardStyles.title}>
-          {wizardStep === 1 && 'Select Action'}
-          {wizardStep === 2 && wizardAction === 'create' && 'Create New Pop'}
-          {wizardStep === 2 && wizardAction === 'update' && 'Select Pop to Update'}
-          {wizardStep === 3 && 'Confirm Update'}
-        </h2>
-
-        {/* Step 1: Action Selection */}
-        {wizardStep === 1 && (
-          <div>
-            <p>Data uploaded to Arweave at:</p>
-            <div style={wizardStyles.linkBox}>
-              {tempLink}
+          {wizardStep === 1 && (
+            <div>
+              <p>Data uploaded to Arweave at:</p>
+              <div style={wizardStyles.linkBox}>
+                {tempLink}
+              </div>
+              <p>What would you like to do with this data?</p>
+              <div style={wizardStyles.buttonGroup}>
+                <button
+                  onClick={() => this.setState({ wizardAction: 'create', wizardStep: 2 })}
+                  style={wizardStyles.button}
+                >
+                  Create New Pop
+                </button>
+                <button
+                  onClick={() => this.setState({ wizardAction: 'update', wizardStep: 2 })}
+                  style={wizardStyles.button}
+                >
+                  Update Existing Pop
+                </button>
+              </div>
             </div>
-            <p>What would you like to do with this data?</p>
-            <div style={wizardStyles.buttonGroup}>
-              <button
-                onClick={() => this.setState({ wizardAction: 'create', wizardStep: 2 })}
-                style={wizardStyles.button}
-              >
-                Create New Pop
-              </button>
-              <button
-                onClick={() => this.setState({ wizardAction: 'update', wizardStep: 2 })}
-                style={wizardStyles.button}
-              >
-                Update Existing Pop
-              </button>
-            </div>
-          </div>
-        )}
+          )}
 
-        {/* Step 2a: Create New Pop */}
-        {wizardStep === 2 && wizardAction === 'create' && (
-          <div>
-            <p>Creating new Pop with data from:</p>
-            <div style={wizardStyles.linkBox}>
-              {tempLink}
+          {wizardStep === 2 && wizardAction === 'create' && (
+            <div>
+              <p>Creating new Pop with data from:</p>
+              <div style={wizardStyles.linkBox}>
+                {tempLink}
+              </div>
+              <div style={wizardStyles.formGroup}>
+                <label style={wizardStyles.label}>Name:</label>
+                <input
+                  type="text"
+                  value={this.state.name}
+                  onChange={(e) => this.setState({ name: e.target.value })}
+                  style={wizardStyles.input}
+                  placeholder="Enter a name for this Pop"
+                />
+              </div>
+              <div style={wizardStyles.formGroup}>
+                <label style={wizardStyles.label}>UPC (optional):</label>
+                <input
+                  type="text"
+                  value={this.state.upc}
+                  onChange={(e) => this.setState({ upc: e.target.value })}
+                  style={wizardStyles.input}
+                  placeholder="Enter UPC if applicable"
+                />
+              </div>
+              <div style={wizardStyles.buttonGroup}>
+                <button
+                  onClick={() => this.setState({ wizardStep: 1 })}
+                  style={{ ...wizardStyles.button, ...wizardStyles.secondaryButton }}
+                >
+                  Back
+                </button>
+                <button
+                  onClick={this.completeCreatePop}
+                  style={wizardStyles.button}
+                >
+                  Create Pop
+                </button>
+              </div>
             </div>
-            <div style={wizardStyles.formGroup}>
-              <label style={wizardStyles.label}>Name:</label>
-              <input
-                type="text"
-                value={this.state.name}
-                onChange={(e) => this.setState({ name: e.target.value })}
-                style={wizardStyles.input}
-                placeholder="Enter a name for this Pop"
-              />
-            </div>
-            <div style={wizardStyles.formGroup}>
-              <label style={wizardStyles.label}>UPC (optional):</label>
-              <input
-                type="text"
-                value={this.state.upc}
-                onChange={(e) => this.setState({ upc: e.target.value })}
-                style={wizardStyles.input}
-                placeholder="Enter UPC if applicable"
-              />
-            </div>
-            <div style={wizardStyles.buttonGroup}>
-              <button
-                onClick={() => this.setState({ wizardStep: 1 })}
-                style={{ ...wizardStyles.button, ...wizardStyles.secondaryButton }}
-              >
-                Back
-              </button>
-              <button
-                onClick={this.completeCreatePop}
-                style={wizardStyles.button}
-              >
-                Create Pop
-              </button>
-            </div>
-          </div>
-        )}
+          )}
 
-        {/* Step 2b: Update Existing Pop */}
-        {wizardStep === 2 && wizardAction === 'update' && (
-          <div>
-            <p>Select which Pop to update with this data:</p>
-            <div style={wizardStyles.popList}>
-              {pops.length === 0 ? (
-                <div style={wizardStyles.emptyMessage}>
-                  No Pops available to update
-                </div>
-              ) : (
-                pops.map(pop => (
-                  <div
-                    key={pop.id}
-                    onClick={() => this.setState({ selectedPopId: pop.id })}
-                    style={{
-                      ...wizardStyles.popItem,
-                      ...(selectedPopId === pop.id ? wizardStyles.selectedPopItem : {})
-                    }}
-                  >
-                    <div><strong>ID:</strong> {pop.id}</div>
-                    <div><strong>Name:</strong> {pop.name}</div>
-                    <div><strong>Current Link:</strong> {pop.link}</div>
+          {wizardStep === 2 && wizardAction === 'update' && (
+            <div>
+              <p>Select which Pop to update with this data:</p>
+              <div style={wizardStyles.popList}>
+                {pops.length === 0 ? (
+                  <div style={wizardStyles.emptyMessage}>
+                    No Pops available to update
                   </div>
-                ))
+                ) : (
+                  pops.map(pop => (
+                    <div
+                      key={pop.id}
+                      onClick={() => this.setState({ selectedPopId: pop.id })}
+                      style={{
+                        ...wizardStyles.popItem,
+                        ...(selectedPopId === pop.id ? wizardStyles.selectedPopItem : {})
+                      }}
+                    >
+                      <div><strong>ID:</strong> {pop.id}</div>
+                      <div><strong>Name:</strong> {pop.name}</div>
+                      <div><strong>Current Link:</strong> {pop.link}</div>
+                    </div>
+                  ))
+                )}
+              </div>
+              <div style={wizardStyles.buttonGroup}>
+                <button
+                  onClick={() => this.setState({ wizardStep: 1 })}
+                  style={{ ...wizardStyles.button, ...wizardStyles.secondaryButton }}
+                >
+                  Back
+                </button>
+                <button
+                  onClick={() => this.setState({ wizardStep: 3 })}
+                  disabled={!selectedPopId}
+                  style={{
+                    ...wizardStyles.button,
+                    opacity: !selectedPopId ? 0.5 : 1
+                  }}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+
+          {wizardStep === 3 && (
+            <div>
+              <p>Updating Pop #{selectedPopId} with new data from:</p>
+              <div style={wizardStyles.linkBox}>
+                {tempLink}
+              </div>
+              <p>Are you sure you want to update this Pop?</p>
+              <div style={wizardStyles.buttonGroup}>
+                <button
+                  onClick={() => this.setState({ wizardStep: 2 })}
+                  style={{ ...wizardStyles.button, ...wizardStyles.secondaryButton }}
+                >
+                  Back
+                </button>
+                <button
+                  onClick={this.completeUpdatePop}
+                  style={wizardStyles.button}
+                >
+                  Confirm Update
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  renderDashboardPanel = () => {
+    return (
+      <div style={styles.panel}>
+        <h2 style={styles.panelTitle}>REPO DASHBOARD</h2>
+        <div style={styles.gridContainer}>
+          <div style={styles.gridItem}>
+            <h3 style={styles.subTitle}>CURRENT REPO</h3>
+            <div style={styles.infoBox}>
+              {this.state.currentPopit ? (
+                <>
+                  <p>Address: {this.state.currentPopit.address.substring(0, 12)}...</p>
+                  <p>Total Pops: {this.state.pops.length}</p>
+                  <p>Creation Price: {this.state.creationPrice} FLIP</p>
+                </>
+              ) : (
+                <p>No Popit loaded</p>
               )}
             </div>
-            <div style={wizardStyles.buttonGroup}>
-              <button
-                onClick={() => this.setState({ wizardStep: 1 })}
-                style={{ ...wizardStyles.button, ...wizardStyles.secondaryButton }}
-              >
-                Back
-              </button>
-              <button
-                onClick={() => this.setState({ wizardStep: 3 })}
-                disabled={!selectedPopId}
+          </div>
+          <div style={styles.gridItem}>
+            <h3 style={styles.subTitle}>POP MANAGEMENT</h3>
+            <div style={styles.infoBox}>
+              <input
+                type="text"
+                name="selectedPopId"
+                value={this.state.selectedPopId}
+                onChange={this.handleInputChange}
+                placeholder="Pop ID"
+                style={styles.input}
+              />
+              {this.state.validatingPop && <div>Validating...</div>}
+              {this.state.popValidationError && (
+                <div style={{ color: CYBERPUNK.error, margin: '5px 0' }}>
+                  {this.state.popValidationError}
+                </div>
+              )}
+              <input
+                type="text"
+                name="newLink"
+                value={this.state.newLink}
+                onChange={this.handleInputChange}
+                placeholder="New Link"
+                style={styles.input}
+              />
+              <button 
                 style={{
-                  ...wizardStyles.button,
-                  opacity: !selectedPopId ? 0.5 : 1
+                  ...styles.button,
+                  opacity: this.state.popValidationError ? 0.5 : 1,
+                  cursor: this.state.popValidationError ? 'not-allowed' : 'pointer'
                 }}
+                onClick={!this.state.popValidationError ? this.updatePopLink : null}
+                disabled={!!this.state.popValidationError}
               >
-                Next
+                UPDATE POP LINK
+              </button>
+              <div style={styles.divider}></div>
+              <button 
+                style={{...styles.button, backgroundColor: CYBERPUNK.error}}
+                onClick={() => this.removePop(this.state.selectedPopId)}
+              >
+                REMOVE POP
               </button>
             </div>
-          </div>
-        )}
-
-        {/* Step 3: Confirm Update */}
-        {wizardStep === 3 && (
-          <div>
-            <p>Updating Pop #{selectedPopId} with new data from:</p>
-            <div style={wizardStyles.linkBox}>
-              {tempLink}
-            </div>
-            <p>Are you sure you want to update this Pop?</p>
-            <div style={wizardStyles.buttonGroup}>
-              <button
-                onClick={() => this.setState({ wizardStep: 2 })}
-                style={{ ...wizardStyles.button, ...wizardStyles.secondaryButton }}
-              >
-                Back
-              </button>
-              <button
-                onClick={this.completeUpdatePop}
-                style={wizardStyles.button}
-              >
-                Confirm Update
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-
-
-
-
-
-
-
-
-renderDashboardPanel = () => {
-  return (
-    <div style={styles.panel}>
-      <h2 style={styles.panelTitle}>REPO DASHBOARD</h2>
-      <div style={styles.gridContainer}>
-        <div style={styles.gridItem}>
-          <h3 style={styles.subTitle}>CURRENT REPO</h3>
-          <div style={styles.infoBox}>
-            {this.state.currentPopit ? (
-              <>
-                <p>Address: {this.state.currentPopit.address.substring(0, 12)}...</p>
-                <p>Total Pops: {this.state.pops.length}</p>
-                <p>Creation Price: {this.state.creationPrice} FLIP</p>
-              </>
-            ) : (
-              <p>No Popit loaded</p>
-            )}
           </div>
         </div>
-        <div style={styles.gridItem}>
-          <h3 style={styles.subTitle}>POP MANAGEMENT</h3>
-          <div style={styles.infoBox}>
-            <input
-              type="text"
-              name="selectedPopId"
-              value={this.state.selectedPopId}
-              onChange={this.handleInputChange}
-              placeholder="Pop ID"
-              style={styles.input}
-            />
-            {this.state.validatingPop && <div>Validating...</div>}
-            {this.state.popValidationError && (
-              <div style={{ color: CYBERPUNK.error, margin: '5px 0' }}>
-                {this.state.popValidationError}
-              </div>
-            )}
-            <input
-              type="text"
-              name="newLink"
-              value={this.state.newLink}
-              onChange={this.handleInputChange}
-              placeholder="New Link"
-              style={styles.input}
-            />
-            <button 
-              style={{
-                ...styles.button,
-                opacity: this.state.popValidationError ? 0.5 : 1,
-                cursor: this.state.popValidationError ? 'not-allowed' : 'pointer'
-              }}
-              onClick={!this.state.popValidationError ? this.updatePopLink : null}
-              disabled={!!this.state.popValidationError}
-            >
-              UPDATE POP LINK
-            </button>
-            <div style={styles.divider}></div>
-            <button 
-              style={{...styles.button, backgroundColor: CYBERPUNK.error}}
-              onClick={() => this.removePop(this.state.selectedPopId)}
-            >
-              REMOVE POP
-            </button>
-          </div>
+        {this.renderOutputArea(this.state.dashboardOutput)}
+        <div style={{ textAlign: 'right', marginTop: '10px' }}>
+          <button 
+            style={{ ...styles.button, width: 'auto', padding: '5px 10px' }}
+            onClick={() => this.clearOutput('dashboard')}
+          >
+            CLEAR OUTPUT
+          </button>
         </div>
       </div>
-      {this.renderOutputArea(this.state.dashboardOutput)}
-      <div style={{ textAlign: 'right', marginTop: '10px' }}>
-        <button 
-          style={{ ...styles.button, width: 'auto', padding: '5px 10px' }}
-          onClick={() => this.clearOutput('dashboard')}
-        >
-          CLEAR OUTPUT
-        </button>
-      </div>
-    </div>
-  );
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
+    );
+  };
 
   renderPopitPanel = () => {
     return (
@@ -3554,7 +3359,8 @@ renderDashboardPanel = () => {
       protocolFormData, 
       protocolFormErrors,
       protocolSearchQuery,
-      protocolSearchResults
+      protocolSearchResults,
+      allProtocolParsers
     } = this.state;
 
     return (
@@ -3588,57 +3394,56 @@ renderDashboardPanel = () => {
               </button>
               <div style={styles.divider}></div>
               <h4 style={{ color: CYBERPUNK.secondary, marginBottom: '5px' }}>Your Protocols:</h4>
-{definedProtocols.length === 0 ? (
-  <p style={{ color: CYBERPUNK.text, opacity: 0.7 }}>No protocols defined</p>
-) : (
-  <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
-{(this.state.allProtocolParsers || []).map((parser, index) => (
-  <div 
-    key={index} 
-    style={{ 
-      display: 'flex', 
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: '5px',
-      padding: '5px',
-      backgroundColor: 'rgba(0, 0, 0, 0.3)',
-      border: `1px solid ${CYBERPUNK.primary}`,
-      cursor: 'pointer' // Add cursor pointer to indicate clickable
-    }}
-    onClick={() => this.loadProtocolDefinition(parser.protocol)} // Add click handler
-  >
-    <div style={{ flex: 1 }}>
-      <div style={{ color: CYBERPUNK.primary }}>{parser.protocol}</div>
-      <div style={{ fontSize: '12px', opacity: 0.8 }}>
-        {parser.parserUrl}
-      </div>
-      <div style={{ fontSize: '10px', opacity: 0.6 }}>
-        Owner: {parser.owner.substring(0, 8)}...@{new Date(parser.timestamp * 1000).toLocaleDateString()}
-      </div>
-    </div>
-    {parser.owner.toLowerCase() === this.state.account.toLowerCase() && (
-      <button
-        style={{
-          background: 'transparent',
-          border: `1px solid ${CYBERPUNK.error}`,
-          color: CYBERPUNK.error,
-          padding: '2px 5px',
-          cursor: 'pointer',
-          fontSize: '12px'
-        }}
-        onClick={(e) => {
-          e.stopPropagation(); // Prevent triggering the parent div's click
-          this.removeProtocolParser(parser.protocol);
-        }}
-      >
-        X
-      </button>
-    )}
-  </div>
-))}
-  </div>
-)}
-
+              {definedProtocols.length === 0 ? (
+                <p style={{ color: CYBERPUNK.text, opacity: 0.7 }}>No protocols defined</p>
+              ) : (
+                <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
+                  {allProtocolParsers.map((parser, index) => (
+                    <div 
+                      key={index} 
+                      style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '5px',
+                        padding: '5px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                        border: `1px solid ${CYBERPUNK.primary}`,
+                        cursor: 'pointer'
+                      }}
+                      onClick={() => this.loadProtocolDefinition(parser.protocol)}
+                    >
+                      <div style={{ flex: 1 }}>
+                        <div style={{ color: CYBERPUNK.primary }}>{parser.protocol}</div>
+                        <div style={{ fontSize: '12px', opacity: 0.8 }}>
+                          {parser.parserUrl}
+                        </div>
+                        <div style={{ fontSize: '10px', opacity: 0.6 }}>
+                          Owner: {parser.owner.substring(0, 8)}...@{new Date(parser.timestamp * 1000).toLocaleDateString()}
+                        </div>
+                      </div>
+                      {parser.owner.toLowerCase() === this.state.account.toLowerCase() && (
+                        <button
+                          style={{
+                            background: 'transparent',
+                            border: `1px solid ${CYBERPUNK.error}`,
+                            color: CYBERPUNK.error,
+                            padding: '2px 5px',
+                            cursor: 'pointer',
+                            fontSize: '12px'
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            this.removeProtocolParser(parser.protocol);
+                          }}
+                        >
+                          X
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -4304,10 +4109,17 @@ const styles = {
     backgroundColor: CYBERPUNK.primary,
     margin: '10px 0',
     opacity: 0.3
+  },
+  formGroup: {
+    marginBottom: '15px'
+  },
+  label: {
+    display: 'block',
+    marginBottom: '5px',
+    color: CYBERPUNK.secondary
   }
 };
 
-// Add these styles to your styles object
 const wizardStyles = {
   overlay: {
     position: 'fixed',
