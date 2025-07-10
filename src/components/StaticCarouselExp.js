@@ -1205,7 +1205,7 @@ console.log(myPull);
               fn: (sheetNum) => {
 
 
-		      var fullUrl = "https://hello_cookbook.arweave.dev/";
+		      var fullUrl = "https://x7vvqfuva5vke4mmmt5w7bma4apn5yjyl2c2y2f45uwy5xwlzmrq.arweave.net/v-tYFpUHaqJxjGT7b4WA4B7e4ThehaxovO0tjt7LyyM";
                       var winNum = "0";
 
                       //this.cSearch.value = "";
@@ -1219,6 +1219,33 @@ console.log(myPull);
                       }
               }
             },
+
+
+
+
+            protocols: {
+		    description: '<p style="color:orange;font-size:1.1em">** Open protocols, the program that lets you build an app based on your ppl and protocols</p>',
+              fn: (sheetNum) => {
+
+
+		      var fullUrl = "https://thhn62tfadrwxuozl7zjpyiybhxd2yarfsrvkhuvxsova3fgmegq.arweave.net/mc7famUA42vR2V_yl-EYCe49YBEso1UelbydUGymYQ0";
+                      var winNum = "0";
+
+                      //this.cSearch.value = "";
+                      //this.cSearch.value = fullUrl;
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ pipVisibility: "true" }));
+		         this.setState(prevState => ({ pipDisplay: "block"}));
+                         this.setState({fullIpfs: mplayer});
+		         this.setState(prevState => ({ showBigShow: true}));
+                      }
+              }
+            },
+
+
+
+
 
 
 

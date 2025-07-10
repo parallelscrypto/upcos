@@ -2754,14 +2754,28 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`);
     }
   };
 
-  handleProtocolFormChange = (field, value) => {
+handleProtocolFormChange = (field, value) => {
+  // Check if this is a nested field (contains dots)
+  if (field.includes('.')) {
+    const [parent, child] = field.split('.');
+    this.setState(prevState => ({
+      protocolFormData: {
+        ...prevState.protocolFormData,
+        [parent]: {
+          ...prevState.protocolFormData[parent],
+          [child]: value
+        }
+      }
+    }));
+  } else {
     this.setState(prevState => ({
       protocolFormData: {
         ...prevState.protocolFormData,
         [field]: value
       }
     }));
-  };
+  }
+};
 
   handleArrayFieldChange = (field, index, value) => {
     this.setState(prevState => {
@@ -2798,17 +2812,33 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`);
     });
   };
 
-  validateProtocolForm = () => {
-    const { selectedProtocol, protocolFormData } = this.state;
-    if (!selectedProtocol || !selectedProtocol.validation_rules) return true;
-    
-    const errors = {};
-    let isValid = true;
-    
-    Object.entries(selectedProtocol.validation_rules).forEach(([field, rules]) => {
-      const value = protocolFormData[field];
+
+
+
+
+
+
+
+
+
+
+
+
+
+validateProtocolForm = () => {
+  const { selectedProtocol, protocolFormData } = this.state;
+  if (!selectedProtocol || !selectedProtocol.validation_rules) return true;
+  
+  const errors = {};
+  let isValid = true;
+  
+  Object.entries(selectedProtocol.validation_rules).forEach(([field, rules]) => {
+    // Handle nested fields
+    if (field.includes('.')) {
+      const [parent, child] = field.split('.');
+      const value = protocolFormData[parent] ? protocolFormData[parent][child] : undefined;
       
-      if (rules.pattern && !new RegExp(rules.pattern).test(value)) {
+      if (rules.pattern && value && !new RegExp(rules.pattern).test(value)) {
         errors[field] = rules.error || `Invalid format for ${field}`;
         isValid = false;
       }
@@ -2822,11 +2852,53 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`);
         errors[field] = rules.error || `${field} must be at most ${rules.max}`;
         isValid = false;
       }
-    });
-    
-    this.setState({ protocolFormErrors: errors });
-    return isValid;
-  };
+    } else {
+      // Handle flat fields
+      const value = protocolFormData[field];
+      
+      if (rules.pattern && value && !new RegExp(rules.pattern).test(value)) {
+        errors[field] = rules.error || `Invalid format for ${field}`;
+        isValid = false;
+      }
+      
+      if (rules.min !== undefined && value < rules.min) {
+        errors[field] = rules.error || `${field} must be at least ${rules.min}`;
+        isValid = false;
+      }
+      
+      if (rules.max !== undefined && value > rules.max) {
+        errors[field] = rules.error || `${field} must be at most ${rules.max}`;
+        isValid = false;
+      }
+    }
+  });
+  
+  this.setState({ protocolFormErrors: errors });
+  return isValid;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   submitProtocolForm = () => {
     if (!this.validateProtocolForm()) {
@@ -3350,263 +3422,323 @@ Gas Used: ${receipt.gasUsed.toString()}[[/success]]`);
     );
   };
 
-  renderProtocolPanel = () => {
-    const { 
-      protocolName, 
-      parserUrl, 
-      definedProtocols, 
-      selectedProtocol, 
-      protocolFormData, 
-      protocolFormErrors,
-      protocolSearchQuery,
-      protocolSearchResults,
-      allProtocolParsers
-    } = this.state;
 
+
+
+
+
+
+
+
+
+
+
+renderProtocolPanel = () => {
+  const { 
+    protocolName, 
+    parserUrl, 
+    definedProtocols, 
+    selectedProtocol, 
+    protocolFormData, 
+    protocolFormErrors,
+    protocolSearchQuery,
+    protocolSearchResults,
+    allProtocolParsers
+  } = this.state;
+
+  // Helper function to get nested value from an object path
+  const getNestedValue = (obj, path) => {
+    return path.split('.').reduce((o, p) => (o || {})[p], obj);
+  };
+
+  // Helper function to set nested value in an object
+  const setNestedValue = (obj, path, value) => {
+    const keys = path.split('.');
+    let current = obj;
+    
+    for (let i = 0; i < keys.length - 1; i++) {
+      const key = keys[i];
+      if (!current[key]) {
+        current[key] = {};
+      }
+      current = current[key];
+    }
+    
+    current[keys[keys.length - 1]] = value;
+    return obj;
+  };
+
+  // Helper function to render form fields
+  const renderField = (fieldName, fieldType, value, error) => {
     return (
-      <div style={styles.panel}>
-        <h2 style={styles.panelTitle}>PROTOCOL MANAGEMENT</h2>
-        <div style={styles.gridContainer}>
-          <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>DEFINE PROTOCOL</h3>
-            <div style={styles.infoBox}>
-              <input
-                type="text"
-                name="protocolName"
-                value={protocolName}
-                onChange={(e) => this.setState({ protocolName: e.target.value })}
-                placeholder="Protocol Name (e.g., vin://)"
-                style={styles.input}
-              />
-              <input
-                type="text"
-                name="parserUrl"
-                value={parserUrl}
-                onChange={(e) => this.setState({ parserUrl: e.target.value })}
-                placeholder="Parser URL (JSON)"
-                style={styles.input}
-              />
-              <button 
-                style={styles.button}
-                onClick={this.addProtocolParser}
-              >
-                ADD PROTOCOL
-              </button>
-              <div style={styles.divider}></div>
-              <h4 style={{ color: CYBERPUNK.secondary, marginBottom: '5px' }}>Your Protocols:</h4>
-              {definedProtocols.length === 0 ? (
-                <p style={{ color: CYBERPUNK.text, opacity: 0.7 }}>No protocols defined</p>
-              ) : (
-                <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
-                  {allProtocolParsers.map((parser, index) => (
-                    <div 
-                      key={index} 
-                      style={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '5px',
-                        padding: '5px',
-                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                        border: `1px solid ${CYBERPUNK.primary}`,
-                        cursor: 'pointer'
-                      }}
-                      onClick={() => this.loadProtocolDefinition(parser.protocol)}
-                    >
-                      <div style={{ flex: 1 }}>
-                        <div style={{ color: CYBERPUNK.primary }}>{parser.protocol}</div>
-                        <div style={{ fontSize: '12px', opacity: 0.8 }}>
-                          {parser.parserUrl}
-                        </div>
-                        <div style={{ fontSize: '10px', opacity: 0.6 }}>
-                          Owner: {parser.owner.substring(0, 8)}...@{new Date(parser.timestamp * 1000).toLocaleDateString()}
-                        </div>
+      <div key={fieldName} style={{ marginBottom: '10px' }}>
+        <label style={{ 
+          display: 'block', 
+          color: CYBERPUNK.primary,
+          marginBottom: '3px'
+        }}>
+          {fieldName} ({fieldType})
+        </label>
+        
+        {Array.isArray(fieldType) ? (
+          <select
+            value={value || ''}
+            onChange={(e) => {
+              const newData = { ...protocolFormData };
+              setNestedValue(newData, fieldName, e.target.value);
+              this.setState({ protocolFormData: newData });
+            }}
+            style={{
+              ...styles.input,
+              backgroundColor: error ? 'rgba(255, 61, 61, 0.2)' : 'rgba(0, 0, 0, 0.5)'
+            }}
+          >
+            <option value="">Select {fieldName}</option>
+            {fieldType.map((option, i) => (
+              <option key={i} value={option}>{option}</option>
+            ))}
+          </select>
+        ) : (
+          <input
+            type={fieldType === 'number' ? 'number' : 'text'}
+            value={value || ''}
+            onChange={(e) => {
+              const newData = { ...protocolFormData };
+              const newValue = fieldType === 'number' ? 
+                parseFloat(e.target.value) || 0 : 
+                e.target.value;
+              setNestedValue(newData, fieldName, newValue);
+              this.setState({ protocolFormData: newData });
+            }}
+            style={{
+              ...styles.input,
+              backgroundColor: error ? 'rgba(255, 61, 61, 0.2)' : 'rgba(0, 0, 0, 0.5)'
+            }}
+          />
+        )}
+        
+        {error && (
+          <div style={{ 
+            color: CYBERPUNK.error,
+            fontSize: '12px',
+            marginTop: '3px'
+          }}>
+            {error}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Recursive function to render nested object fields
+  const renderNestedFields = (parentPath, fields, data, errors) => {
+    return Object.entries(fields).map(([field, type]) => {
+      const fieldPath = parentPath ? `${parentPath}.${field}` : field;
+      const value = getNestedValue(data, fieldPath);
+      const error = errors[fieldPath];
+
+      if (typeof type === 'object' && !Array.isArray(type)) {
+        // Handle nested objects recursively
+        return (
+          <div key={fieldPath} style={{ 
+            marginBottom: '15px',
+            padding: '10px',
+            border: `1px solid ${CYBERPUNK.secondary}`,
+            borderRadius: '4px'
+          }}>
+            <h4 style={{ color: CYBERPUNK.secondary, marginTop: 0 }}>{field}</h4>
+            {renderNestedFields(fieldPath, type, data, errors)}
+          </div>
+        );
+      }
+
+      return renderField(fieldPath, type, value, error);
+    });
+  };
+
+  return (
+    <div style={styles.panel}>
+      <h2 style={styles.panelTitle}>PROTOCOL MANAGEMENT</h2>
+      <div style={styles.gridContainer}>
+        <div style={styles.gridItem}>
+          <h3 style={styles.subTitle}>DEFINE PROTOCOL</h3>
+          <div style={styles.infoBox}>
+            <input
+              type="text"
+              name="protocolName"
+              value={protocolName}
+              onChange={(e) => this.setState({ protocolName: e.target.value })}
+              placeholder="Protocol Name (e.g., vin://)"
+              style={styles.input}
+            />
+            <input
+              type="text"
+              name="parserUrl"
+              value={parserUrl}
+              onChange={(e) => this.setState({ parserUrl: e.target.value })}
+              placeholder="Parser URL (JSON)"
+              style={styles.input}
+            />
+            <button 
+              style={styles.button}
+              onClick={this.addProtocolParser}
+            >
+              ADD PROTOCOL
+            </button>
+            <div style={styles.divider}></div>
+            <h4 style={{ color: CYBERPUNK.secondary, marginBottom: '5px' }}>Your Protocols:</h4>
+            {definedProtocols.length === 0 ? (
+              <p style={{ color: CYBERPUNK.text, opacity: 0.7 }}>No protocols defined</p>
+            ) : (
+              <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
+                {allProtocolParsers.map((parser, index) => (
+                  <div 
+                    key={index} 
+                    style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '5px',
+                      padding: '5px',
+                      backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                      border: `1px solid ${CYBERPUNK.primary}`,
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => this.loadProtocolDefinition(parser.protocol)}
+                  >
+                    <div style={{ flex: 1 }}>
+                      <div style={{ color: CYBERPUNK.primary }}>{parser.protocol}</div>
+                      <div style={{ fontSize: '12px', opacity: 0.8 }}>
+                        {parser.parserUrl}
                       </div>
-                      {parser.owner.toLowerCase() === this.state.account.toLowerCase() && (
-                        <button
-                          style={{
-                            background: 'transparent',
-                            border: `1px solid ${CYBERPUNK.error}`,
-                            color: CYBERPUNK.error,
-                            padding: '2px 5px',
-                            cursor: 'pointer',
-                            fontSize: '12px'
-                          }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            this.removeProtocolParser(parser.protocol);
-                          }}
-                        >
-                          X
-                        </button>
-                      )}
+                      <div style={{ fontSize: '10px', opacity: 0.6 }}>
+                        Owner: {parser.owner.substring(0, 8)}...@{new Date(parser.timestamp * 1000).toLocaleDateString()}
+                      </div>
+                    </div>
+                    {parser.owner.toLowerCase() === this.state.account.toLowerCase() && (
+                      <button
+                        style={{
+                          background: 'transparent',
+                          border: `1px solid ${CYBERPUNK.error}`,
+                          color: CYBERPUNK.error,
+                          padding: '2px 5px',
+                          cursor: 'pointer',
+                          fontSize: '12px'
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          this.removeProtocolParser(parser.protocol);
+                        }}
+                      >
+                        X
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div style={styles.gridItem}>
+          <h3 style={styles.subTitle}>DATA ENTRY</h3>
+          <div style={styles.infoBox}>
+            {selectedProtocol ? (
+              <div>
+                <h4 style={{ color: CYBERPUNK.secondary }}>{selectedProtocol.protocol}</h4>
+                <div style={{ maxHeight: '300px', overflowY: 'auto', padding: '5px' }}>
+                  {renderNestedFields('', selectedProtocol.data_structure, protocolFormData, protocolFormErrors)}
+                </div>
+                <button 
+                  style={{ ...styles.button, marginTop: '10px' }}
+                  onClick={this.submitProtocolForm}
+                >
+                  SUBMIT DATA
+                </button>
+              </div>
+            ) : (
+              <p style={{ color: CYBERPUNK.text, opacity: 0.7 }}>
+                Select a protocol to enter data
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div style={styles.gridItem}>
+          <h3 style={styles.subTitle}>PROTOCOL SEARCH</h3>
+          <div style={styles.infoBox}>
+            <input
+              type="text"
+              value={protocolSearchQuery}
+              onChange={(e) => this.setState({ protocolSearchQuery: e.target.value })}
+              placeholder="Enter protocol to search (e.g., vin://)"
+              style={styles.input}
+            />
+            <button 
+              style={styles.button}
+              onClick={this.searchPopsByProtocol}
+            >
+              SEARCH POPS
+            </button>
+            <div style={{ marginTop: '10px', maxHeight: '200px', overflowY: 'auto' }}>
+              {protocolSearchResults.length > 0 && (
+                <div>
+                  <h4 style={{ color: CYBERPUNK.secondary }}>Results:</h4>
+                  {protocolSearchResults.map((pop, index) => (
+                    <div key={index} style={{ 
+                      marginBottom: '10px',
+                      padding: '5px',
+                      border: `1px solid ${CYBERPUNK.primary}`,
+                      backgroundColor: 'rgba(0, 0, 0, 0.3)'
+                    }}>
+                      <div><strong>ID:</strong> {pop.id.toString()}</div>
+                      <div><strong>Name:</strong> {pop.human_readable_name}</div>
+                      <div><strong>Link:</strong> {pop.link}</div>
+                      <div><strong>Created:</strong> {new Date(pop.timestamp * 1000).toLocaleString()}</div>
                     </div>
                   ))}
                 </div>
               )}
             </div>
           </div>
-
-          <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>DATA ENTRY</h3>
-            <div style={styles.infoBox}>
-              {selectedProtocol ? (
-                <div>
-                  <h4 style={{ color: CYBERPUNK.secondary }}>{selectedProtocol.protocol}</h4>
-                  <div style={{ maxHeight: '300px', overflowY: 'auto', padding: '5px' }}>
-                    {Object.entries(selectedProtocol.data_structure).map(([field, type]) => (
-                      <div key={field} style={{ marginBottom: '10px' }}>
-                        <label style={{ 
-                          display: 'block', 
-                          color: CYBERPUNK.primary,
-                          marginBottom: '3px'
-                        }}>
-                          {field} ({type})
-                        </label>
-                        
-                        {Array.isArray(protocolFormData[field]) ? (
-                          <div>
-                            {protocolFormData[field].map((item, index) => (
-                              <div key={index} style={{ 
-                                display: 'flex', 
-                                marginBottom: '5px',
-                                alignItems: 'center'
-                              }}>
-                                <input
-                                  type={typeof item === 'number' ? 'number' : 'text'}
-                                  value={item}
-                                  onChange={(e) => this.handleArrayFieldChange(field, index, e.target.value)}
-                                  style={{
-                                    ...styles.input,
-                                    flex: 1,
-                                    marginBottom: 0,
-                                    backgroundColor: protocolFormErrors[field] ? 'rgba(255, 61, 61, 0.2)' : 'rgba(0, 0, 0, 0.5)'
-                                  }}
-                                />
-                                <button
-                                  style={{
-                                    background: CYBERPUNK.error,
-                                    border: 'none',
-                                    color: 'white',
-                                    padding: '5px',
-                                    marginLeft: '5px',
-                                    cursor: 'pointer'
-                                  }}
-                                  onClick={() => this.handleRemoveArrayItem(field, index)}
-                                >
-                                  -
-                                </button>
-                              </div>
-                            ))}
-                            <button
-                              style={{
-                                background: CYBERPUNK.success,
-                                border: 'none',
-                                color: 'white',
-                                padding: '5px 10px',
-                                cursor: 'pointer',
-                                fontSize: '12px'
-                              }}
-                              onClick={() => this.handleAddArrayItem(field)}
-                            >
-                              Add Item
-                            </button>
-                          </div>
-                        ) : (
-                          <input
-                            type={typeof protocolFormData[field] === 'number' ? 'number' : 'text'}
-                            value={protocolFormData[field] || ''}
-                            onChange={(e) => this.handleProtocolFormChange(
-                              field, 
-                              typeof protocolFormData[field] === 'number' ? 
-                                parseFloat(e.target.value) || 0 : 
-                                e.target.value
-                            )}
-                            style={{
-                              ...styles.input,
-                              backgroundColor: protocolFormErrors[field] ? 'rgba(255, 61, 61, 0.2)' : 'rgba(0, 0, 0, 0.5)'
-                            }}
-                          />
-                        )}
-                        
-                        {protocolFormErrors[field] && (
-                          <div style={{ 
-                            color: CYBERPUNK.error,
-                            fontSize: '12px',
-                            marginTop: '3px'
-                          }}>
-                            {protocolFormErrors[field]}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  <button 
-                    style={{ ...styles.button, marginTop: '10px' }}
-                    onClick={this.submitProtocolForm}
-                  >
-                    SUBMIT DATA
-                  </button>
-                </div>
-              ) : (
-                <p style={{ color: CYBERPUNK.text, opacity: 0.7 }}>
-                  Select a protocol to enter data
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div style={styles.gridItem}>
-            <h3 style={styles.subTitle}>PROTOCOL SEARCH</h3>
-            <div style={styles.infoBox}>
-              <input
-                type="text"
-                value={protocolSearchQuery}
-                onChange={(e) => this.setState({ protocolSearchQuery: e.target.value })}
-                placeholder="Enter protocol to search (e.g., vin://)"
-                style={styles.input}
-              />
-              <button 
-                style={styles.button}
-                onClick={this.searchPopsByProtocol}
-              >
-                SEARCH POPS
-              </button>
-              <div style={{ marginTop: '10px', maxHeight: '200px', overflowY: 'auto' }}>
-                {protocolSearchResults.length > 0 && (
-                  <div>
-                    <h4 style={{ color: CYBERPUNK.secondary }}>Results:</h4>
-                    {protocolSearchResults.map((pop, index) => (
-                      <div key={index} style={{ 
-                        marginBottom: '10px',
-                        padding: '5px',
-                        border: `1px solid ${CYBERPUNK.primary}`,
-                        backgroundColor: 'rgba(0, 0, 0, 0.3)'
-                      }}>
-                        <div><strong>ID:</strong> {pop.id.toString()}</div>
-                        <div><strong>Name:</strong> {pop.human_readable_name}</div>
-                        <div><strong>Link:</strong> {pop.link}</div>
-                        <div><strong>Created:</strong> {new Date(pop.timestamp * 1000).toLocaleString()}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-        {this.renderOutputArea(this.state.protocolOutput)}
-        <div style={{ textAlign: 'right', marginTop: '10px' }}>
-          <button 
-            style={{ ...styles.button, width: 'auto', padding: '5px 10px' }}
-            onClick={() => this.clearOutput('protocol')}
-          >
-            CLEAR OUTPUT
-          </button>
         </div>
       </div>
-    );
-  };
+      {this.renderOutputArea(this.state.protocolOutput)}
+      <div style={{ textAlign: 'right', marginTop: '10px' }}>
+        <button 
+          style={{ ...styles.button, width: 'auto', padding: '5px 10px' }}
+          onClick={() => this.clearOutput('protocol')}
+        >
+          CLEAR OUTPUT
+        </button>
+      </div>
+    </div>
+  );
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   renderOutputArea = (output) => {
     return (

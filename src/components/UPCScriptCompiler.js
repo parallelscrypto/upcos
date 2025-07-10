@@ -18,7 +18,10 @@ class UPCScriptCompiler extends Component {
       compiledData: null,
       isConnected: false,
       currentAccount: null,
-      isMobileMenuOpen: false
+      isMobileMenuOpen: false,
+      isIdeOpen: false,
+      activeTutorial: null,
+      isIdeClosing: false
     };
 
     this.defaultButtonStyle = {
@@ -272,6 +275,7 @@ class UPCScriptCompiler extends Component {
     ];
     
     this.previewFrameRef = React.createRef();
+    this.ideTextareaRef = React.createRef();
   }
 
   componentDidMount() {
@@ -309,6 +313,16 @@ class UPCScriptCompiler extends Component {
     this.setState(prevState => ({
       isMobileMenuOpen: !prevState.isMobileMenuOpen
     }));
+  };
+
+  toggleIde = () => {
+    this.setState(prevState => ({
+      isIdeOpen: !prevState.isIdeOpen
+    }), () => {
+      if (this.state.isIdeOpen && this.ideTextareaRef.current) {
+        this.ideTextareaRef.current.focus();
+      }
+    });
   };
 
   handleFrameMessage = (event) => {
@@ -370,6 +384,10 @@ class UPCScriptCompiler extends Component {
   };
 
   handleInputChange = (e) => {
+    this.setState({ inputText: e.target.value });
+  };
+
+  handleIdeInputChange = (e) => {
     this.setState({ inputText: e.target.value });
   };
 
@@ -657,7 +675,15 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
     return value;
   };
 
-  compileToJson = async () => {
+
+
+
+
+
+
+
+
+compileToJson = async () => {
     this.setState({ isCompiling: true });
     
     try {
@@ -761,13 +787,72 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
       });
       
       this.showStatus('COMPILATION SUCCESSFUL');
-      this.switchTab('upload');
+      
+      // Start IDE close animation if IDE is open
+      if (this.state.isIdeOpen) {
+        this.setState({ isIdeClosing: true });
+        setTimeout(() => {
+          this.setState({ 
+            isIdeOpen: false,
+            isIdeClosing: false 
+          });
+          this.switchTab('upload');
+        }, 500); // Match this with the CSS transition duration
+      } else {
+        this.switchTab('upload');
+      }
     } catch (error) {
       console.error(error);
-      this.setState({ isCompiling: false });
+      this.setState({ 
+        isCompiling: false,
+        isIdeClosing: false 
+      });
       this.showStatus('COMPILATION ERROR', true);
     }
   };
+
+
+
+
+
+
+
+
+
+
+  openTutorial = (tutorial) => {
+    this.setState({ activeTutorial: tutorial });
+  };
+
+  closeTutorial = () => {
+    this.setState({ activeTutorial: null });
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   render() {
     const { 
@@ -781,7 +866,10 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
       currentTime,
       currentDate,
       isMobile,
-      isMobileMenuOpen
+      isMobileMenuOpen,
+      isIdeOpen,
+      activeTutorial,
+      isIdeClosing
     } = this.state;
 
     return (
@@ -1165,6 +1253,297 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             }
           }
 
+          /* IDE Modal Styles */
+          .ide-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--dark-bg);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid var(--neon-purple);
+            box-shadow: 0 0 30px var(--neon-purple);
+            transition: opacity 0.5s ease;
+          }
+
+          .ide-modal.fade-out {
+            opacity: 0;
+          }
+
+          /* IDE compiling overlay */
+          .ide-compiling-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(5, 1, 10, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 3100;
+            color: var(--terminal-green);
+            font-family: 'Courier New', monospace;
+            text-align: center;
+          }
+
+          .ide-compiling-text {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 10px var(--terminal-green);
+            animation: pulse 1.5s infinite;
+            padding: 0 20px;
+          }
+
+          .ide-compiling-subtext {
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            color: var(--neon-blue);
+            padding: 0 20px;
+          }
+
+          .ide-compiling-animation {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+          }
+
+          .ide-compiling-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: var(--terminal-green);
+            animation: bounce 1.5s infinite ease-in-out;
+            box-shadow: 0 0 10px var(--terminal-green);
+          }
+
+          .ide-compiling-dot:nth-child(1) {
+            animation-delay: 0s;
+          }
+
+          .ide-compiling-dot:nth-child(2) {
+            animation-delay: 0.2s;
+          }
+
+          .ide-compiling-dot:nth-child(3) {
+            animation-delay: 0.4s;
+          }
+
+          .ide-header {
+            padding: 10px;
+            background: rgba(211, 0, 197, 0.2);
+            border-bottom: 1px solid var(--neon-purple);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+
+          .ide-title {
+            color: var(--neon-purple);
+            text-shadow: 0 0 10px var(--neon-purple);
+            font-size: 1.2rem;
+            font-weight: bold;
+          }
+
+          .ide-close {
+            background: none;
+            border: none;
+            color: var(--neon-purple);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0 10px;
+          }
+
+          .ide-close:hover {
+            color: white;
+            text-shadow: 0 0 10px white;
+          }
+
+          .ide-toolbar {
+            display: flex;
+            background: rgba(5, 1, 10, 0.8);
+            border-bottom: 1px solid var(--neon-blue);
+            padding: 5px;
+            flex-wrap: wrap;
+          }
+
+          .ide-menu {
+            position: relative;
+            margin-right: 10px;
+          }
+
+          .ide-menu-btn {
+            background: none;
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 5px 10px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: all 0.3s;
+          }
+
+          .ide-menu-btn:hover {
+            background: rgba(5, 217, 232, 0.2);
+          }
+
+          .ide-menu-content {
+            display: none;
+            position: absolute;
+            background: var(--darker-bg);
+            min-width: 200px;
+            border: 1px solid var(--neon-blue);
+            z-index: 1;
+            box-shadow: 0 0 15px var(--neon-blue);
+          }
+
+          .ide-menu:hover .ide-menu-content {
+            display: block;
+          }
+
+          .ide-menu-item {
+            color: var(--neon-blue);
+            padding: 8px 12px;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+          }
+
+          .ide-menu-item:hover {
+            background: rgba(5, 217, 232, 0.2);
+          }
+
+          .ide-toolbar-btn {
+            background: none;
+            border: 1px solid var(--neon-orange);
+            color: var(--neon-orange);
+            padding: 5px 10px;
+            margin-right: 5px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: all 0.3s;
+          }
+
+          .ide-toolbar-btn:hover {
+            background: rgba(255, 94, 0, 0.2);
+          }
+
+          .ide-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+          }
+
+          .ide-line-numbers {
+            background: rgba(5, 1, 10, 0.8);
+            color: var(--neon-blue);
+            padding: 10px 5px;
+            font-family: 'Courier New', monospace;
+            overflow-y: auto;
+            border-right: 1px solid var(--neon-blue);
+            text-align: right;
+            user-select: none;
+          }
+
+          .ide-textarea-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+          }
+
+          .ide-textarea {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            color: var(--terminal-green);
+            border: none;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+            white-space: pre;
+            overflow-wrap: normal;
+            overflow-x: auto;
+          }
+
+          .ide-footer {
+            padding: 5px 10px;
+            background: rgba(5, 1, 10, 0.8);
+            border-top: 1px solid var(--neon-orange);
+            color: var(--neon-orange);
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+          }
+
+          .tutorial-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--darker-bg);
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 30px var(--neon-blue);
+            z-index: 4000;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow: auto;
+            padding: 20px;
+          }
+
+          .tutorial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--neon-blue);
+            padding-bottom: 10px;
+          }
+
+          .tutorial-title {
+            color: var(--neon-blue);
+            font-size: 1.2rem;
+            font-weight: bold;
+          }
+
+          .tutorial-close {
+            background: none;
+            border: none;
+            color: var(--neon-blue);
+            font-size: 1.5rem;
+            cursor: pointer;
+          }
+
+          .tutorial-content {
+            color: var(--terminal-green);
+            line-height: 1.6;
+          }
+
+          .tutorial-content a {
+            color: var(--neon-orange);
+            text-decoration: none;
+          }
+
+          .tutorial-content a:hover {
+            text-decoration: underline;
+          }
+
+          .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 3999;
+          }
+
           @media (min-width: 768px) {
             h1 {
               font-size: 2rem;
@@ -1209,6 +1588,40 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             .tab {
               border-right: none;
               border-bottom: 1px solid var(--neon-orange);
+            }
+
+            .ide-modal {
+              padding-top: 40px;
+            }
+
+            /* Updated toolbar layout for mobile */
+            .ide-toolbar {
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              grid-template-rows: repeat(2, auto);
+              gap: 5px;
+              padding: 5px;
+            }
+
+            .ide-menu {
+              margin-bottom: 0;
+              margin-right: 0;
+              grid-column: span 1;
+            }
+
+            .ide-menu-btn, .ide-toolbar-btn {
+              width: 100%;
+              margin-right: 0;
+              margin-bottom: 0;
+              padding: 5px;
+              font-size: 0.7rem;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+
+            .ide-menu-content {
+              min-width: 150px;
             }
           }
         `}</style>
@@ -1267,6 +1680,7 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
                   <button id="compileBtn" onClick={this.compileToJson}>COMPILE</button>
                   <button id="clearBtn" onClick={this.clearInputs}>CLEAR</button>
                   <button id="exampleBtn" onClick={this.loadExample}>EXAMPLE</button>
+                  <button id="ideBtn" onClick={this.toggleIde}>OPEN IDE</button>
                 </div>
               </div>
               <div className="output-section">
@@ -1311,7 +1725,7 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
           </div>
         </div>
 
-        {isCompiling && (
+        {isCompiling && !isIdeOpen && (
           <div className="compiling-overlay">
             <div className="compiling-text">COMPILING CONFIGURATION</div>
             <div className="compiling-animation">
@@ -1321,6 +1735,157 @@ config.show=>>>https://youtu.be/Op60PzpsVQQ?si=oeEXHSYKm97tDk1B>https://youtu.be
             </div>
             <div className="compiling-subtext">You will be automatically switched to the upload tab when complete</div>
           </div>
+        )}
+
+        {isIdeOpen && (
+          <div className={`ide-modal ${isIdeClosing ? 'fade-out' : ''}`}>
+            {isCompiling && (
+              <div className="ide-compiling-overlay">
+                <div className="ide-compiling-text">COMPILING CONFIGURATION</div>
+                <div className="ide-compiling-animation">
+                  <div className="ide-compiling-dot"></div>
+                  <div className="ide-compiling-dot"></div>
+                  <div className="ide-compiling-dot"></div>
+                </div>
+                <div className="ide-compiling-subtext">The IDE will close automatically when complete</div>
+              </div>
+            )}
+            
+            <div className="ide-header">
+              <div className="ide-title">UPCSCRIPT IDE</div>
+              <button className="ide-close" onClick={this.toggleIde}>×</button>
+            </div>
+            
+            <div className="ide-toolbar">
+              <div className="ide-menu">
+                <button className="ide-menu-btn">File</button>
+                <div className="ide-menu-content">
+                  <div className="ide-menu-item" onClick={this.compileToJson}>Compile</div>
+                  <div className="ide-menu-item" onClick={this.clearInputs}>Clear</div>
+                  <div className="ide-menu-item" onClick={this.downloadFile}>Download</div>
+                  <div className="ide-menu-item" onClick={this.toggleIde}>Close</div>
+                </div>
+              </div>
+              
+              <div className="ide-menu">
+                <button className="ide-menu-btn">Edit</button>
+                <div className="ide-menu-content">
+                  <div className="ide-menu-item" onClick={() => document.execCommand('cut')}>Cut</div>
+                  <div className="ide-menu-item" onClick={() => document.execCommand('copy')}>Copy</div>
+                  <div className="ide-menu-item" onClick={() => document.execCommand('paste')}>Paste</div>
+                  <div className="ide-menu-item" onClick={() => document.execCommand('selectAll')}>Select All</div>
+                </div>
+              </div>
+              
+              <div className="ide-menu">
+                <button className="ide-menu-btn">Tutorial</button>
+                <div className="ide-menu-content">
+                  <div className="ide-menu-item" onClick={() => this.openTutorial('basic')}>Basic Syntax</div>
+                  <div className="ide-menu-item" onClick={() => this.openTutorial('dynamic')}>Dynamic Values</div>
+                  <div className="ide-menu-item" onClick={() => this.openTutorial('examples')}>Examples</div>
+                </div>
+              </div>
+              
+              <button className="ide-toolbar-btn" onClick={this.compileToJson}>COMPILE</button>
+              <button className="ide-toolbar-btn" onClick={this.clearInputs}>CLEAR</button>
+              <button className="ide-toolbar-btn" onClick={this.loadExample}>EXAMPLE</button>
+            </div>
+            
+            <div className="ide-content">
+              <div className="ide-line-numbers">
+                {inputText.split('\n').map((_, i) => (
+                  <div key={i}>{i + 1}</div>
+                ))}
+              </div>
+              <div className="ide-textarea-container">
+                <textarea
+                  ref={this.ideTextareaRef}
+                  className="ide-textarea"
+                  value={inputText}
+                  onChange={this.handleIdeInputChange}
+                  spellCheck="false"
+                />
+              </div>
+            </div>
+            
+            <div className="ide-footer">
+              <div>UPCSCRIPT IDE v1.0</div>
+              <div>Lines: {inputText.split('\n').length} | Chars: {inputText.length}</div>
+            </div>
+          </div>
+        )}
+
+        {activeTutorial && (
+          <>
+            <div className="tutorial-overlay" onClick={this.closeTutorial}></div>
+            <div className="tutorial-modal">
+              <div className="tutorial-header">
+                <div className="tutorial-title">
+                  {activeTutorial === 'basic' && 'Basic Syntax Tutorial'}
+                  {activeTutorial === 'dynamic' && 'Dynamic Values Tutorial'}
+                  {activeTutorial === 'examples' && 'Example Configurations'}
+                </div>
+                <button className="tutorial-close" onClick={this.closeTutorial}>×</button>
+              </div>
+              <div className="tutorial-content">
+                {activeTutorial === 'basic' && (
+                  <>
+                    <h3>Basic UPCScript Syntax</h3>
+                    <p>UPCScript uses a simple key=value format for configuration:</p>
+                    <pre>config.button.2.title=Button Label</pre>
+                    <pre>config.button.2.payload=Action to perform</pre>
+                    <pre>config.button.2.background=orange</pre>
+                    <pre>config.button.2.color=black</pre>
+                    
+                    <h3>Special Configurations</h3>
+                    <p>Background image:</p>
+                    <pre>config.bg=https://example.com/image.jpg</pre>
+                    
+                    <p>Hard drive link:</p>
+                    <pre>config.hdd=https://example.com/drive</pre>
+                    
+                    <p>AI assistant link:</p>
+                    <pre>config.ai=https://example.com/ai</pre>
+                  </>
+                )}
+                
+                {activeTutorial === 'dynamic' && (
+                  <>
+                    <h3>Dynamic Value Resolution</h3>
+                    <p>UPCScript can resolve dynamic values from blockchain contracts:</p>
+                    
+                    <h4>UPC Information</h4>
+                    <pre>config.button.1.title=upc.12345.name</pre>
+                    <pre>config.button.1.payload=upc.12345.vr</pre>
+                    
+                    <h4>NFT Information</h4>
+                    <pre>config.button.2.title=nft.67890.name</pre>
+                    <pre>config.button.2.payload=nft.67890.vr</pre>
+                    
+                    <h4>People Information</h4>
+                    <pre>config.button.3.title=ppl.name.johndoe.name</pre>
+                    <pre>config.button.3.payload=ppl.name.johndoe.link</pre>
+                    
+                    <p>Make sure "Resolve dynamic values" is checked when compiling.</p>
+                  </>
+                )}
+                
+                {activeTutorial === 'examples' && (
+                  <>
+                    <h3>Example Configurations</h3>
+                    <p>Here are some useful resources for learning UPCScript:</p>
+                    <ul>
+                      <li><a href="https://example.com/tutorial1" target="_blank" rel="noopener noreferrer">Basic Button Configuration</a></li>
+                      <li><a href="https://example.com/tutorial2" target="_blank" rel="noopener noreferrer">Dynamic Value Examples</a></li>
+                      <li><a href="https://example.com/tutorial3" target="_blank" rel="noopener noreferrer">Advanced Layouts</a></li>
+                    </ul>
+                    
+                    <p>Try clicking the "EXAMPLE" button to load a sample configuration.</p>
+                  </>
+                )}
+              </div>
+            </div>
+          </>
         )}
       </div>
     );
