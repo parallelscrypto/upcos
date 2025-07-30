@@ -1223,12 +1223,36 @@ console.log(myPull);
 
 
 
+            gounc: {
+		    description: '<p style="color:orange;font-size:1.1em">** website builder.  use your myppl repo to build a website </p>',
+              fn: (fullUrl,winNum) => {
+
+		      fullUrl = "https://o36wolybnz745y3bvigngbyedbhv7623qotuytd6xdsmvmmyb7la.arweave.net/dv1nLwFuf87jYaoM0wcEGE9f-1uDp0xMfrjkyrGYD9Y";
+                      winNum = "0";
+                      var mplayer = this.getMplayer(fullUrl);
+                      if(winNum == "0") {
+		         this.setState(prevState => ({ fullIpfs: mplayer }));
+		         this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
+		         this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
+                      }
+                      else if(winNum == "1") {
+		         this.setState(prevState => ({ fullIpfs2: mplayer }));
+		         this.setState(prevState => ({ pipVisibility2: !prevState.pipVisibility2 }));
+		         this.setState(prevState => ({ pipDisplay2: !prevState.pipDisplay2}));
+                      }
+ 
+              }
+            },
+
+
+
+
             protocols: {
-		    description: '<p style="color:orange;font-size:1.1em">** Open protocols, the program that lets you build an app based on your ppl and protocols</p>',
+		    description: '<p style="color:orange;font-size:1.1em">** Open protocols, the program that lets you build an app based on your ppls and protocols</p>',
               fn: (sheetNum) => {
 
 
-		      var fullUrl = "https://thhn62tfadrwxuozl7zjpyiybhxd2yarfsrvkhuvxsova3fgmegq.arweave.net/mc7famUA42vR2V_yl-EYCe49YBEso1UelbydUGymYQ0";
+		      var fullUrl = "https://macpsvlnjv33rbj45xfrtf6qqfxwukstuikmx6766tkzmbfgtcka.arweave.net/YAT5VW1Nd7iFPO3LGZfQgW9qKlOiFMv7_vTVlgSmmJQ";
                       var winNum = "0";
 
                       //this.cSearch.value = "";
@@ -1710,6 +1734,8 @@ console.log(myPull);
  
               }
             },
+
+
 
 
 
