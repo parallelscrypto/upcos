@@ -767,30 +767,6 @@ console.log("INSIDE >>> CONSTRUCTOR TEST", config)
 
 
 
-            bet: {
-		    description: '<p style="color:orange;font-size:1.1em">** open the betting console. you can pass mlb, nba, nfl, nhl, ncaaf, ncaabb as the options.  the second param will allow you to open the console in a modal by passing 1 as the second param.  for example, to open the mlb betting console, type `bet mlb` and to open  it in a modal `bet mlb 1`  NOT AFFILIATED WITH OR ENDORSED BY ANY PROFESSIONAL SPORT ORGANIZATION OR ENTITY IN ANY WAY</p>',
-              fn: (sport,winNum=0) => {
-
-                     const terminal = this.progressTerminal.current
-
-                     var mplayer;
-                      if( sport == "mlb" ) {
-                         mplayer = <MLBBettingTerminal/>;
-                      }
-
-                      if(winNum == "1") {
-                        terminal.pushToStdout(mplayer);
-                      }
-                      else {
- 		        this.setState(prevState => ({ fullIpfs: mplayer }));
-		        this.setState(prevState => ({ pipVisibility: !prevState.pipVisibility }));
-		        this.setState(prevState => ({ pipDisplay: !prevState.pipDisplay}));
-                      }
- 
-              }
-            },
-
-
             mp: {
 		    description: '<p style="color:orange;font-size:1.1em">** open the memecoin generator </p>',
               fn: async (winNum=0) => {
@@ -2623,7 +2599,76 @@ console.log(popArgs);
 
 
 
+approve: {
+  description: '<p style="color:orange;font-size:1.1em">** Approve tokens for spending by a contract</p>',
+  fn: async (tokenAddress, spenderAddress, amount) => {
+    const terminal = this.progressTerminal.current;
+    
+    try {
+      // Validate inputs
+      if (!tokenAddress || !spenderAddress || !amount) {
+        throw new Error("Usage: approve [tokenAddress] [spenderAddress] [amount]");
+      }
 
+      // Check if we have a provider (either Web3 or Ethers)
+      if (!window.ethereum) {
+        throw new Error("Ethereum provider not found");
+      }
+
+      // Initialize connection if needed
+      if (!this.state.provider) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+        const account = await signer.getAddress();
+        
+        this.setState({
+          provider,
+          signer,
+          account,
+          isConnected: true
+        });
+      }
+
+      const amountWei = ethers.utils.parseUnits(amount.toString(), 18);
+      
+      terminal.pushToStdout(`Approving ${amount} tokens (${amountWei.toString()} wei) from ${tokenAddress} for ${spenderAddress}...`);
+      
+      // ERC20 ABI - just the approve function
+      const erc20Abi = [
+        "function approve(address spender, uint256 amount) public returns (bool)"
+      ];
+      
+      // Create contract instance
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        erc20Abi,
+        this.state.signer
+      );
+      
+      // Send approval transaction
+      const tx = await tokenContract.approve(spenderAddress, amountWei);
+      
+      terminal.pushToStdout(`###### APPROVAL SUCCESS ######`);
+      terminal.pushToStdout(`Transaction hash: ${tx.hash}`);
+      terminal.pushToStdout(`Waiting for confirmation...`);
+      
+      // Wait for transaction confirmation
+      const receipt = await tx.wait();
+      
+      terminal.pushToStdout(`Transaction confirmed in block ${receipt.blockNumber}`);
+      terminal.pushToStdout(`Gas used: ${receipt.gasUsed.toString()}`);
+      terminal.pushToStdout(`###### END #######`);
+      
+      return tx.hash;
+    } catch (error) {
+      const errorMsg = `[[error]]Approval failed: ${error.message}[[/error]]`;
+      terminal.pushToStdout(errorMsg);
+      console.error("Approval error:", error);
+      throw error;
+    }
+  }
+},
 
 
 

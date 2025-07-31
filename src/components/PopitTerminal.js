@@ -2354,109 +2354,141 @@ Block: ${receipt.blockNumber}[[/success]]`;
     }
   };
 
-  loadPopit = async (address) => {
-    if (!address) {
-      address = this.state.popitAddress;
-    }
+
+
+
+
+loadPopit = async (address) => {
+  if (!address) {
+    address = this.state.popitAddress;
+  }
+  
+  try {
+    this.pushToTerminal(`Loading repo at: ${address}`);
     
+    const popit = new ethers.Contract(
+      address,
+      PopitABI,
+      this.state.signer
+    );
+
     try {
-      this.pushToTerminal(`Loading repo at: ${address}`);
-      
-      const popit = new ethers.Contract(
-        address,
-        PopitABI,
-        this.state.signer
-      );
+      await popit.totalPops();
+    } catch (e) {
+      throw new Error("Invalid Popit contract - missing required functions");
+    }
 
-      try {
-        await popit.totalPops();
-      } catch (e) {
-        throw new Error("Invalid Popit contract - missing required functions");
-      }
+    const price = await popit.creationPrice();
+    const popitOwner = await popit.owner();
+    const name = await popit.name();
+    const symbol = await popit.symbol();
 
-      const price = await popit.creationPrice();
-      const popitOwner = await popit.owner();
-      const name = await popit.name();
-      const symbol = await popit.symbol();
+    this.setState({
+      currentPopit: popit,
+      creationPrice: ethers.utils.formatUnits(price, 18)
+    });
 
-      this.setState({
-        currentPopit: popit,
-        creationPrice: ethers.utils.formatUnits(price, 18)
-      });
-
-      const successMessage = `[[success]]Successfully loaded Popit contract:
+    const successMessage = `[[success]]Successfully loaded Popit contract:
 Address: ${address}
 Name: ${name}
 Symbol: ${symbol}
 Owner: ${popitOwner}
 Creation Price: ${ethers.utils.formatUnits(price, 18)} FLIP[[/success]]`;
-      
-      this.pushToTerminal(successMessage);
-      return successMessage;
-    } catch (error) {
-      const errorMessage = `[[error]]Error loading Popit: ${error.message}[[/error]]`;
-      this.pushToTerminal(errorMessage);
-      throw error;
+    
+    this.pushToTerminal(successMessage);
+    return successMessage;
+  } catch (error) {
+    const errorMessage = `[[error]]Error loading Popit: ${error.message}[[/error]]`;
+    this.pushToTerminal(errorMessage);
+    throw error;
+  }
+};
+
+
+
+
+
+
+
+
+
+
+createPop = async () => {
+  try {
+    const { currentPopit, link, upc, name } = this.state;
+    if (!currentPopit) {
+      throw new Error('No Popit loaded');
     }
-  };
+  
+    if (!link || !upc || !name) {
+      throw new Error('Link, UPC, and name are required');
+    }
 
-  createPop = async () => {
-    try {
-      const { currentPopit, link, upc, name } = this.state;
-      if (!currentPopit) {
-        throw new Error('No Popit loaded');
-      }
+    const protocol = this.extractProtocol(name);
   
-      if (!link || !upc || !name) {
-        throw new Error('Link, UPC, and name are required');
-      }
-
-      const protocol = this.extractProtocol(name);
+    this.pushToTerminal(`Creating Pop with name: ${name}, UPC: ${upc}, link: ${link}, protocol: ${protocol}`);
+    
+    // Get the FLIP token address and creation price from the Popit contract
+    const flipTokenAddress = await currentPopit.flipToken();
+    const creationPrice = await currentPopit.creationPrice();
+    
+    this.pushToTerminal(`Using FLIP token at: ${flipTokenAddress}`);
+    this.pushToTerminal(`Creation price: ${ethers.utils.formatUnits(creationPrice, 18)} FLIP`);
+    
+    const flipToken = new ethers.Contract(
+      flipTokenAddress,
+      [
+        "function allowance(address owner, address spender) external view returns (uint256)",
+        "function approve(address spender, uint256 amount) external returns (bool)",
+        "function balanceOf(address account) external view returns (uint256)"
+      ],
+      this.state.signer
+    );
   
-      this.pushToTerminal(`Creating Pop with name: ${name}, UPC: ${upc}, link: ${link}, protocol: ${protocol}`);
-      
-      const flipTokenAddress = '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118';
-      const flipToken = new ethers.Contract(
-        flipTokenAddress,
-        [
-          "function allowance(address owner, address spender) external view returns (uint256)",
-          "function approve(address spender, uint256 amount) external returns (bool)",
-          "function balanceOf(address account) external view returns (uint256)"
-        ],
-        this.state.signer
-      );
+    const balance = await flipToken.balanceOf(this.state.account);
+    
+    if (balance.lt(creationPrice)) {
+      throw new Error(`Insufficient FLIP balance. Need ${ethers.utils.formatUnits(creationPrice, 18)} FLIP, you have ${ethers.utils.formatUnits(balance, 18)}`);
+    }
   
-      const price = ethers.utils.parseUnits('1', 18);
-      const balance = await flipToken.balanceOf(this.state.account);
-      
-      if (balance.lt(price)) {
-        throw new Error(`Insufficient FLIP balance. Need ${ethers.utils.formatUnits(price, 18)} FLIP`);
-      }
+    const allowance = await flipToken.allowance(this.state.account, currentPopit.address);
+    if (allowance.lt(creationPrice)) {
+      this.pushToTerminal('Approving FLIP tokens...');
+      const approveTx = await flipToken.approve(currentPopit.address, creationPrice);
+      await approveTx.wait();
+    }
   
-      const allowance = await flipToken.allowance(this.state.account, currentPopit.address);
-      if (allowance.lt(price)) {
-        this.pushToTerminal('Approving FLIP tokens...');
-        const approveTx = await flipToken.approve(currentPopit.address, price);
-        await approveTx.wait();
-      }
+    const tx = await currentPopit.createPop(link, upc, name, protocol);
+    const receipt = await tx.wait();
   
-      const tx = await currentPopit.createPop(link, upc, name, protocol);
-      const receipt = await tx.wait();
-  
-      const successMessage = `[[success]]Pop created successfully!
+    const successMessage = `[[success]]Pop created successfully!
 Transaction Hash: ${receipt.transactionHash}
-Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
+Gas Used: ${receipt.gasUsed.toString()}
+Price Paid: ${ethers.utils.formatUnits(creationPrice, 18)} FLIP[[/success]]`;
   
-      this.pushToTerminal(successMessage);
-      await this.listPops();
-      
-      return successMessage;
-    } catch (error) {
-      const errorMessage = `[[error]]Creation failed: ${error.reason || error.message}[[/error]]`;
-      this.pushToTerminal(errorMessage);
-      throw error;
-    }
-  };
+    this.pushToTerminal(successMessage);
+    await this.listPops();
+    
+    return successMessage;
+  } catch (error) {
+    const errorMessage = `[[error]]Creation failed: ${error.reason || error.message}[[/error]]`;
+    this.pushToTerminal(errorMessage);
+    throw error;
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   removePop = async (id) => {
     try {
@@ -3954,6 +3986,7 @@ renderProtocolPanel = () => {
                     }
                   }
                 },
+
                 push: {
                   description: 'Create new Pop',
                   usage: 'push <link> <upc> <name>',
@@ -3967,8 +4000,15 @@ renderProtocolPanel = () => {
 
                       const protocol = this.extractProtocol(name);
 
+                      // Get the FLIP token address and creation price from the Popit contract
+                      const flipTokenAddress = await currentPopit.flipToken();
+                      const creationPrice = await currentPopit.creationPrice();
+                      
+                      this.pushToTerminal(`Using FLIP token at: ${flipTokenAddress}`);
+                      this.pushToTerminal(`Creation price: ${ethers.utils.formatUnits(creationPrice, 18)} FLIP`);
+                      
                       const flipToken = new ethers.Contract(
-                        '0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118',
+                        flipTokenAddress,
                         [
                           "function approve(address spender, uint256 amount) returns (bool)",
                           "function allowance(address owner, address spender) view returns (uint256)",
@@ -3977,17 +4017,15 @@ renderProtocolPanel = () => {
                         provider.getSigner()
                       );
 
-                      const requiredAmount = ethers.utils.parseUnits('1', 18);
                       const balance = await flipToken.balanceOf(account);
-                      if (balance.lt(requiredAmount)) {
-                        throw new Error(`Need 1 FLIP (you have ${ethers.utils.formatUnits(balance, 18)})`);
+                      if (balance.lt(creationPrice)) {
+                        throw new Error(`Need ${ethers.utils.formatUnits(creationPrice, 18)} FLIP (you have ${ethers.utils.formatUnits(balance, 18)})`);
                       }
 
-                      const MAX_UINT256 = ethers.constants.MaxUint256;
                       const allowance = await flipToken.allowance(account, currentPopit.address);
-                      if (allowance.lt(requiredAmount)) {
+                      if (allowance.lt(creationPrice)) {
                         this.pushToTerminal('Approving FLIP tokens...');
-                        const approveTx = await flipToken.approve(currentPopit.address, MAX_UINT256);
+                        const approveTx = await flipToken.approve(currentPopit.address, creationPrice);
                         await approveTx.wait();
                         this.pushToTerminal('[[success]]FLIP tokens approved![[/success]]');
                         
@@ -4001,8 +4039,9 @@ renderProtocolPanel = () => {
                       
                       if (receipt.status === 1) {
                         const successMessage = `[[success]]Pop created successfully!
-  Transaction Hash: ${receipt.transactionHash}
-  Gas Used: ${receipt.gasUsed.toString()}[[/success]]`;
+                Transaction Hash: ${receipt.transactionHash}
+                Gas Used: ${receipt.gasUsed.toString()}
+                Price Paid: ${ethers.utils.formatUnits(creationPrice, 18)} FLIP[[/success]]`;
                         this.pushToTerminal(successMessage);
                         await this.listPops();
                         return '';
@@ -4020,6 +4059,8 @@ renderProtocolPanel = () => {
                     }
                   }
                 },
+
+
                 remove: {
                   description: 'Remove a Pop',
                   usage: 'remove <id>',
@@ -4101,6 +4142,94 @@ renderProtocolPanel = () => {
                     }
                   }
                 },
+  setfliptoken: {
+    description: 'Change the FLIP token contract address (Owner only)',
+    usage: 'setfliptoken <tokenAddress>',
+    fn: async (tokenAddress) => {
+      try {
+        const { currentPopit } = this.state;
+        if (!currentPopit) {
+          throw new Error('No Popit loaded');
+        }
+
+        if (!tokenAddress) {
+          throw new Error('Usage: setfliptoken [tokenAddress]');
+        }
+
+        if (!ethers.utils.isAddress(tokenAddress)) {
+          throw new Error('Invalid token address format');
+        }
+
+        this.pushToTerminal(`Setting new FLIP token address to ${tokenAddress}...`);
+        
+        // Get current FLIP token address for display
+        const currentFlipToken = await currentPopit.flipToken();
+        this.pushToTerminal(`Current FLIP token: ${currentFlipToken}`);
+        
+        // Send transaction to update
+        const tx = await currentPopit.setFlipToken(tokenAddress);
+        
+        this.pushToTerminal(`Transaction sent: ${tx.hash}`);
+        this.pushToTerminal('Waiting for confirmation...');
+        
+        const receipt = await tx.wait();
+        
+        this.pushToTerminal(`[[success]]Transaction confirmed in block ${receipt.blockNumber}`);
+        this.pushToTerminal(`New FLIP token address set to ${tokenAddress}[[/success]]`);
+        
+        return '';
+      } catch (error) {
+        const errorMsg = `[[error]]setfliptoken failed: ${error.message}[[/error]]`;
+        this.pushToTerminal(errorMsg);
+        return errorMsg;
+      }
+    }
+  },
+
+  setcreationprice: {
+    description: 'Change the creation price in FLIP tokens (Owner only)',
+    usage: 'setcreationprice <price> (in whole FLIP tokens)',
+    fn: async (price) => {
+      try {
+        const { currentPopit } = this.state;
+        if (!currentPopit) {
+          throw new Error('No Popit loaded');
+        }
+
+        if (!price) {
+          throw new Error('Usage: setcreationprice [price] (in whole FLIP tokens)');
+        }
+
+        const priceWei = ethers.utils.parseUnits(price.toString(), 18);
+        
+        // Get current price for display
+        const currentPrice = await currentPopit.creationPrice();
+        this.pushToTerminal(`Current creation price: ${ethers.utils.formatUnits(currentPrice, 18)} FLIP`);
+        
+        this.pushToTerminal(`Setting new creation price to ${price} FLIP (${priceWei.toString()} wei)...`);
+        
+        // Send transaction to update
+        const tx = await currentPopit.setCreationPrice(priceWei);
+        
+        this.pushToTerminal(`Transaction sent: ${tx.hash}`);
+        this.pushToTerminal('Waiting for confirmation...');
+        
+        const receipt = await tx.wait();
+        
+        this.pushToTerminal(`[[success]]Transaction confirmed in block ${receipt.blockNumber}`);
+        this.pushToTerminal(`New creation price set to ${price} FLIP[[/success]]`);
+        
+        // Update local state
+        this.setState({ creationPrice: price });
+        
+        return '';
+      } catch (error) {
+        const errorMsg = `[[error]]setcreationprice failed: ${error.message}[[/error]]`;
+        this.pushToTerminal(errorMsg);
+        return errorMsg;
+      }
+    }
+  },
                 searchprotocol: {
                   description: 'Search pops by protocol',
                   usage: 'searchprotocol <protocol>',
