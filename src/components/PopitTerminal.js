@@ -4142,7 +4142,7 @@ renderProtocolPanel = () => {
                     }
                   }
                 },
-  setfliptoken: {
+  settoken: {
     description: 'Change the FLIP token contract address (Owner only)',
     usage: 'setfliptoken <tokenAddress>',
     fn: async (tokenAddress) => {
@@ -4186,7 +4186,7 @@ renderProtocolPanel = () => {
     }
   },
 
-  setcreationprice: {
+  setprice: {
     description: 'Change the creation price in FLIP tokens (Owner only)',
     usage: 'setcreationprice <price> (in whole FLIP tokens)',
     fn: async (price) => {

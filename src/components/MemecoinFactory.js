@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import Terminal from 'react-console-emulator';
 import MemecoinFactoryABI from '../etc/rawmaterial/MemecoinFactory.json';
 
-const MEMECOIN_FACTORY_ADDRESS = "0x843e40211C088F429b1D35dd5f641CE0b05F4496";
+const MEMECOIN_FACTORY_ADDRESS = "0x302C1f8A2256aaa2226167B847DD6f57DAed2c20";
 
 class MemecoinTerminal extends Component {
   constructor(props) {
@@ -17,7 +17,7 @@ class MemecoinTerminal extends Component {
       isConnected: false,
       connectionError: null,
       templates: [
-        { id: 0, name: "Standard Memecoin" },
+        { id: 0, name: "Standard Burnable Memecoin" },
         { id: 1, name: "Mintable Memecoin" },
         { id: 2, name: "Tax Memecoin" }
       ],
@@ -494,7 +494,7 @@ class MemecoinTerminal extends Component {
                 this.showCreateTokenModal();
               }
             },
-            createtoken: {
+            mkt: {
               description: 'Create new memecoin (templateId, name, symbol, supply, [extraParams])',
               fn: async (...args) => await this.createMemecoin(...args)
             },
@@ -502,7 +502,7 @@ class MemecoinTerminal extends Component {
               description: 'List available token templates',
               fn: async () => await this.listTemplates()
             },
-            mytokens: {
+            ls: {
               description: 'List all tokens you created',
               fn: async () => await this.listUserTokens()
             },

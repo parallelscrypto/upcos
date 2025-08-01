@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract MemecoinFactory is Ownable {
@@ -27,17 +28,17 @@ contract MemecoinFactory is Ownable {
     uint256 public creationFee = 0.01 ether;
     bool public feeEnabled = false;
     
-    constructor() {
+    constructor() Ownable(msg.sender) {
         _addDefaultTemplates();
     }
     
     function _addDefaultTemplates() internal {
-        // Template 0: Standard Memecoin
+        // Template 0: Standard Burnable Memecoin
         templates.push(TokenTemplate({
-            name: "Standard Memecoin",
-            description: "Basic ERC20 with fixed supply",
+            name: "Standard Burnable Memecoin",
+            description: "Basic ERC20 with burn functionality",
             active: true,
-            bytecode: type(StandardMemecoin).creationCode
+            bytecode: type(StandardBurnableMemecoin).creationCode
         }));
         
         // Template 1: Mintable Memecoin
@@ -137,8 +138,12 @@ contract MemecoinFactory is Ownable {
     }
 }
 
-contract StandardMemecoin is ERC20, Ownable {
-    constructor(string memory name, string memory symbol) ERC20(name, symbol) {}
+contract StandardBurnableMemecoin is ERC20, ERC20Burnable, Ownable {
+    constructor(string memory name, string memory symbol) 
+        ERC20(name, symbol) 
+        ERC20Burnable()
+        Ownable(msg.sender)
+    {}
     
     function initialize(
         uint256 initialSupply,
@@ -151,7 +156,10 @@ contract StandardMemecoin is ERC20, Ownable {
 }
 
 contract MintableMemecoin is ERC20, Ownable {
-    constructor(string memory name, string memory symbol) ERC20(name, symbol) {}
+    constructor(string memory name, string memory symbol) 
+        ERC20(name, symbol)
+        Ownable(msg.sender)
+    {}
     
     function initialize(
         uint256 initialSupply,
@@ -171,7 +179,10 @@ contract TaxMemecoin is ERC20, Ownable {
     uint256 public constant TAX_RATE = 500; // 5%
     address public taxWallet;
     
-    constructor(string memory name, string memory symbol) ERC20(name, symbol) {}
+    constructor(string memory name, string memory symbol) 
+        ERC20(name, symbol)
+        Ownable(msg.sender)
+    {}
     
     function initialize(
         uint256 initialSupply,
