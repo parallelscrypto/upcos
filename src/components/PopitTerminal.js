@@ -362,6 +362,44 @@ const PopitABI = [
 		"inputs": [
 			{
 				"indexed": true,
+				"internalType": "string",
+				"name": "protocol",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "writer",
+				"type": "address"
+			}
+		],
+		"name": "ProtocolWriterAdded",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "string",
+				"name": "protocol",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "writer",
+				"type": "address"
+			}
+		],
+		"name": "ProtocolWriterRemoved",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
 				"internalType": "address",
 				"name": "from",
 				"type": "address"
@@ -396,6 +434,24 @@ const PopitABI = [
 			}
 		],
 		"name": "addProtocolParser",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "protocol",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "writer",
+				"type": "address"
+			}
+		],
+		"name": "addProtocolWriter",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -939,6 +995,44 @@ const PopitABI = [
 	{
 		"inputs": [
 			{
+				"internalType": "string",
+				"name": "protocol",
+				"type": "string"
+			}
+		],
+		"name": "getProtocolOwner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "protocol",
+				"type": "string"
+			}
+		],
+		"name": "getProtocolWriters",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "owner",
 				"type": "address"
@@ -950,6 +1044,24 @@ const PopitABI = [
 				"internalType": "string[]",
 				"name": "",
 				"type": "string[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getWritersAddedByMe",
+		"outputs": [
+			{
+				"internalType": "string[]",
+				"name": "protocols",
+				"type": "string[]"
+			},
+			{
+				"internalType": "address[][]",
+				"name": "writers",
+				"type": "address[][]"
 			}
 		],
 		"stateMutability": "view",
@@ -997,6 +1109,30 @@ const PopitABI = [
 			}
 		],
 		"name": "isApprovedForAll",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "protocol",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "isProtocolWriter",
 		"outputs": [
 			{
 				"internalType": "bool",
@@ -1084,6 +1220,25 @@ const PopitABI = [
 				"type": "string"
 			}
 		],
+		"name": "protocolOwners",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
 		"name": "protocolParsers",
 		"outputs": [
 			{
@@ -1114,11 +1269,53 @@ const PopitABI = [
 		"inputs": [
 			{
 				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "protocolWriters",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
 				"name": "protocol",
 				"type": "string"
 			}
 		],
 		"name": "removeProtocolParser",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "protocol",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "writer",
+				"type": "address"
+			}
+		],
+		"name": "removeProtocolWriter",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -2149,7 +2346,7 @@ renderGrepPanel = () => {
         const account = await signer.getAddress();
         
         const factory = new ethers.Contract(
-          '0x693089F92E12Da6871D3839B1037031b558D26E0',
+          '0x35ce69a02c87cad071c1e7682a80ab708a924914',
           PopitFactoryABI.abi,
           signer
         );
@@ -2425,6 +2622,17 @@ createPop = async () => {
     }
 
     const protocol = this.extractProtocol(name);
+    
+    // Check protocol permissions
+    const protocolOwner = await currentPopit.getProtocolOwner(protocol);
+    const isWriter = await currentPopit.isProtocolWriter(protocol, this.state.account);
+    
+    if (protocolOwner !== ethers.constants.AddressZero && 
+        protocolOwner !== this.state.account && 
+        !isWriter) {
+      throw new Error(`You don't have permission to create pops for protocol ${protocol}. 
+        You must be the owner or an approved writer.`);
+    }
   
     this.pushToTerminal(`Creating Pop with name: ${name}, UPC: ${upc}, link: ${link}, protocol: ${protocol}`);
     
@@ -2450,14 +2658,14 @@ createPop = async () => {
     if (balance.lt(creationPrice)) {
       throw new Error(`Insufficient FLIP balance. Need ${ethers.utils.formatUnits(creationPrice, 18)} FLIP, you have ${ethers.utils.formatUnits(balance, 18)}`);
     }
-  
+
     const allowance = await flipToken.allowance(this.state.account, currentPopit.address);
     if (allowance.lt(creationPrice)) {
       this.pushToTerminal('Approving FLIP tokens...');
       const approveTx = await flipToken.approve(currentPopit.address, creationPrice);
       await approveTx.wait();
     }
-  
+
     const tx = await currentPopit.createPop(link, upc, name, protocol);
     const receipt = await tx.wait();
   
@@ -2511,71 +2719,94 @@ Price Paid: ${ethers.utils.formatUnits(creationPrice, 18)} FLIP[[/success]]`;
     }
   };
 
-  updatePopLink = async () => {
+
+
+
+
+
+updatePopLink = async () => {
+  try {
+    const { currentPopit, selectedPopId, newLink } = this.state;
+    if (!currentPopit) {
+      throw new Error('No Popit loaded');
+    }
+
+    if (!selectedPopId) {
+      throw new Error('Please select a Pop ID');
+    }
+
+    if (!newLink) {
+      throw new Error('Please enter a new link');
+    }
+
+    this.pushToTerminal(`Updating Pop ${selectedPopId} link to: ${newLink}`);
+    
     try {
-      const { currentPopit, selectedPopId, newLink } = this.state;
-      if (!currentPopit) {
-        throw new Error('No Popit loaded');
+      const pop = await currentPopit.getPopById(selectedPopId);
+      if (pop.id.toString() === '0') {
+        throw new Error('Pop does not exist');
       }
-
-      if (!selectedPopId) {
-        throw new Error('Please select a Pop ID');
-      }
-
-      if (!newLink) {
-        throw new Error('Please enter a new link');
-      }
-
-      this.pushToTerminal(`Updating Pop ${selectedPopId} link to: ${newLink}`);
       
-      try {
-        const pop = await currentPopit.getPopById(selectedPopId);
-        if (pop.id.toString() === '0') {
-          throw new Error('Pop does not exist');
-        }
+      const owner = await currentPopit.ownerOf(selectedPopId);
+      if (owner.toLowerCase() !== this.state.account.toLowerCase()) {
+        // Check protocol permissions if not owner of the pop
+        const protocolOwner = await currentPopit.getProtocolOwner(pop.protocol);
+        const isWriter = await currentPopit.isProtocolWriter(pop.protocol, this.state.account);
         
-        const owner = await currentPopit.ownerOf(selectedPopId);
-        if (owner.toLowerCase() !== this.state.account.toLowerCase()) {
-          throw new Error('You are not the owner of this Pop');
+        if (protocolOwner !== ethers.constants.AddressZero && 
+            protocolOwner !== this.state.account && 
+            !isWriter) {
+          throw new Error(`You don't have permission to update pops for protocol ${pop.protocol}. 
+            You must be the owner or an approved writer.`);
         }
-      } catch (checkError) {
-        throw new Error(`Validation failed: ${checkError.message}`);
       }
+    } catch (checkError) {
+      throw new Error(`Validation failed: ${checkError.message}`);
+    }
 
-      let tx;
-      try {
-        tx = await currentPopit.updateLink(selectedPopId, newLink);
-      } catch (estimateError) {
-        console.warn("Gas estimation failed, trying with manual limit:", estimateError);
-        tx = await currentPopit.updateLink(selectedPopId, newLink, {
-          gasLimit: 500000
-        });
-      }
-      
-      const receipt = await tx.wait();
-      
-      if (receipt.status === 0) {
-        throw new Error('Transaction reverted in the blockchain');
-      }
+    let tx;
+    try {
+      tx = await currentPopit.updateLink(selectedPopId, newLink);
+    } catch (estimateError) {
+      console.warn("Gas estimation failed, trying with manual limit:", estimateError);
+      tx = await currentPopit.updateLink(selectedPopId, newLink, {
+        gasLimit: 500000
+      });
+    }
+    
+    const receipt = await tx.wait();
+    
+    if (receipt.status === 0) {
+      throw new Error('Transaction reverted in the blockchain');
+    }
 
-      this.pushToTerminal(`[[success]]Pop link updated successfully!
+    this.pushToTerminal(`[[success]]Pop link updated successfully!
 Transaction Hash: ${receipt.transactionHash}
 Gas Used: ${receipt.gasUsed.toString()}[[/success]]`);
-      
-      await this.listPops();
-      return true;
-    } catch (error) {
-      let errorMessage = `[[error]]Update failed: ${error.reason || error.message}[[/error]]`;
-      
-      if (error.data && error.data.message) {
-        errorMessage += `\n${error.data.message}`;
-      }
-      
-      this.pushToTerminal(errorMessage);
-      console.error("UpdatePopLink error:", error);
-      return false;
+    
+    await this.listPops();
+    return true;
+  } catch (error) {
+    let errorMessage = `[[error]]Update failed: ${error.reason || error.message}[[/error]]`;
+    
+    if (error.data && error.data.message) {
+      errorMessage += `\n${error.data.message}`;
     }
-  };
+    
+    this.pushToTerminal(errorMessage);
+    console.error("UpdatePopLink error:", error);
+    return false;
+  }
+};
+
+
+
+
+
+
+
+
+
 
   listPops = async () => {
     try {
@@ -2912,7 +3143,136 @@ validateProtocolForm = () => {
 
 
 
+// Add these methods to the PopitTerminal class
 
+// Protocol Ownership Management Functions
+getProtocolOwner = async (protocol) => {
+  try {
+    const { currentPopit } = this.state;
+    if (!currentPopit) {
+      throw new Error('No Popit loaded');
+    }
+
+    const owner = await currentPopit.getProtocolOwner(protocol);
+    this.pushToTerminal(`Protocol Owner for ${protocol}: ${owner}`);
+    return owner;
+  } catch (error) {
+    this.pushToTerminal(`[[error]]Error getting protocol owner: ${error.message}[[/error]]`);
+    throw error;
+  }
+};
+
+isProtocolWriter = async (protocol, account) => {
+  try {
+    const { currentPopit } = this.state;
+    if (!currentPopit) {
+      throw new Error('No Popit loaded');
+    }
+
+    const isWriter = await currentPopit.isProtocolWriter(protocol, account);
+    this.pushToTerminal(`${account} ${isWriter ? 'is' : 'is not'} a writer for ${protocol}`);
+    return isWriter;
+  } catch (error) {
+    this.pushToTerminal(`[[error]]Error checking writer status: ${error.message}[[/error]]`);
+    throw error;
+  }
+};
+
+getProtocolWriters = async (protocol) => {
+  try {
+    const { currentPopit } = this.state;
+    if (!currentPopit) {
+      throw new Error('No Popit loaded');
+    }
+
+    const writers = await currentPopit.getProtocolWriters(protocol);
+    this.pushToTerminal(`[[header]]Writers for ${protocol}:[[/header]]`);
+    writers.forEach(writer => {
+      this.pushToTerminal(`- ${writer}`);
+    });
+    return writers;
+  } catch (error) {
+    this.pushToTerminal(`[[error]]Error getting protocol writers: ${error.message}[[/error]]`);
+    throw error;
+  }
+};
+
+addProtocolWriter = async (protocol, writerAddress) => {
+  try {
+    const { currentPopit } = this.state;
+    if (!currentPopit) {
+      throw new Error('No Popit loaded');
+    }
+
+    if (!ethers.utils.isAddress(writerAddress)) {
+      throw new Error('Invalid Ethereum address');
+    }
+
+    this.pushToTerminal(`Adding ${writerAddress} as writer for ${protocol}...`);
+    const tx = await currentPopit.addProtocolWriter(protocol, writerAddress);
+    await tx.wait();
+    this.pushToTerminal(`[[success]]Writer added successfully![[/success]]`);
+    return true;
+  } catch (error) {
+    this.pushToTerminal(`[[error]]Error adding writer: ${error.message}[[/error]]`);
+    throw error;
+  }
+};
+
+removeProtocolWriter = async (protocol, writerAddress) => {
+  try {
+    const { currentPopit } = this.state;
+    if (!currentPopit) {
+      throw new Error('No Popit loaded');
+    }
+
+    if (!ethers.utils.isAddress(writerAddress)) {
+      throw new Error('Invalid Ethereum address');
+    }
+
+    this.pushToTerminal(`Removing ${writerAddress} as writer for ${protocol}...`);
+    const tx = await currentPopit.removeProtocolWriter(protocol, writerAddress);
+    await tx.wait();
+    this.pushToTerminal(`[[success]]Writer removed successfully![[/success]]`);
+    return true;
+  } catch (error) {
+    this.pushToTerminal(`[[error]]Error removing writer: ${error.message}[[/error]]`);
+    throw error;
+  }
+};
+
+getWritersAddedByMe = async () => {
+  try {
+    const { currentPopit } = this.state;
+    if (!currentPopit) {
+      throw new Error('No Popit loaded');
+    }
+
+    const [protocols, writers] = await currentPopit.getWritersAddedByMe();
+    
+    if (protocols.length === 0) {
+      this.pushToTerminal('You are not the owner of any protocols');
+      return;
+    }
+
+    this.pushToTerminal('[[header]]Protocols you own and their writers:[[/header]]');
+    protocols.forEach((protocol, index) => {
+      this.pushToTerminal(`\n${protocol}:`);
+      if (writers[index].length === 0) {
+        this.pushToTerminal('  No writers');
+      } else {
+        writers[index].forEach(writer => {
+          this.pushToTerminal(`  - ${writer}`);
+        });
+      }
+    });
+    
+    return [protocols, writers];
+  } catch (error) {
+    this.pushToTerminal(`[[error]]Error getting your protocol writers: ${error.message}[[/error]]`);
+    throw error;
+  }
+};
 
 
 
@@ -3986,6 +4346,80 @@ renderProtocolPanel = () => {
                     }
                   }
                 },
+
+  getowner: {
+    description: 'Get owner of a protocol',
+    usage: 'getowner <protocol>',
+    fn: async (protocol) => {
+      try {
+        await this.getProtocolOwner(protocol);
+        return '';
+      } catch (error) {
+        return error.message;
+      }
+    }
+  },
+  iswriter: {
+    description: 'Check if address is a writer for protocol',
+    usage: 'iswriter <protocol> <address>',
+    fn: async (protocol, address) => {
+      try {
+        await this.isProtocolWriter(protocol, address);
+        return '';
+      } catch (error) {
+        return error.message;
+      }
+    }
+  },
+  listwriters: {
+    description: 'List all writers for a protocol',
+    usage: 'listwriters <protocol>',
+    fn: async (protocol) => {
+      try {
+        await this.getProtocolWriters(protocol);
+        return '';
+      } catch (error) {
+        return error.message;
+      }
+    }
+  },
+  addwriter: {
+    description: 'Add a writer to a protocol (must be owner)',
+    usage: 'addwriter <protocol> <address>',
+    fn: async (protocol, address) => {
+      try {
+        await this.addProtocolWriter(protocol, address);
+        return '';
+      } catch (error) {
+        return error.message;
+      }
+    }
+  },
+  removewriter: {
+    description: 'Remove a writer from a protocol (must be owner)',
+    usage: 'removewriter <protocol> <address>',
+    fn: async (protocol, address) => {
+      try {
+        await this.removeProtocolWriter(protocol, address);
+        return '';
+      } catch (error) {
+        return error.message;
+      }
+    }
+  },
+  mywriters: {
+    description: 'List all protocols you own and their writers',
+    fn: async () => {
+      try {
+        await this.getWritersAddedByMe();
+        return '';
+      } catch (error) {
+        return error.message;
+      }
+    }
+  },
+
+
 
                 push: {
                   description: 'Create new Pop',

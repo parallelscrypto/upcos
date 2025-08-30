@@ -2354,7 +2354,36 @@ console.log("upc data is " , data)
 
 
 
+setppls: {
+  description: '<p style="color:orange;font-size:1.1em">** Set the PPLL (admin private protocol link list) contract address</p>',
+  fn: async (address) => {
+    const terminal = this.progressTerminal.current;
+    
+    try {
+      // 1. Check if address is provided
+      if (!address) {
+        throw new Error("No address provided. Usage: setppll [address]");
+      }
 
+      // 2. Validate it's a proper Ethereum address
+      if (!ethers.utils.isAddress(address)) {
+        throw new Error("Invalid Ethereum address format");
+      }
+
+      // 3. Set the state
+      this.setState({
+        ppls: address
+      });
+
+      terminal.pushToStdout(`[[success]]PPLL contract address set to: ${address}[[/success]]`);
+      
+    } catch (error) {
+      const errorMessage = `[[error]]setppll error: ${error.message}[[/error]]`;
+      terminal.pushToStdout(errorMessage);
+      console.error("setppll execution error:", error);
+    }
+  }
+},
 
 
 
@@ -2397,7 +2426,7 @@ myppl: {
       // 3. Verify PPLS contract address
       if (!this.state.ppls || this.state.ppls == "0x1234567890123456789012345678901234567890") {
         this.setState({
-          ppls: '0xb5E940a2a914c31B84f2bB77D2c3D4C69fc06097'
+          ppls: '0x382fa67D5FE31800864A7846992de027067408E4'
         });
 
         //throw new Error("No PPLS contract configured. Using default repo address 0xB7997334E8D694F0fb2430053BF1E3F9430CFBE5 for myppl command until you set it yourself.  run this command and pass the address of your ppl to set a new ppl");

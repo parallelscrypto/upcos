@@ -39,11 +39,15 @@ contract Popit is ERC721, Ownable {
     mapping(string => ProtocolParser) public protocolParsers;
     mapping(address => string[]) public ownerProtocols;
     
+    // Protocol ownership and authorized writers
+    mapping(string => address) public protocolOwners;
+    mapping(string => mapping(address => bool)) public protocolWriters;
+    mapping(string => address[]) private protocolWritersList;
+    
     IERC20Burnable public flipToken;
     uint256 public creationPrice = 1 * (10**18);
     address public defaultFlipToken = 0xc758a25380Eb23898C5f9b3181b4C1C54D3dC118;
 
-    // New state variables for efficient parser management
     address[] private allParserOwners;
     string[] private allProtocols;
 
@@ -52,16 +56,90 @@ contract Popit is ERC721, Ownable {
     event PopUpdated(uint256 id, string newLink);
     event ProtocolParserAdded(string indexed protocol, string parserUrl, address owner);
     event ProtocolParserRemoved(string indexed protocol);
+    event ProtocolWriterAdded(string indexed protocol, address writer);
+    event ProtocolWriterRemoved(string indexed protocol, address writer);
 
     constructor(string memory name, string memory symbol) ERC721(name, symbol) Ownable(msg.sender) {
         flipToken = IERC20Burnable(defaultFlipToken);
     }
 
-    // Protocol Parser Management Functions
+    // Protocol Ownership Management
+    function _isProtocolWriter(string memory protocol, address account) private view returns (bool) {
+        return protocolOwners[protocol] == account || protocolWriters[protocol][account];
+    }
+
+    function addProtocolWriter(string memory protocol, address writer) external {
+        require(protocolOwners[protocol] == msg.sender, "Only protocol owner can add writers");
+        require(!protocolWriters[protocol][writer], "Address is already a writer");
+        
+        protocolWriters[protocol][writer] = true;
+        protocolWritersList[protocol].push(writer);
+        emit ProtocolWriterAdded(protocol, writer);
+    }
+
+    function removeProtocolWriter(string memory protocol, address writer) external {
+        require(protocolOwners[protocol] == msg.sender, "Only protocol owner can remove writers");
+        require(protocolWriters[protocol][writer], "Address is not a writer");
+        
+        protocolWriters[protocol][writer] = false;
+        
+        address[] storage writers = protocolWritersList[protocol];
+        for (uint i = 0; i < writers.length; i++) {
+            if (writers[i] == writer) {
+                writers[i] = writers[writers.length - 1];
+                writers.pop();
+                break;
+            }
+        }
+        
+        emit ProtocolWriterRemoved(protocol, writer);
+    }
+
+    function getProtocolOwner(string memory protocol) public view returns (address) {
+        return protocolOwners[protocol];
+    }
+
+    function isProtocolWriter(string memory protocol, address account) public view returns (bool) {
+        return _isProtocolWriter(protocol, account);
+    }
+
+    function getProtocolWriters(string memory protocol) public view returns (address[] memory) {
+        return protocolWritersList[protocol];
+    }
+
+    function getWritersAddedByMe() public view returns (string[] memory protocols, address[][] memory writers) {
+        uint count = 0;
+        
+        for (uint i = 0; i < allProtocols.length; i++) {
+            if (protocolOwners[allProtocols[i]] == msg.sender) {
+                count++;
+            }
+        }
+        
+        protocols = new string[](count);
+        writers = new address[][](count);
+        
+        uint index = 0;
+        for (uint i = 0; i < allProtocols.length; i++) {
+            string memory protocol = allProtocols[i];
+            if (protocolOwners[protocol] == msg.sender) {
+                protocols[index] = protocol;
+                writers[index] = protocolWritersList[protocol];
+                index++;
+            }
+        }
+        
+        return (protocols, writers);
+    }
+
     function addProtocolParser(string memory protocol, string memory parserUrl) external {
         require(bytes(protocol).length > 0, "Protocol cannot be empty");
         require(bytes(parserUrl).length > 0, "Parser URL cannot be empty");
         require(bytes(protocolParsers[protocol].protocol).length == 0, "Protocol already exists");
+        
+        if (protocolOwners[protocol] == address(0)) {
+            protocolOwners[protocol] = msg.sender;
+        }
         
         protocolParsers[protocol] = ProtocolParser({
             protocol: protocol,
@@ -73,7 +151,6 @@ contract Popit is ERC721, Ownable {
         ownerProtocols[msg.sender].push(protocol);
         allProtocols.push(protocol);
         
-        // Add to allParserOwners if not already present
         bool ownerExists = false;
         for (uint i = 0; i < allParserOwners.length; i++) {
             if (allParserOwners[i] == msg.sender) {
@@ -91,7 +168,6 @@ contract Popit is ERC721, Ownable {
     function removeProtocolParser(string memory protocol) external {
         require(protocolParsers[protocol].owner == msg.sender, "Not the parser owner");
         
-        // Remove from allProtocols array
         for (uint i = 0; i < allProtocols.length; i++) {
             if (keccak256(abi.encodePacked(allProtocols[i])) == keccak256(abi.encodePacked(protocol))) {
                 allProtocols[i] = allProtocols[allProtocols.length - 1];
@@ -100,7 +176,6 @@ contract Popit is ERC721, Ownable {
             }
         }
         
-        // Remove from owner's protocol list
         string[] storage protocols = ownerProtocols[msg.sender];
         for (uint i = 0; i < protocols.length; i++) {
             if (keccak256(abi.encodePacked(protocols[i])) == keccak256(abi.encodePacked(protocol))) {
@@ -110,9 +185,7 @@ contract Popit is ERC721, Ownable {
             }
         }
         
-        // Check if owner has any remaining protocols
         if (ownerProtocols[msg.sender].length == 0) {
-            // Remove from allParserOwners if no more protocols
             for (uint i = 0; i < allParserOwners.length; i++) {
                 if (allParserOwners[i] == msg.sender) {
                     allParserOwners[i] = allParserOwners[allParserOwners.length - 1];
@@ -161,6 +234,11 @@ contract Popit is ERC721, Ownable {
 
     function insertLink(string memory _link, string memory _upc, string memory _human_readable_name, string memory _protocol) public {
         require(nameToPop[_human_readable_name].id == 0, "Name must be unique");
+        
+        if (protocolOwners[_protocol] != address(0)) {
+            require(_isProtocolWriter(_protocol, msg.sender), "Not authorized to create for this protocol");
+        }
+        
         require(flipToken.transferFrom(msg.sender, address(this), creationPrice), "FLIP transfer failed");
         flipToken.burn(creationPrice);
 
@@ -179,6 +257,10 @@ contract Popit is ERC721, Ownable {
             protocol: _protocol
         });
 
+        if (protocolOwners[_protocol] == address(0)) {
+            protocolOwners[_protocol] = msg.sender;
+        }
+
         hashToPop[hash] = newPop;
         upcToPop[_upc] = newPop;
         nameToPop[_human_readable_name] = newPop;
@@ -192,6 +274,10 @@ contract Popit is ERC721, Ownable {
         require(flipToken.balanceOf(msg.sender) >= creationPrice, "Insufficient balance");
         require(flipToken.transferFrom(msg.sender, address(this), creationPrice), "Payment failed");
         flipToken.burn(creationPrice);
+
+        if (protocolOwners[protocol] != address(0)) {
+            require(_isProtocolWriter(protocol, msg.sender), "Not authorized to create for this protocol");
+        }
 
         bytes32 hash = keccak256(abi.encodePacked(name));
         require(nameToPop[name].id == 0, "Name already exists");
@@ -209,6 +295,10 @@ contract Popit is ERC721, Ownable {
             timestamp: block.timestamp,
             protocol: protocol
         });
+
+        if (protocolOwners[protocol] == address(0)) {
+            protocolOwners[protocol] = msg.sender;
+        }
 
         hashToPop[hash] = newPop;
         upcToPop[upc] = newPop;
