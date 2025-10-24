@@ -3,7 +3,7 @@ import Iframe from 'react-iframe'
 import Popit from '../etc/rawmaterial/Popit.json'
 import NostRadioToken from '../etc/rawmaterial/Flip.json'
 import RawMaterial from '../etc/rawmaterial/RawMaterial.json'
-import Web3 from 'web3'
+import { ethers } from 'ethers'
 //import Navbar from './Navbar'
 import CommentSection from './CommentSection'
 import StaticCarouselExp from './StaticCarouselExp'
@@ -31,7 +31,8 @@ class AppExp extends Component {
       code: "",
       popitNft: null,
       intelX: null,
-      popitData: null
+      popitData: null,
+      provider: null
     }
 
     this.scan = null;
@@ -54,252 +55,274 @@ class AppExp extends Component {
   }
 
   async componentWillMount() {
-    //await this.loadWeb3()
-    //await this.loadBlockchainData()
+    await this.loadWeb3()
+    await this.loadBlockchainData()
   }
 
   async loadWeb3() {
-    // Load web3
+    try {
+      let provider;
+      
+      if (window.ethereum) {
+        // CORRECT: Ethers.js v5 syntax
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+      } else if (window.web3 && window.web3.currentProvider) {
+        provider = new ethers.providers.Web3Provider(window.web3.currentProvider);
+      } else {
+        provider = new ethers.providers.JsonRpcProvider("https://polygon-rpc.com/");
+      }
+      
+      this.setState({ provider: provider });
+      return provider;
+    } catch (error) {
+      console.error("Error loading Web3:", error);
+      const provider = new ethers.providers.JsonRpcProvider("https://polygon-rpc.com/");
+      this.setState({ provider: provider });
+      return provider;
+    }
   }
 
   async loadBlockchainData() {
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum)
-      await window.ethereum.enable()
-    } else if (window.web3) {
-      window.web3 = new Web3(window.web3.currentProvider)
-    } else {
-      window.web3 = new Web3(window.web3.currentProvider)
-      //window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+    try {
+      // Ensure provider is loaded first
+      let provider = this.state.provider;
+      if (!provider) {
+        provider = await this.loadWeb3();
+      }
+
+      const signer = provider.getSigner();
+      const account = await signer.getAddress();
+      this.setState({ account: account });
+
+      const network = await provider.getNetwork();
+      const networkId = Number(network.chainId);
+
+      // Load Popit contract
+      const popitData = Popit.networks[networkId];
+      if (popitData) {
+        const popitAddress = popitData.address;
+        const popitNftContract = new ethers.Contract(popitAddress, Popit.abi, signer);
+        this.setState({ 
+          popitNft: popitNftContract,
+          address: popitAddress 
+        });
+      }
+
+      // Load RawMaterial contract
+      const upcData = RawMaterial.networks[networkId];
+      if (upcData) {
+        const upcAddress = upcData.address;
+        const upcNftContract = new ethers.Contract(upcAddress, RawMaterial.abi, signer);
+        this.setState({ 
+          upcNft: upcNftContract,
+          upcAddress: upcAddress 
+        });
+      }
+
+      // Load NostRadioToken contract
+      const intelXData = NostRadioToken.networks[networkId];
+      if (intelXData) {
+        const intelXContract = new ethers.Contract(intelXData.address, NostRadioToken.abi, signer);
+        this.setState({ intelX: intelXContract });
+      }
+
+      this.setState({ loading: false });
+      return this.state.popitNft;
+
+    } catch (error) {
+      console.error("Error loading blockchain data:", error);
+      this.setState({ loading: false });
+      return null;
     }
-
-    const web3 = window.web3
-
-    const accounts = await web3.eth.getAccounts()
-    this.setState({ account: accounts[0] })
-
-  
-    const networkId = await web3.eth.net.getId()
-    const popitData = Popit.networks[networkId]
-    const popitAddress = popitData.address;
-    const popitNftContract = await new web3.eth.Contract(Popit.abi, popitAddress);
-
-
-
-    const upcData = RawMaterial.networks[networkId]
-    const upcAddress = upcData.address;
-    const upcNftContract = await new web3.eth.Contract(RawMaterial.abi, upcAddress);
-
-
-
-    this.setState({ upcNft: upcNftContract });
-    this.setState({ upcAddress: upcAddress });
-
-
-    this.setState({ popitNft: popitNftContract });
-    this.setState({ address: popitAddress });
-
-
-
-
-
-
-
-
-    return popitNftContract;
   }
 
   async popitPush(link, upc, humanReadableName) {
+    try {
+      const loadedFull = await this.loadBlockchainData();
+      if (!loadedFull) throw new Error("Contract not loaded");
 
-    var loadedFull = await this.loadBlockchainData();
-    var address = this.state.account;
-
-    const pushRes = await loadedFull.methods.insertLink(link, upc, humanReadableName).send({ from: address });
-    return pushRes.toString();
+      const tx = await loadedFull.insertLink(link, upc, humanReadableName);
+      await tx.wait();
+      return tx.hash;
+    } catch (error) {
+      console.error("Error in popitPush:", error);
+      throw error;
+    }
   };
-
-
-
 
   latestRawId = async (upcId) => {
-    const { accounts, contract } = this.state;
-
-    var loadedFull = await this.loadBlockchainData();
-    var address = this.state.account;
-    //console.log(this.state.sendCryptoValue);
-    // Stores a given value, 5 by default.
-    return this.state.upcNft.methods.latestTokenId().call({ from: address });
+    try {
+      if (!this.state.upcNft) {
+        await this.loadBlockchainData();
+      }
+      return await this.state.upcNft.latestTokenId();
+    } catch (error) {
+      console.error("Error in latestRawId:", error);
+      throw error;
+    }
   };
 
-
-
-  getMyNfts= async () => {
-
-    var loadedFull = await this.loadBlockchainData();
-    var address = this.state.account;
-    //console.log(this.state.sendCryptoValue);
-    // Stores a given value, 5 by default.
-    return this.state.upcNft.methods.getMyNfts().call({ from: address });
+  getMyNfts = async () => {
+    try {
+      if (!this.state.upcNft) {
+        await this.loadBlockchainData();
+      }
+      return await this.state.upcNft.getMyNfts();
+    } catch (error) {
+      console.error("Error in getMyNfts:", error);
+      throw error;
+    }
   };
-
-
-
-
-
 
   nftInfo = async (nftId) => {
-
-    var loadedFull = await this.loadBlockchainData();
-    var address = this.state.account;
-    //console.log(this.state.sendCryptoValue);
-    // Stores a given value, 5 by default.
-    return this.state.upcNft.methods.nftInfo(nftId).call({ from: address });
+    try {
+      if (!this.state.upcNft) {
+        await this.loadBlockchainData();
+      }
+      return await this.state.upcNft.nftInfo(nftId);
+    } catch (error) {
+      console.error("Error in nftInfo:", error);
+      throw error;
+    }
   };
-
-
-
-
-
 
   upcInfo = async (upcId) => {
-    var loadedFull = await this.loadBlockchainData();
-    var address = this.state.account;
-
-   //console.log(this.state.sendCryptoValue);
-    // Stores a given value, 5 by default.
-    return this.state.upcNft.methods.upcInfo(upcId).call({ from: address });
+    try {
+      if (!this.state.upcNft) {
+        await this.loadBlockchainData();
+      }
+      return await this.state.upcNft.upcInfo(upcId);
+    } catch (error) {
+      console.error("Error in upcInfo:", error);
+      throw error;
+    }
   };
 
+  async popitUpdate(upcId, link) {
+    try {
+      const loadedFull = await this.loadBlockchainData();
+      if (!loadedFull) throw new Error("Contract not loaded");
 
-
-
-
-  async popitUpdate(upcId,link) {
-
-    var loadedFull = await this.loadBlockchainData();
-    var address = this.state.account;
-
-    const pushRes = await loadedFull.methods.updateLink(upcId,link).send({ from: address });
-    return pushRes.toString();
+      const tx = await loadedFull.updateLink(upcId, link);
+      await tx.wait();
+      return tx.hash;
+    } catch (error) {
+      console.error("Error in popitUpdate:", error);
+      throw error;
+    }
   };
-
-
 
   async latestTokenId() { 
-    const loadedFull = await this.loadBlockchainData();
-    const address = loadedFull[1];
-    const pushRes = await loadedFull.methods.latestTokenId().call({ from: address });
-    return pushRes.toString();
+    try {
+      const loadedFull = await this.loadBlockchainData();
+      if (!loadedFull) throw new Error("Contract not loaded");
+      
+      const result = await loadedFull.latestTokenId();
+      return result.toString();
+    } catch (error) {
+      console.error("Error in latestTokenId:", error);
+      throw error;
+    }
   };
 
-
-
-
   async getMyAddress() { 
-    const loadedFull = await this.loadBlockchainData();
-
+    if (!this.state.account || this.state.account === '0x0') {
+      await this.loadBlockchainData();
+    }
     return this.state.account;
   };
 
-
-
-
-
-  async popitPullUniversal(start,end) {
-    const loadedFull = await this.loadBlockchainData();
-    const address = loadedFull[1];
-    const pushRes = await loadedFull.methods.getUniversalData(start,end).call({ from: address });
-    return pushRes;
+  async popitPullUniversal(start, end) {
+    try {
+      const loadedFull = await this.loadBlockchainData();
+      if (!loadedFull) throw new Error("Contract not loaded");
+      
+      const result = await loadedFull.getUniversalData(start, end);
+      return result;
+    } catch (error) {
+      console.error("Error in popitPullUniversal:", error);
+      throw error;
+    }
   };
-
-
 
   async approvePPL(numTokens) {
-//    const loadedFull = await this.loadBlockchainData();
-//    const address = loadedFull[1];
+    try {
+      // Ensure everything is loaded first
+      await this.loadBlockchainData();
+      
+      if (!this.state.intelX) {
+        throw new Error("IntelX contract not loaded");
+      }
 
+      if (!this.state.popitNft) {
+        throw new Error("Popit contract not loaded");
+      }
 
+      const popitAddress = await this.state.popitNft.getAddress();
+      
+      if (!numTokens) {
+        numTokens = "100000000000000000";
+      }
 
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum)
-      await window.ethereum.enable()
-    } else if (window.web3) {
-      window.web3 = new Web3(window.web3.currentProvider)
-    } else {
-      window.web3 = new Web3(window.web3.currentProvider)
-      //window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+      const tx = await this.state.intelX.approve(popitAddress, numTokens);
+      await tx.wait();
+      return tx.hash;
+    } catch (error) {
+      console.error("Error in approvePPL:", error);
+      throw error;
     }
-
-    const web3 = window.web3
-    const networkId = await web3.eth.net.getId()
-
-    const popitData = Popit.networks[networkId]
-    const address = popitData.address;
-
-
-    let MYDATA;
-
-    // Load PAY currency
-    const intelXData = NostRadioToken.networks[networkId]
-    if(intelXData) {
-
-      MYDATA = new web3.eth.Contract(NostRadioToken.abi, intelXData.address)
-    }
-
-
-    if(!numTokens) {
-       numTokens = "100000000000000000";
-    }
-
-    const accounts = await web3.eth.getAccounts();
-    
-    let account = accounts[0];
-    let approval = await MYDATA.methods.approve(address, numTokens).send({ from: account });
-    return approval.toString();
   };
-
-
 
   async popitPullPPL(humanReadableName) {
-    const loadedFull = await this.loadBlockchainData();
-    const address = loadedFull[1];
-    const pushRes = await loadedFull.methods.getPopByGlobalName(humanReadableName).call({ from: address });
-    return pushRes.toString();
+    try {
+      const loadedFull = await this.loadBlockchainData();
+      if (!loadedFull) throw new Error("Contract not loaded");
+      
+      const result = await loadedFull.getPopByGlobalName(humanReadableName);
+      return result.toString();
+    } catch (error) {
+      console.error("Error in popitPullPPL:", error);
+      throw error;
+    }
   };
-
 
   async popitPullUpc(upc) {
-    const loadedFull = await this.loadBlockchainData();
-    const address = loadedFull[1];
-    const pushRes = await loadedFull.methods.getPopByUpc(upc).call({ from: address });
-    return pushRes;
+    try {
+      const loadedFull = await this.loadBlockchainData();
+      if (!loadedFull) throw new Error("Contract not loaded");
+      
+      const result = await loadedFull.getPopByUpc(upc);
+      return result;
+    } catch (error) {
+      console.error("Error in popitPullUpc:", error);
+      throw error;
+    }
   };
-
 
   async popitPullHash(hash) {
-    const loadedFull = await this.loadBlockchainData();
-    const address = loadedFull[1];
-    const pushRes = await loadedFull.methods.getPopByInstance(hash).call({ from: address });
-    return pushRes;
+    try {
+      const loadedFull = await this.loadBlockchainData();
+      if (!loadedFull) throw new Error("Contract not loaded");
+      
+      const result = await loadedFull.getPopByInstance(hash);
+      return result;
+    } catch (error) {
+      console.error("Error in popitPullHash:", error);
+      throw error;
+    }
   };
-
-
-
 
   render() {
     var currentUrl = window.location.href;
     const exportIndex = currentUrl.indexOf('/export');
     const firstSlashIndex = currentUrl.indexOf('/', exportIndex + 1);
 
-    // Extract the substring after the first slash after 'export'
     const encodedSubstring = currentUrl.substring(firstSlashIndex + 1);
     const myShow = atob(encodedSubstring);
 
-    // Parse the string as JSON
     const dataObject = JSON.parse(myShow);
 
-
-    // Extract the value of the 'show' variable
     const showValue = dataObject.show;
     const codeValue = dataObject.code;
     const manifestValue = dataObject.manifest;
